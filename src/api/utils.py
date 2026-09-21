@@ -148,3 +148,12 @@ def generate_recommendation(prob: float, calls: float, delay: float) -> str:
     elif prob >= 0.35:
         return "RỦI RO TRUNG BÌNH: Gửi email giới thiệu tính năng, tặng điểm Loyalty và ưu đãi gia hạn sớm."
     return "KHÁCH HÀNG ỔN ĐỊNH: Khách hàng hài lòng cao. Đề xuất chiến dịch Upsell/Cross-sell gói cao cấp."
+
+
+def run_model_inference(clf, raw_vec: np.ndarray, scaler, use_scaled: bool) -> Tuple[np.ndarray, int, float, str]:
+    """Thực thi suy luận mô hình và phân tầng mức độ rủi ro."""
+    x_input = scaler.transform(raw_vec) if use_scaled and scaler is not None else raw_vec
+    pred_class = int(clf.predict(x_input)[0])
+    prob = float(clf.predict_proba(x_input)[0][1]) if hasattr(clf, "predict_proba") else float(pred_class)
+    risk_tier = "High Risk" if prob >= 0.70 else ("Medium Risk" if prob >= 0.35 else "Low Risk")
+    return x_input, pred_class, prob, risk_tier

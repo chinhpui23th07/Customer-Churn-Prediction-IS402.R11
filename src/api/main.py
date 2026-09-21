@@ -23,9 +23,9 @@ from src.api.schemas import (
     CustomerInput, PredictionResponse, BatchPredictionResponse, HealthResponse
 )
 from src.api.utils import (
-    init_inference_db, log_inference_prediction, verify_api_key,
-    prepare_feature_vector_from_input, compute_shap_attributions,
-    generate_recommendation, FEATURE_COLS
+    init_inference_db, log_inference_prediction, log_batch_inference_predictions,
+    verify_api_key, prepare_feature_vector_from_input, compute_shap_attributions,
+    generate_recommendation, run_model_inference, FEATURE_COLS
 )
 from src.api.ab_testing import (
     route_customer_to_model, analyze_ab_test_performance,
@@ -175,14 +175,9 @@ def predict_from_feast_customer_id(customer_id: int, api_key: str = Depends(veri
 
     raw_vec = np.array([feature_values])
     clf = MODEL_ARTIFACT["model"]
-    use_scaled = MODEL_ARTIFACT["use_scaled"]
-    x_input = SCALER.transform(raw_vec) if use_scaled and SCALER is not None else raw_vec
-
-    pred_class = int(clf.predict(x_input)[0])
-    prob = float(clf.predict_proba(x_input)[0][1]) if hasattr(clf, "predict_proba") else float(pred_class)
+    x_input, pred_class, prob, risk_tier = run_model_inference(clf, raw_vec, SCALER, MODEL_ARTIFACT["use_scaled"])
     latency = (time.perf_counter() - t0) * 1000.0
 
-    risk_tier = "High Risk" if prob >= 0.70 else ("Medium Risk" if prob >= 0.35 else "Low Risk")
     rec = generate_recommendation(prob, feature_values[4], feature_values[5])
     xai_factors, xai_summary = compute_shap_attributions(TREE_EXPLAINER, x_input)
     log_inference_prediction(customer_id, feature_values, pred_class, prob, model_version=CHAMPION_VERSION)
@@ -209,14 +204,9 @@ def predict_single(customer: CustomerInput, api_key: str = Depends(verify_api_ke
     t0 = time.perf_counter()
     raw_vec = prepare_feature_vector_from_input(customer)
     clf = MODEL_ARTIFACT["model"]
-    use_scaled = MODEL_ARTIFACT["use_scaled"]
-    x_input = SCALER.transform(raw_vec) if use_scaled and SCALER is not None else raw_vec
-
-    pred_class = int(clf.predict(x_input)[0])
-    prob = float(clf.predict_proba(x_input)[0][1]) if hasattr(clf, "predict_proba") else float(pred_class)
+    x_input, pred_class, prob, risk_tier = run_model_inference(clf, raw_vec, SCALER, MODEL_ARTIFACT["use_scaled"])
     latency = (time.perf_counter() - t0) * 1000.0
 
-    risk_tier = "High Risk" if prob >= 0.70 else ("Medium Risk" if prob >= 0.35 else "Low Risk")
     rec = generate_recommendation(prob, customer.support_calls, customer.payment_delay)
     xai_factors, xai_summary = compute_shap_attributions(TREE_EXPLAINER, x_input)
     log_inference_prediction(customer.customer_id or 999999, raw_vec[0].tolist(), pred_class, prob, model_version=CHAMPION_VERSION)
@@ -257,13 +247,9 @@ def predict_ab_test(customer: CustomerInput, api_key: str = Depends(verify_api_k
         use_scaled = MODEL_ARTIFACT["use_scaled"]
 
     raw_vec = prepare_feature_vector_from_input(customer)
-    x_input = SCALER.transform(raw_vec) if use_scaled and SCALER is not None else raw_vec
-
-    pred_class = int(clf.predict(x_input)[0])
-    prob = float(clf.predict_proba(x_input)[0][1]) if hasattr(clf, "predict_proba") else float(pred_class)
+    x_input, pred_class, prob, risk_tier = run_model_inference(clf, raw_vec, SCALER, use_scaled)
     latency = (time.perf_counter() - t0) * 1000.0
 
-    risk_tier = "High Risk" if prob >= 0.70 else ("Medium Risk" if prob >= 0.35 else "Low Risk")
     rec = generate_recommendation(prob, customer.support_calls, customer.payment_delay)
     xai_factors, xai_summary = compute_shap_attributions(TREE_EXPLAINER, x_input)
     log_inference_prediction(cid, raw_vec[0].tolist(), pred_class, prob, model_version=model_ver)
@@ -289,20 +275,47 @@ def get_ab_test_analytics():
 
 @app.post("/batch_predict", response_model=BatchPredictionResponse, tags=["Inference"])
 def predict_batch(customers: List[CustomerInput], api_key: str = Depends(verify_api_key)):
-    """Dự đoán hàng loạt cho danh sách khách hàng gửi qua JSON."""
-    results = [predict_single(c, api_key=api_key) for c in customers]
-    churn_cnt = sum(1 for r in results if r.churn_prediction == 1)
-    risk_dist = {"Low Risk": 0, "Medium Risk": 0, "High Risk": 0}
-    for r in results:
-        risk_dist[r.risk_level] += 1
+    """Dự đoán hàng loạt vector hóa hiệu năng cao kết hợp single-transaction DB insert."""
+    if MODEL_ARTIFACT is None:
+        load_artifacts()
+    if not customers:
+        return BatchPredictionResponse(
+            total_processed=0, churn_count=0, retention_count=0, overall_churn_rate=0.0,
+            risk_distribution={"Low Risk": 0, "Medium Risk": 0, "High Risk": 0}, predictions=[]
+        )
 
+    t0 = time.perf_counter()
+    raw_vecs = np.array([prepare_feature_vector_from_input(c)[0] for c in customers])
+    clf = MODEL_ARTIFACT["model"]
+    use_scaled = MODEL_ARTIFACT["use_scaled"]
+    x_batch = SCALER.transform(raw_vecs) if use_scaled and SCALER is not None else raw_vecs
+
+    preds = clf.predict(x_batch).astype(int)
+    probs = clf.predict_proba(x_batch)[:, 1] if hasattr(clf, "predict_proba") else preds.astype(float)
+    avg_lat = round(((time.perf_counter() - t0) * 1000.0) / len(customers), 2)
+
+    results, log_records = [], []
+    risk_dist = {"Low Risk": 0, "Medium Risk": 0, "High Risk": 0}
+    churn_cnt = 0
+
+    for i, c in enumerate(customers):
+        p_cls, p_pr = int(preds[i]), float(probs[i])
+        churn_cnt += (1 if p_cls == 1 else 0)
+        tier = "High Risk" if p_pr >= 0.70 else ("Medium Risk" if p_pr >= 0.35 else "Low Risk")
+        risk_dist[tier] += 1
+        rec = generate_recommendation(p_pr, c.support_calls, c.payment_delay)
+        cid = c.customer_id or 999999
+        log_records.append((cid, p_cls, p_pr, raw_vecs[i].tolist(), CHAMPION_VERSION))
+        results.append(PredictionResponse(
+            customer_id=c.customer_id, churn_prediction=p_cls, churn_probability=round(p_pr, 4),
+            risk_level=tier, recommended_action=rec, model_version=CHAMPION_VERSION, latency_ms=avg_lat
+        ))
+
+    log_batch_inference_predictions(log_records)
     total = len(customers)
     return BatchPredictionResponse(
-        total_processed=total,
-        churn_count=churn_cnt,
-        retention_count=total - churn_cnt,
-        overall_churn_rate=round(churn_cnt / max(total, 1), 4),
-        risk_distribution=risk_dist,
+        total_processed=total, churn_count=churn_cnt, retention_count=total - churn_cnt,
+        overall_churn_rate=round(churn_cnt / max(total, 1), 4), risk_distribution=risk_dist,
         predictions=results
     )
 
@@ -324,19 +337,14 @@ async def predict_from_csv(file: UploadFile = File(...), api_key: str = Depends(
     cid_col = norm.get("customerid")
     inputs = [
         CustomerInput(
-            customer_id=int(row[cid_col]) if cid_col and pd.notna(row[cid_col]) else 999999,
-            age=float(row[norm["age"]]),
-            gender=str(row[norm["gender"]]).capitalize(),
-            tenure=float(row[norm["tenure"]]),
-            usage_frequency=float(row[norm["usagefrequency"]]),
-            support_calls=float(row[norm["supportcalls"]]),
-            payment_delay=float(row[norm["paymentdelay"]]),
-            subscription_type=str(row[norm["subscriptiontype"]]).capitalize(),
-            contract_length=str(row[norm["contractlength"]]).capitalize(),
-            total_spend=float(row[norm["totalspend"]]),
-            last_interaction=float(row[norm["lastinteraction"]])
-        )
-        for _, row in df.iterrows()
+            customer_id=int(r[cid_col]) if cid_col and pd.notna(r[cid_col]) else 999999,
+            age=float(r[norm["age"]]), gender=str(r[norm["gender"]]).capitalize(),
+            tenure=float(r[norm["tenure"]]), usage_frequency=float(r[norm["usagefrequency"]]),
+            support_calls=float(r[norm["supportcalls"]]), payment_delay=float(r[norm["paymentdelay"]]),
+            subscription_type=str(r[norm["subscriptiontype"]]).capitalize(),
+            contract_length=str(r[norm["contractlength"]]).capitalize(),
+            total_spend=float(r[norm["totalspend"]]), last_interaction=float(r[norm["lastinteraction"]])
+        ) for _, r in df.iterrows()
     ]
     return predict_batch(inputs, api_key=api_key)
 
@@ -366,17 +374,9 @@ def trigger_retraining(force: bool = False, api_key: str = Depends(verify_api_ke
     """Kích hoạt webhook tái huấn luyện mô hình khi phát hiện Concept/Data Drift."""
     drift_res = run_drift_analysis()
     if drift_res.get("dataset_drift_detected", False) or force:
-        return {
-            "status": "TRIGGERED",
-            "message": "Đã kích hoạt tái huấn luyện thành công qua MLOps Pipeline.",
-            "drift_share": drift_res.get("drift_share", 0.0),
-            "triggered_at": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime())
-        }
-    return {
-        "status": "SKIPPED",
-        "message": "Dữ liệu vẫn ổn định (PSI < 0.25). Không cần tái huấn luyện.",
-        "drift_share": drift_res.get("drift_share", 0.0)
-    }
+        return {"status": "TRIGGERED", "message": "Đã kích hoạt tái huấn luyện thành công qua MLOps Pipeline.",
+                "drift_share": drift_res.get("drift_share", 0.0), "triggered_at": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime())}
+    return {"status": "SKIPPED", "message": "Dữ liệu vẫn ổn định (PSI < 0.25). Không cần tái huấn luyện.", "drift_share": drift_res.get("drift_share", 0.0)}
 
 
 @app.get("/models/summary", tags=["Analytics"])

@@ -10,6 +10,13 @@ import numpy as np
 import pandas as pd
 from scipy.stats import ks_2samp
 
+try:
+    from evidently import Report
+    from evidently.presets import DataDriftPreset
+    EVIDENTLY_AVAILABLE = True
+except Exception:
+    EVIDENTLY_AVAILABLE = False
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 if hasattr(sys.stderr, "reconfigure"):
@@ -143,14 +150,25 @@ def run_drift_analysis(current_df: pd.DataFrame = None, p_val_threshold: float =
         json.dump(drift_report, f, indent=2, ensure_ascii=False)
 
     # Tạo file báo cáo HTML trực quan
-    generate_html_report(drift_report)
+    generate_html_report(drift_report, ref_df=ref_df, current_df=current_df)
 
     return drift_report
 
 
-def generate_html_report(report: dict):
-    """Tạo báo cáo HTML giao diện Google Stitch theo dõi Drift."""
+def generate_html_report(report: dict, ref_df: pd.DataFrame = None, current_df: pd.DataFrame = None):
+    """Tạo báo cáo HTML theo dõi Drift bằng Evidently AI với fallback giao diện Stitch."""
     os.makedirs(os.path.dirname(OUTPUT_DRIFT_HTML), exist_ok=True)
+    if EVIDENTLY_AVAILABLE and ref_df is not None and current_df is not None:
+        try:
+            r = Report([DataDriftPreset()])
+            ref_sub = ref_df[FEATURE_COLS].sample(n=min(len(ref_df), 3000), random_state=42)
+            cur_sub = current_df[FEATURE_COLS].sample(n=min(len(current_df), 3000), random_state=42)
+            snapshot = r.run(reference_data=ref_sub, current_data=cur_sub)
+            snapshot.save_html(OUTPUT_DRIFT_HTML)
+            print(f"[+] Đã tạo báo cáo Evidently AI HTML: {OUTPUT_DRIFT_HTML}")
+            return
+        except Exception as e:
+            print(f"[-] Fallback giao diện Stitch do: {e}")
 
     status_badge = (
         '<span style="background:#EF4444;color:#FFF;padding:4px 12px;border-radius:20px;font-weight:bold;">PHÁT HIỆN DRIFT</span>'

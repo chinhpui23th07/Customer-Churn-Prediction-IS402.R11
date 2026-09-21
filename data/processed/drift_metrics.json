@@ -1,96 +1,96 @@
 {
-  "timestamp": "2026-09-21T22:35:00.881569",
+  "timestamp": "2026-09-21T23:15:00.045946",
   "reference_samples": 309547,
-  "current_samples": 46,
+  "current_samples": 53,
   "features": {
     "age": {
-      "ks_statistic": 0.2891,
-      "p_value": 0.00067,
-      "psi_score": 0.9142,
+      "ks_statistic": 0.2751,
+      "p_value": 0.00049,
+      "psi_score": 0.9623,
       "drift_detected": true,
       "drift_level": "High"
     },
     "gender_encoded": {
-      "ks_statistic": 0.0457,
-      "p_value": 0.9999,
+      "ks_statistic": 0.0392,
+      "p_value": 0.99999,
       "psi_score": 0.0,
       "drift_detected": false,
       "drift_level": "Stable"
     },
     "tenure": {
-      "ks_statistic": 0.2837,
-      "p_value": 0.00091,
-      "psi_score": 0.8443,
+      "ks_statistic": 0.2902,
+      "p_value": 0.00019,
+      "psi_score": 0.8891,
       "drift_detected": true,
       "drift_level": "High"
     },
     "usage_frequency": {
-      "ks_statistic": 0.1872,
-      "p_value": 0.06946,
-      "psi_score": 0.6277,
+      "ks_statistic": 0.1757,
+      "p_value": 0.06676,
+      "psi_score": 0.6407,
       "drift_detected": true,
       "drift_level": "High"
     },
     "support_calls": {
-      "ks_statistic": 0.2185,
-      "p_value": 0.02083,
-      "psi_score": 0.4405,
+      "ks_statistic": 0.2177,
+      "p_value": 0.01102,
+      "psi_score": 0.4654,
       "drift_detected": true,
       "drift_level": "High"
     },
     "payment_delay": {
-      "ks_statistic": 0.44,
+      "ks_statistic": 0.4334,
       "p_value": 0.0,
-      "psi_score": 1.4932,
+      "psi_score": 1.5713,
       "drift_detected": true,
       "drift_level": "High"
     },
     "subscription_type_encoded": {
-      "ks_statistic": 0.0542,
-      "p_value": 0.99817,
-      "psi_score": 0.0051,
+      "ks_statistic": 0.0417,
+      "p_value": 0.99994,
+      "psi_score": 0.0054,
       "drift_detected": false,
       "drift_level": "Stable"
     },
     "contract_length_encoded": {
-      "ks_statistic": 0.1856,
-      "p_value": 0.07363,
-      "psi_score": 0.0473,
+      "ks_statistic": 0.1646,
+      "p_value": 0.10063,
+      "psi_score": 0.0466,
       "drift_detected": false,
       "drift_level": "Stable"
     },
     "total_spend": {
-      "ks_statistic": 0.3618,
-      "p_value": 1e-05,
-      "psi_score": 1.1121,
+      "ks_statistic": 0.3478,
+      "p_value": 0.0,
+      "psi_score": 1.1609,
       "drift_detected": true,
       "drift_level": "High"
     },
     "last_interaction": {
-      "ks_statistic": 0.2893,
-      "p_value": 0.00067,
-      "psi_score": 1.0025,
+      "ks_statistic": 0.2827,
+      "p_value": 0.00031,
+      "psi_score": 1.0519,
       "drift_detected": true,
       "drift_level": "High"
     },
     "support_calls_per_tenure": {
-      "ks_statistic": 0.3846,
+      "ks_statistic": 0.3809,
       "p_value": 0.0,
-      "psi_score": 0.973,
+      "psi_score": 1.0206,
       "drift_detected": true,
       "drift_level": "High"
     },
     "spend_per_tenure": {
       "ks_statistic": 0.6218,
       "p_value": 0.0,
-      "psi_score": 1.9929,
+      "psi_score": 2.1449,
       "drift_detected": true,
       "drift_level": "High"
     },
     "delay_ratio": {
       "ks_statistic": 0.6368,
       "p_value": 0.0,
-      "psi_score": 1.791,
+      "psi_score": 1.8939,
       "drift_detected": true,
       "drift_level": "High"
     }
