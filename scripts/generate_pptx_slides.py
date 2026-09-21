@@ -65,6 +65,7 @@ def build_presentation():
     io_data = load_json(os.path.join(DATA_DIR, "io_benchmark_results.json"))
     lat_data = load_json(os.path.join(DATA_DIR, "region_latency_results.json"))
     bias_data = load_json(os.path.join(DATA_DIR, "dataset_bias_analysis.json"))
+    tune_data = load_json(os.path.join(MODELS_DIR, "tuning_history.json"))
 
     prs = Presentation()
     prs.slide_width = Inches(13.333)
@@ -112,7 +113,9 @@ def build_presentation():
     p_speedup = io_data.get("Parquet", {}).get("read_speedup_vs_csv", 14.41)
     p_read = io_data.get("Parquet", {}).get("read_throughput_mb_s", 111.77)
     sg_rtt = lat_data.get("ap-southeast-1", {}).get("avg_ms", 81.13)
-    monthly_churn_pct = bias_data.get("monthly_churn_rate", 0.9984) * 100
+    monthly_churn_pct = bias_data.get("contract_length_distribution", {}).get("Monthly", {}).get("churn_rate", 0.9984) * 100
+    optuna_best_xgb = tune_data.get("xgboost_champion", {}).get("best_roc_auc", 0.999)
+    optuna_best_rf = tune_data.get("random_forest_challenger", {}).get("best_roc_auc", 0.9988)
 
     slides_content = [
         {
@@ -203,6 +206,19 @@ def build_presentation():
             ],
             "image": "model_comparison_metrics.png",
             "speaker_notes": "Nhóm thực hiện đánh giá bằng 5-Fold Cross Validation trên tập train để chống overfitting trước khi kiểm thử trên tập test độc lập."
+        },
+        {
+            "cat": "4.0 TỐI ƯU HÓA SIÊU THAM SỐ (OPTUNA)",
+            "title": "Tối Ưu Siêu Tham Số Bayes Qua 12 Trials Với Optuna",
+            "bullets": [
+                "Áp dụng Bayesian Optimization với TPE Sampler (Tree-structured Parzen Estimator).",
+                f"Champion XGBoost: Đạt ROC-AUC {optuna_best_xgb:.4f} tại Trial #9 (n_estimators=140, max_depth=5, lr=0.0708).",
+                f"Challenger Random Forest: Đạt ROC-AUC {optuna_best_rf:.4f} tại Trial #2 (n_estimators=60, max_depth=14).",
+                "Phân tầng 3-Fold Stratified CV trên 25,000 mẫu đại diện, chống quá khớp (overfitting).",
+                "Lưu vết toàn diện: Tự động ghi nhận trials vào tuning_history.json và sinh biểu đồ hội tụ."
+            ],
+            "image": "optuna_optimization.png",
+            "speaker_notes": "Nhóm ứng dụng Optuna Bayesian Optimization với 12 trials, tự động tối ưu hóa siêu tham số cho cả Champion và Challenger."
         },
         {
             "cat": "4.0 ĐÁNH GIÁ ĐƯỜNG CONG ROC & AUC",
