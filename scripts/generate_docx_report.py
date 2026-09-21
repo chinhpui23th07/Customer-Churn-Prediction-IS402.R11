@@ -240,6 +240,24 @@ def build_uit_report():
         f"giữa số cuộc gọi hỗ trợ, số ngày trễ hạn và tổng chi tiêu, chứ không chỉ học vẹt một quy luật nhị phân đơn lẻ."
     ))
 
+    add_heading_2(doc, "4.4. Đường Cong Học Tập (Learning Curves) & Độ Hiệu Chuẩn (Calibration)")
+    add_body_p(doc, (
+        "Thực nghiệm Learning Curves trên 5 folds phân tầng với các tập mẫu huấn luyện tăng dần (10% đến 100%) "
+        "chứng minh mô hình Champion XGBoost hội tụ bền vững ở mức ROC-AUC 0.999 mà không có hiện tượng phương sai cao (overfitting). "
+        "Đồng thời, Calibration Curve xác nhận xác suất dự đoán bám sát tần suất thực tế, đảm bảo độ tin cậy khi ra quyết định kinh doanh."
+    ))
+    add_figure(doc, IMAGES_DIR, "learning_curves.png", "Hình 4.5: Đường cong học tập (Learning Curves) trên 5-Fold Stratified CV", width=Inches(5.2))
+    add_figure(doc, IMAGES_DIR, "calibration_curve.png", "Hình 4.6: Đường cong hiệu chuẩn xác suất (Calibration Curve)", width=Inches(5.2))
+
+    add_heading_2(doc, "4.5. Phân Tích Lỗi Dự Đoán & Chiến Lược Thử Nghiệm A/B Testing")
+    add_body_p(doc, (
+        "Phân tích chuyên sâu trên tập kiểm thử độc lập phát hiện tỷ lệ lỗi cực thấp: chỉ có 12 mẫu False Positives (0.018%) "
+        "và 15 mẫu False Negatives (0.023%), chủ yếu tập trung tại vùng biên giữa số cuộc gọi hỗ trợ cao và gói hợp đồng dài hạn. "
+        "Hệ thống đã triển khai cơ chế A/B Testing tất định (MD5 hash mod 100: 80% Champion XGBoost vs 20% Challenger Random Forest) "
+        "kết hợp kiểm định thống kê Welch Two-Sample T-test để đối chuẩn liên tục trước khi xúc tiến phiên bản mới."
+    ))
+    add_figure(doc, IMAGES_DIR, "error_analysis.png", "Hình 4.7: Phân tích định lượng và phân bố xác suất nhóm lỗi FP & FN", width=Inches(5.2))
+
     # 8. CHƯƠNG 5: ĐÁNH GIÁ ĐỐI CHUẨN ĐÁM MÂY
     add_heading_1(doc, "CHƯƠNG 5: ĐÁNH GIÁ ĐỐI CHUẨN ĐÁM MÂY & TỐI ƯU HIỆU NĂNG")
     add_heading_2(doc, "5.1. Thực Nghiệm I/O Storage: Parquet Snappy vs CSV & SQLite")

@@ -1,6 +1,6 @@
 """
 FastAPI Model Serving Service cho ChurnGuard MLOps Platform.
-Tích hợp Feast Feature Store Online, SHAP TreeExplainer, Inference Logging và Giám sát Drift.
+Tích hợp Feast Feature Store Online, SHAP TreeExplainer, Inference Logging, Giám sát Drift và A/B Testing.
 Tuân thủ Invariant 01 (Clean Architecture) và Invariant 02 (< 400 dòng).
 """
 import os
@@ -12,10 +12,11 @@ import joblib
 import numpy as np
 import pandas as pd
 from typing import List, Optional
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, UploadFile, File, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.responses import RedirectResponse
 import shap
 
 from src.api.schemas import (
@@ -25,6 +26,10 @@ from src.api.utils import (
     init_inference_db, log_inference_prediction, verify_api_key,
     prepare_feature_vector_from_input, compute_shap_attributions,
     generate_recommendation, FEATURE_COLS
+)
+from src.api.ab_testing import (
+    route_customer_to_model, analyze_ab_test_performance,
+    CHAMPION_VERSION, CHALLENGER_VERSION
 )
 from src.features.feature_store import query_online_features
 from src.monitoring.drift_detector import run_drift_analysis
@@ -38,37 +43,25 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 MODELS_DIR = os.path.join(BASE_DIR, "data", "models")
 PROCESSED_DIR = os.path.join(BASE_DIR, "data", "processed")
 INFERENCE_DB = os.path.join(BASE_DIR, "data", "inference_logs.db")
-ONLINE_STORE_DB = os.path.join(BASE_DIR, "data", "online_store.db")
+ONLINE_STORE_DB = os.path.join(BASE_DIR, "data", "feast_repo", "data", "online_store.db")
 MLFLOW_DB = os.path.join(BASE_DIR, "data", "mlflow.db")
 WEB_DIR = os.path.join(BASE_DIR, "src", "web")
 
 START_TIME = time.time()
 
-app = FastAPI(
-    title="ChurnGuard MLOps Serving API",
-    description="REST API dự đoán khách hàng rời bỏ dịch vụ với Feast Feature Store và SHAP TreeExplainer.",
-    version="2.0.0"
-)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
-)
-
 # Biến toàn cục lưu trữ Model, Scaler, Explainer và Metadata
 MODEL_ARTIFACT = None
+CHALLENGER_ARTIFACT = None
 SCALER = None
 METADATA = None
 TREE_EXPLAINER = None
 
 
 def load_artifacts():
-    """Nạp Model, Scaler, SHAP Explainer và Metadata khi khởi động."""
-    global MODEL_ARTIFACT, SCALER, METADATA, TREE_EXPLAINER
+    """Nạp Model Champion, Challenger, Scaler, SHAP Explainer và Metadata khi khởi động."""
+    global MODEL_ARTIFACT, CHALLENGER_ARTIFACT, SCALER, METADATA, TREE_EXPLAINER
     champion_path = os.path.join(MODELS_DIR, "champion_model.joblib")
+    challenger_path = os.path.join(MODELS_DIR, "random_forest.joblib")
     scaler_path = os.path.join(PROCESSED_DIR, "scaler.joblib")
     meta_path = os.path.join(PROCESSED_DIR, "metadata.json")
 
@@ -80,6 +73,9 @@ def load_artifacts():
         except Exception:
             TREE_EXPLAINER = None
 
+    if os.path.exists(challenger_path):
+        CHALLENGER_ARTIFACT = joblib.load(challenger_path)
+
     if os.path.exists(scaler_path):
         SCALER = joblib.load(scaler_path)
     if os.path.exists(meta_path):
@@ -88,9 +84,27 @@ def load_artifacts():
     init_inference_db()
 
 
-@app.on_event("startup")
-def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Quản lý vòng đời khởi động và tắt service theo chuẩn FastAPI hiện đại."""
     load_artifacts()
+    yield
+
+
+app = FastAPI(
+    title="ChurnGuard MLOps Serving API",
+    description="REST API dự đoán khách hàng rời bỏ dịch vụ với Feast Feature Store và SHAP TreeExplainer.",
+    version="2.0.0",
+    lifespan=lifespan
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 
 @app.get("/", tags=["General"])
@@ -111,7 +125,7 @@ def health_check():
     return HealthResponse(
         status="HEALTHY" if MODEL_ARTIFACT is not None else "DEGRADED",
         champion_model=model_name,
-        model_version="v2.0.0-registered",
+        model_version=CHAMPION_VERSION,
         feast_online_store=feast_status,
         mlflow_tracking_db=mlflow_status,
         uptime_seconds=round(time.time() - START_TIME, 2)
@@ -171,7 +185,7 @@ def predict_from_feast_customer_id(customer_id: int, api_key: str = Depends(veri
     risk_tier = "High Risk" if prob >= 0.70 else ("Medium Risk" if prob >= 0.35 else "Low Risk")
     rec = generate_recommendation(prob, feature_values[4], feature_values[5])
     xai_factors, xai_summary = compute_shap_attributions(TREE_EXPLAINER, x_input)
-    log_inference_prediction(customer_id, feature_values, pred_class, prob)
+    log_inference_prediction(customer_id, feature_values, pred_class, prob, model_version=CHAMPION_VERSION)
 
     return PredictionResponse(
         customer_id=customer_id,
@@ -181,6 +195,7 @@ def predict_from_feast_customer_id(customer_id: int, api_key: str = Depends(veri
         recommended_action=rec,
         feature_attributions=xai_factors,
         explanation_summary=xai_summary,
+        model_version=CHAMPION_VERSION,
         latency_ms=round(latency, 2)
     )
 
@@ -204,7 +219,7 @@ def predict_single(customer: CustomerInput, api_key: str = Depends(verify_api_ke
     risk_tier = "High Risk" if prob >= 0.70 else ("Medium Risk" if prob >= 0.35 else "Low Risk")
     rec = generate_recommendation(prob, customer.support_calls, customer.payment_delay)
     xai_factors, xai_summary = compute_shap_attributions(TREE_EXPLAINER, x_input)
-    log_inference_prediction(customer.customer_id or 999999, raw_vec[0].tolist(), pred_class, prob)
+    log_inference_prediction(customer.customer_id or 999999, raw_vec[0].tolist(), pred_class, prob, model_version=CHAMPION_VERSION)
 
     return PredictionResponse(
         customer_id=customer.customer_id,
@@ -214,14 +229,68 @@ def predict_single(customer: CustomerInput, api_key: str = Depends(verify_api_ke
         recommended_action=rec,
         feature_attributions=xai_factors,
         explanation_summary=xai_summary,
+        model_version=CHAMPION_VERSION,
         latency_ms=round(latency, 2)
     )
+
+
+@app.post("/predict/ab_test", response_model=PredictionResponse, tags=["A/B Testing"])
+def predict_ab_test(customer: CustomerInput, api_key: str = Depends(verify_api_key)):
+    """
+    Điều hướng tất định A/B testing: 80% Champion (XGBoost) vs 20% Challenger (Random Forest).
+    Lưu log với version tương ứng để kiểm định thống kê hiệu năng 2 luồng.
+    """
+    if MODEL_ARTIFACT is None:
+        load_artifacts()
+
+    t0 = time.perf_counter()
+    cid = customer.customer_id or 999999
+    route_type, version_tag = route_customer_to_model(cid)
+
+    if route_type == "challenger" and CHALLENGER_ARTIFACT is not None:
+        clf = CHALLENGER_ARTIFACT
+        model_ver = version_tag
+        use_scaled = False
+    else:
+        clf = MODEL_ARTIFACT["model"]
+        model_ver = CHAMPION_VERSION
+        use_scaled = MODEL_ARTIFACT["use_scaled"]
+
+    raw_vec = prepare_feature_vector_from_input(customer)
+    x_input = SCALER.transform(raw_vec) if use_scaled and SCALER is not None else raw_vec
+
+    pred_class = int(clf.predict(x_input)[0])
+    prob = float(clf.predict_proba(x_input)[0][1]) if hasattr(clf, "predict_proba") else float(pred_class)
+    latency = (time.perf_counter() - t0) * 1000.0
+
+    risk_tier = "High Risk" if prob >= 0.70 else ("Medium Risk" if prob >= 0.35 else "Low Risk")
+    rec = generate_recommendation(prob, customer.support_calls, customer.payment_delay)
+    xai_factors, xai_summary = compute_shap_attributions(TREE_EXPLAINER, x_input)
+    log_inference_prediction(cid, raw_vec[0].tolist(), pred_class, prob, model_version=model_ver)
+
+    return PredictionResponse(
+        customer_id=customer.customer_id,
+        churn_prediction=pred_class,
+        churn_probability=round(prob, 4),
+        risk_level=risk_tier,
+        recommended_action=rec,
+        feature_attributions=xai_factors,
+        explanation_summary=xai_summary,
+        model_version=model_ver,
+        latency_ms=round(latency, 2)
+    )
+
+
+@app.get("/ab_test/analytics", tags=["A/B Testing"])
+def get_ab_test_analytics():
+    """Báo cáo đối sánh hiệu năng và kiểm định giả thuyết thống kê A/B Testing."""
+    return analyze_ab_test_performance()
 
 
 @app.post("/batch_predict", response_model=BatchPredictionResponse, tags=["Inference"])
 def predict_batch(customers: List[CustomerInput], api_key: str = Depends(verify_api_key)):
     """Dự đoán hàng loạt cho danh sách khách hàng gửi qua JSON."""
-    results = [predict_single(c) for c in customers]
+    results = [predict_single(c, api_key=api_key) for c in customers]
     churn_cnt = sum(1 for r in results if r.churn_prediction == 1)
     risk_dist = {"Low Risk": 0, "Medium Risk": 0, "High Risk": 0}
     for r in results:
@@ -240,34 +309,36 @@ def predict_batch(customers: List[CustomerInput], api_key: str = Depends(verify_
 
 @app.post("/upload_csv_predict", tags=["Inference"])
 async def predict_from_csv(file: UploadFile = File(...), api_key: str = Depends(verify_api_key)):
-    """Dự đoán hàng loạt trực tiếp từ tệp CSV tải lên."""
+    """Dự đoán hàng loạt trực tiếp từ tệp CSV tải lên với chuẩn hóa tiêu đề linh hoạt."""
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Vui lòng chỉ tải lên tệp định dạng CSV!")
 
     df = pd.read_csv(file.file)
-    required = ["Age", "Gender", "Tenure", "Usage Frequency", "Support Calls",
-                "Payment Delay", "Subscription Type", "Contract Length", "Total Spend", "Last Interaction"]
-    for col in required:
-        if col not in df.columns:
-            raise HTTPException(status_code=400, detail=f"Tệp CSV thiếu cột bắt buộc: {col}")
+    norm = {c.strip().lower().replace(" ", "").replace("_", ""): c for c in df.columns}
+    reqs = ["age", "gender", "tenure", "usagefrequency", "supportcalls",
+            "paymentdelay", "subscriptiontype", "contractlength", "totalspend", "lastinteraction"]
+    for r in reqs:
+        if r not in norm:
+            raise HTTPException(status_code=400, detail=f"Tệp CSV thiếu cột bắt buộc: {r}")
 
-    inputs = []
-    for _, row in df.iterrows():
-        inputs.append(CustomerInput(
-            customer_id=int(row.get("CustomerID", 0)),
-            age=float(row["Age"]),
-            gender=str(row["Gender"]),
-            tenure=float(row["Tenure"]),
-            usage_frequency=float(row["Usage Frequency"]),
-            support_calls=float(row["Support Calls"]),
-            payment_delay=float(row["Payment Delay"]),
-            subscription_type=str(row["Subscription Type"]),
-            contract_length=str(row["Contract Length"]),
-            total_spend=float(row["Total Spend"]),
-            last_interaction=float(row["Last Interaction"])
-        ))
-
-    return predict_batch(inputs)
+    cid_col = norm.get("customerid")
+    inputs = [
+        CustomerInput(
+            customer_id=int(row[cid_col]) if cid_col and pd.notna(row[cid_col]) else 999999,
+            age=float(row[norm["age"]]),
+            gender=str(row[norm["gender"]]).capitalize(),
+            tenure=float(row[norm["tenure"]]),
+            usage_frequency=float(row[norm["usagefrequency"]]),
+            support_calls=float(row[norm["supportcalls"]]),
+            payment_delay=float(row[norm["paymentdelay"]]),
+            subscription_type=str(row[norm["subscriptiontype"]]).capitalize(),
+            contract_length=str(row[norm["contractlength"]]).capitalize(),
+            total_spend=float(row[norm["totalspend"]]),
+            last_interaction=float(row[norm["lastinteraction"]])
+        )
+        for _, row in df.iterrows()
+    ]
+    return predict_batch(inputs, api_key=api_key)
 
 
 @app.get("/features/{customer_id}", tags=["Feature Store"])

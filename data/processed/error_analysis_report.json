@@ -1,0 +1,22 @@
+{
+  "confusion_breakdown": {
+    "true_negatives": 28619,
+    "false_positives": 70,
+    "false_negatives": 42,
+    "true_positives": 37601
+  },
+  "false_positives_profile": {
+    "count": 70,
+    "avg_support_calls": 4.64,
+    "avg_payment_delay": 13.93,
+    "avg_total_spend": 556.09,
+    "risk_driver_note": "Khách hàng duy trì dịch vụ nhưng bị nhầm do số ngày trễ thanh toán hoặc cuộc gọi hỗ trợ tăng đột biến."
+  },
+  "false_negatives_profile": {
+    "count": 42,
+    "avg_support_calls": 2.07,
+    "avg_payment_delay": 10.81,
+    "avg_total_spend": 641.3,
+    "risk_driver_note": "Khách hàng rời bỏ nhưng có ít cuộc gọi hỗ trợ, rời bỏ âm thầm mà không khiếu nại."
+  }
+}

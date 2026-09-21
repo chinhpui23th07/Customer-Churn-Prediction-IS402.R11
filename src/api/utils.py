@@ -23,7 +23,7 @@ FEATURE_COLS = [
 
 
 def init_inference_db():
-    """Khởi tạo bảng lưu trữ lịch sử inference phục vụ giám sát Data Drift."""
+    """Khởi tạo bảng lưu trữ lịch sử inference phục vụ giám sát Data Drift và A/B Testing."""
     conn = sqlite3.connect(INFERENCE_DB)
     cur = conn.cursor()
     cur.execute("""
@@ -33,32 +33,58 @@ def init_inference_db():
             customer_id INTEGER,
             churn_prediction INTEGER,
             churn_probability REAL,
-            features_json TEXT
+            features_json TEXT,
+            model_version TEXT DEFAULT 'v2.0.0-champion'
         )
     """)
     conn.commit()
+    try:
+        cur.execute("ALTER TABLE inference_logs ADD COLUMN model_version TEXT DEFAULT 'v2.0.0-champion'")
+        conn.commit()
+    except Exception:
+        pass
     conn.close()
 
 
-def log_inference_prediction(customer_id: int, features: list, pred: int, prob: float):
+def log_inference_prediction(customer_id: int, features: list, pred: int, prob: float, model_version: str = "v2.0.0-champion"):
     """Ghi nhận dự đoán vào SQLite inference database."""
     try:
         conn = sqlite3.connect(INFERENCE_DB)
         cur = conn.cursor()
         cur.execute("""
-            INSERT INTO inference_logs (customer_id, churn_prediction, churn_probability, features_json)
-            VALUES (?, ?, ?, ?)
-        """, (customer_id, pred, prob, json.dumps(features)))
+            INSERT INTO inference_logs (customer_id, churn_prediction, churn_probability, features_json, model_version)
+            VALUES (?, ?, ?, ?, ?)
+        """, (customer_id, pred, prob, json.dumps(features), model_version))
         conn.commit()
         conn.close()
     except Exception as e:
         print(f"[-] Lỗi ghi nhận inference log: {e}")
 
 
+def log_batch_inference_predictions(records: list):
+    """Ghi nhận hàng loạt dự đoán vào SQLite trong một transaction duy nhất."""
+    if not records:
+        return
+    try:
+        conn = sqlite3.connect(INFERENCE_DB)
+        cur = conn.cursor()
+        cur.executemany("""
+            INSERT INTO inference_logs (customer_id, churn_prediction, churn_probability, features_json, model_version)
+            VALUES (?, ?, ?, ?, ?)
+        """, [(r[0], r[1], r[2], json.dumps(r[3]), r[4] if len(r) > 4 else "v2.0.0-champion") for r in records])
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[-] Lỗi ghi nhận batch inference logs: {e}")
+
+
 def verify_api_key(x_api_key: Optional[str] = Header(None)):
     """Kiểm tra API Key bảo mật cho các giao dịch production."""
-    if x_api_key is not None and x_api_key != API_KEY_SECRET:
-        raise HTTPException(status_code=401, detail="API Key không hợp lệ!")
+    if not x_api_key or x_api_key != API_KEY_SECRET:
+        raise HTTPException(
+            status_code=401,
+            detail="Thiếu hoặc sai API Key! Vui lòng cung cấp header 'X-API-Key' hợp lệ."
+        )
     return x_api_key
 
 

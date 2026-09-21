@@ -78,8 +78,10 @@ def prepare_feast_data(sample_size: int = 100000):
         df = df.copy()
 
     now = datetime.now(timezone.utc)
-    df["event_timestamp"] = now
-    df["created_timestamp"] = now
+    if "event_timestamp" not in df.columns:
+        df["event_timestamp"] = now - pd.to_timedelta(df["tenure"] * 30, unit="D")
+    if "created_timestamp" not in df.columns:
+        df["created_timestamp"] = now
 
     for col in ["age", "tenure", "usage_frequency", "support_calls", "payment_delay",
                 "total_spend", "last_interaction", "support_calls_per_tenure",
@@ -93,10 +95,21 @@ def prepare_feast_data(sample_size: int = 100000):
     print(f"[+] Đã tạo tệp Feast Offline Source: {FEAST_PARQUET_SOURCE} ({len(df):,} mẫu)")
 
 
+_FEATURE_STORE_INSTANCE = None
+
+
+def get_feature_store() -> FeatureStore:
+    """Trả về phiên bản Feast FeatureStore Singleton tối ưu tài nguyên."""
+    global _FEATURE_STORE_INSTANCE
+    if _FEATURE_STORE_INSTANCE is None:
+        _FEATURE_STORE_INSTANCE = FeatureStore(repo_path=FEAST_REPO_DIR)
+    return _FEATURE_STORE_INSTANCE
+
+
 def setup_feast_store():
     """Khởi tạo và apply metadata vào Feast Registry & Online Store."""
     prepare_feast_data()
-    store = FeatureStore(repo_path=FEAST_REPO_DIR)
+    store = get_feature_store()
     print("[*] Đang apply Entity và FeatureView vào Feast Registry...")
     store.apply([customer_entity, customer_feature_view])
     print("[*] Đang materialize dữ liệu sang Feast Online Store (SQLite)...")
@@ -109,7 +122,7 @@ def setup_feast_store():
 
 def query_online_features(customer_ids: list[int]) -> dict:
     """Truy xuất đặc trưng online cho phục vụ dự đoán thời gian thực (Serving)."""
-    store = FeatureStore(repo_path=FEAST_REPO_DIR)
+    store = get_feature_store()
     feature_names = [
         "customer_churn_features:age",
         "customer_churn_features:gender_encoded",

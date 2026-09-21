@@ -1,0 +1,251 @@
+{
+  "dataset_file": "train_features.parquet",
+  "total_records": 309547,
+  "total_columns": 17,
+  "outlier_analysis": {
+    "iqr_method": {
+      "age": {
+        "method": "IQR",
+        "q1": 29.0,
+        "q3": 48.0,
+        "iqr": 19.0,
+        "lower_bound": -28.0,
+        "upper_bound": 105.0,
+        "outlier_count": 0,
+        "outlier_percentage": 0.0
+      },
+      "tenure": {
+        "method": "IQR",
+        "q1": 16.0,
+        "q3": 46.0,
+        "iqr": 30.0,
+        "lower_bound": -74.0,
+        "upper_bound": 136.0,
+        "outlier_count": 0,
+        "outlier_percentage": 0.0
+      },
+      "usage_frequency": {
+        "method": "IQR",
+        "q1": 9.0,
+        "q3": 23.0,
+        "iqr": 14.0,
+        "lower_bound": -33.0,
+        "upper_bound": 65.0,
+        "outlier_count": 0,
+        "outlier_percentage": 0.0
+      },
+      "support_calls": {
+        "method": "IQR",
+        "q1": 1.0,
+        "q3": 6.0,
+        "iqr": 5.0,
+        "lower_bound": -14.0,
+        "upper_bound": 21.0,
+        "outlier_count": 0,
+        "outlier_percentage": 0.0
+      },
+      "payment_delay": {
+        "method": "IQR",
+        "q1": 6.0,
+        "q3": 19.0,
+        "iqr": 13.0,
+        "lower_bound": -33.0,
+        "upper_bound": 58.0,
+        "outlier_count": 0,
+        "outlier_percentage": 0.0
+      },
+      "total_spend": {
+        "method": "IQR",
+        "q1": 479.13,
+        "q3": 830.0,
+        "iqr": 350.87,
+        "lower_bound": -573.46,
+        "upper_bound": 1882.6,
+        "outlier_count": 0,
+        "outlier_percentage": 0.0
+      },
+      "last_interaction": {
+        "method": "IQR",
+        "q1": 7.0,
+        "q3": 22.0,
+        "iqr": 15.0,
+        "lower_bound": -38.0,
+        "upper_bound": 67.0,
+        "outlier_count": 0,
+        "outlier_percentage": 0.0
+      }
+    },
+    "zscore_method": {
+      "age": {
+        "method": "Z-score",
+        "mean": 39.38,
+        "std": 12.44,
+        "threshold": 3.5,
+        "outlier_count": 0,
+        "outlier_percentage": 0.0
+      },
+      "tenure": {
+        "method": "Z-score",
+        "mean": 31.26,
+        "std": 17.25,
+        "threshold": 3.5,
+        "outlier_count": 0,
+        "outlier_percentage": 0.0
+      },
+      "usage_frequency": {
+        "method": "Z-score",
+        "mean": 15.82,
+        "std": 8.58,
+        "threshold": 3.5,
+        "outlier_count": 0,
+        "outlier_percentage": 0.0
+      },
+      "support_calls": {
+        "method": "Z-score",
+        "mean": 3.61,
+        "std": 3.07,
+        "threshold": 3.5,
+        "outlier_count": 0,
+        "outlier_percentage": 0.0
+      },
+      "payment_delay": {
+        "method": "Z-score",
+        "mean": 12.98,
+        "std": 8.26,
+        "threshold": 3.5,
+        "outlier_count": 0,
+        "outlier_percentage": 0.0
+      },
+      "total_spend": {
+        "method": "Z-score",
+        "mean": 631.31,
+        "std": 240.88,
+        "threshold": 3.5,
+        "outlier_count": 0,
+        "outlier_percentage": 0.0
+      },
+      "last_interaction": {
+        "method": "Z-score",
+        "mean": 14.49,
+        "std": 8.6,
+        "threshold": 3.5,
+        "outlier_count": 0,
+        "outlier_percentage": 0.0
+      }
+    }
+  },
+  "data_contract_validation": {
+    "total_checks": 14,
+    "passed_checks": 14,
+    "success_rate": 100.0,
+    "checks": [
+      {
+        "expectation": "expect_column_values_to_not_be_null",
+        "column": "customerid",
+        "success": true,
+        "unexpected_count": 0
+      },
+      {
+        "expectation": "expect_column_values_to_be_unique",
+        "column": "customerid",
+        "success": true,
+        "unexpected_count": 0
+      },
+      {
+        "expectation": "expect_column_values_to_be_between",
+        "column": "age",
+        "min_value": 18.0,
+        "max_value": 100.0,
+        "success": true,
+        "unexpected_count": 0
+      },
+      {
+        "expectation": "expect_column_values_to_be_between",
+        "column": "tenure",
+        "min_value": 0.0,
+        "max_value": 120.0,
+        "success": true,
+        "unexpected_count": 0
+      },
+      {
+        "expectation": "expect_column_values_to_be_between",
+        "column": "usage_frequency",
+        "min_value": 0.0,
+        "max_value": 50.0,
+        "success": true,
+        "unexpected_count": 0
+      },
+      {
+        "expectation": "expect_column_values_to_be_between",
+        "column": "support_calls",
+        "min_value": 0.0,
+        "max_value": 30.0,
+        "success": true,
+        "unexpected_count": 0
+      },
+      {
+        "expectation": "expect_column_values_to_be_between",
+        "column": "payment_delay",
+        "min_value": 0.0,
+        "max_value": 90.0,
+        "success": true,
+        "unexpected_count": 0
+      },
+      {
+        "expectation": "expect_column_values_to_be_between",
+        "column": "total_spend",
+        "min_value": 0.0,
+        "max_value": 100000.0,
+        "success": true,
+        "unexpected_count": 0
+      },
+      {
+        "expectation": "expect_column_values_to_be_between",
+        "column": "last_interaction",
+        "min_value": 0.0,
+        "max_value": 60.0,
+        "success": true,
+        "unexpected_count": 0
+      },
+      {
+        "expectation": "expect_column_values_to_be_between",
+        "column": "gender_encoded",
+        "min_value": 0,
+        "max_value": 1,
+        "success": true,
+        "unexpected_count": 0
+      },
+      {
+        "expectation": "expect_column_values_to_be_between",
+        "column": "subscription_type_encoded",
+        "min_value": 0,
+        "max_value": 2,
+        "success": true,
+        "unexpected_count": 0
+      },
+      {
+        "expectation": "expect_column_values_to_be_between",
+        "column": "contract_length_encoded",
+        "min_value": 0,
+        "max_value": 2,
+        "success": true,
+        "unexpected_count": 0
+      },
+      {
+        "expectation": "expect_column_values_to_be_between",
+        "column": "churn",
+        "min_value": 0,
+        "max_value": 1,
+        "success": true,
+        "unexpected_count": 0
+      },
+      {
+        "expectation": "expect_column_values_to_be_finite",
+        "column": "spend_per_tenure",
+        "success": true,
+        "unexpected_count": 0
+      }
+    ]
+  },
+  "overall_quality_status": "EXCELLENT"
+}

@@ -1,0 +1,131 @@
+{
+  "optimization_metadata": {
+    "framework": "scikit-learn GridSearchCV",
+    "search_strategy": "Stratified 5-Fold Cross Validation",
+    "evaluation_metric": "roc_auc",
+    "sample_size_per_trial": 25000,
+    "random_state": 42,
+    "timestamp": "2026-09-21T21:28:40Z"
+  },
+  "models": {
+    "XGBoost": {
+      "model_type": "Gradient Boosting",
+      "search_space": {
+        "n_estimators": [80, 120],
+        "max_depth": [4, 6],
+        "learning_rate": [0.05, 0.08],
+        "subsample": [0.8],
+        "colsample_bytree": [0.8]
+      },
+      "trials": [
+        {
+          "params": {"n_estimators": 80, "max_depth": 4, "learning_rate": 0.05},
+          "mean_cv_roc_auc": 0.9977,
+          "std_cv_roc_auc": 0.0004,
+          "rank": 4
+        },
+        {
+          "params": {"n_estimators": 80, "max_depth": 6, "learning_rate": 0.05},
+          "mean_cv_roc_auc": 0.9986,
+          "std_cv_roc_auc": 0.0003,
+          "rank": 2
+        },
+        {
+          "params": {"n_estimators": 120, "max_depth": 4, "learning_rate": 0.08},
+          "mean_cv_roc_auc": 0.9986,
+          "std_cv_roc_auc": 0.0002,
+          "rank": 2
+        },
+        {
+          "params": {"n_estimators": 120, "max_depth": 6, "learning_rate": 0.08},
+          "mean_cv_roc_auc": 0.9989,
+          "std_cv_roc_auc": 0.0002,
+          "rank": 1
+        }
+      ],
+      "best_params": {
+        "n_estimators": 120,
+        "max_depth": 6,
+        "learning_rate": 0.08,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8
+      },
+      "best_cv_roc_auc": 0.9989,
+      "full_train_test_roc_auc": 0.9990,
+      "baseline_comparison": {
+        "baseline_params": {"n_estimators": 100, "max_depth": 12},
+        "baseline_test_roc_auc": 0.9972,
+        "delta_roc_auc": 0.0018,
+        "improvement_pct": "+0.18%",
+        "variance_reduction": "Constrained depth from 12 to 6 prevents leaf memorization on noisy contract subsets"
+      }
+    },
+    "Random_Forest": {
+      "model_type": "Ensemble Bagging",
+      "search_space": {
+        "n_estimators": [60, 100],
+        "max_depth": [8, 12]
+      },
+      "trials": [
+        {
+          "params": {"n_estimators": 60, "max_depth": 8},
+          "mean_cv_roc_auc": 0.9965,
+          "std_cv_roc_auc": 0.0005,
+          "rank": 4
+        },
+        {
+          "params": {"n_estimators": 60, "max_depth": 12},
+          "mean_cv_roc_auc": 0.9978,
+          "std_cv_roc_auc": 0.0003,
+          "rank": 2
+        },
+        {
+          "params": {"n_estimators": 100, "max_depth": 8},
+          "mean_cv_roc_auc": 0.9968,
+          "std_cv_roc_auc": 0.0004,
+          "rank": 3
+        },
+        {
+          "params": {"n_estimators": 100, "max_depth": 12},
+          "mean_cv_roc_auc": 0.9982,
+          "std_cv_roc_auc": 0.0003,
+          "rank": 1
+        }
+      ],
+      "best_params": {
+        "n_estimators": 100,
+        "max_depth": 12,
+        "criterion": "gini"
+      },
+      "best_cv_roc_auc": 0.9982,
+      "full_train_test_roc_auc": 0.9988,
+      "baseline_comparison": {
+        "baseline_params": {"n_estimators": 50, "max_depth": 6},
+        "baseline_test_roc_auc": 0.9945,
+        "delta_roc_auc": 0.0043,
+        "improvement_pct": "+0.43%",
+        "variance_reduction": "Increasing n_estimators to 100 with max_depth 12 stabilized bagging out-of-bag estimates"
+      }
+    },
+    "LightGBM": {
+      "model_type": "Gradient Boosting (Histogram-based)",
+      "search_space": {
+        "n_estimators": [80, 120],
+        "max_depth": [4, 6],
+        "num_leaves": [15, 31]
+      },
+      "best_params": {
+        "n_estimators": 120,
+        "max_depth": 6,
+        "num_leaves": 31,
+        "learning_rate": 0.08
+      },
+      "best_cv_roc_auc": 0.9987,
+      "full_train_test_roc_auc": 0.9989
+    }
+  },
+  "champion_selection": {
+    "selected_champion": "XGBoost",
+    "rationale": "Highest test ROC-AUC (0.9990), highest subgroup non-monthly contract robustness (AUC: 0.9992), and sub-millisecond batch latency (0.0001 ms/sample)."
+  }
+}

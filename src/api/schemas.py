@@ -30,6 +30,7 @@ class PredictionResponse(BaseModel):
     recommended_action: str = Field(..., description="Chiến lược và hành động giữ chân khách hàng đề xuất")
     feature_attributions: Optional[Dict[str, float]] = Field(default=None, description="Tác động đóng góp của từng đặc trưng vào điểm số rời bỏ (SHAP/Feature Attribution)")
     explanation_summary: Optional[str] = Field(default=None, description="Tóm tắt lý do rủi ro chính theo chuẩn XAI")
+    model_version: Optional[str] = Field(default="v2.0.0-champion", description="Phiên bản mô hình thực hiện dự đoán")
     latency_ms: float = Field(..., description="Thời gian xử lý dự đoán (milliseconds)")
 
 
