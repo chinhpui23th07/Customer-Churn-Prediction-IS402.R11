@@ -1,0 +1,52 @@
+{
+  "ap-southeast-1": {
+    "region_name": "Đông Nam Á (Singapore / Azure Southeast Asia)",
+    "distance_km": 1400,
+    "endpoint": "dynamodb.ap-southeast-1.amazonaws.com",
+    "min_ms": 56.9,
+    "avg_ms": 81.13,
+    "max_ms": 117.85,
+    "jitter_ms": 60.95,
+    "sla_tier": "Chấp nhận được (50-150ms)"
+  },
+  "ap-east-1": {
+    "region_name": "Đông Á (Hong Kong / Azure East Asia)",
+    "distance_km": 1500,
+    "endpoint": "dynamodb.ap-east-1.amazonaws.com",
+    "min_ms": 44.77,
+    "avg_ms": 332.61,
+    "max_ms": 1140.16,
+    "jitter_ms": 1095.39,
+    "sla_tier": "Cần CDN/Edge Acceleration (>150ms)"
+  },
+  "ap-northeast-1": {
+    "region_name": "Nhật Bản (Tokyo / Azure Japan East)",
+    "distance_km": 4300,
+    "endpoint": "dynamodb.ap-northeast-1.amazonaws.com",
+    "min_ms": 114.22,
+    "avg_ms": 168.28,
+    "max_ms": 270.05,
+    "jitter_ms": 155.83,
+    "sla_tier": "Cần CDN/Edge Acceleration (>150ms)"
+  },
+  "eu-central-1": {
+    "region_name": "Châu Âu (Frankfurt / Azure Germany West Central)",
+    "distance_km": 9400,
+    "endpoint": "dynamodb.eu-central-1.amazonaws.com",
+    "min_ms": 220.59,
+    "avg_ms": 262.1,
+    "max_ms": 341.3,
+    "jitter_ms": 120.71,
+    "sla_tier": "Cần CDN/Edge Acceleration (>150ms)"
+  },
+  "us-east-1": {
+    "region_name": "Bắc Mỹ (N. Virginia / Azure East US)",
+    "distance_km": 14200,
+    "endpoint": "dynamodb.us-east-1.amazonaws.com",
+    "min_ms": 315.82,
+    "avg_ms": 582.65,
+    "max_ms": 1315.77,
+    "jitter_ms": 999.96,
+    "sla_tier": "Cần CDN/Edge Acceleration (>150ms)"
+  }
+}

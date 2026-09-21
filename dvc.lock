@@ -1,0 +1,82 @@
+schema: '2.0'
+stages:
+  download_data:
+    cmd: python src/data/download_dataset.py
+    deps:
+    - path: src/data/download_dataset.py
+      hash: md5
+      md5: 03d365b004e90902c16f53a180f1444d
+      size: 6983
+    outs:
+    - path: data/raw/customer_churn_dataset-testing-master.csv
+      hash: md5
+      md5: 55289b95d9b4310f554778c725097c5b
+      size: 3282220
+    - path: data/raw/customer_churn_dataset-training-master.csv
+      hash: md5
+      md5: a8d02f389b1e2a894b1decc4dfb658be
+      size: 23448754
+  preprocess:
+    cmd: python src/data/preprocess.py
+    deps:
+    - path: data/raw/customer_churn_dataset-training-master.csv
+      hash: md5
+      md5: a8d02f389b1e2a894b1decc4dfb658be
+      size: 23448754
+    - path: src/data/preprocess.py
+      hash: md5
+      md5: 9183b63c623de555cdac0319baa443fa
+      size: 8742
+    outs:
+    - path: data/processed/test_features.parquet
+      hash: md5
+      md5: a90ee511921775427234d63c452d7173
+      size: 1680394
+    - path: data/processed/train_features.parquet
+      hash: md5
+      md5: 01634e6dd55982233ed97486664343b9
+      size: 6964041
+    - path: data/processed/val_features.parquet
+      hash: md5
+      md5: 1ecc207f84dec5ef178b39582e910339
+      size: 1683371
+  train_models:
+    cmd: python src/models/train_pipeline.py
+    deps:
+    - path: data/processed/train_features.parquet
+      hash: md5
+      md5: 01634e6dd55982233ed97486664343b9
+      size: 6964041
+    - path: data/processed/val_features.parquet
+      hash: md5
+      md5: 1ecc207f84dec5ef178b39582e910339
+      size: 1683371
+    - path: src/models/train_pipeline.py
+      hash: md5
+      md5: 83f6c197aa36e02d8b75d86f9e04cf03
+      size: 13255
+    outs:
+    - path: data/models/champion_model.joblib
+      hash: md5
+      md5: 3f52d2bd562d2599e8a67ab55d14d9f1
+      size: 413601
+  evaluate_and_benchmark:
+    cmd: python src/models/evaluate.py
+    deps:
+    - path: data/models/champion_model.joblib
+      hash: md5
+      md5: 3f52d2bd562d2599e8a67ab55d14d9f1
+      size: 413601
+    - path: data/processed/test_features.parquet
+      hash: md5
+      md5: a90ee511921775427234d63c452d7173
+      size: 1680394
+    - path: src/models/evaluate.py
+      hash: md5
+      md5: 686208be10c0a011c05b8a1cead981fe
+      size: 7266
+    outs:
+    - path: data/processed/model_evaluation_report.json
+      hash: md5
+      md5: 108a8f4e60a55710434acfea6ee0ad34
+      size: 1943

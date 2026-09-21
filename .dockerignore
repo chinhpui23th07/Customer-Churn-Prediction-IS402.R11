@@ -1,0 +1,27 @@
+# Git & DVC
+.git/
+.dvc/
+.dvc_storage/
+*.dvc
+
+# Python cache & virtualenv
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# Large documents, slides, research papers
+docs/
+scratch/
+tests/
+graphify-out/
+.agents/
+
+# Data files (handled via mounts or pipeline)
+data/raw/*.csv
+data/processed/*.parquet
+*.db
+*.sqlite
+*.log

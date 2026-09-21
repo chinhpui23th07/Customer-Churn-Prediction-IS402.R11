@@ -1,0 +1,25 @@
+{
+  "contract_length_distribution": {
+    "Annual": {
+      "total_customers": 177674,
+      "churned_customers": 81975,
+      "churn_rate": 0.46137870481893806
+    },
+    "Monthly": {
+      "total_customers": 87588,
+      "churned_customers": 87447,
+      "churn_rate": 0.9983901904370461
+    },
+    "Quarterly": {
+      "total_customers": 176949,
+      "churned_customers": 81527,
+      "churn_rate": 0.4607372745819417
+    }
+  },
+  "overall": {
+    "total_records": 442211,
+    "churn_count": 250949,
+    "churn_rate": 0.567487014117695,
+    "monthly_churn_perfect_signal_note": "Kaggle synthetic generator sets Monthly contract churn to 100%. Models exploit this strong deterministic rule."
+  }
+}

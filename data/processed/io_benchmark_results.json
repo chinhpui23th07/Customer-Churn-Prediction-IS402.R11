@@ -1,0 +1,28 @@
+{
+  "CSV": {
+    "format": "CSV (Row-based Plain Text)",
+    "file_size_mb": 8.94,
+    "write_time_sec": 0.5327,
+    "read_time_sec": 0.3117,
+    "write_throughput_mb_s": 16.78,
+    "read_throughput_mb_s": 28.68
+  },
+  "Parquet": {
+    "format": "Apache Parquet (Columnar + Snappy)",
+    "file_size_mb": 2.42,
+    "write_time_sec": 0.0557,
+    "read_time_sec": 0.0216,
+    "write_throughput_mb_s": 43.39,
+    "read_throughput_mb_s": 111.77,
+    "compression_ratio_vs_csv": 3.7,
+    "read_speedup_vs_csv": 14.41
+  },
+  "SQLite": {
+    "format": "SQLite3 (Relational Embedded DB)",
+    "file_size_mb": 5.58,
+    "write_time_sec": 0.2469,
+    "read_time_sec": 0.3628,
+    "write_throughput_mb_s": 22.59,
+    "read_throughput_mb_s": 15.37
+  }
+}

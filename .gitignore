@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Feast & MLflow & SQLite
+.feast/
+mlruns/
+mlartifacts/
+*.db
+*.sqlite
+*.sqlite3
+
+# Large Data & DVC
+.dvc/cache/
+.dvc_storage/
+data/raw/*.csv
+data/processed/*.parquet
+data/processed/*.joblib
+data/models/*.joblib
+data/feast_repo/churn_features.parquet
+data/feast_repo/data/
+*.parquet
+*.joblib
+data/inference_logs.*
+data/prediction_logs.*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/raw.dvc
+
+# System & IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Temporary scratch & logs
+scratch/
+*.log
+graphify-out/cache/
+
+# Cloned External Repositories and Large PDFs
+docs/research/repos/
+docs/research/papers/*.pdf
+tools/

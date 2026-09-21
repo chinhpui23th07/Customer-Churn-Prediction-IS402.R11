@@ -1,0 +1,43 @@
+stages:
+  download_data:
+    cmd: python src/data/download_dataset.py
+    deps:
+      - src/data/download_dataset.py
+    outs:
+      - data/raw/customer_churn_dataset-training-master.csv:
+          cache: true
+      - data/raw/customer_churn_dataset-testing-master.csv:
+          cache: true
+
+  preprocess:
+    cmd: python src/data/preprocess.py
+    deps:
+      - src/data/preprocess.py
+      - data/raw/customer_churn_dataset-training-master.csv
+    outs:
+      - data/processed/train_features.parquet:
+          cache: true
+      - data/processed/val_features.parquet:
+          cache: true
+      - data/processed/test_features.parquet:
+          cache: true
+
+  train_models:
+    cmd: python src/models/train_pipeline.py
+    deps:
+      - src/models/train_pipeline.py
+      - data/processed/train_features.parquet
+      - data/processed/val_features.parquet
+    outs:
+      - data/models/champion_model.joblib:
+          cache: true
+
+  evaluate_and_benchmark:
+    cmd: python src/models/evaluate.py
+    deps:
+      - src/models/evaluate.py
+      - data/models/champion_model.joblib
+      - data/processed/test_features.parquet
+    outs:
+      - data/processed/model_evaluation_report.json:
+          cache: false
