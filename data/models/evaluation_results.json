@@ -8,11 +8,13 @@
         "solver": "lbfgs",
         "class_weight": "balanced"
       },
-      "train_duration_sec": 0.24,
+      "train_duration_sec": 0.2,
+      "tuning_history": {},
       "cv_5fold": {
         "roc_auc_mean": 0.9442,
         "roc_auc_std": 0.0022,
-        "f1_mean": 0.8841
+        "f1_mean": 0.8841,
+        "f1_std": 0.0016
       },
       "validation": {
         "accuracy": 0.8727,
@@ -224,6 +226,7 @@
           }
         ]
       },
+      "subgroup_non_monthly_roc_auc": 0.9287,
       "feature_importance": {
         "age": 0.4194,
         "gender_encoded": 0.541,
@@ -243,15 +246,23 @@
     },
     "Random_Forest": {
       "params": {
-        "n_estimators": 100,
         "max_depth": 12,
-        "criterion": "gini"
+        "n_estimators": 100
       },
-      "train_duration_sec": 4.94,
+      "train_duration_sec": 4.66,
+      "tuning_history": {
+        "grid_scores": [
+          0.9974,
+          0.9973,
+          0.9985,
+          0.9986
+        ]
+      },
       "cv_5fold": {
         "roc_auc_mean": 0.9987,
         "roc_auc_std": 0.0005,
-        "f1_mean": 0.9931
+        "f1_mean": 0.9931,
+        "f1_std": 0.0006
       },
       "validation": {
         "accuracy": 0.9927,
@@ -260,7 +271,7 @@
         "f1_score": 0.9935,
         "roc_auc": 0.999,
         "pr_auc": 0.9987,
-        "latency_per_sample_ms": 0.0014,
+        "latency_per_sample_ms": 0.0012,
         "confusion_matrix": [
           [
             28629,
@@ -338,19 +349,23 @@
           },
           {
             "fpr": 0.0015,
-            "tpr": 0.7839
+            "tpr": 0.7664
           },
           {
             "fpr": 0.0026,
-            "tpr": 0.9941
+            "tpr": 0.994
           },
           {
-            "fpr": 0.0043,
-            "tpr": 0.9978
+            "fpr": 0.0042,
+            "tpr": 0.9977
           },
           {
             "fpr": 0.0098,
-            "tpr": 0.9992
+            "tpr": 0.9991
+          },
+          {
+            "fpr": 0.9177,
+            "tpr": 1.0
           }
         ]
       },
@@ -459,6 +474,7 @@
           }
         ]
       },
+      "subgroup_non_monthly_roc_auc": 0.9992,
       "feature_importance": {
         "age": 0.1137,
         "gender_encoded": 0.0302,
@@ -478,15 +494,23 @@
     },
     "XGBoost": {
       "params": {
-        "n_estimators": 120,
         "max_depth": 6,
-        "learning_rate": 0.08
+        "n_estimators": 120
       },
-      "train_duration_sec": 1.29,
+      "train_duration_sec": 1.25,
+      "tuning_history": {
+        "grid_scores": [
+          0.9977,
+          0.9986,
+          0.9986,
+          0.9989
+        ]
+      },
       "cv_5fold": {
         "roc_auc_mean": 0.9989,
         "roc_auc_std": 0.0004,
-        "f1_mean": 0.9974
+        "f1_mean": 0.9974,
+        "f1_std": 0.0002
       },
       "validation": {
         "accuracy": 0.9984,
@@ -495,7 +519,7 @@
         "f1_score": 0.9986,
         "roc_auc": 0.9991,
         "pr_auc": 0.9986,
-        "latency_per_sample_ms": 0.0002,
+        "latency_per_sample_ms": 0.0003,
         "confusion_matrix": [
           [
             28629,
@@ -600,7 +624,7 @@
         "f1_score": 0.9985,
         "roc_auc": 0.999,
         "pr_auc": 0.9986,
-        "latency_per_sample_ms": 0.0003,
+        "latency_per_sample_ms": 0.0004,
         "confusion_matrix": [
           [
             28619,
@@ -698,6 +722,7 @@
           }
         ]
       },
+      "subgroup_non_monthly_roc_auc": 0.9992,
       "feature_importance": {
         "age": 0.0702,
         "gender_encoded": 0.1406,
@@ -722,10 +747,12 @@
         "num_leaves": 31
       },
       "train_duration_sec": 1.01,
+      "tuning_history": {},
       "cv_5fold": {
         "roc_auc_mean": 0.9989,
         "roc_auc_std": 0.0004,
-        "f1_mean": 0.9983
+        "f1_mean": 0.9983,
+        "f1_std": 0.0003
       },
       "validation": {
         "accuracy": 0.9986,
@@ -734,7 +761,7 @@
         "f1_score": 0.9988,
         "roc_auc": 0.9991,
         "pr_auc": 0.9988,
-        "latency_per_sample_ms": 0.0009,
+        "latency_per_sample_ms": 0.0008,
         "confusion_matrix": [
           [
             28629,
@@ -839,7 +866,7 @@
         "f1_score": 0.9987,
         "roc_auc": 0.999,
         "pr_auc": 0.9984,
-        "latency_per_sample_ms": 0.0008,
+        "latency_per_sample_ms": 0.0009,
         "confusion_matrix": [
           [
             28619,
@@ -937,6 +964,7 @@
           }
         ]
       },
+      "subgroup_non_monthly_roc_auc": 0.9992,
       "feature_importance": {
         "age": 613.0,
         "gender_encoded": 127.0,

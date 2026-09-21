@@ -18,13 +18,13 @@
     <div class="container">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <h1>Báo Cáo Giám Sát Data Drift</h1>
-            <span style="background:#10B981;color:#FFF;padding:4px 12px;border-radius:20px;font-weight:bold;">DỮ LIỆU ỔN ĐỊNH</span>
+            <span style="background:#EF4444;color:#FFF;padding:4px 12px;border-radius:20px;font-weight:bold;">PHÁT HIỆN DRIFT</span>
         </div>
-        <p style="color:#94A3B8;">Thời điểm đo: 2026-09-21T20:22:52.758063 | Reference Samples: 66332 | Current Samples: 10000</p>
+        <p style="color:#94A3B8;">Thời điểm đo: 2026-09-21T21:33:04.076611 | Reference Samples: 309547 | Current Samples: 22</p>
         
         <div class="kpi">
-            <div class="card"><div class="num">0 / 13</div><div style="color:#94A3B8;font-size:12px;">ĐẶC TRƯNG BỊ DRIFT</div></div>
-            <div class="card"><div class="num">0.0%</div><div style="color:#94A3B8;font-size:12px;">TỶ LỆ TRÔI DẠT</div></div>
+            <div class="card"><div class="num">11 / 13</div><div style="color:#94A3B8;font-size:12px;">ĐẶC TRƯNG BỊ DRIFT</div></div>
+            <div class="card"><div class="num">84.6%</div><div style="color:#94A3B8;font-size:12px;">TỶ LỆ TRÔI DẠT</div></div>
             <div class="card"><div class="num">KS-Test + PSI</div><div style="color:#94A3B8;font-size:12px;">PHƯƠNG PHÁP KIỂM ĐỊNH</div></div>
         </div>
 
@@ -42,106 +42,106 @@
                 
         <tr style="border-bottom: 1px solid #334155;">
             <td style="padding:10px;font-weight:600;color:#F8FAFC;">age</td>
-            <td style="padding:10px;color:#94A3B8;">0.0099</td>
-            <td style="padding:10px;color:#94A3B8;">0.35576</td>
-            <td style="padding:10px;color:#94A3B8;">0.0012</td>
-            <td style="padding:10px;"><span style="color:#10B981;font-weight:600;">Stable</span></td>
+            <td style="padding:10px;color:#94A3B8;">0.3523</td>
+            <td style="padding:10px;color:#94A3B8;">0.00602</td>
+            <td style="padding:10px;color:#94A3B8;">0.9471</td>
+            <td style="padding:10px;"><span style="color:#EF4444;font-weight:600;">High</span></td>
         </tr>
         
         <tr style="border-bottom: 1px solid #334155;">
             <td style="padding:10px;font-weight:600;color:#F8FAFC;">gender_encoded</td>
-            <td style="padding:10px;color:#94A3B8;">0.0057</td>
-            <td style="padding:10px;color:#94A3B8;">0.93967</td>
-            <td style="padding:10px;color:#94A3B8;">0.0001</td>
-            <td style="padding:10px;"><span style="color:#10B981;font-weight:600;">Stable</span></td>
-        </tr>
-        
-        <tr style="border-bottom: 1px solid #334155;">
-            <td style="padding:10px;font-weight:600;color:#F8FAFC;">tenure</td>
-            <td style="padding:10px;color:#94A3B8;">0.0046</td>
-            <td style="padding:10px;color:#94A3B8;">0.99253</td>
-            <td style="padding:10px;color:#94A3B8;">0.001</td>
-            <td style="padding:10px;"><span style="color:#10B981;font-weight:600;">Stable</span></td>
-        </tr>
-        
-        <tr style="border-bottom: 1px solid #334155;">
-            <td style="padding:10px;font-weight:600;color:#F8FAFC;">usage_frequency</td>
-            <td style="padding:10px;color:#94A3B8;">0.0107</td>
-            <td style="padding:10px;color:#94A3B8;">0.26834</td>
-            <td style="padding:10px;color:#94A3B8;">0.001</td>
-            <td style="padding:10px;"><span style="color:#10B981;font-weight:600;">Stable</span></td>
-        </tr>
-        
-        <tr style="border-bottom: 1px solid #334155;">
-            <td style="padding:10px;font-weight:600;color:#F8FAFC;">support_calls</td>
-            <td style="padding:10px;color:#94A3B8;">0.0053</td>
-            <td style="padding:10px;color:#94A3B8;">0.96569</td>
-            <td style="padding:10px;color:#94A3B8;">0.0014</td>
-            <td style="padding:10px;"><span style="color:#10B981;font-weight:600;">Stable</span></td>
-        </tr>
-        
-        <tr style="border-bottom: 1px solid #334155;">
-            <td style="padding:10px;font-weight:600;color:#F8FAFC;">payment_delay</td>
-            <td style="padding:10px;color:#94A3B8;">0.0092</td>
-            <td style="padding:10px;color:#94A3B8;">0.44821</td>
-            <td style="padding:10px;color:#94A3B8;">0.0006</td>
-            <td style="padding:10px;"><span style="color:#10B981;font-weight:600;">Stable</span></td>
-        </tr>
-        
-        <tr style="border-bottom: 1px solid #334155;">
-            <td style="padding:10px;font-weight:600;color:#F8FAFC;">subscription_type_encoded</td>
-            <td style="padding:10px;color:#94A3B8;">0.0029</td>
-            <td style="padding:10px;color:#94A3B8;">1.0</td>
+            <td style="padding:10px;color:#94A3B8;">0.1129</td>
+            <td style="padding:10px;color:#94A3B8;">0.91222</td>
             <td style="padding:10px;color:#94A3B8;">0.0</td>
             <td style="padding:10px;"><span style="color:#10B981;font-weight:600;">Stable</span></td>
         </tr>
         
         <tr style="border-bottom: 1px solid #334155;">
+            <td style="padding:10px;font-weight:600;color:#F8FAFC;">tenure</td>
+            <td style="padding:10px;color:#94A3B8;">0.2613</td>
+            <td style="padding:10px;color:#94A3B8;">0.08178</td>
+            <td style="padding:10px;color:#94A3B8;">0.7805</td>
+            <td style="padding:10px;"><span style="color:#EF4444;font-weight:600;">High</span></td>
+        </tr>
+        
+        <tr style="border-bottom: 1px solid #334155;">
+            <td style="padding:10px;font-weight:600;color:#F8FAFC;">usage_frequency</td>
+            <td style="padding:10px;color:#94A3B8;">0.3493</td>
+            <td style="padding:10px;color:#94A3B8;">0.00665</td>
+            <td style="padding:10px;color:#94A3B8;">0.7813</td>
+            <td style="padding:10px;"><span style="color:#EF4444;font-weight:600;">High</span></td>
+        </tr>
+        
+        <tr style="border-bottom: 1px solid #334155;">
+            <td style="padding:10px;font-weight:600;color:#F8FAFC;">support_calls</td>
+            <td style="padding:10px;color:#94A3B8;">0.2922</td>
+            <td style="padding:10px;color:#94A3B8;">0.03696</td>
+            <td style="padding:10px;color:#94A3B8;">0.6133</td>
+            <td style="padding:10px;"><span style="color:#EF4444;font-weight:600;">High</span></td>
+        </tr>
+        
+        <tr style="border-bottom: 1px solid #334155;">
+            <td style="padding:10px;font-weight:600;color:#F8FAFC;">payment_delay</td>
+            <td style="padding:10px;color:#94A3B8;">0.5072</td>
+            <td style="padding:10px;color:#94A3B8;">1e-05</td>
+            <td style="padding:10px;color:#94A3B8;">1.1885</td>
+            <td style="padding:10px;"><span style="color:#EF4444;font-weight:600;">High</span></td>
+        </tr>
+        
+        <tr style="border-bottom: 1px solid #334155;">
+            <td style="padding:10px;font-weight:600;color:#F8FAFC;">subscription_type_encoded</td>
+            <td style="padding:10px;color:#94A3B8;">0.2084</td>
+            <td style="padding:10px;color:#94A3B8;">0.25721</td>
+            <td style="padding:10px;color:#94A3B8;">0.0051</td>
+            <td style="padding:10px;"><span style="color:#10B981;font-weight:600;">Stable</span></td>
+        </tr>
+        
+        <tr style="border-bottom: 1px solid #334155;">
             <td style="padding:10px;font-weight:600;color:#F8FAFC;">contract_length_encoded</td>
-            <td style="padding:10px;color:#94A3B8;">0.0048</td>
-            <td style="padding:10px;color:#94A3B8;">0.98811</td>
-            <td style="padding:10px;color:#94A3B8;">0.0001</td>
+            <td style="padding:10px;color:#94A3B8;">0.3259</td>
+            <td style="padding:10px;color:#94A3B8;">0.01398</td>
+            <td style="padding:10px;color:#94A3B8;">0.0473</td>
             <td style="padding:10px;"><span style="color:#10B981;font-weight:600;">Stable</span></td>
         </tr>
         
         <tr style="border-bottom: 1px solid #334155;">
             <td style="padding:10px;font-weight:600;color:#F8FAFC;">total_spend</td>
-            <td style="padding:10px;color:#94A3B8;">0.0076</td>
-            <td style="padding:10px;color:#94A3B8;">0.69714</td>
-            <td style="padding:10px;color:#94A3B8;">0.0012</td>
-            <td style="padding:10px;"><span style="color:#10B981;font-weight:600;">Stable</span></td>
+            <td style="padding:10px;color:#94A3B8;">0.5159</td>
+            <td style="padding:10px;color:#94A3B8;">1e-05</td>
+            <td style="padding:10px;color:#94A3B8;">1.1093</td>
+            <td style="padding:10px;"><span style="color:#EF4444;font-weight:600;">High</span></td>
         </tr>
         
         <tr style="border-bottom: 1px solid #334155;">
             <td style="padding:10px;font-weight:600;color:#F8FAFC;">last_interaction</td>
-            <td style="padding:10px;color:#94A3B8;">0.0073</td>
-            <td style="padding:10px;color:#94A3B8;">0.74431</td>
-            <td style="padding:10px;color:#94A3B8;">0.0009</td>
-            <td style="padding:10px;"><span style="color:#10B981;font-weight:600;">Stable</span></td>
+            <td style="padding:10px;color:#94A3B8;">0.432</td>
+            <td style="padding:10px;color:#94A3B8;">0.0003</td>
+            <td style="padding:10px;color:#94A3B8;">0.9432</td>
+            <td style="padding:10px;"><span style="color:#EF4444;font-weight:600;">High</span></td>
         </tr>
         
         <tr style="border-bottom: 1px solid #334155;">
             <td style="padding:10px;font-weight:600;color:#F8FAFC;">support_calls_per_tenure</td>
-            <td style="padding:10px;color:#94A3B8;">0.0055</td>
-            <td style="padding:10px;color:#94A3B8;">0.95631</td>
-            <td style="padding:10px;color:#94A3B8;">0.0003</td>
-            <td style="padding:10px;"><span style="color:#10B981;font-weight:600;">Stable</span></td>
+            <td style="padding:10px;color:#94A3B8;">0.3826</td>
+            <td style="padding:10px;color:#94A3B8;">0.00209</td>
+            <td style="padding:10px;color:#94A3B8;">0.8935</td>
+            <td style="padding:10px;"><span style="color:#EF4444;font-weight:600;">High</span></td>
         </tr>
         
         <tr style="border-bottom: 1px solid #334155;">
             <td style="padding:10px;font-weight:600;color:#F8FAFC;">spend_per_tenure</td>
-            <td style="padding:10px;color:#94A3B8;">0.0137</td>
-            <td style="padding:10px;color:#94A3B8;">0.07574</td>
-            <td style="padding:10px;color:#94A3B8;">0.0011</td>
-            <td style="padding:10px;"><span style="color:#10B981;font-weight:600;">Stable</span></td>
+            <td style="padding:10px;color:#94A3B8;">0.625</td>
+            <td style="padding:10px;color:#94A3B8;">0.0</td>
+            <td style="padding:10px;color:#94A3B8;">1.37</td>
+            <td style="padding:10px;"><span style="color:#EF4444;font-weight:600;">High</span></td>
         </tr>
         
         <tr style="border-bottom: 1px solid #334155;">
             <td style="padding:10px;font-weight:600;color:#F8FAFC;">delay_ratio</td>
-            <td style="padding:10px;color:#94A3B8;">0.006</td>
-            <td style="padding:10px;color:#94A3B8;">0.91147</td>
-            <td style="padding:10px;color:#94A3B8;">0.0009</td>
-            <td style="padding:10px;"><span style="color:#10B981;font-weight:600;">Stable</span></td>
+            <td style="padding:10px;color:#94A3B8;">0.6368</td>
+            <td style="padding:10px;color:#94A3B8;">0.0</td>
+            <td style="padding:10px;color:#94A3B8;">1.3147</td>
+            <td style="padding:10px;"><span style="color:#EF4444;font-weight:600;">High</span></td>
         </tr>
         
             </tbody>

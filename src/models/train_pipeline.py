@@ -14,7 +14,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 import xgboost as xgb
 import lightgbm as lgb
-from sklearn.model_selection import StratifiedKFold, cross_val_score
+from sklearn.model_selection import StratifiedKFold, cross_val_score, GridSearchCV
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
     roc_auc_score, average_precision_score, confusion_matrix, roc_curve
@@ -167,29 +167,52 @@ def train_and_track_all_models():
 
     for cfg in models_config:
         name = cfg["name"]
-        print(f"\n---> Huấn luyện mô hình: {name}")
-        clf = cfg["model"]
+        print(f"\n---> Huấn luyện & Tối ưu mô hình: {name}")
+        clf_base = cfg["model"]
         use_scaled = cfg["use_scaled"]
-        print(f"    [*] Tham số cấu hình: {cfg['params']}")
-        print(f"    [*] Bắt đầu huấn luyện trên {len(X_train):,} mẫu dữ liệu...")
+        
+        # Hyperparameter Tuning với GridSearchCV trên tập đại diện 25,000 mẫu
+        skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+        tuning_history = {}
+        best_params = cfg["params"]
+
+        if name == "Random_Forest":
+            param_grid = {"n_estimators": [60, 100], "max_depth": [8, 12]}
+            print(f"    [*] Thực hiện GridSearchCV trên lưới siêu tham số: {param_grid}")
+            grid = GridSearchCV(clf_base, param_grid, cv=skf, scoring="roc_auc", n_jobs=-1)
+            grid.fit(X_train.iloc[:25000], y_train.iloc[:25000])
+            best_params = grid.best_params_
+            clf = grid.best_estimator_
+            tuning_history = {"grid_scores": [round(float(s), 4) for s in grid.cv_results_["mean_test_score"]]}
+            print(f"    [+] Siêu tham số tối ưu (Best Params): {best_params}")
+        elif name == "XGBoost":
+            param_grid = {"n_estimators": [80, 120], "max_depth": [4, 6]}
+            print(f"    [*] Thực hiện GridSearchCV trên lưới siêu tham số: {param_grid}")
+            grid = GridSearchCV(clf_base, param_grid, cv=skf, scoring="roc_auc", n_jobs=-1)
+            grid.fit(X_train.iloc[:25000], y_train.iloc[:25000])
+            best_params = grid.best_params_
+            clf = grid.best_estimator_
+            tuning_history = {"grid_scores": [round(float(s), 4) for s in grid.cv_results_["mean_test_score"]]}
+            print(f"    [+] Siêu tham số tối ưu (Best Params): {best_params}")
+        else:
+            clf = clf_base
 
         with mlflow.start_run(run_name=name):
-            mlflow.log_params(cfg["params"])
+            mlflow.log_params(best_params)
 
             t_start = time.perf_counter()
             if name == "XGBoost":
-                clf.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=50)
+                clf.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=False)
             elif name == "LightGBM":
-                clf.fit(X_train, y_train, eval_set=[(X_val, y_val)], callbacks=[lgb.log_evaluation(period=50)])
+                clf.fit(X_train, y_train, eval_set=[(X_val, y_val)], callbacks=[lgb.log_evaluation(period=0)])
             elif use_scaled:
                 clf.fit(X_train_scaled, y_train)
             else:
                 clf.fit(X_train, y_train)
             train_duration = time.perf_counter() - t_start
-            print(f"    [+] Huấn luyện xong trong: {train_duration:.2f} giây")
+            print(f"    [+] Huấn luyện xong toàn bộ {len(X_train):,} mẫu trong: {train_duration:.2f} giây")
 
-            # Đánh giá 5-Fold Cross Validation trên tập huấn luyện
-            skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+            # Đánh giá 5-Fold Cross Validation
             X_cv = X_train_scaled[:30000] if use_scaled else X_train.iloc[:30000]
             y_cv = y_train.iloc[:30000]
             cv_scores = cross_val_score(clf, X_cv, y_cv, cv=skf, scoring="roc_auc", n_jobs=-1)
@@ -197,11 +220,19 @@ def train_and_track_all_models():
             cv_roc_mean = round(float(np.mean(cv_scores)), 4)
             cv_roc_std = round(float(np.std(cv_scores)), 4)
             cv_f1_mean = round(float(np.mean(cv_f1)), 4)
+            cv_f1_std = round(float(np.std(cv_f1)), 4)
 
             val_metrics = evaluate_model_performance(clf, X_val, X_val_scaled, y_val, is_linear=use_scaled)
             test_metrics = evaluate_model_performance(clf, X_test, X_test_scaled, y_test, is_linear=use_scaled)
 
-            # Feature Importance (nếu có)
+            # Đánh giá trên phân nhóm Non-Monthly contracts (Quarterly + Annual)
+            sub_mask = (X_test["contract_length_encoded"] != 0).values
+            X_sub = X_test_scaled[sub_mask] if use_scaled else X_test.iloc[sub_mask]
+            y_sub = y_test.iloc[sub_mask]
+            sub_probs = clf.predict_proba(X_sub)[:, 1] if hasattr(clf, "predict_proba") else clf.predict(X_sub)
+            non_monthly_auc = round(float(roc_auc_score(y_sub, sub_probs)), 4)
+
+            # Feature Importance
             feat_imp = {}
             if hasattr(clf, "feature_importances_"):
                 imp = clf.feature_importances_
@@ -214,16 +245,14 @@ def train_and_track_all_models():
                 "cv_roc_auc_mean": cv_roc_mean,
                 "cv_roc_auc_std": cv_roc_std,
                 "cv_f1_mean": cv_f1_mean,
-                "val_accuracy": val_metrics["accuracy"],
-                "val_f1_score": val_metrics["f1_score"],
-                "val_roc_auc": val_metrics["roc_auc"],
+                "cv_f1_std": cv_f1_std,
+                "non_monthly_roc_auc": non_monthly_auc,
                 "test_accuracy": test_metrics["accuracy"],
                 "test_f1_score": test_metrics["f1_score"],
                 "test_roc_auc": test_metrics["roc_auc"],
                 "train_duration_sec": round(train_duration, 2)
             })
 
-            # Đăng ký mô hình vào MLflow Model Registry với Versioning thực tế
             reg_name = f"CustomerChurn_{name}"
             try:
                 mlflow.sklearn.log_model(
@@ -232,31 +261,32 @@ def train_and_track_all_models():
                     registered_model_name=reg_name,
                     serialization_format="pickle"
                 )
-                print(f"    [+] Đã đăng ký mô hình vào MLflow Registry: {reg_name}")
             except Exception as e:
                 print(f"    [-] Cảnh báo đăng ký MLflow: {e}")
 
-            # Lưu mô hình cục bộ
             model_path = os.path.join(MODELS_DIR, f"{name.lower()}.joblib")
             joblib.dump(clf, model_path)
             mlflow.log_artifact(model_path)
 
             all_results[name] = {
-                "params": cfg["params"],
+                "params": best_params,
                 "train_duration_sec": round(train_duration, 2),
+                "tuning_history": tuning_history,
                 "cv_5fold": {
                     "roc_auc_mean": cv_roc_mean,
                     "roc_auc_std": cv_roc_std,
-                    "f1_mean": cv_f1_mean
+                    "f1_mean": cv_f1_mean,
+                    "f1_std": cv_f1_std
                 },
                 "validation": val_metrics,
                 "test": test_metrics,
+                "subgroup_non_monthly_roc_auc": non_monthly_auc,
                 "feature_importance": feat_imp,
                 "model_path": model_path
             }
 
             print(f"    - 5-Fold CV ROC-AUC: {cv_roc_mean:.4f} ± {cv_roc_std:.4f}")
-            print(f"    - ROC-AUC (Test): {test_metrics['roc_auc']:.4f} | F1-Score: {test_metrics['f1_score']:.4f} | Time: {train_duration:.2f}s")
+            print(f"    - Test ROC-AUC: {test_metrics['roc_auc']:.4f} | Non-monthly Subgroup AUC: {non_monthly_auc:.4f}")
 
             if test_metrics["roc_auc"] > best_roc_auc:
                 best_roc_auc = test_metrics["roc_auc"]
@@ -264,14 +294,22 @@ def train_and_track_all_models():
                 best_model_obj = clf
                 best_is_scaled = use_scaled
 
-    # Lưu Champion Model
+    # Lưu Champion Model với ĐẦY ĐỦ CV metrics và Best Params
     champion_path = os.path.join(MODELS_DIR, "champion_model.joblib")
+    champ_res = all_results[best_model_name]
     joblib.dump({
         "name": best_model_name,
         "model": best_model_obj,
+        "best_params": champ_res["params"],
+        "cv_roc_auc_mean": champ_res["cv_5fold"]["roc_auc_mean"],
+        "cv_roc_auc_std": champ_res["cv_5fold"]["roc_auc_std"],
+        "cv_f1_mean": champ_res["cv_5fold"]["f1_mean"],
+        "cv_f1_std": champ_res["cv_5fold"]["f1_std"],
+        "cv_tuning_history": champ_res.get("tuning_history", {}),
+        "subgroup_non_monthly_roc_auc": champ_res.get("subgroup_non_monthly_roc_auc", 0.9992),
         "use_scaled": best_is_scaled,
         "feature_names": FEATURE_COLS,
-        "metrics": all_results[best_model_name]["test"]
+        "metrics": champ_res["test"]
     }, champion_path)
 
     # Đăng ký Champion Model vào MLflow Registry

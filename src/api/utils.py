@@ -6,6 +6,7 @@ import os
 import json
 import sqlite3
 import numpy as np
+import shap
 from typing import Optional, Tuple, Dict
 from fastapi import HTTPException, Header
 

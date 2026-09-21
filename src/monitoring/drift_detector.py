@@ -16,7 +16,8 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-REF_PARQUET = os.path.join(BASE_DIR, "data", "processed", "val_features.parquet")
+REF_PARQUET = os.path.join(BASE_DIR, "data", "processed", "train_features.parquet")
+INFERENCE_DB = os.path.join(BASE_DIR, "data", "inference_logs.db")
 OUTPUT_DRIFT_JSON = os.path.join(BASE_DIR, "data", "processed", "drift_metrics.json")
 OUTPUT_DRIFT_HTML = os.path.join(BASE_DIR, "docs", "drift_report.html")
 
@@ -29,32 +30,69 @@ FEATURE_COLS = [
 
 
 def calculate_psi(expected: np.ndarray, actual: np.ndarray, num_buckets: int = 10) -> float:
-    """Tính chỉ số Population Stability Index (PSI)."""
+    """
+    Tính chỉ số Population Stability Index (PSI) chuẩn khoa học.
+    Sử dụng phân vị của phân phối cơ sở (Expected - Training baseline) để chia bin,
+    kết hợp mở rộng vô cực và Laplace smoothing để tránh chia cho 0 và log(0).
+    """
     expected = expected[~np.isnan(expected)]
     actual = actual[~np.isnan(actual)]
     if len(expected) == 0 or len(actual) == 0:
         return 0.0
 
-    breakpoints = np.linspace(min(np.min(expected), np.min(actual)),
-                              max(np.max(expected), np.max(actual)),
-                              num_buckets + 1)
+    percentiles = np.linspace(0, 100, num_buckets + 1)
+    breakpoints = np.percentile(expected, percentiles)
+    breakpoints = np.unique(breakpoints)
+    if len(breakpoints) < 2:
+        return 0.0
+
+    # Mở rộng biên để bao trùm mọi giá trị ngoại lai của actual
+    breakpoints[0] = -np.inf
+    breakpoints[-1] = np.inf
+
     exp_counts, _ = np.histogram(expected, bins=breakpoints)
     act_counts, _ = np.histogram(actual, bins=breakpoints)
 
-    exp_pct = np.maximum(exp_counts / len(expected), 0.0001)
-    act_pct = np.maximum(act_counts / len(actual), 0.0001)
+    k = len(breakpoints) - 1
+    exp_pct = (exp_counts + 1) / (len(expected) + k)
+    act_pct = (act_counts + 1) / (len(actual) + k)
 
     psi_val = np.sum((act_pct - exp_pct) * np.log(act_pct / exp_pct))
     return float(np.round(psi_val, 4))
 
 
-def run_drift_analysis(current_df: pd.DataFrame = None, p_val_threshold: float = 0.05) -> dict:
-    """Thực hiện phân tích Data Drift giữa dữ liệu chuẩn và dữ liệu hiện tại."""
+def run_drift_analysis(current_df: pd.DataFrame = None, p_val_threshold: float = 0.05,
+                       simulate_drift: bool = False) -> dict:
+    """
+    Thực hiện phân tích Data Drift giữa dữ liệu huấn luyện cơ sở (Train baseline)
+    và dữ liệu suy luận Production (Inference logs từ SQLite hoặc Production test stream).
+    """
+    import sqlite3
     ref_df = pd.read_parquet(REF_PARQUET)
 
+    # Đọc dữ liệu từ SQLite inference logs nếu có
+    if current_df is None and os.path.exists(INFERENCE_DB):
+        try:
+            conn = sqlite3.connect(INFERENCE_DB)
+            cur = conn.cursor()
+            cur.execute("SELECT features_json FROM inference_logs ORDER BY id DESC LIMIT 5000")
+            rows = cur.fetchall()
+            conn.close()
+            if len(rows) >= 10:
+                data_list = [json.loads(r[0]) for r in rows]
+                current_df = pd.DataFrame(data_list, columns=FEATURE_COLS)
+        except Exception:
+            pass
+
+    # Nếu chưa có đủ log suy luận thực tế, lấy mẫu từ tập Test đại diện cho Production stream
     if current_df is None:
         test_df = pd.read_parquet(os.path.join(BASE_DIR, "data", "processed", "test_features.parquet"))
-        current_df = test_df.sample(n=min(len(test_df), 10000), random_state=42)
+        current_df = test_df.sample(n=min(len(test_df), 10000), random_state=42)[FEATURE_COLS].copy()
+
+    if simulate_drift:
+        current_df = current_df.copy()
+        current_df["payment_delay"] = current_df["payment_delay"] * 2.2 + 5.0
+        current_df["support_calls"] = current_df["support_calls"] * 2.0 + 3.0
 
     drift_report = {
         "timestamp": pd.Timestamp.now().isoformat(),

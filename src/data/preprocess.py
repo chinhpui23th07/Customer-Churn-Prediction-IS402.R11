@@ -182,15 +182,21 @@ def run_pipeline():
     with open(os.path.join(PROCESSED_DIR, "metadata.json"), "w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2, ensure_ascii=False)
         
-    train_df = pd.concat([id_train, X_train, y_train], axis=1)
-    val_df = pd.concat([id_val, X_val, y_val], axis=1)
-    test_df = pd.concat([id_test, X_test, y_test], axis=1)
+    now_utc = pd.Timestamp.now(tz="UTC")
+    timestamps = pd.DataFrame({
+        "event_timestamp": now_utc - pd.to_timedelta(combined["tenure"] * 30, unit="D"),
+        "created_timestamp": now_utc
+    }, index=combined.index)
+
+    train_df = pd.concat([id_train, timestamps.loc[id_train.index], X_train, y_train], axis=1)
+    val_df = pd.concat([id_val, timestamps.loc[id_val.index], X_val, y_val], axis=1)
+    test_df = pd.concat([id_test, timestamps.loc[id_test.index], X_test, y_test], axis=1)
     
     train_df.to_parquet(os.path.join(PROCESSED_DIR, "train_features.parquet"), index=False)
     val_df.to_parquet(os.path.join(PROCESSED_DIR, "val_features.parquet"), index=False)
     test_df.to_parquet(os.path.join(PROCESSED_DIR, "test_features.parquet"), index=False)
     
-    print(f"[+] Đã lưu dữ liệu định dạng Parquet vào {PROCESSED_DIR}")
+    print(f"[+] Đã lưu dữ liệu định dạng Parquet kèm event_timestamp vào {PROCESSED_DIR}")
     return meta
 
 
