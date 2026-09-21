@@ -1,131 +1,233 @@
 {
-  "optimization_metadata": {
-    "framework": "scikit-learn GridSearchCV",
-    "search_strategy": "Stratified 5-Fold Cross Validation",
-    "evaluation_metric": "roc_auc",
-    "sample_size_per_trial": 25000,
-    "random_state": 42,
-    "timestamp": "2026-09-21T21:28:40Z"
-  },
-  "models": {
-    "XGBoost": {
-      "model_type": "Gradient Boosting",
-      "search_space": {
-        "n_estimators": [80, 120],
-        "max_depth": [4, 6],
-        "learning_rate": [0.05, 0.08],
-        "subsample": [0.8],
-        "colsample_bytree": [0.8]
-      },
-      "trials": [
-        {
-          "params": {"n_estimators": 80, "max_depth": 4, "learning_rate": 0.05},
-          "mean_cv_roc_auc": 0.9977,
-          "std_cv_roc_auc": 0.0004,
-          "rank": 4
-        },
-        {
-          "params": {"n_estimators": 80, "max_depth": 6, "learning_rate": 0.05},
-          "mean_cv_roc_auc": 0.9986,
-          "std_cv_roc_auc": 0.0003,
-          "rank": 2
-        },
-        {
-          "params": {"n_estimators": 120, "max_depth": 4, "learning_rate": 0.08},
-          "mean_cv_roc_auc": 0.9986,
-          "std_cv_roc_auc": 0.0002,
-          "rank": 2
-        },
-        {
-          "params": {"n_estimators": 120, "max_depth": 6, "learning_rate": 0.08},
-          "mean_cv_roc_auc": 0.9989,
-          "std_cv_roc_auc": 0.0002,
-          "rank": 1
-        }
-      ],
-      "best_params": {
-        "n_estimators": 120,
-        "max_depth": 6,
-        "learning_rate": 0.08,
-        "subsample": 0.8,
-        "colsample_bytree": 0.8
-      },
-      "best_cv_roc_auc": 0.9989,
-      "full_train_test_roc_auc": 0.9990,
-      "baseline_comparison": {
-        "baseline_params": {"n_estimators": 100, "max_depth": 12},
-        "baseline_test_roc_auc": 0.9972,
-        "delta_roc_auc": 0.0018,
-        "improvement_pct": "+0.18%",
-        "variance_reduction": "Constrained depth from 12 to 6 prevents leaf memorization on noisy contract subsets"
-      }
+  "framework": "Optuna 4.8.0 + Bayesian TPE Sampler",
+  "objective": "Maximize 3-Fold Stratified Cross-Validation ROC-AUC",
+  "sample_size": 25000,
+  "xgboost_champion": {
+    "best_roc_auc": 0.999,
+    "best_params": {
+      "n_estimators": 140,
+      "max_depth": 5,
+      "learning_rate": 0.07082645386849487,
+      "subsample": 0.8366775698358199,
+      "colsample_bytree": 0.7462136138813817
     },
-    "Random_Forest": {
-      "model_type": "Ensemble Bagging",
-      "search_space": {
-        "n_estimators": [60, 100],
-        "max_depth": [8, 12]
-      },
-      "trials": [
-        {
-          "params": {"n_estimators": 60, "max_depth": 8},
-          "mean_cv_roc_auc": 0.9965,
-          "std_cv_roc_auc": 0.0005,
-          "rank": 4
-        },
-        {
-          "params": {"n_estimators": 60, "max_depth": 12},
-          "mean_cv_roc_auc": 0.9978,
-          "std_cv_roc_auc": 0.0003,
-          "rank": 2
-        },
-        {
-          "params": {"n_estimators": 100, "max_depth": 8},
-          "mean_cv_roc_auc": 0.9968,
-          "std_cv_roc_auc": 0.0004,
-          "rank": 3
-        },
-        {
-          "params": {"n_estimators": 100, "max_depth": 12},
-          "mean_cv_roc_auc": 0.9982,
-          "std_cv_roc_auc": 0.0003,
-          "rank": 1
+    "trials_count": 12,
+    "trials_history": [
+      {
+        "trial_id": 0,
+        "value": 0.9989,
+        "params": {
+          "n_estimators": 100,
+          "max_depth": 8,
+          "learning_rate": 0.08939430644184299,
+          "subsample": 0.8496646210492591,
+          "colsample_bytree": 0.7390046601106091
         }
-      ],
-      "best_params": {
-        "n_estimators": 100,
-        "max_depth": 12,
-        "criterion": "gini"
       },
-      "best_cv_roc_auc": 0.9982,
-      "full_train_test_roc_auc": 0.9988,
-      "baseline_comparison": {
-        "baseline_params": {"n_estimators": 50, "max_depth": 6},
-        "baseline_test_roc_auc": 0.9945,
-        "delta_roc_auc": 0.0043,
-        "improvement_pct": "+0.43%",
-        "variance_reduction": "Increasing n_estimators to 100 with max_depth 12 stabilized bagging out-of-bag estimates"
+      {
+        "trial_id": 1,
+        "value": 0.9985,
+        "params": {
+          "n_estimators": 80,
+          "max_depth": 4,
+          "learning_rate": 0.1035931504211269,
+          "subsample": 0.8502787529358021,
+          "colsample_bytree": 0.8770181444490113
+        }
+      },
+      {
+        "trial_id": 2,
+        "value": 0.9989,
+        "params": {
+          "n_estimators": 80,
+          "max_depth": 8,
+          "learning_rate": 0.09982425290843555,
+          "subsample": 0.753084777669569,
+          "colsample_bytree": 0.7454562418017752
+        }
+      },
+      {
+        "trial_id": 3,
+        "value": 0.998,
+        "params": {
+          "n_estimators": 80,
+          "max_depth": 5,
+          "learning_rate": 0.07119220403002743,
+          "subsample": 0.8079862546605289,
+          "colsample_bytree": 0.7728072850495105
+        }
+      },
+      {
+        "trial_id": 4,
+        "value": 0.9983,
+        "params": {
+          "n_estimators": 140,
+          "max_depth": 4,
+          "learning_rate": 0.055137670354863826,
+          "subsample": 0.7915904608234229,
+          "colsample_bytree": 0.814017496054259
+        }
+      },
+      {
+        "trial_id": 5,
+        "value": 0.9989,
+        "params": {
+          "n_estimators": 140,
+          "max_depth": 4,
+          "learning_rate": 0.07037398948922527,
+          "subsample": 0.8481036422155106,
+          "colsample_bytree": 0.7116126031799994
+        }
+      },
+      {
+        "trial_id": 6,
+        "value": 0.9978,
+        "params": {
+          "n_estimators": 140,
+          "max_depth": 4,
+          "learning_rate": 0.04296328585098912,
+          "subsample": 0.9372213843133332,
+          "colsample_bytree": 0.9414080082686398
+        }
+      },
+      {
+        "trial_id": 7,
+        "value": 0.9987,
+        "params": {
+          "n_estimators": 160,
+          "max_depth": 5,
+          "learning_rate": 0.04453089592981038,
+          "subsample": 0.8710582566280392,
+          "colsample_bytree": 0.8100381234349003
+        }
+      },
+      {
+        "trial_id": 8,
+        "value": 0.9961,
+        "params": {
+          "n_estimators": 80,
+          "max_depth": 6,
+          "learning_rate": 0.04154009502503007,
+          "subsample": 0.9273301005196954,
+          "colsample_bytree": 0.7646949954000042
+        }
+      },
+      {
+        "trial_id": 9,
+        "value": 0.999,
+        "params": {
+          "n_estimators": 140,
+          "max_depth": 5,
+          "learning_rate": 0.07082645386849487,
+          "subsample": 0.8366775698358199,
+          "colsample_bytree": 0.7462136138813817
+        }
+      },
+      {
+        "trial_id": 10,
+        "value": 0.9989,
+        "params": {
+          "n_estimators": 120,
+          "max_depth": 7,
+          "learning_rate": 0.05704670718341765,
+          "subsample": 0.7044904689037049,
+          "colsample_bytree": 0.8629666376945446
+        }
+      },
+      {
+        "trial_id": 11,
+        "value": 0.999,
+        "params": {
+          "n_estimators": 120,
+          "max_depth": 8,
+          "learning_rate": 0.11686540625090172,
+          "subsample": 0.7485801798345854,
+          "colsample_bytree": 0.7018946261721482
+        }
       }
-    },
-    "LightGBM": {
-      "model_type": "Gradient Boosting (Histogram-based)",
-      "search_space": {
-        "n_estimators": [80, 120],
-        "max_depth": [4, 6],
-        "num_leaves": [15, 31]
-      },
-      "best_params": {
-        "n_estimators": 120,
-        "max_depth": 6,
-        "num_leaves": 31,
-        "learning_rate": 0.08
-      },
-      "best_cv_roc_auc": 0.9987,
-      "full_train_test_roc_auc": 0.9989
-    }
+    ]
   },
-  "champion_selection": {
-    "selected_champion": "XGBoost",
-    "rationale": "Highest test ROC-AUC (0.9990), highest subgroup non-monthly contract robustness (AUC: 0.9992), and sub-millisecond batch latency (0.0001 ms/sample)."
+  "random_forest_challenger": {
+    "best_roc_auc": 0.9988,
+    "best_params": {
+      "n_estimators": 60,
+      "max_depth": 14,
+      "min_samples_split": 5
+    },
+    "trials_count": 8,
+    "trials_history": [
+      {
+        "trial_id": 0,
+        "value": 0.9987,
+        "params": {
+          "n_estimators": 80,
+          "max_depth": 14,
+          "min_samples_split": 5
+        }
+      },
+      {
+        "trial_id": 1,
+        "value": 0.9977,
+        "params": {
+          "n_estimators": 100,
+          "max_depth": 9,
+          "min_samples_split": 2
+        }
+      },
+      {
+        "trial_id": 2,
+        "value": 0.9988,
+        "params": {
+          "n_estimators": 60,
+          "max_depth": 14,
+          "min_samples_split": 5
+        }
+      },
+      {
+        "trial_id": 3,
+        "value": 0.997,
+        "params": {
+          "n_estimators": 100,
+          "max_depth": 8,
+          "min_samples_split": 6
+        }
+      },
+      {
+        "trial_id": 4,
+        "value": 0.9978,
+        "params": {
+          "n_estimators": 120,
+          "max_depth": 9,
+          "min_samples_split": 2
+        }
+      },
+      {
+        "trial_id": 5,
+        "value": 0.9983,
+        "params": {
+          "n_estimators": 60,
+          "max_depth": 10,
+          "min_samples_split": 4
+        }
+      },
+      {
+        "trial_id": 6,
+        "value": 0.9984,
+        "params": {
+          "n_estimators": 80,
+          "max_depth": 10,
+          "min_samples_split": 5
+        }
+      },
+      {
+        "trial_id": 7,
+        "value": 0.9982,
+        "params": {
+          "n_estimators": 60,
+          "max_depth": 10,
+          "min_samples_split": 3
+        }
+      }
+    ]
   }
 }
