@@ -71,6 +71,14 @@ docs/requirements/
 docs/audit_reports/
 docs/ACADEMIC_INTEGRITY_AUDIT_REPORT.md
 docs/MULTI_AGENT_TRIPLE_BLIND_AUDIT_REPORT.md
+docs/BAO_CAO_TONG_HOP_DU_AN_VA_KIEM_TOAN_SWARM.md
+docs/DEMO_AND_PRESENTATION_GUIDE.md
+docs/slides.marp.md
+docs/*.docx
+docs/*.pptx
+docs/*.pdf
+docs/*.html
+assets/uit_logo.png
 TEST_READY.md
 *.zip
 Nghiên Cứu Tập Dữ Liệu Churn.docx

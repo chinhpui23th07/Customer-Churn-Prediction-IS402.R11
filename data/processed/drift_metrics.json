@@ -1,123 +1,123 @@
 {
-  "timestamp": "2026-10-22T22:22:04.108049",
+  "timestamp": "2026-10-22T22:33:24.720827",
   "reference_samples": 309547,
-  "current_samples": 1106,
+  "current_samples": 1167,
   "bonferroni_alpha": 0.003846,
   "features": {
     "age": {
-      "ks_statistic": 0.2406,
+      "ks_statistic": 0.2549,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.4984,
+      "psi_score": 0.557,
       "drift_detected": true,
       "drift_level": "High"
     },
     "gender_encoded": {
-      "ks_statistic": 0.1154,
+      "ks_statistic": 0.127,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.0535,
+      "psi_score": 0.0649,
       "drift_detected": true,
       "drift_level": "Stable"
     },
     "tenure": {
-      "ks_statistic": 0.2334,
+      "ks_statistic": 0.2497,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.5059,
+      "psi_score": 0.5655,
       "drift_detected": true,
       "drift_level": "High"
     },
     "usage_frequency": {
-      "ks_statistic": 0.1684,
+      "ks_statistic": 0.1788,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.479,
+      "psi_score": 0.5387,
       "drift_detected": true,
       "drift_level": "High"
     },
     "support_calls": {
-      "ks_statistic": 0.047,
-      "p_value": 0.01484,
+      "ks_statistic": 0.0493,
+      "p_value": 0.0067,
       "bonferroni_alpha": 0.003846,
       "ks_drift": false,
-      "psi_score": 0.0494,
+      "psi_score": 0.0544,
       "drift_detected": false,
       "drift_level": "Stable"
     },
     "payment_delay": {
-      "ks_statistic": 0.2635,
+      "ks_statistic": 0.2819,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.428,
+      "psi_score": 0.4817,
       "drift_detected": true,
       "drift_level": "High"
     },
     "subscription_type_encoded": {
-      "ks_statistic": 0.1409,
+      "ks_statistic": 0.1486,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.2222,
+      "psi_score": 0.2516,
       "drift_detected": true,
-      "drift_level": "Moderate"
+      "drift_level": "High"
     },
     "contract_length_encoded": {
-      "ks_statistic": 0.1972,
+      "ks_statistic": 0.2121,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.1699,
+      "psi_score": 0.1966,
       "drift_detected": true,
       "drift_level": "Moderate"
     },
     "total_spend": {
-      "ks_statistic": 0.1242,
+      "ks_statistic": 0.1307,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.1524,
+      "psi_score": 0.1688,
       "drift_detected": true,
       "drift_level": "Moderate"
     },
     "last_interaction": {
-      "ks_statistic": 0.2289,
+      "ks_statistic": 0.2417,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.51,
+      "psi_score": 0.5651,
       "drift_detected": true,
       "drift_level": "High"
     },
     "support_calls_per_tenure": {
-      "ks_statistic": 0.091,
+      "ks_statistic": 0.0969,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.0987,
+      "psi_score": 0.1101,
       "drift_detected": true,
-      "drift_level": "Stable"
+      "drift_level": "Moderate"
     },
     "spend_per_tenure": {
-      "ks_statistic": 0.1119,
+      "ks_statistic": 0.1197,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.1926,
+      "psi_score": 0.2119,
       "drift_detected": true,
       "drift_level": "Moderate"
     },
     "delay_ratio": {
-      "ks_statistic": 0.2387,
+      "ks_statistic": 0.2543,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.466,
+      "psi_score": 0.5197,
       "drift_detected": true,
       "drift_level": "High"
     }
