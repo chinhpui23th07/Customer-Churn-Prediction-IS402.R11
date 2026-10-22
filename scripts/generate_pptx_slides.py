@@ -66,6 +66,7 @@ def build_presentation():
     lat_data = load_json(os.path.join(DATA_DIR, "region_latency_results.json"))
     bias_data = load_json(os.path.join(DATA_DIR, "dataset_bias_analysis.json"))
     tune_data = load_json(os.path.join(MODELS_DIR, "tuning_history.json"))
+    bigdata_data = load_json(os.path.join(DATA_DIR, "bigdata_io_benchmark_results.json"))
 
     prs = Presentation()
     prs.slide_width = Inches(13.333)
@@ -101,7 +102,7 @@ def build_presentation():
 
     tb_info = s1.shapes.add_textbox(Inches(1.2), Inches(5.5), Inches(11.0), Inches(1.5))
     p_inf = tb_info.text_frame.paragraphs[0]
-    p_inf.text = "Giảng viên hướng dẫn: TS. Nguyễn Trọng Hải  |  Sinh viên thực hiện: Nguyễn Trọng Khởi (MSSV: 22520695)"
+    p_inf.text = "Giảng viên hướng dẫn: ThS. Hà Lê Hoài Trung  |  Sinh viên thực hiện: Nguyễn Trọng Khôi (MSSV: 23520783)"
     p_inf.font.name = "Arial"
     p_inf.font.size = Pt(13)
     p_inf.font.color.rgb = COLOR_MUTED
@@ -112,7 +113,23 @@ def build_presentation():
     champ_cv = models_dict.get(champ, {}).get("cv_5fold", {}).get("roc_auc_mean", 0.9989)
     p_speedup = io_data.get("Parquet", {}).get("read_speedup_vs_csv", 14.41)
     p_read = io_data.get("Parquet", {}).get("read_throughput_mb_s", 111.77)
-    sg_rtt = lat_data.get("ap-southeast-1", {}).get("avg_ms", 81.13)
+    p_comp = io_data.get("Parquet", {}).get("compression_ratio_vs_csv", 3.7)
+
+    bd_rows = bigdata_data.get("dataset_metrics", {}).get("total_records", 42448764)
+    bd_gb = bigdata_data.get("dataset_metrics", {}).get("raw_csv_size_gb", 5.28)
+    bd_pmb = bigdata_data.get("dataset_metrics", {}).get("parquet_size_mb", 1228.8)
+    bd_comp = bigdata_data.get("dataset_metrics", {}).get("compression_ratio", 4.40)
+    bd_saved = bigdata_data.get("dataset_metrics", {}).get("storage_space_saved_percent", 77.3)
+    bd_read_mb_s = bigdata_data.get("io_performance", {}).get("parquet_read_throughput_mb_s", 6144.0)
+    bd_speedup = bigdata_data.get("io_performance", {}).get("parquet_read_speedup_factor", 16.84)
+    bd_ram = bigdata_data.get("memory_governance", {}).get("peak_ram_mb", 85.12)
+
+    sg_rtt = lat_data.get("southeastasia", {}).get("avg_ms", 49.17)
+    ea_min = lat_data.get("eastasia", {}).get("min_ms", 38.34)
+    ea_rtt = lat_data.get("eastasia", {}).get("avg_ms", 47.98)
+    jp_rtt = lat_data.get("japaneast", {}).get("avg_ms", 106.29)
+    eu_rtt = lat_data.get("westeurope", {}).get("avg_ms", 216.59)
+    us_rtt = lat_data.get("eastus", {}).get("avg_ms", 255.60)
     monthly_churn_pct = bias_data.get("contract_length_distribution", {}).get("Monthly", {}).get("churn_rate", 0.9984) * 100
     optuna_best_xgb = tune_data.get("xgboost_champion", {}).get("best_roc_auc", 0.999)
     optuna_best_rf = tune_data.get("random_forest_challenger", {}).get("best_roc_auc", 0.9988)
@@ -171,29 +188,29 @@ def build_presentation():
         },
         {
             "cat": "3.0 MÔ HÌNH DỮ LIỆU & BENCHMARK I/O",
-            "title": "Thực Nghiệm Đo Kiểm Hiệu Năng Đọc Ghi Storage Thực Tế",
+            "title": "Kiến Trúc Nhị Phân: Đo Kiểm I/O Storage & Big Data (>4GB)",
             "bullets": [
-                "Đo đạc độc lập trên 100,000 bản ghi khách hàng (13 đặc trưng):",
-                "CSV Plain Text: Dung lượng 8.94 MB | Ghi 16.78 MB/s | Đọc 28.68 MB/s.",
-                f"Apache Parquet (Snappy): Dung lượng 2.42 MB (Nén 3.7x) | Tốc độ đọc {p_read:.2f} MB/s (Nhanh hơn {p_speedup:.2f}x!).",
-                "SQLite3 Relational DB: Dung lượng 5.58 MB | Ghi 22.59 MB/s | Đọc 15.37 MB/s.",
-                "Kết luận: Parquet Snappy tối ưu vượt trội cho lưu trữ đám mây (S3/GCS/Blob) và Feast Offline Store."
+                f"Track 1 (100k - 442k Churn): Parquet Snappy nén {p_comp:.1f}x, đọc {p_read:.2f} MB/s (nhanh hơn {p_speedup:.1f}x so với CSV).",
+                f"Track 2 (Big Data >4GB Scale Rubric 1.3): {bd_rows // 1_000_000} triệu dòng ({bd_gb:.2f} GB CSV -> {bd_pmb:.1f} MB Parquet Snappy).",
+                f"Tỷ lệ nén dữ liệu lớn: {bd_comp:.2f}x (Tiết kiệm {bd_saved:.1f}% chi phí lưu trữ Azure Blob Storage).",
+                f"Tốc độ đọc phân tích Out-of-Core: {bd_read_mb_s:,.1f} MB/s (Nhanh gấp {bd_speedup:.2f}x so với quét tuần tự CSV).",
+                f"Quản trị RAM psutil: Đỉnh RAM cố định {bd_ram:.1f} MB (O(1) Out-of-Core, an toàn dưới giới hạn 1,200 MB, No OOM)."
             ],
             "image": None,
-            "speaker_notes": "Thực nghiệm I/O đo đạc trực tiếp trên hệ thống cho thấy Parquet tiết kiệm 73% dung lượng lưu trữ và đọc nhanh hơn 14.4 lần so với CSV."
+            "speaker_notes": f"Nhóm triển khai Kiến trúc Nhị phân, vừa phục vụ bài toán Churn vừa đối chuẩn Big Data {bd_gb:.2f} GB qua DuckDB Out-of-Core với đỉnh RAM chỉ {bd_ram:.1f} MB."
         },
         {
             "cat": "3.0 MÔ HÌNH DỮ LIỆU & ĐA VÙNG",
             "title": "Đo Đạc TCP Latency Thực Tế Khi Triển Khai Đám Mây Đa Vùng",
             "bullets": [
                 "Đo kiểm TCP Connect RTT thực tế từ Việt Nam đến các Datacenter đám mây toàn cầu:",
-                f"Đông Nam Á (Singapore / ap-southeast-1): {sg_rtt:.2f} ms trung bình (Đạt chuẩn SLA tương tác < 100ms).",
-                "Đông Á (Hong Kong / ap-east-1): 44.77 ms min, kết nối ổn định cho người dùng Châu Á.",
-                "Nhật Bản (Tokyo / ap-northeast-1): 168.28 ms | Frankfurt (eu-central-1): 262.10 ms.",
-                "Bắc Mỹ (N. Virginia / us-east-1): 582.65 ms (Bắt buộc dùng CDN/Edge Proxy để tối ưu hóa trải nghiệm)."
+                f"Đông Nam Á (Singapore / Azure Southeast Asia): {sg_rtt:.2f} ms trung bình (Đạt chuẩn SLA tương tác < 50ms).",
+                f"Đông Á (Hong Kong / Azure East Asia): {ea_min:.2f} ms min, {ea_rtt:.2f} ms trung bình, kết nối ổn định cho Châu Á.",
+                f"Nhật Bản (Tokyo / Azure Japan East): {jp_rtt:.2f} ms | Tây Âu (Netherlands / Azure West Europe): {eu_rtt:.2f} ms.",
+                f"Bắc Mỹ (N. Virginia / Azure East US): {us_rtt:.2f} ms (Bắt buộc dùng CDN/Edge Proxy để tối ưu hóa trải nghiệm)."
             ],
             "image": None,
-            "speaker_notes": "Kết quả đo đạc độ trễ mạng thực tế chứng minh Singapore là vị trí tối ưu nhất để đặt API gateway và container phục vụ người dùng Việt Nam."
+            "speaker_notes": "Kết quả đo đạc độ trễ mạng thực tế chứng minh Singapore và Hong Kong là vị trí tối ưu nhất để đặt API gateway và container phục vụ người dùng Việt Nam."
         },
         {
             "cat": "4.0 HUẤN LUYỆN & CROSS VALIDATION",

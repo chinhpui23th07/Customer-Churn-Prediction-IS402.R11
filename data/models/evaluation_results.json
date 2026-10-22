@@ -1,6 +1,6 @@
 {
   "champion_model": "XGBoost",
-  "champion_roc_auc": 0.999,
+  "champion_roc_auc": 0.9989,
   "models": {
     "Logistic_Regression": {
       "params": {
@@ -8,7 +8,7 @@
         "solver": "lbfgs",
         "class_weight": "balanced"
       },
-      "train_duration_sec": 0.2,
+      "train_duration_sec": 0.19,
       "tuning_history": {},
       "cv_5fold": {
         "roc_auc_mean": 0.9442,
@@ -228,58 +228,134 @@
       },
       "subgroup_non_monthly_roc_auc": 0.9287,
       "feature_importance": {
-        "age": 0.4194,
-        "gender_encoded": 0.541,
-        "tenure": 0.0955,
-        "usage_frequency": 0.1151,
-        "support_calls": 2.2045,
-        "payment_delay": 0.827,
-        "subscription_type_encoded": 0.056,
-        "contract_length_encoded": 1.0072,
-        "total_spend": 1.3725,
-        "last_interaction": 0.5502,
-        "support_calls_per_tenure": 0.0561,
-        "spend_per_tenure": 0.0615,
-        "delay_ratio": 0.1159
+        "age": 0.0565,
+        "gender_encoded": 0.0729,
+        "tenure": 0.0129,
+        "usage_frequency": 0.0155,
+        "support_calls": 0.297,
+        "payment_delay": 0.1114,
+        "subscription_type_encoded": 0.0075,
+        "contract_length_encoded": 0.1357,
+        "total_spend": 0.1849,
+        "last_interaction": 0.0741,
+        "support_calls_per_tenure": 0.0076,
+        "spend_per_tenure": 0.0083,
+        "delay_ratio": 0.0156
       },
       "model_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\data\\models\\logistic_regression.joblib"
     },
     "Random_Forest": {
       "params": {
+        "n_estimators": 150,
         "max_depth": 12,
-        "n_estimators": 100
+        "min_samples_split": 5
       },
-      "train_duration_sec": 4.66,
+      "train_duration_sec": 6.74,
       "tuning_history": {
-        "grid_scores": [
-          0.9974,
-          0.9973,
-          0.9985,
-          0.9986
+        "best_roc_auc": 0.9988,
+        "best_params": {
+          "n_estimators": 60,
+          "max_depth": 14,
+          "min_samples_split": 5
+        },
+        "trials_count": 8,
+        "trials_history": [
+          {
+            "trial_id": 0,
+            "value": 0.9987,
+            "params": {
+              "n_estimators": 80,
+              "max_depth": 14,
+              "min_samples_split": 5
+            }
+          },
+          {
+            "trial_id": 1,
+            "value": 0.9977,
+            "params": {
+              "n_estimators": 100,
+              "max_depth": 9,
+              "min_samples_split": 2
+            }
+          },
+          {
+            "trial_id": 2,
+            "value": 0.9988,
+            "params": {
+              "n_estimators": 60,
+              "max_depth": 14,
+              "min_samples_split": 5
+            }
+          },
+          {
+            "trial_id": 3,
+            "value": 0.997,
+            "params": {
+              "n_estimators": 100,
+              "max_depth": 8,
+              "min_samples_split": 6
+            }
+          },
+          {
+            "trial_id": 4,
+            "value": 0.9978,
+            "params": {
+              "n_estimators": 120,
+              "max_depth": 9,
+              "min_samples_split": 2
+            }
+          },
+          {
+            "trial_id": 5,
+            "value": 0.9983,
+            "params": {
+              "n_estimators": 60,
+              "max_depth": 10,
+              "min_samples_split": 4
+            }
+          },
+          {
+            "trial_id": 6,
+            "value": 0.9984,
+            "params": {
+              "n_estimators": 80,
+              "max_depth": 10,
+              "min_samples_split": 5
+            }
+          },
+          {
+            "trial_id": 7,
+            "value": 0.9982,
+            "params": {
+              "n_estimators": 60,
+              "max_depth": 10,
+              "min_samples_split": 3
+            }
+          }
         ]
       },
       "cv_5fold": {
-        "roc_auc_mean": 0.9987,
-        "roc_auc_std": 0.0005,
-        "f1_mean": 0.9931,
-        "f1_std": 0.0006
+        "roc_auc_mean": 0.9989,
+        "roc_auc_std": 0.0003,
+        "f1_mean": 0.9934,
+        "f1_std": 0.0008
       },
       "validation": {
-        "accuracy": 0.9927,
+        "accuracy": 0.9923,
         "precision": 0.9984,
-        "recall": 0.9887,
-        "f1_score": 0.9935,
-        "roc_auc": 0.999,
-        "pr_auc": 0.9987,
-        "latency_per_sample_ms": 0.0012,
+        "recall": 0.9881,
+        "f1_score": 0.9932,
+        "roc_auc": 0.9991,
+        "pr_auc": 0.9989,
+        "latency_per_sample_ms": 0.0014,
         "confusion_matrix": [
           [
             28629,
             61
           ],
           [
-            425,
-            37217
+            447,
+            37195
           ]
         ],
         "roc_curve": [
@@ -289,108 +365,19 @@
           },
           {
             "fpr": 0.0,
-            "tpr": 0.0245
+            "tpr": 0.0111
           },
           {
             "fpr": 0.0,
-            "tpr": 0.034
+            "tpr": 0.0142
           },
           {
             "fpr": 0.0,
-            "tpr": 0.0406
+            "tpr": 0.0182
           },
           {
             "fpr": 0.0,
-            "tpr": 0.0482
-          },
-          {
-            "fpr": 0.0,
-            "tpr": 0.0548
-          },
-          {
-            "fpr": 0.0,
-            "tpr": 0.061
-          },
-          {
-            "fpr": 0.0,
-            "tpr": 0.068
-          },
-          {
-            "fpr": 0.0,
-            "tpr": 0.0764
-          },
-          {
-            "fpr": 0.0,
-            "tpr": 0.0859
-          },
-          {
-            "fpr": 0.0,
-            "tpr": 0.0998
-          },
-          {
-            "fpr": 0.0001,
-            "tpr": 0.1159
-          },
-          {
-            "fpr": 0.0001,
-            "tpr": 0.1333
-          },
-          {
-            "fpr": 0.0002,
-            "tpr": 0.1648
-          },
-          {
-            "fpr": 0.0004,
-            "tpr": 0.2643
-          },
-          {
-            "fpr": 0.0011,
-            "tpr": 0.4881
-          },
-          {
-            "fpr": 0.0015,
-            "tpr": 0.7664
-          },
-          {
-            "fpr": 0.0026,
-            "tpr": 0.994
-          },
-          {
-            "fpr": 0.0042,
-            "tpr": 0.9977
-          },
-          {
-            "fpr": 0.0098,
-            "tpr": 0.9991
-          },
-          {
-            "fpr": 0.9177,
-            "tpr": 1.0
-          }
-        ]
-      },
-      "test": {
-        "accuracy": 0.9929,
-        "precision": 0.998,
-        "recall": 0.9894,
-        "f1_score": 0.9937,
-        "roc_auc": 0.9989,
-        "pr_auc": 0.9986,
-        "latency_per_sample_ms": 0.0012,
-        "confusion_matrix": [
-          [
-            28616,
-            73
-          ],
-          [
-            400,
-            37243
-          ]
-        ],
-        "roc_curve": [
-          {
-            "fpr": 0.0,
-            "tpr": 0.0
+            "tpr": 0.0218
           },
           {
             "fpr": 0.0,
@@ -398,127 +385,355 @@
           },
           {
             "fpr": 0.0,
-            "tpr": 0.0353
+            "tpr": 0.0318
           },
           {
             "fpr": 0.0,
-            "tpr": 0.0413
+            "tpr": 0.0386
           },
           {
             "fpr": 0.0,
-            "tpr": 0.0486
+            "tpr": 0.0495
           },
           {
             "fpr": 0.0,
-            "tpr": 0.0547
+            "tpr": 0.063
           },
           {
             "fpr": 0.0,
-            "tpr": 0.0624
+            "tpr": 0.1004
           },
           {
-            "fpr": 0.0,
-            "tpr": 0.0691
-          },
-          {
-            "fpr": 0.0,
-            "tpr": 0.08
-          },
-          {
-            "fpr": 0.0,
-            "tpr": 0.0911
-          },
-          {
-            "fpr": 0.0,
-            "tpr": 0.1046
-          },
-          {
-            "fpr": 0.0,
-            "tpr": 0.1224
-          },
-          {
-            "fpr": 0.0001,
-            "tpr": 0.1472
-          },
-          {
-            "fpr": 0.0001,
-            "tpr": 0.2019
+            "fpr": 0.0003,
+            "tpr": 0.2364
           },
           {
             "fpr": 0.0008,
-            "tpr": 0.3254
+            "tpr": 0.4566
           },
           {
             "fpr": 0.0013,
-            "tpr": 0.5455
+            "tpr": 0.6646
           },
           {
-            "fpr": 0.0018,
-            "tpr": 0.7604
+            "fpr": 0.0019,
+            "tpr": 0.9252
           },
           {
-            "fpr": 0.0028,
-            "tpr": 0.9929
+            "fpr": 0.0025,
+            "tpr": 0.9942
           },
           {
-            "fpr": 0.0043,
-            "tpr": 0.9973
+            "fpr": 0.0032,
+            "tpr": 0.9959
           },
           {
-            "fpr": 0.0076,
-            "tpr": 0.9987
+            "fpr": 0.0044,
+            "tpr": 0.9968
           },
           {
-            "fpr": 0.0295,
+            "fpr": 0.006,
+            "tpr": 0.9978
+          },
+          {
+            "fpr": 0.0096,
+            "tpr": 0.9983
+          },
+          {
+            "fpr": 0.023,
+            "tpr": 1.0
+          }
+        ]
+      },
+      "test": {
+        "accuracy": 0.9923,
+        "precision": 0.998,
+        "recall": 0.9884,
+        "f1_score": 0.9932,
+        "roc_auc": 0.9989,
+        "pr_auc": 0.9986,
+        "latency_per_sample_ms": 0.0015,
+        "confusion_matrix": [
+          [
+            28616,
+            73
+          ],
+          [
+            437,
+            37206
+          ]
+        ],
+        "roc_curve": [
+          {
+            "fpr": 0.0,
+            "tpr": 0.0
+          },
+          {
+            "fpr": 0.0,
+            "tpr": 0.0107
+          },
+          {
+            "fpr": 0.0,
+            "tpr": 0.0136
+          },
+          {
+            "fpr": 0.0,
+            "tpr": 0.0171
+          },
+          {
+            "fpr": 0.0,
+            "tpr": 0.0215
+          },
+          {
+            "fpr": 0.0,
+            "tpr": 0.027
+          },
+          {
+            "fpr": 0.0,
+            "tpr": 0.0346
+          },
+          {
+            "fpr": 0.0,
+            "tpr": 0.0402
+          },
+          {
+            "fpr": 0.0,
+            "tpr": 0.0499
+          },
+          {
+            "fpr": 0.0,
+            "tpr": 0.0671
+          },
+          {
+            "fpr": 0.0,
+            "tpr": 0.1055
+          },
+          {
+            "fpr": 0.0003,
+            "tpr": 0.2174
+          },
+          {
+            "fpr": 0.0008,
+            "tpr": 0.4016
+          },
+          {
+            "fpr": 0.0014,
+            "tpr": 0.5903
+          },
+          {
+            "fpr": 0.0019,
+            "tpr": 0.8531
+          },
+          {
+            "fpr": 0.0026,
+            "tpr": 0.9922
+          },
+          {
+            "fpr": 0.0034,
+            "tpr": 0.9959
+          },
+          {
+            "fpr": 0.0044,
+            "tpr": 0.9971
+          },
+          {
+            "fpr": 0.0061,
+            "tpr": 0.998
+          },
+          {
+            "fpr": 0.0097,
+            "tpr": 0.9986
+          },
+          {
+            "fpr": 0.0131,
             "tpr": 0.9999
           }
         ]
       },
       "subgroup_non_monthly_roc_auc": 0.9992,
       "feature_importance": {
-        "age": 0.1137,
-        "gender_encoded": 0.0302,
-        "tenure": 0.0085,
-        "usage_frequency": 0.0018,
-        "support_calls": 0.2519,
-        "payment_delay": 0.1244,
+        "age": 0.1213,
+        "gender_encoded": 0.0274,
+        "tenure": 0.0088,
+        "usage_frequency": 0.0015,
+        "support_calls": 0.2502,
+        "payment_delay": 0.1223,
         "subscription_type_encoded": 0.0006,
-        "contract_length_encoded": 0.1421,
-        "total_spend": 0.1911,
-        "last_interaction": 0.0293,
-        "support_calls_per_tenure": 0.074,
-        "spend_per_tenure": 0.0274,
-        "delay_ratio": 0.005
+        "contract_length_encoded": 0.1344,
+        "total_spend": 0.1874,
+        "last_interaction": 0.0319,
+        "support_calls_per_tenure": 0.0801,
+        "spend_per_tenure": 0.0294,
+        "delay_ratio": 0.0049
       },
       "model_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\data\\models\\random_forest.joblib"
     },
     "XGBoost": {
       "params": {
-        "max_depth": 6,
-        "n_estimators": 120
+        "n_estimators": 140,
+        "max_depth": 5,
+        "learning_rate": 0.0886,
+        "subsample": 0.8367
       },
-      "train_duration_sec": 1.25,
+      "train_duration_sec": 1.57,
       "tuning_history": {
-        "grid_scores": [
-          0.9977,
-          0.9986,
-          0.9986,
-          0.9989
+        "best_roc_auc": 0.999,
+        "best_params": {
+          "n_estimators": 140,
+          "max_depth": 5,
+          "learning_rate": 0.07082645386849487,
+          "subsample": 0.8366775698358199,
+          "colsample_bytree": 0.7462136138813817
+        },
+        "trials_count": 12,
+        "trials_history": [
+          {
+            "trial_id": 0,
+            "value": 0.9989,
+            "params": {
+              "n_estimators": 100,
+              "max_depth": 8,
+              "learning_rate": 0.08939430644184299,
+              "subsample": 0.8496646210492591,
+              "colsample_bytree": 0.7390046601106091
+            }
+          },
+          {
+            "trial_id": 1,
+            "value": 0.9985,
+            "params": {
+              "n_estimators": 80,
+              "max_depth": 4,
+              "learning_rate": 0.1035931504211269,
+              "subsample": 0.8502787529358021,
+              "colsample_bytree": 0.8770181444490113
+            }
+          },
+          {
+            "trial_id": 2,
+            "value": 0.9989,
+            "params": {
+              "n_estimators": 80,
+              "max_depth": 8,
+              "learning_rate": 0.09982425290843555,
+              "subsample": 0.753084777669569,
+              "colsample_bytree": 0.7454562418017752
+            }
+          },
+          {
+            "trial_id": 3,
+            "value": 0.998,
+            "params": {
+              "n_estimators": 80,
+              "max_depth": 5,
+              "learning_rate": 0.07119220403002743,
+              "subsample": 0.8079862546605289,
+              "colsample_bytree": 0.7728072850495105
+            }
+          },
+          {
+            "trial_id": 4,
+            "value": 0.9983,
+            "params": {
+              "n_estimators": 140,
+              "max_depth": 4,
+              "learning_rate": 0.055137670354863826,
+              "subsample": 0.7915904608234229,
+              "colsample_bytree": 0.814017496054259
+            }
+          },
+          {
+            "trial_id": 5,
+            "value": 0.9989,
+            "params": {
+              "n_estimators": 140,
+              "max_depth": 4,
+              "learning_rate": 0.07037398948922527,
+              "subsample": 0.8481036422155106,
+              "colsample_bytree": 0.7116126031799994
+            }
+          },
+          {
+            "trial_id": 6,
+            "value": 0.9978,
+            "params": {
+              "n_estimators": 140,
+              "max_depth": 4,
+              "learning_rate": 0.04296328585098912,
+              "subsample": 0.9372213843133332,
+              "colsample_bytree": 0.9414080082686398
+            }
+          },
+          {
+            "trial_id": 7,
+            "value": 0.9987,
+            "params": {
+              "n_estimators": 160,
+              "max_depth": 5,
+              "learning_rate": 0.04453089592981038,
+              "subsample": 0.8710582566280392,
+              "colsample_bytree": 0.8100381234349003
+            }
+          },
+          {
+            "trial_id": 8,
+            "value": 0.9961,
+            "params": {
+              "n_estimators": 80,
+              "max_depth": 6,
+              "learning_rate": 0.04154009502503007,
+              "subsample": 0.9273301005196954,
+              "colsample_bytree": 0.7646949954000042
+            }
+          },
+          {
+            "trial_id": 9,
+            "value": 0.999,
+            "params": {
+              "n_estimators": 140,
+              "max_depth": 5,
+              "learning_rate": 0.07082645386849487,
+              "subsample": 0.8366775698358199,
+              "colsample_bytree": 0.7462136138813817
+            }
+          },
+          {
+            "trial_id": 10,
+            "value": 0.9989,
+            "params": {
+              "n_estimators": 120,
+              "max_depth": 7,
+              "learning_rate": 0.05704670718341765,
+              "subsample": 0.7044904689037049,
+              "colsample_bytree": 0.8629666376945446
+            }
+          },
+          {
+            "trial_id": 11,
+            "value": 0.999,
+            "params": {
+              "n_estimators": 120,
+              "max_depth": 8,
+              "learning_rate": 0.11686540625090172,
+              "subsample": 0.7485801798345854,
+              "colsample_bytree": 0.7018946261721482
+            }
+          }
         ]
       },
       "cv_5fold": {
         "roc_auc_mean": 0.9989,
-        "roc_auc_std": 0.0004,
-        "f1_mean": 0.9974,
-        "f1_std": 0.0002
+        "roc_auc_std": 0.0005,
+        "f1_mean": 0.9981,
+        "f1_std": 0.0003
       },
       "validation": {
-        "accuracy": 0.9984,
+        "accuracy": 0.9989,
         "precision": 0.9984,
-        "recall": 0.9989,
-        "f1_score": 0.9986,
-        "roc_auc": 0.9991,
-        "pr_auc": 0.9986,
+        "recall": 0.9996,
+        "f1_score": 0.999,
+        "roc_auc": 0.999,
+        "pr_auc": 0.9984,
         "latency_per_sample_ms": 0.0003,
         "confusion_matrix": [
           [
@@ -526,8 +741,8 @@
             61
           ],
           [
-            42,
-            37600
+            14,
+            37628
           ]
         ],
         "roc_curve": [
@@ -536,103 +751,103 @@
             "tpr": 0.0
           },
           {
-            "fpr": 0.0001,
-            "tpr": 0.0677
-          },
-          {
             "fpr": 0.0003,
-            "tpr": 0.1538
+            "tpr": 0.0866
           },
           {
             "fpr": 0.0004,
-            "tpr": 0.2293
-          },
-          {
-            "fpr": 0.0005,
-            "tpr": 0.2983
+            "tpr": 0.1666
           },
           {
             "fpr": 0.0006,
-            "tpr": 0.364
+            "tpr": 0.2412
+          },
+          {
+            "fpr": 0.0006,
+            "tpr": 0.3046
+          },
+          {
+            "fpr": 0.0007,
+            "tpr": 0.3625
           },
           {
             "fpr": 0.0008,
-            "tpr": 0.4268
+            "tpr": 0.4189
           },
           {
-            "fpr": 0.0009,
-            "tpr": 0.4875
+            "fpr": 0.0008,
+            "tpr": 0.4701
           },
           {
-            "fpr": 0.0009,
-            "tpr": 0.5455
+            "fpr": 0.0008,
+            "tpr": 0.5206
           },
           {
             "fpr": 0.001,
-            "tpr": 0.6028
+            "tpr": 0.5691
           },
           {
             "fpr": 0.0011,
-            "tpr": 0.663
+            "tpr": 0.6207
           },
           {
             "fpr": 0.0012,
-            "tpr": 0.7268
+            "tpr": 0.6748
           },
           {
-            "fpr": 0.0015,
-            "tpr": 0.8355
+            "fpr": 0.0014,
+            "tpr": 0.7389
           },
           {
-            "fpr": 0.0501,
+            "fpr": 0.0016,
+            "tpr": 0.8322
+          },
+          {
+            "fpr": 0.0021,
+            "tpr": 0.9661
+          },
+          {
+            "fpr": 0.0656,
             "tpr": 1.0
           },
           {
-            "fpr": 0.1665,
+            "fpr": 0.1949,
             "tpr": 1.0
           },
           {
-            "fpr": 0.2704,
+            "fpr": 0.3007,
             "tpr": 1.0
           },
           {
-            "fpr": 0.3734,
+            "fpr": 0.4266,
             "tpr": 1.0
           },
           {
-            "fpr": 0.4953,
+            "fpr": 0.6207,
             "tpr": 1.0
           },
           {
-            "fpr": 0.6345,
-            "tpr": 1.0
-          },
-          {
-            "fpr": 0.8116,
-            "tpr": 1.0
-          },
-          {
-            "fpr": 1.0,
+            "fpr": 0.9693,
             "tpr": 1.0
           }
         ]
       },
       "test": {
-        "accuracy": 0.9983,
+        "accuracy": 0.9987,
         "precision": 0.9981,
-        "recall": 0.9989,
-        "f1_score": 0.9985,
-        "roc_auc": 0.999,
-        "pr_auc": 0.9986,
-        "latency_per_sample_ms": 0.0004,
+        "recall": 0.9996,
+        "f1_score": 0.9989,
+        "roc_auc": 0.9989,
+        "pr_auc": 0.9983,
+        "latency_per_sample_ms": 0.0003,
         "confusion_matrix": [
           [
             28619,
             70
           ],
           [
-            42,
-            37601
+            16,
+            37627
           ]
         ],
         "roc_curve": [
@@ -641,135 +856,135 @@
             "tpr": 0.0
           },
           {
-            "fpr": 0.0001,
-            "tpr": 0.0706
-          },
-          {
             "fpr": 0.0002,
-            "tpr": 0.1565
+            "tpr": 0.0866
           },
           {
             "fpr": 0.0003,
-            "tpr": 0.23
+            "tpr": 0.1654
           },
           {
             "fpr": 0.0004,
-            "tpr": 0.2978
+            "tpr": 0.2426
           },
           {
             "fpr": 0.0005,
-            "tpr": 0.3626
+            "tpr": 0.3079
+          },
+          {
+            "fpr": 0.0005,
+            "tpr": 0.3653
           },
           {
             "fpr": 0.0007,
-            "tpr": 0.4239
+            "tpr": 0.4181
           },
           {
             "fpr": 0.0008,
-            "tpr": 0.4839
+            "tpr": 0.4672
           },
           {
-            "fpr": 0.001,
-            "tpr": 0.5423
+            "fpr": 0.0009,
+            "tpr": 0.5172
           },
           {
             "fpr": 0.0011,
-            "tpr": 0.6002
+            "tpr": 0.5674
           },
           {
             "fpr": 0.0014,
-            "tpr": 0.6581
+            "tpr": 0.6198
+          },
+          {
+            "fpr": 0.0015,
+            "tpr": 0.6756
           },
           {
             "fpr": 0.0017,
-            "tpr": 0.7199
+            "tpr": 0.7396
           },
           {
-            "fpr": 0.002,
-            "tpr": 0.8208
+            "fpr": 0.0019,
+            "tpr": 0.8226
           },
           {
-            "fpr": 0.0419,
+            "fpr": 0.0023,
+            "tpr": 0.9624
+          },
+          {
+            "fpr": 0.0673,
             "tpr": 1.0
           },
           {
-            "fpr": 0.1651,
+            "fpr": 0.1956,
             "tpr": 1.0
           },
           {
-            "fpr": 0.2713,
+            "fpr": 0.3086,
             "tpr": 1.0
           },
           {
-            "fpr": 0.3699,
+            "fpr": 0.4376,
             "tpr": 1.0
           },
           {
-            "fpr": 0.4973,
+            "fpr": 0.6417,
             "tpr": 1.0
           },
           {
-            "fpr": 0.6337,
-            "tpr": 1.0
-          },
-          {
-            "fpr": 0.8114,
-            "tpr": 1.0
-          },
-          {
-            "fpr": 0.9746,
+            "fpr": 0.9705,
             "tpr": 1.0
           }
         ]
       },
       "subgroup_non_monthly_roc_auc": 0.9992,
       "feature_importance": {
-        "age": 0.0702,
-        "gender_encoded": 0.1406,
-        "tenure": 0.0188,
-        "usage_frequency": 0.0031,
-        "support_calls": 0.2485,
-        "payment_delay": 0.1227,
-        "subscription_type_encoded": 0.0089,
-        "contract_length_encoded": 0.1531,
-        "total_spend": 0.1175,
-        "last_interaction": 0.0292,
-        "support_calls_per_tenure": 0.055,
-        "spend_per_tenure": 0.0285,
-        "delay_ratio": 0.004
+        "age": 0.0639,
+        "gender_encoded": 0.1125,
+        "tenure": 0.0142,
+        "usage_frequency": 0.0074,
+        "support_calls": 0.2728,
+        "payment_delay": 0.1245,
+        "subscription_type_encoded": 0.0155,
+        "contract_length_encoded": 0.1634,
+        "total_spend": 0.1851,
+        "last_interaction": 0.0366,
+        "support_calls_per_tenure": 0.0032,
+        "spend_per_tenure": 0.0006,
+        "delay_ratio": 0.0005
       },
       "model_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\data\\models\\xgboost.joblib"
     },
     "LightGBM": {
       "params": {
-        "n_estimators": 120,
-        "max_depth": 6,
-        "num_leaves": 31
+        "n_estimators": 100,
+        "max_depth": 5,
+        "num_leaves": 24
       },
-      "train_duration_sec": 1.01,
+      "train_duration_sec": 0.8,
       "tuning_history": {},
       "cv_5fold": {
-        "roc_auc_mean": 0.9989,
-        "roc_auc_std": 0.0004,
-        "f1_mean": 0.9983,
-        "f1_std": 0.0003
+        "roc_auc_mean": 0.9988,
+        "roc_auc_std": 0.0003,
+        "f1_mean": 0.9977,
+        "f1_std": 0.0002
       },
       "validation": {
-        "accuracy": 0.9986,
+        "accuracy": 0.9975,
         "precision": 0.9984,
-        "recall": 0.9991,
-        "f1_score": 0.9988,
-        "roc_auc": 0.9991,
-        "pr_auc": 0.9988,
-        "latency_per_sample_ms": 0.0008,
+        "recall": 0.9972,
+        "f1_score": 0.9978,
+        "roc_auc": 0.999,
+        "pr_auc": 0.9985,
+        "latency_per_sample_ms": 0.0005,
         "confusion_matrix": [
           [
             28629,
             61
           ],
           [
-            33,
-            37609
+            106,
+            37536
           ]
         ],
         "roc_curve": [
@@ -778,103 +993,103 @@
             "tpr": 0.0
           },
           {
-            "fpr": 0.0001,
-            "tpr": 0.0836
+            "fpr": 0.0002,
+            "tpr": 0.0525
           },
           {
             "fpr": 0.0002,
-            "tpr": 0.162
+            "tpr": 0.1113
           },
           {
-            "fpr": 0.0003,
-            "tpr": 0.2362
+            "fpr": 0.0002,
+            "tpr": 0.1652
           },
           {
-            "fpr": 0.0004,
-            "tpr": 0.3217
+            "fpr": 0.0005,
+            "tpr": 0.2166
+          },
+          {
+            "fpr": 0.0005,
+            "tpr": 0.2658
+          },
+          {
+            "fpr": 0.0006,
+            "tpr": 0.3163
           },
           {
             "fpr": 0.0007,
-            "tpr": 0.4032
+            "tpr": 0.366
           },
           {
-            "fpr": 0.0009,
-            "tpr": 0.4781
+            "fpr": 0.0008,
+            "tpr": 0.4156
+          },
+          {
+            "fpr": 0.0008,
+            "tpr": 0.4682
           },
           {
             "fpr": 0.001,
-            "tpr": 0.5461
+            "tpr": 0.5213
           },
           {
             "fpr": 0.0011,
-            "tpr": 0.6184
+            "tpr": 0.5712
           },
           {
-            "fpr": 0.0013,
-            "tpr": 0.6902
+            "fpr": 0.0012,
+            "tpr": 0.6234
+          },
+          {
+            "fpr": 0.0012,
+            "tpr": 0.6775
+          },
+          {
+            "fpr": 0.0014,
+            "tpr": 0.7302
           },
           {
             "fpr": 0.0015,
-            "tpr": 0.7616
+            "tpr": 0.7858
           },
           {
             "fpr": 0.0016,
-            "tpr": 0.8181
-          },
-          {
-            "fpr": 0.0017,
-            "tpr": 0.8672
+            "tpr": 0.8429
           },
           {
             "fpr": 0.0018,
-            "tpr": 0.9139
+            "tpr": 0.9022
           },
           {
             "fpr": 0.002,
-            "tpr": 0.972
+            "tpr": 0.9507
           },
           {
-            "fpr": 0.0105,
-            "tpr": 1.0
+            "fpr": 0.0096,
+            "tpr": 0.9991
           },
           {
-            "fpr": 0.1096,
-            "tpr": 1.0
-          },
-          {
-            "fpr": 0.2633,
-            "tpr": 1.0
-          },
-          {
-            "fpr": 0.4364,
-            "tpr": 1.0
-          },
-          {
-            "fpr": 0.6541,
-            "tpr": 1.0
-          },
-          {
-            "fpr": 0.9654,
+            "fpr": 0.8585,
             "tpr": 1.0
           }
         ]
       },
       "test": {
-        "accuracy": 0.9985,
+        "accuracy": 0.9974,
         "precision": 0.9981,
-        "recall": 0.9992,
-        "f1_score": 0.9987,
-        "roc_auc": 0.999,
-        "pr_auc": 0.9984,
-        "latency_per_sample_ms": 0.0009,
+        "recall": 0.9973,
+        "f1_score": 0.9977,
+        "roc_auc": 0.9988,
+        "pr_auc": 0.9981,
+        "latency_per_sample_ms": 0.0006,
         "confusion_matrix": [
           [
             28619,
             70
           ],
           [
-            29,
-            37614
+            102,
+            37541
           ]
         ],
         "roc_curve": [
@@ -883,102 +1098,102 @@
             "tpr": 0.0
           },
           {
-            "fpr": 0.0002,
-            "tpr": 0.0885
+            "fpr": 0.0003,
+            "tpr": 0.0595
           },
           {
             "fpr": 0.0003,
-            "tpr": 0.1615
-          },
-          {
-            "fpr": 0.0003,
-            "tpr": 0.2378
+            "tpr": 0.1217
           },
           {
             "fpr": 0.0005,
-            "tpr": 0.326
+            "tpr": 0.1723
+          },
+          {
+            "fpr": 0.0005,
+            "tpr": 0.2226
+          },
+          {
+            "fpr": 0.0006,
+            "tpr": 0.2686
           },
           {
             "fpr": 0.0007,
-            "tpr": 0.3995
+            "tpr": 0.3225
+          },
+          {
+            "fpr": 0.0007,
+            "tpr": 0.3704
+          },
+          {
+            "fpr": 0.0008,
+            "tpr": 0.4196
           },
           {
             "fpr": 0.0009,
-            "tpr": 0.4754
+            "tpr": 0.4749
           },
           {
             "fpr": 0.001,
-            "tpr": 0.5522
+            "tpr": 0.5238
           },
           {
             "fpr": 0.0012,
-            "tpr": 0.6267
+            "tpr": 0.5777
           },
           {
             "fpr": 0.0014,
-            "tpr": 0.6966
+            "tpr": 0.6248
           },
           {
-            "fpr": 0.0017,
-            "tpr": 0.7689
+            "fpr": 0.0016,
+            "tpr": 0.6827
           },
           {
-            "fpr": 0.0019,
-            "tpr": 0.825
+            "fpr": 0.0016,
+            "tpr": 0.7333
+          },
+          {
+            "fpr": 0.0018,
+            "tpr": 0.7856
+          },
+          {
+            "fpr": 0.002,
+            "tpr": 0.8454
+          },
+          {
+            "fpr": 0.0021,
+            "tpr": 0.8995
           },
           {
             "fpr": 0.0022,
-            "tpr": 0.8746
+            "tpr": 0.9483
           },
           {
-            "fpr": 0.0022,
-            "tpr": 0.9205
+            "fpr": 0.0071,
+            "tpr": 0.9994
           },
           {
-            "fpr": 0.0023,
-            "tpr": 0.9789
-          },
-          {
-            "fpr": 0.0192,
-            "tpr": 1.0
-          },
-          {
-            "fpr": 0.1414,
-            "tpr": 1.0
-          },
-          {
-            "fpr": 0.3048,
-            "tpr": 1.0
-          },
-          {
-            "fpr": 0.4688,
-            "tpr": 1.0
-          },
-          {
-            "fpr": 0.6755,
-            "tpr": 1.0
-          },
-          {
-            "fpr": 0.9679,
+            "fpr": 0.7545,
             "tpr": 1.0
           }
         ]
       },
-      "subgroup_non_monthly_roc_auc": 0.9992,
+      "subgroup_non_monthly_roc_auc": 0.9991,
       "feature_importance": {
-        "age": 613.0,
-        "gender_encoded": 127.0,
-        "tenure": 317.0,
-        "usage_frequency": 225.0,
-        "support_calls": 447.0,
-        "payment_delay": 323.0,
-        "subscription_type_encoded": 110.0,
-        "contract_length_encoded": 263.0,
-        "total_spend": 404.0,
-        "last_interaction": 203.0,
-        "support_calls_per_tenure": 124.0,
-        "spend_per_tenure": 209.0,
-        "delay_ratio": 235.0
+        "age": 0.1774,
+        "gender_encoded": 0.0326,
+        "tenure": 0.0578,
+        "usage_frequency": 0.0591,
+        "support_calls": 0.1365,
+        "payment_delay": 0.1022,
+        "subscription_type_encoded": 0.0252,
+        "contract_length_encoded": 0.0765,
+        "total_spend": 0.1274,
+        "last_interaction": 0.0465,
+        "support_calls_per_tenure": 0.0422,
+        "spend_per_tenure": 0.0443,
+        "delay_ratio": 0.0722
       },
       "model_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\data\\models\\lightgbm.joblib"
     }

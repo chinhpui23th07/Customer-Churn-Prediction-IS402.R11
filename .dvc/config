@@ -2,3 +2,5 @@
     remote = local_storage
 ['remote "local_storage"']
     url = ../.dvc_storage
+['remote "azure_storage"']
+    url = azure://churnguard-models/dvc

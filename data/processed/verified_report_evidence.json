@@ -1,0 +1,196 @@
+{
+  "student_info": {
+    "student_name": "Nguyễn Trọng Khôi",
+    "student_id": "23520783",
+    "instructor": "ThS. Hà Lê Hoài Trung",
+    "course": "IS402 - Điện toán Đám mây",
+    "evidence_file": "scripts/uit_report_content.py#L25-L32"
+  },
+  "codebase_line_cap": {
+    "total_source_files": 46,
+    "files_over_400_lines": 0,
+    "web_ui_line_counts": {
+      "src/web/app.js": 198,
+      "src/web/charts.js": 131,
+      "src/web/dashboard.py": 183,
+      "src/web/index.html": 181,
+      "src/web/style.css": 172
+    },
+    "all_web_files_under_200_lines": true
+  },
+  "raw_data": {
+    "train_csv_mb": 22.36,
+    "test_csv_mb": 3.13,
+    "total_raw_mb": 25.49,
+    "evidence_files": [
+      "data/raw/customer_churn_dataset-training-master.csv",
+      "data/raw/customer_churn_dataset-testing-master.csv"
+    ]
+  },
+  "processed_dataset": {
+    "unique_customers_total": 442211,
+    "train_rows": 309547,
+    "val_rows": 66332,
+    "test_rows": 66332,
+    "feature_count": 13,
+    "train_medians": {
+      "age": 39.0,
+      "tenure": 32.0,
+      "usage_frequency": 16.0,
+      "support_calls": 3.0,
+      "payment_delay": 13.0,
+      "total_spend": 660.44,
+      "last_interaction": 14.0
+    },
+    "churn_rate_overall": 0.567487,
+    "monthly_contract_churn_rate": 0.99839,
+    "evidence_file": "data/processed/metadata.json#L1-L49"
+  },
+  "feast_online_store": {
+    "offline_parquet_entities": 442211,
+    "online_sqlite_entities": 442211,
+    "matches_unique_customers": true,
+    "evidence_files": [
+      "data/feast_repo/churn_features.parquet",
+      "data/feast_repo/data/online_store.db"
+    ]
+  },
+  "inference_sqlite_wal_db": {
+    "logged_predictions_count": 973,
+    "evidence_file": "data/inference_logs.db"
+  },
+  "io_and_streaming_benchmarks": {
+    "csv_size_mb": 8.94,
+    "parquet_size_mb": 2.42,
+    "compression_ratio_vs_csv": 3.7,
+    "read_speedup_vs_csv": 14.41,
+    "parquet_read_throughput_mb_s": 111.77,
+    "in_memory_peak_ram_mb": 318.7,
+    "streaming_peak_ram_mb": 113.38,
+    "evidence_files": [
+      "data/processed/io_benchmark_results.json#L1-L28",
+      "data/processed/big_data_streaming_benchmark.json#L1-L16"
+    ]
+  },
+  "data_quality_contracts": {
+    "total_checks": 14,
+    "passed_checks": 14,
+    "success_rate": 100.0,
+    "evidence_file": "data/processed/data_quality_report.json#L137-L249"
+  },
+  "optuna_and_models": {
+    "champion_model": "XGBoost",
+    "xgb_trials": 12,
+    "rf_trials": 8,
+    "champion_joblib_params": {
+      "n_estimators": 140,
+      "max_depth": 5,
+      "learning_rate": 0.0886,
+      "subsample": 0.8367
+    },
+    "xgb_val_roc_auc": 0.999,
+    "xgb_test_roc_auc": 0.9989,
+    "xgb_test_f1": 0.9989,
+    "rf_val_roc_auc": 0.9991,
+    "rf_test_roc_auc": 0.9989,
+    "lgbm_val_roc_auc": 0.999,
+    "lgbm_test_roc_auc": 0.9988,
+    "lr_val_roc_auc": 0.9443,
+    "lr_test_roc_auc": 0.944,
+    "confusion_matrix_test": {
+      "true_negative": 28619,
+      "false_positive": 70,
+      "false_negative": 16,
+      "true_positive": 37627,
+      "true_negatives": 28619,
+      "false_positives": 70,
+      "false_negatives": 16,
+      "true_positives": 37627
+    },
+    "evidence_files": [
+      "data/models/tuning_history.json#L1-L233",
+      "data/models/evaluation_results.json#L1-L1201",
+      "data/models/champion_model.joblib",
+      "data/processed/error_analysis_report.json#L1-L39"
+    ]
+  },
+  "drift_monitoring": {
+    "reference_samples": 309547,
+    "current_samples": 923,
+    "bonferroni_alpha": 0.003846,
+    "drifted_features_count": 12,
+    "total_features": 13,
+    "drift_share": 0.9231,
+    "evidence_file": "data/processed/drift_metrics.json#L1-L129"
+  },
+  "region_latency_rtt_ms": {
+    "southeastasia": {
+      "min_ms": 26.19,
+      "avg_ms": 49.17
+    },
+    "eastasia": {
+      "min_ms": 38.34,
+      "avg_ms": 47.98
+    },
+    "japaneast": {
+      "min_ms": 89.18,
+      "avg_ms": 106.29
+    },
+    "westeurope": {
+      "min_ms": 197.43,
+      "avg_ms": 216.59
+    },
+    "eastus": {
+      "min_ms": 238.57,
+      "avg_ms": 255.6
+    }
+  },
+  "dual_track_rubric": {
+    "local_real_score": 3.35,
+    "target_cloud_score": 9.9,
+    "total_penalized_points": 6.65,
+    "local_rubric_scores": {
+      "R1.1_problem_class": 0.25,
+      "R1.2_data_type": 0.25,
+      "R1.3_scale_and_speed": 0.0,
+      "R1.4_cloud_models": 0.1,
+      "R2.1_storage_format": 0.1,
+      "R2.2_algorithms": 0.3,
+      "R2.3_cloud_services": 0.1,
+      "R3.1_io_speed": 0.1,
+      "R3.2_etl_pipeline": 0.1,
+      "R3.3_region_latency": 0.0,
+      "R3.4_feature_store": 0.15,
+      "R4.1_model_training": 0.55,
+      "R4.2_model_api": 0.35,
+      "R4.3_visualization": 0.45,
+      "R4.4_web_application": 0.15,
+      "R5.1_slide_presentation": 0.15,
+      "R5.2_word_report": 0.15,
+      "R5.3_presentation_demo": 0.0,
+      "R5.4_cloud_management_quotas": 0.1
+    },
+    "target_cloud_scores": {
+      "R1.1_problem_class": 0.25,
+      "R1.2_data_type": 0.25,
+      "R1.3_scale_and_speed": 0.75,
+      "R1.4_cloud_models": 0.25,
+      "R2.1_storage_format": 0.5,
+      "R2.2_algorithms": 0.5,
+      "R2.3_cloud_services": 0.5,
+      "R3.1_io_speed": 0.5,
+      "R3.2_etl_pipeline": 0.5,
+      "R3.3_region_latency": 0.5,
+      "R3.4_feature_store": 0.5,
+      "R4.1_model_training": 0.95,
+      "R4.2_model_api": 0.5,
+      "R4.3_visualization": 0.95,
+      "R4.4_web_application": 0.5,
+      "R5.1_slide_presentation": 0.5,
+      "R5.2_word_report": 0.5,
+      "R5.3_presentation_demo": 0.5,
+      "R5.4_cloud_management_quotas": 0.5
+    },
+    "evidence_file": "final_check_results.json#L1-L71"
+  }
+}

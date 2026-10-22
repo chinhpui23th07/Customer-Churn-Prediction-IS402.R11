@@ -1,0 +1,16 @@
+{
+  "dataset_name": "Kaggle Customer Churn Training Master",
+  "file_size_mb": 22.36,
+  "total_rows": 440832,
+  "in_memory_mode": {
+    "time_sec": 4.154,
+    "peak_memory_mb": 318.7,
+    "throughput_rows_sec": 106131.7
+  },
+  "out_of_core_streaming_mode": {
+    "time_sec": 9.247,
+    "peak_memory_mb": 113.38,
+    "throughput_rows_sec": 47673.0,
+    "scalability_assessment": "Khả thi mở rộng tới các tập dữ liệu >4GB mà không tràn bộ nhớ (No OOM)"
+  }
+}

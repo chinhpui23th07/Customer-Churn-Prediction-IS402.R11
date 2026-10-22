@@ -25,3 +25,7 @@ data/processed/*.parquet
 *.db
 *.sqlite
 *.log
+
+# Whitelist Feast Registry and Online Store DB for Docker serving
+!data/feast_repo/data/*.db
+

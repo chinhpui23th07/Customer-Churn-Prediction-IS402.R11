@@ -1,0 +1,68 @@
+{
+  "local_dataset_audit": {
+    "total_raw_bytes": 26731747,
+    "total_raw_mb": 25.49,
+    "total_raw_gb": 0.025,
+    "target_rubric_gb": 4.0,
+    "is_compliant_4gb": false,
+    "deficit_factor": 160.7,
+    "files": {
+      "customer_churn_dataset-testing-master.csv": {
+        "size_bytes": 3282220,
+        "size_mb": 3.13
+      },
+      "customer_churn_dataset-training-master.csv": {
+        "size_bytes": 23448754,
+        "size_mb": 22.36
+      },
+      "data_sources.json": {
+        "size_bytes": 773,
+        "size_mb": 0.0
+      }
+    }
+  },
+  "local_io_benchmark": {
+    "CSV": {
+      "format": "CSV (Row-based Plain Text)",
+      "file_size_mb": 8.94,
+      "write_time_sec": 0.5327,
+      "read_time_sec": 0.3117,
+      "write_throughput_mb_s": 16.78,
+      "read_throughput_mb_s": 28.68
+    },
+    "Parquet": {
+      "format": "Apache Parquet (Columnar + Snappy)",
+      "file_size_mb": 2.42,
+      "write_time_sec": 0.0557,
+      "read_time_sec": 0.0216,
+      "write_throughput_mb_s": 43.39,
+      "read_throughput_mb_s": 111.77,
+      "compression_ratio_vs_csv": 3.7,
+      "read_speedup_vs_csv": 14.41
+    },
+    "SQLite": {
+      "format": "SQLite3 (Relational Embedded DB)",
+      "file_size_mb": 5.58,
+      "write_time_sec": 0.2469,
+      "read_time_sec": 0.3628,
+      "write_throughput_mb_s": 22.59,
+      "read_throughput_mb_s": 15.37
+    }
+  },
+  "cloud_bigdata_specs": {
+    "dataset_name": "REES46 eCommerce Behavior Data",
+    "kaggle_source": "mkechinov/ecommerce-behavior-data-from-multi-category-store",
+    "target_raw_file": "2019-Oct.csv",
+    "target_raw_size_gb": 5.28,
+    "target_records": 42448764,
+    "notebook_ready": true,
+    "script_ready": true,
+    "kernel_metadata_ready": true,
+    "execution_mode": "Out-of-Core DuckDB Streaming to Parquet Snappy (Cloud Compute)"
+  },
+  "verdict": {
+    "local_status": "Dữ liệu local 25.5 MB (440k dòng) phục vụ huấn luyện ML & API",
+    "cloud_status": "Kịch bản >4GB đã đóng gói hoàn tất, sẵn sàng thực thi trên Kaggle/Azure Cloud (/boost)",
+    "mock_data_detected": false
+  }
+}

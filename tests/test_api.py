@@ -195,6 +195,16 @@ def test_models_summary():
     assert "Logistic_Regression" in data["models"]
 
 
+def test_models_tuning():
+    """Verify Optuna hyperparameter tuning history endpoint."""
+    response = client.get("/models/tuning")
+    assert response.status_code == 200
+    data = response.json()
+    assert "framework" in data
+    assert "xgboost_champion" in data
+    assert data["xgboost_champion"]["trials_count"] == 12
+
+
 def test_drift_status():
     """Verify Kolmogorov-Smirnov and Population Stability Index (PSI) drift monitoring."""
     response = client.get("/drift/status")
@@ -223,3 +233,19 @@ def test_trigger_retrain():
     data = response.json()
     assert data["status"] == "TRIGGERED"
     assert "triggered_at" in data
+
+
+def test_ui_endpoint():
+    """Verify Web UI static mount serves HTML."""
+    response = client.get("/ui/")
+    assert response.status_code == 200
+    assert "text/html" in response.headers.get("content-type", "")
+
+
+def test_reload_model_endpoint():
+    """Verify hot-reload endpoint responds with reload confirmation."""
+    response = client.post("/api/v1/reload_model", headers=AUTH_HEADERS)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] in ["RELOADED", "NOOP"]
+

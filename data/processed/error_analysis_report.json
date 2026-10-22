@@ -2,8 +2,25 @@
   "confusion_breakdown": {
     "true_negatives": 28619,
     "false_positives": 70,
-    "false_negatives": 42,
-    "true_positives": 37601
+    "false_negatives": 16,
+    "true_positives": 37627
+  },
+  "counts": {
+    "true_negative": 28619,
+    "false_positive": 70,
+    "false_negative": 16,
+    "true_positive": 37627,
+    "true_negatives": 28619,
+    "false_positives": 70,
+    "false_negatives": 16,
+    "true_positives": 37627
+  },
+  "metrics": {
+    "accuracy": 0.9987,
+    "precision": 0.9981,
+    "recall": 0.9996,
+    "f1_score": 0.9989,
+    "roc_auc": 0.9989
   },
   "false_positives_profile": {
     "count": 70,
@@ -13,10 +30,10 @@
     "risk_driver_note": "Khách hàng duy trì dịch vụ nhưng bị nhầm do số ngày trễ thanh toán hoặc cuộc gọi hỗ trợ tăng đột biến."
   },
   "false_negatives_profile": {
-    "count": 42,
-    "avg_support_calls": 2.07,
-    "avg_payment_delay": 10.81,
-    "avg_total_spend": 641.3,
+    "count": 16,
+    "avg_support_calls": 2.12,
+    "avg_payment_delay": 11.0,
+    "avg_total_spend": 498.45,
     "risk_driver_note": "Khách hàng rời bỏ nhưng có ít cuộc gọi hỗ trợ, rời bỏ âm thầm mà không khiếu nại."
   }
 }

@@ -39,7 +39,7 @@ style: |
 
 - **Trường:** Đại học Công nghệ Thông tin - ĐHQG-HCM (UIT)
 - **Khoa:** Hệ thống Thông tin
-- **Sinh viên thực hiện:** Nguyễn Trọng Khởi (MSSV: 2252xxxx)
+- **Sinh viên thực hiện:** Nguyễn Trọng Khôi (MSSV: 23520783)
 - **Kiến trúc:** MLOps Level 2 (Feast + MLflow + FastAPI + Google Stitch)
 
 ---

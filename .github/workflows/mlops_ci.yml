@@ -8,13 +8,13 @@ on:
 
 env:
   PYTHON_VERSION: "3.11"
-  API_KEY_SECRET: "mlops-churn-secret-2026"
+  API_KEY_SECRET: ${{ secrets.API_KEY_SECRET || 'mlops-churn-secret-2026' }}
 
 jobs:
   quality-gate-and-test:
     name: CI Quality Gate, Line Cap & Test Suite
-    # Hỗ trợ cấu hình Self-hosted Runner theo Đề bài 11 hoặc GitHub Cloud Runner
-    runs-on: ubuntu-latest
+    # Cấu hình Self-hosted Runner theo đúng đặc tả Đề tài 11 (Tutorial PDF 55 AI Vietnam)
+    runs-on: [self-hosted, linux]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -41,11 +41,12 @@ jobs:
 
       - name: Anti-Mockup & Truth Integrity Scan (Invariant 13)
         run: |
-          git grep -iE "TODO: mock|fakeData|dummyData|simulateTx" -- src/ || echo "Codebase is verified clean."
+          ! git grep -iE "TODO: mock|fakeData|dummyData|simulateTx" -- src/
 
       - name: Verify DVC Pipeline Integrity
         run: |
-          dvc status || echo "DVC metadata validated."
+          dvc dag
+          dvc status
 
       - name: Execute Pytest Suite (100% Passed)
         run: |
@@ -54,7 +55,7 @@ jobs:
   docker-build:
     name: Build & Smoke Test Docker Image
     needs: quality-gate-and-test
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -69,7 +70,7 @@ jobs:
   cd-deploy:
     name: CD Deployment & Automated Health Verification
     needs: [quality-gate-and-test, docker-build]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     steps:
       - name: Checkout Repository
@@ -77,11 +78,13 @@ jobs:
 
       - name: Validate Docker Compose Orchestration
         run: |
-          docker compose config || echo "Docker Compose orchestration schema validated."
+          docker compose config
 
-      - name: Simulated Zero-Downtime Blue-Green Deployment
+      - name: Smoke Test Serving Container
         run: |
-          echo "[*] Triển khai phiên bản mô hình mới lên môi trường Staging/Production..."
-          echo "[*] Kích hoạt container ChurnGuard Serving API trên cổng 8000..."
-          echo "[+] Xác nhận trạng thái Healthy: curl -s http://localhost:8000/health"
-          echo "[+] CD Pipeline hoàn tất thành công!"
+          docker build -t churnguard-serving:test .
+          docker run -d --name test-serving -p 8000:8000 churnguard-serving:test
+          sleep 5
+          curl --fail http://localhost:8000/health || (docker logs test-serving && exit 1)
+          docker stop test-serving && docker rm test-serving
+          echo "[+] Verified Serving Container health check passed successfully."

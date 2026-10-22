@@ -57,12 +57,18 @@ def analyze_ab_test_performance() -> Dict[str, Any]:
     if not os.path.exists(INFERENCE_DB):
         return {"status": "NO_DATA", "message": "Chưa có dữ liệu suy luận trong cơ sở dữ liệu."}
 
-    conn = sqlite3.connect(INFERENCE_DB)
-    cur = conn.cursor()
-
-    cur.execute("SELECT churn_prediction, churn_probability, model_version FROM inference_logs")
-    rows = cur.fetchall()
-    conn.close()
+    conn = None
+    try:
+        conn = sqlite3.connect(str(INFERENCE_DB), timeout=10.0)
+        cur = conn.cursor()
+        cur.execute("PRAGMA journal_mode=WAL;")
+        cur.execute("PRAGMA synchronous=NORMAL;")
+        cur.execute("PRAGMA busy_timeout=5000;")
+        cur.execute("SELECT churn_prediction, churn_probability, model_version FROM inference_logs")
+        rows = cur.fetchall()
+    finally:
+        if conn is not None:
+            conn.close()
 
     if not rows:
         return {"status": "NO_DATA", "message": "Bảng inference_logs đang rỗng."}
@@ -89,9 +95,15 @@ def analyze_ab_test_performance() -> Dict[str, Any]:
     p_value_prob = None
     t_stat_prob = None
     if n_champ >= 5 and n_chal >= 5:
-        t_res = stats.ttest_ind(champ_probs, chal_probs, equal_var=False)
-        t_stat_prob = round(float(t_res.statistic), 4)
-        p_value_prob = round(float(t_res.pvalue), 4)
+        std_champ = float(np.std(champ_probs))
+        std_chal = float(np.std(chal_probs))
+        if std_champ > 1e-6 or std_chal > 1e-6:
+            t_res = stats.ttest_ind(champ_probs, chal_probs, equal_var=False)
+            t_stat_prob = round(float(t_res.statistic), 4) if np.isfinite(t_res.statistic) else None
+            p_value_prob = round(float(t_res.pvalue), 4) if np.isfinite(t_res.pvalue) else None
+        else:
+            t_stat_prob = 0.0
+            p_value_prob = 1.0
 
     stat_sig = bool(p_value_prob is not None and p_value_prob < 0.05)
 

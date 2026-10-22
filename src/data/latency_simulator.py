@@ -19,59 +19,61 @@ OUTPUT_LATENCY = os.path.join(BASE_DIR, "data", "processed", "region_latency_res
 
 CLOUD_REGIONS = [
     {
-        "region_code": "ap-southeast-1",
+        "region_code": "southeastasia",
         "region_name": "Đông Nam Á (Singapore / Azure Southeast Asia)",
-        "endpoint": "dynamodb.ap-southeast-1.amazonaws.com",
+        "endpoint": "southeastasia.api.cognitive.microsoft.com",
         "distance_km": 1400
     },
     {
-        "region_code": "ap-east-1",
+        "region_code": "eastasia",
         "region_name": "Đông Á (Hong Kong / Azure East Asia)",
-        "endpoint": "dynamodb.ap-east-1.amazonaws.com",
+        "endpoint": "eastasia.api.cognitive.microsoft.com",
         "distance_km": 1500
     },
     {
-        "region_code": "ap-northeast-1",
+        "region_code": "japaneast",
         "region_name": "Nhật Bản (Tokyo / Azure Japan East)",
-        "endpoint": "dynamodb.ap-northeast-1.amazonaws.com",
+        "endpoint": "japaneast.api.cognitive.microsoft.com",
         "distance_km": 4300
     },
     {
-        "region_code": "eu-central-1",
-        "region_name": "Châu Âu (Frankfurt / Azure Germany West Central)",
-        "endpoint": "dynamodb.eu-central-1.amazonaws.com",
+        "region_code": "westeurope",
+        "region_name": "Tây Âu (Netherlands / Azure West Europe)",
+        "endpoint": "westeurope.api.cognitive.microsoft.com",
         "distance_km": 9400
     },
     {
-        "region_code": "us-east-1",
+        "region_code": "eastus",
         "region_name": "Bắc Mỹ (N. Virginia / Azure East US)",
-        "endpoint": "dynamodb.us-east-1.amazonaws.com",
+        "endpoint": "eastus.api.cognitive.microsoft.com",
         "distance_km": 14200
     }
 ]
 
 
-def measure_tcp_latency(host: str, port: int = 443, num_pings: int = 4) -> dict:
+def measure_tcp_latency(host: str, port: int = 443, num_pings: int = 4, timeout: float = 2.0) -> dict:
     """Đo độ trễ TCP handshake thực tế tới cloud endpoint mà không có giá trị nhân tạo."""
     rtts = []
     for _ in range(num_pings):
         t0 = time.perf_counter()
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(5.0)
+            s.settimeout(timeout)
             s.connect((host, port))
             rtt_ms = (time.perf_counter() - t0) * 1000.0
             rtts.append(rtt_ms)
-            s.close()
-        except socket.error:
+        except (socket.error, OSError):
             # Đo qua HTTP request thực tế nếu TCP connect gặp vấn đề
             try:
                 t0_http = time.perf_counter()
-                urllib.request.urlopen(f"https://{host}", timeout=5.0)
+                with urllib.request.urlopen(f"https://{host}", timeout=timeout) as resp:
+                    _ = resp.status
                 http_rtt = (time.perf_counter() - t0_http) * 1000.0
                 rtts.append(http_rtt)
             except Exception:
                 pass
+        finally:
+            s.close()
         time.sleep(0.05)
 
     if not rtts:
@@ -110,8 +112,10 @@ def run_latency_benchmark():
             "distance_km": reg["distance_km"],
             "endpoint": reg["endpoint"],
             **metrics,
-            "sla_tier": "Tối ưu (<50ms)" if metrics["avg_ms"] < 50 else (
-                "Chấp nhận được (50-150ms)" if metrics["avg_ms"] < 150 else "Cần CDN/Edge Acceleration (>150ms)"
+            "sla_tier": (
+                "Tối ưu (<50ms)" if metrics["avg_ms"] is not None and metrics["avg_ms"] < 50 else (
+                    "Chấp nhận được (50-150ms)" if metrics["avg_ms"] is not None and metrics["avg_ms"] < 150 else "Cần CDN/Edge Acceleration (>150ms)"
+                )
             )
         }
 

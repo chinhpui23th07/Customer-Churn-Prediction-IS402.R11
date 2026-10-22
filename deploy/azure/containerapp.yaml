@@ -1,0 +1,71 @@
+# Azure Container Apps Specification Manifest
+# Project: ChurnGuard MLOps - UIT IS402 Cloud Computing (22520695)
+apiVersion: 2023-05-01
+type: Microsoft.App/containerApps
+location: southeastasia
+properties:
+  environmentId: /subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/rg-churnguard-mlops-sea/providers/Microsoft.App/managedEnvironments/env-churnguard-mlops
+  configuration:
+    activeRevisionsMode: Single
+    ingress:
+      external: true
+      targetPort: 8000
+      transport: auto
+      allowInsecure: false
+      traffic:
+        - latestRevision: true
+          weight: 100
+    secrets:
+      - name: api-key-secret
+        value: "${API_KEY_SECRET}"
+      - name: redis-conn-str
+        value: "${AZURE_REDIS_CONNECTION_STRING}"
+      - name: redis-password
+        value: "${AZURE_REDIS_PASSWORD}"
+  template:
+    containers:
+      - name: churnguard-serving
+        image: ${acrName}.azurecr.io/churnguard-mlops:latest
+        resources:
+          cpu: 1.0
+          memory: 2.0Gi
+        env:
+          - name: API_KEY
+            secretRef: api-key-secret
+          - name: MLFLOW_TRACKING_URI
+            value: "sqlite:////app/data/mlflow.db"
+          - name: AZURE_STORAGE_CONTAINER
+            value: "churnguard-datasets"
+          - name: REDIS_HOST
+            value: "${AZURE_REDIS_HOST}"
+          - name: REDIS_PORT
+            value: "6380"
+          - name: REDIS_SSL
+            value: "true"
+          - name: AZURE_REDIS_PASSWORD
+            secretRef: redis-password
+          - name: USE_MLFLOW_REGISTRY
+            value: "false"
+        probes:
+          - type: Liveness
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            failureThreshold: 3
+          - type: Readiness
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 2
+    scale:
+      minReplicas: 0
+      maxReplicas: 5
+      rules:
+        - name: http-scaling-rule
+          http:
+            metadata:
+              concurrentRequests: "50"

@@ -36,33 +36,52 @@ FEATURE_COLS = [
 ]
 
 
-def calculate_psi(expected: np.ndarray, actual: np.ndarray, num_buckets: int = 10) -> float:
+def calculate_psi(
+    expected: np.ndarray,
+    actual: np.ndarray,
+    num_buckets: int = 10,
+    buckets: int = None
+) -> float:
     """
     Tính chỉ số Population Stability Index (PSI) chuẩn khoa học.
-    Sử dụng phân vị của phân phối cơ sở (Expected - Training baseline) để chia bin,
-    kết hợp mở rộng vô cực và Laplace smoothing để tránh chia cho 0 và log(0).
+    Sử dụng trung điểm cho biến rời rạc (binary/ternary) và phân vị nội tại cho biến liên tục,
+    kết hợp ngưỡng kẹp epsilon = 1e-4 theo Rabanser et al. (2019) và Katalay et al. (2025, Eq. 4).
     """
+    if buckets is not None:
+        num_buckets = buckets
+
+    expected = np.asarray(expected, dtype=float)
+    actual = np.asarray(actual, dtype=float)
     expected = expected[~np.isnan(expected)]
     actual = actual[~np.isnan(actual)]
     if len(expected) == 0 or len(actual) == 0:
         return 0.0
 
-    percentiles = np.linspace(0, 100, num_buckets + 1)
-    breakpoints = np.percentile(expected, percentiles)
-    breakpoints = np.unique(breakpoints)
-    if len(breakpoints) < 2:
-        return 0.0
-
-    # Mở rộng biên để bao trùm mọi giá trị ngoại lai của actual
-    breakpoints[0] = -np.inf
-    breakpoints[-1] = np.inf
+    unique_vals = np.unique(expected)
+    if len(unique_vals) <= 1:
+        if np.allclose(actual, unique_vals[0]):
+            return 0.0
+        v = float(unique_vals[0])
+        breakpoints = np.array([-np.inf, v - 1e-6, v + 1e-6, np.inf])
+    elif 2 <= len(unique_vals) <= num_buckets:
+        midpoints = (unique_vals[:-1] + unique_vals[1:]) / 2.0
+        breakpoints = np.concatenate(([-np.inf], midpoints, [np.inf]))
+    else:
+        percentiles = np.linspace(0, 100, num_buckets + 1)
+        raw_bp = np.unique(np.percentile(expected, percentiles))
+        interior = raw_bp[1:-1]
+        if len(interior) == 0:
+            interior = np.array([(raw_bp[0] + raw_bp[-1]) / 2.0])
+        breakpoints = np.concatenate(([-np.inf], interior, [np.inf]))
 
     exp_counts, _ = np.histogram(expected, bins=breakpoints)
     act_counts, _ = np.histogram(actual, bins=breakpoints)
 
-    k = len(breakpoints) - 1
-    exp_pct = (exp_counts + 1) / (len(expected) + k)
-    act_pct = (act_counts + 1) / (len(actual) + k)
+    exp_pct = exp_counts / len(expected)
+    act_pct = act_counts / len(actual)
+
+    exp_pct = np.where(exp_pct == 0, 1e-4, exp_pct)
+    act_pct = np.where(act_pct == 0, 1e-4, act_pct)
 
     psi_val = np.sum((act_pct - exp_pct) * np.log(act_pct / exp_pct))
     return float(np.round(psi_val, 4))
@@ -73,6 +92,7 @@ def run_drift_analysis(current_df: pd.DataFrame = None, p_val_threshold: float =
     """
     Thực hiện phân tích Data Drift giữa dữ liệu huấn luyện cơ sở (Train baseline)
     và dữ liệu suy luận Production (Inference logs từ SQLite hoặc Production test stream).
+    Áp dụng hiệu chỉnh đa giả thuyết Bonferroni (alpha / M) theo Rabanser et al. (2019).
     """
     import sqlite3
     ref_df = pd.read_parquet(REF_PARQUET)
@@ -100,11 +120,33 @@ def run_drift_analysis(current_df: pd.DataFrame = None, p_val_threshold: float =
         current_df = current_df.copy()
         current_df["payment_delay"] = current_df["payment_delay"] * 2.2 + 5.0
         current_df["support_calls"] = current_df["support_calls"] * 2.0 + 3.0
+        if "total_spend" in current_df.columns:
+            current_df["total_spend"] = current_df["total_spend"] * 1.35 + 120.0
+        if "usage_frequency" in current_df.columns:
+            current_df["usage_frequency"] = np.maximum(0.0, current_df["usage_frequency"] * 0.6 - 2.0)
+        safe_tenure = np.maximum(current_df["tenure"], 1.0) if "tenure" in current_df.columns else 1.0
+        if "spend_per_tenure" in current_df.columns and "total_spend" in current_df.columns:
+            current_df["spend_per_tenure"] = current_df["total_spend"] / safe_tenure
+        if "support_calls_per_tenure" in current_df.columns:
+            current_df["support_calls_per_tenure"] = current_df["support_calls"] / safe_tenure
+        if "support_per_tenure" in current_df.columns:
+            current_df["support_per_tenure"] = current_df["support_calls"] / safe_tenure
+        if "usage_per_tenure" in current_df.columns and "usage_frequency" in current_df.columns:
+            current_df["usage_per_tenure"] = current_df["usage_frequency"] / safe_tenure
+        if "delay_ratio" in current_df.columns:
+            current_df["delay_ratio"] = current_df["payment_delay"] / (safe_tenure + 1.0)
+        if "risk_score_composite" in current_df.columns:
+            current_df["risk_score_composite"] = (
+                0.4 * current_df["support_calls"] + 0.4 * current_df["payment_delay"]
+            )
+
+    bonferroni_alpha = p_val_threshold / len(FEATURE_COLS) if len(FEATURE_COLS) > 0 else p_val_threshold
 
     drift_report = {
         "timestamp": pd.Timestamp.now().isoformat(),
         "reference_samples": len(ref_df),
         "current_samples": len(current_df),
+        "bonferroni_alpha": round(float(bonferroni_alpha), 6),
         "features": {},
         "drifted_features_count": 0,
         "total_features": len(FEATURE_COLS),
@@ -118,21 +160,24 @@ def run_drift_analysis(current_df: pd.DataFrame = None, p_val_threshold: float =
             ref_vals = ref_df[col].dropna().values
             cur_vals = current_df[col].dropna().values
 
-            # Kolmogorov-Smirnov Test
+            # Kolmogorov-Smirnov Test với hiệu chỉnh Bonferroni
             ks_res = ks_2samp(ref_vals, cur_vals)
-            p_val = float(ks_res.pvalue)
+            ks_pval = float(ks_res.pvalue)
             stat = float(ks_res.statistic)
 
             # PSI Metric
             psi = calculate_psi(ref_vals, cur_vals)
 
-            is_drifted = (p_val < p_val_threshold) or (psi > 0.25)
+            ks_drift = ks_pval < bonferroni_alpha
+            is_drifted = ks_drift or (psi > 0.25)
             if is_drifted:
                 drifted_count += 1
 
             drift_report["features"][col] = {
                 "ks_statistic": round(stat, 4),
-                "p_value": round(p_val, 5),
+                "p_value": round(ks_pval, 5),
+                "bonferroni_alpha": round(float(bonferroni_alpha), 6),
+                "ks_drift": bool(ks_drift),
                 "psi_score": psi,
                 "drift_detected": bool(is_drifted),
                 "drift_level": "High" if psi > 0.25 else ("Moderate" if psi > 0.1 else "Stable")
@@ -141,8 +186,8 @@ def run_drift_analysis(current_df: pd.DataFrame = None, p_val_threshold: float =
     drift_report["drifted_features_count"] = drifted_count
     drift_share = drifted_count / len(FEATURE_COLS)
     drift_report["drift_share"] = round(drift_share, 4)
-    # Nếu trên 33% đặc trưng bị trôi dạt -> Cảnh báo Dataset Drift
-    drift_report["dataset_drift_detected"] = bool(drift_share > 0.33)
+    # Ngưỡng đồng nhất >= 30% đặc trưng bị trôi dạt -> Cảnh báo Dataset Drift
+    drift_report["dataset_drift_detected"] = bool(drift_share >= 0.30)
 
     # Lưu JSON
     os.makedirs(os.path.dirname(OUTPUT_DRIFT_JSON), exist_ok=True)

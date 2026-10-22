@@ -1,52 +1,57 @@
 {
-  "ap-southeast-1": {
+  "southeastasia": {
     "region_name": "Đông Nam Á (Singapore / Azure Southeast Asia)",
     "distance_km": 1400,
-    "endpoint": "dynamodb.ap-southeast-1.amazonaws.com",
-    "min_ms": 56.9,
-    "avg_ms": 81.13,
-    "max_ms": 117.85,
-    "jitter_ms": 60.95,
-    "sla_tier": "Chấp nhận được (50-150ms)"
+    "endpoint": "southeastasia.api.cognitive.microsoft.com",
+    "status": "SUCCESS",
+    "min_ms": 26.19,
+    "avg_ms": 49.17,
+    "max_ms": 100.82,
+    "jitter_ms": 74.64,
+    "sla_tier": "Tối ưu (<50ms)"
   },
-  "ap-east-1": {
+  "eastasia": {
     "region_name": "Đông Á (Hong Kong / Azure East Asia)",
     "distance_km": 1500,
-    "endpoint": "dynamodb.ap-east-1.amazonaws.com",
-    "min_ms": 44.77,
-    "avg_ms": 332.61,
-    "max_ms": 1140.16,
-    "jitter_ms": 1095.39,
-    "sla_tier": "Cần CDN/Edge Acceleration (>150ms)"
+    "endpoint": "eastasia.api.cognitive.microsoft.com",
+    "status": "SUCCESS",
+    "min_ms": 38.34,
+    "avg_ms": 47.98,
+    "max_ms": 72.14,
+    "jitter_ms": 33.8,
+    "sla_tier": "Tối ưu (<50ms)"
   },
-  "ap-northeast-1": {
+  "japaneast": {
     "region_name": "Nhật Bản (Tokyo / Azure Japan East)",
     "distance_km": 4300,
-    "endpoint": "dynamodb.ap-northeast-1.amazonaws.com",
-    "min_ms": 114.22,
-    "avg_ms": 168.28,
-    "max_ms": 270.05,
-    "jitter_ms": 155.83,
-    "sla_tier": "Cần CDN/Edge Acceleration (>150ms)"
+    "endpoint": "japaneast.api.cognitive.microsoft.com",
+    "status": "SUCCESS",
+    "min_ms": 89.18,
+    "avg_ms": 106.29,
+    "max_ms": 132.15,
+    "jitter_ms": 42.96,
+    "sla_tier": "Chấp nhận được (50-150ms)"
   },
-  "eu-central-1": {
-    "region_name": "Châu Âu (Frankfurt / Azure Germany West Central)",
+  "westeurope": {
+    "region_name": "Tây Âu (Netherlands / Azure West Europe)",
     "distance_km": 9400,
-    "endpoint": "dynamodb.eu-central-1.amazonaws.com",
-    "min_ms": 220.59,
-    "avg_ms": 262.1,
-    "max_ms": 341.3,
-    "jitter_ms": 120.71,
+    "endpoint": "westeurope.api.cognitive.microsoft.com",
+    "status": "SUCCESS",
+    "min_ms": 197.43,
+    "avg_ms": 216.59,
+    "max_ms": 257.99,
+    "jitter_ms": 60.55,
     "sla_tier": "Cần CDN/Edge Acceleration (>150ms)"
   },
-  "us-east-1": {
+  "eastus": {
     "region_name": "Bắc Mỹ (N. Virginia / Azure East US)",
     "distance_km": 14200,
-    "endpoint": "dynamodb.us-east-1.amazonaws.com",
-    "min_ms": 315.82,
-    "avg_ms": 582.65,
-    "max_ms": 1315.77,
-    "jitter_ms": 999.96,
+    "endpoint": "eastus.api.cognitive.microsoft.com",
+    "status": "SUCCESS",
+    "min_ms": 238.57,
+    "avg_ms": 255.6,
+    "max_ms": 274.87,
+    "jitter_ms": 36.29,
     "sla_tier": "Cần CDN/Edge Acceleration (>150ms)"
   }
 }

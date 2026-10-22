@@ -19,58 +19,62 @@ stages:
   preprocess:
     cmd: python src/data/preprocess.py
     deps:
+    - path: data/raw/customer_churn_dataset-testing-master.csv
+      hash: md5
+      md5: 55289b95d9b4310f554778c725097c5b
+      size: 3282220
     - path: data/raw/customer_churn_dataset-training-master.csv
       hash: md5
       md5: a8d02f389b1e2a894b1decc4dfb658be
       size: 23448754
     - path: src/data/preprocess.py
       hash: md5
-      md5: 9183b63c623de555cdac0319baa443fa
-      size: 8742
+      md5: ba0e8d53256b7c6a7aeb4e4c700f1fae
+      size: 15314
     outs:
     - path: data/processed/test_features.parquet
       hash: md5
-      md5: a90ee511921775427234d63c452d7173
-      size: 1680394
+      md5: c040417985fe1f491e70fa56406a1543
+      size: 1732217
     - path: data/processed/train_features.parquet
       hash: md5
-      md5: 01634e6dd55982233ed97486664343b9
-      size: 6964041
+      md5: 3eb45a02563f0fa624683694315e7d5a
+      size: 7198770
     - path: data/processed/val_features.parquet
       hash: md5
-      md5: 1ecc207f84dec5ef178b39582e910339
-      size: 1683371
+      md5: f5fef834db654c4a691da0f918c7943f
+      size: 1735194
   train_models:
     cmd: python src/models/train_pipeline.py
     deps:
     - path: data/processed/train_features.parquet
       hash: md5
-      md5: 01634e6dd55982233ed97486664343b9
-      size: 6964041
+      md5: 3eb45a02563f0fa624683694315e7d5a
+      size: 7198770
     - path: data/processed/val_features.parquet
       hash: md5
-      md5: 1ecc207f84dec5ef178b39582e910339
-      size: 1683371
+      md5: f5fef834db654c4a691da0f918c7943f
+      size: 1735194
     - path: src/models/train_pipeline.py
       hash: md5
-      md5: 83f6c197aa36e02d8b75d86f9e04cf03
-      size: 13255
+      md5: dd29552bc3e7a1f52060615adf72abc5
+      size: 15493
     outs:
     - path: data/models/champion_model.joblib
       hash: md5
-      md5: 3f52d2bd562d2599e8a67ab55d14d9f1
-      size: 413601
+      md5: f5b426ddebbb9a874ee2abde22a748ab
+      size: 413840
   evaluate_and_benchmark:
     cmd: python src/models/evaluate.py
     deps:
     - path: data/models/champion_model.joblib
       hash: md5
-      md5: 3f52d2bd562d2599e8a67ab55d14d9f1
-      size: 413601
+      md5: f5b426ddebbb9a874ee2abde22a748ab
+      size: 413840
     - path: data/processed/test_features.parquet
       hash: md5
-      md5: a90ee511921775427234d63c452d7173
-      size: 1680394
+      md5: c040417985fe1f491e70fa56406a1543
+      size: 1732217
     - path: src/models/evaluate.py
       hash: md5
       md5: 686208be10c0a011c05b8a1cead981fe

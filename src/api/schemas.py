@@ -2,23 +2,41 @@
 Schema định nghĩa dữ liệu đầu vào và đầu ra cho FastAPI Serving Service.
 Tuân thủ Invariant 01 (Clean Architecture) và Invariant 02 (< 400 dòng).
 """
+import math
 from typing import List, Optional, Dict, Any, Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
+
+MAX_BATCH_SIZE = 1000
 
 
 class CustomerInput(BaseModel):
     """Dữ liệu đặc trưng của một khách hàng phục vụ dự đoán thời gian thực."""
-    customer_id: Optional[int] = Field(default=999999, description="Mã khách hàng")
-    age: float = Field(..., ge=18, le=100, description="Tuổi của khách hàng (18-100)", json_schema_extra={"example": 35.0})
+    customer_id: Optional[int] = Field(default=1, ge=1, description="Customer ID must be >= 1")
+    age: float = Field(..., ge=18, le=100, allow_inf_nan=False, description="Tuổi của khách hàng (18-100)", json_schema_extra={"example": 35.0})
     gender: Literal["Female", "Male"] = Field(..., description="Giới tính ('Male' hoặc 'Female')", json_schema_extra={"example": "Female"})
-    tenure: float = Field(..., ge=0, le=120, description="Thời gian gắn bó với dịch vụ (tháng)", json_schema_extra={"example": 24.0})
-    usage_frequency: float = Field(..., ge=0, le=50, description="Tần suất sử dụng dịch vụ trong tháng", json_schema_extra={"example": 15.0})
-    support_calls: float = Field(..., ge=0, le=30, description="Số cuộc gọi yêu cầu hỗ trợ kỹ thuật", json_schema_extra={"example": 3.0})
-    payment_delay: float = Field(..., ge=0, le=90, description="Số ngày chậm trễ thanh toán hóa đơn", json_schema_extra={"example": 5.0})
+    tenure: float = Field(..., ge=0, le=120, allow_inf_nan=False, description="Thời gian gắn bó với dịch vụ (tháng)", json_schema_extra={"example": 24.0})
+    usage_frequency: float = Field(..., ge=0, le=50, allow_inf_nan=False, description="Tần suất sử dụng dịch vụ trong tháng", json_schema_extra={"example": 15.0})
+    support_calls: float = Field(..., ge=0, le=30, allow_inf_nan=False, description="Số cuộc gọi yêu cầu hỗ trợ kỹ thuật", json_schema_extra={"example": 3.0})
+    payment_delay: float = Field(..., ge=0, le=90, allow_inf_nan=False, description="Số ngày chậm trễ thanh toán hóa đơn", json_schema_extra={"example": 5.0})
     subscription_type: Literal["Basic", "Standard", "Premium"] = Field(..., description="Loại gói cước ('Basic', 'Standard', 'Premium')", json_schema_extra={"example": "Standard"})
     contract_length: Literal["Monthly", "Quarterly", "Annual"] = Field(..., description="Thời hạn hợp đồng ('Monthly', 'Quarterly', 'Annual')", json_schema_extra={"example": "Monthly"})
-    total_spend: float = Field(..., ge=0, le=100000, description="Tổng số tiền đã chi tiêu (USD)", json_schema_extra={"example": 650.0})
-    last_interaction: float = Field(..., ge=0, le=60, description="Số ngày kể từ lần tương tác cuối cùng", json_schema_extra={"example": 12.0})
+    total_spend: float = Field(..., ge=0, le=100000, allow_inf_nan=False, description="Tổng số tiền đã chi tiêu (USD)", json_schema_extra={"example": 650.0})
+    last_interaction: float = Field(..., ge=0, le=60, allow_inf_nan=False, description="Số ngày kể từ lần tương tác cuối cùng", json_schema_extra={"example": 12.0})
+
+    @model_validator(mode="after")
+    def validate_finite_and_customer_id(self) -> "CustomerInput":
+        """Kiểm tra toàn bộ trường số thực phải hữu hạn (không chứa NaN/Inf) và customer_id >= 1."""
+        if self.customer_id is not None and self.customer_id < 1:
+            raise ValueError("customer_id must be >= 1")
+        float_fields = (
+            "age", "tenure", "usage_frequency", "support_calls",
+            "payment_delay", "total_spend", "last_interaction"
+        )
+        for fname in float_fields:
+            val = getattr(self, fname, None)
+            if val is not None and (math.isnan(val) or math.isinf(val)):
+                raise ValueError(f"Field '{fname}' cannot be NaN or Inf")
+        return self
 
 
 class PredictionResponse(BaseModel):

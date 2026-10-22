@@ -9,8 +9,14 @@ services:
     environment:
       - PORT=8000
       - MLFLOW_TRACKING_URI=sqlite:////app/data/mlflow.db
+      - REDIS_HOST=churnguard-redis
+      - REDIS_PORT=6379
+      - MINIO_ENDPOINT=churnguard-minio:9000
     volumes:
       - ./data:/app/data
+    depends_on:
+      - churnguard-redis
+      - churnguard-minio
     restart: always
 
   mlflow-ui:
@@ -22,3 +28,43 @@ services:
       - ./data:/data
     command: mlflow ui --backend-store-uri sqlite:////data/mlflow.db --host 0.0.0.0 --port 5000
     restart: unless-stopped
+
+  churnguard-redis:
+    image: redis:7.2-alpine
+    container_name: churnguard-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+
+  churnguard-minio:
+    image: minio/minio:RELEASE.2024-01-18T22-51-28Z
+    container_name: churnguard-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-churnguard2026}
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+
+  churnguard-dashboard:
+    build: .
+    container_name: churnguard-dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://fastapi-serving:8000
+    command: streamlit run src/web/dashboard.py --server.port 8501 --server.address 0.0.0.0
+    depends_on:
+      - fastapi-serving
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  minio-data:

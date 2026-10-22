@@ -1,0 +1,183 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "title": "ChurnGuard MLOps Infrastructure on Azure",
+    "description": "ARM Template for deploying Azure Container Apps, Azure Blob Storage, Azure Container Registry, and Azure Cache for Redis for UIT IS402 Project 11."
+  },
+  "parameters": {
+    "environmentName": {
+      "type": "string",
+      "defaultValue": "env-churnguard-mlops",
+      "metadata": { "description": "Name of the Container Apps Managed Environment" }
+    },
+    "appName": {
+      "type": "string",
+      "defaultValue": "churnguard-serving-app",
+      "metadata": { "description": "Name of the Container App" }
+    },
+    "acrName": {
+      "type": "string",
+      "defaultValue": "churnguardacr",
+      "metadata": { "description": "Name of the Azure Container Registry" }
+    },
+    "redisName": {
+      "type": "string",
+      "defaultValue": "redis-churnguard-sea",
+      "metadata": { "description": "Name of the Azure Cache for Redis instance" }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "defaultValue": "stchurnguardsea2026",
+      "metadata": { "description": "Globally unique Azure Storage Account name" }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "southeastasia",
+      "metadata": { "description": "Azure Region (Southeast Asia - Singapore)" }
+    }
+  },
+  "variables": {
+    "blobContainerName": "churnguard-datasets",
+    "containerImage": "[format('{0}.azurecr.io/churnguard-mlops:latest', parameters('acrName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "apiVersion": "2023-07-01",
+      "name": "[parameters('acrName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Basic"
+      },
+      "properties": {
+        "adminUserEnabled": true
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-01-01",
+      "name": "[parameters('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "accessTier": "Hot",
+        "supportsHttpsTrafficOnly": true,
+        "minimumTlsVersion": "TLS1_2"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2023-01-01",
+      "name": "[format('{0}/default/{1}', parameters('storageAccountName'), variables('blobContainerName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ],
+      "properties": {
+        "publicAccess": "None"
+      }
+    },
+    {
+      "type": "Microsoft.Cache/Redis",
+      "apiVersion": "2023-08-01",
+      "name": "[parameters('redisName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "sku": {
+          "name": "Basic",
+          "family": "C",
+          "capacity": 0
+        },
+        "enableNonSslPort": false,
+        "minimumTlsVersion": "1.2",
+        "redisConfiguration": {
+          "maxmemory-policy": "volatile-lru"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.App/managedEnvironments",
+      "apiVersion": "2023-05-01",
+      "name": "[parameters('environmentName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "zoneRedundant": false
+      }
+    },
+    {
+      "type": "Microsoft.App/containerApps",
+      "apiVersion": "2023-05-01",
+      "name": "[parameters('appName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.App/managedEnvironments', parameters('environmentName'))]",
+        "[resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName'))]",
+        "[resourceId('Microsoft.Cache/Redis', parameters('redisName'))]"
+      ],
+      "properties": {
+        "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('environmentName'))]",
+        "configuration": {
+          "ingress": {
+            "external": true,
+            "targetPort": 8000
+          }
+        },
+        "template": {
+          "containers": [
+            {
+              "name": "churnguard-serving",
+              "image": "[variables('containerImage')]",
+              "resources": {
+                "cpu": 1.0,
+                "memory": "2.0Gi"
+              },
+              "env": [
+                {
+                  "name": "REDIS_HOST",
+                  "value": "[reference(resourceId('Microsoft.Cache/Redis', parameters('redisName'))).hostName]"
+                },
+                {
+                  "name": "REDIS_PORT",
+                  "value": "6380"
+                },
+                {
+                  "name": "REDIS_SSL",
+                  "value": "true"
+                },
+                {
+                  "name": "AZURE_STORAGE_CONTAINER",
+                  "value": "[variables('blobContainerName')]"
+                }
+              ]
+            }
+          ],
+          "scale": {
+            "minReplicas": 0,
+            "maxReplicas": 5
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "appFqdn": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.App/containerApps', parameters('appName'))).configuration.ingress.fqdn]"
+    },
+    "storageEndpoint": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))).primaryEndpoints.blob]"
+    },
+    "redisHostName": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Cache/Redis', parameters('redisName'))).hostName]"
+    },
+    "redisSslPort": {
+      "type": "int",
+      "value": 6380
+    }
+  }
+}

@@ -30,6 +30,15 @@
       "Annual": 2
     }
   },
+  "train_medians": {
+    "age": 39.0,
+    "tenure": 32.0,
+    "usage_frequency": 16.0,
+    "support_calls": 3.0,
+    "payment_delay": 13.0,
+    "total_spend": 660.44,
+    "last_interaction": 14.0
+  },
   "unique_customers_total": 442211,
   "train_samples": 309547,
   "val_samples": 66332,

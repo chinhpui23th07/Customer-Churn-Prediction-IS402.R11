@@ -3,11 +3,12 @@ stages:
     cmd: python src/data/download_dataset.py
     deps:
       - src/data/download_dataset.py
+    params:
+      - configs/model_params.yaml:
+          - dataset
     outs:
-      - data/raw/customer_churn_dataset-training-master.csv:
-          cache: true
-      - data/raw/customer_churn_dataset-testing-master.csv:
-          cache: true
+      - data/raw/customer_churn_dataset-training-master.csv
+      - data/raw/customer_churn_dataset-testing-master.csv
 
   preprocess:
     cmd: python src/data/preprocess.py
@@ -15,13 +16,52 @@ stages:
       - src/data/preprocess.py
       - data/raw/customer_churn_dataset-training-master.csv
       - data/raw/customer_churn_dataset-testing-master.csv
+    params:
+      - configs/model_params.yaml:
+          - preprocessing
     outs:
-      - data/processed/train_features.parquet:
-          cache: true
-      - data/processed/val_features.parquet:
-          cache: true
-      - data/processed/test_features.parquet:
-          cache: true
+      - data/processed/train_features.parquet
+      - data/processed/val_features.parquet
+      - data/processed/test_features.parquet
+      - data/processed/scaler.joblib
+      - data/processed/metadata.json
+
+  data_quality:
+    cmd: python src/data/data_quality.py
+    deps:
+      - src/data/data_quality.py
+      - data/processed/train_features.parquet
+    params:
+      - configs/model_params.yaml:
+          - data_quality
+    metrics:
+      - data/processed/data_quality_report.json:
+          cache: false
+
+  feature_store:
+    cmd: python src/features/feature_store.py
+    deps:
+      - src/features/feature_store.py
+      - data/processed/train_features.parquet
+      - data/processed/val_features.parquet
+      - data/processed/test_features.parquet
+    params:
+      - configs/model_params.yaml:
+          - feature_store
+    outs:
+      - data/feast_store/customer_features.parquet
+
+  tune_optuna:
+    cmd: python src/models/tune_optuna.py
+    deps:
+      - src/models/tune_optuna.py
+      - data/processed/train_features.parquet
+    params:
+      - configs/model_params.yaml:
+          - optuna
+    metrics:
+      - data/models/tuning_history.json:
+          cache: false
 
   train_models:
     cmd: python src/models/train_pipeline.py
@@ -29,16 +69,54 @@ stages:
       - src/models/train_pipeline.py
       - data/processed/train_features.parquet
       - data/processed/val_features.parquet
+      - data/processed/test_features.parquet
+      - data/processed/scaler.joblib
+      - data/processed/metadata.json
+      - data/models/tuning_history.json
+    params:
+      - configs/model_params.yaml:
+          - models
     outs:
-      - data/models/champion_model.joblib:
-          cache: true
+      - data/models/champion_model.joblib
+      - data/models/evaluation_results.json
 
   evaluate_and_benchmark:
     cmd: python src/models/evaluate.py
     deps:
       - src/models/evaluate.py
       - data/models/champion_model.joblib
+      - data/models/evaluation_results.json
       - data/processed/test_features.parquet
-    outs:
+    params:
+      - configs/model_params.yaml:
+          - evaluation
+    metrics:
       - data/processed/model_evaluation_report.json:
+          cache: false
+
+  model_diagnostics:
+    cmd: python src/models/model_diagnostics.py
+    deps:
+      - src/models/model_diagnostics.py
+      - data/models/champion_model.joblib
+      - data/processed/train_features.parquet
+      - data/processed/test_features.parquet
+    params:
+      - configs/model_params.yaml:
+          - evaluation
+    metrics:
+      - data/processed/error_analysis_report.json:
+          cache: false
+
+  drift_detector:
+    cmd: python src/monitoring/drift_detector.py
+    deps:
+      - src/monitoring/drift_detector.py
+      - data/processed/train_features.parquet
+      - data/processed/test_features.parquet
+    params:
+      - configs/model_params.yaml:
+          - monitoring
+    metrics:
+      - data/processed/drift_metrics.json:
           cache: false

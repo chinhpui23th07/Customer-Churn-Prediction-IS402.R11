@@ -12,7 +12,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import learning_curve
 from sklearn.calibration import calibration_curve
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import (
+    confusion_matrix, accuracy_score, precision_score,
+    recall_score, f1_score, roc_auc_score
+)
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -124,18 +127,43 @@ def run_error_analysis(model, X_test, y_test, output_json: str, output_img: str)
     tp_mask = (y_test == 1) & (y_pred == 1)
     tn_mask = (y_test == 0) & (y_pred == 0)
 
+    tn_count = int(tn_mask.sum())
     fp_count = int(fp_mask.sum())
     fn_count = int(fn_mask.sum())
+    tp_count = int(tp_mask.sum())
 
     fp_df = X_test[fp_mask]
     fn_df = X_test[fn_mask]
 
+    acc = round(float(accuracy_score(y_test, y_pred)), 4) if len(y_test) > 0 else 0.0
+    prec = round(float(precision_score(y_test, y_pred, zero_division=0)), 4) if len(y_test) > 0 else 0.0
+    rec = round(float(recall_score(y_test, y_pred, zero_division=0)), 4) if len(y_test) > 0 else 0.0
+    f1 = round(float(f1_score(y_test, y_pred, zero_division=0)), 4) if len(y_test) > 0 else 0.0
+    roc_auc = round(float(roc_auc_score(y_test, y_prob)), 4) if len(np.unique(y_test)) >= 2 else 0.5
+
     analysis = {
         "confusion_breakdown": {
-            "true_negatives": int(tn_mask.sum()),
+            "true_negatives": tn_count,
             "false_positives": fp_count,
             "false_negatives": fn_count,
-            "true_positives": int(tp_mask.sum())
+            "true_positives": tp_count
+        },
+        "counts": {
+            "true_negative": tn_count,
+            "false_positive": fp_count,
+            "false_negative": fn_count,
+            "true_positive": tp_count,
+            "true_negatives": tn_count,
+            "false_positives": fp_count,
+            "false_negatives": fn_count,
+            "true_positives": tp_count
+        },
+        "metrics": {
+            "accuracy": acc,
+            "precision": prec,
+            "recall": rec,
+            "f1_score": f1,
+            "roc_auc": roc_auc
         },
         "false_positives_profile": {
             "count": fp_count,

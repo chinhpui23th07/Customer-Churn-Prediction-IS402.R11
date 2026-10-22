@@ -1,0 +1,15 @@
+{
+  "id": "nguyentrongkhoi/rees46-bigdata-cloud-benchmark",
+  "title": "UIT IS402 - REES46 Big Data Cloud Benchmark (>4GB)",
+  "code_file": "rees46_bigdata_cloud_benchmark.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "false",
+  "enable_gpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": [
+    "mkechinov/ecommerce-behavior-data-from-multi-category-store"
+  ],
+  "competition_sources": [],
+  "kernel_sources": []
+}

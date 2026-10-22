@@ -22,6 +22,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.pytest_cache/
 
 # Feast & MLflow & SQLite
 .feast/
@@ -58,9 +59,19 @@ data/prediction_logs.*
 # Temporary scratch & logs
 scratch/
 *.log
-graphify-out/cache/
+*.tmp
 
-# Cloned External Repositories and Large PDFs
-docs/research/repos/
-docs/research/papers/*.pdf
+# Excluded by User Directive (Agents, Graphify, Research Papers/Repos, Task Audit Artefacts)
+.agents/
+AGENTS.md
+graphify-out/
+.graphify*
+docs/research/
+docs/audit_reports/
+docs/ACADEMIC_INTEGRITY_AUDIT_REPORT.md
+docs/MULTI_AGENT_TRIPLE_BLIND_AUDIT_REPORT.md
+TEST_READY.md
+*.zip
+Nghiên Cứu Tập Dữ Liệu Churn.docx
+Tài Liệu MLOps Customer Churn.docx
 tools/
