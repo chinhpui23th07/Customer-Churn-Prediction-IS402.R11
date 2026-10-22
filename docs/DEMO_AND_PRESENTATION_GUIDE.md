@@ -1,14 +1,14 @@
-# Kịch Bản Thuyết Trình & Hướng Dẫn Thao Tác Demo (Presentation & Demo Playbook)
+# Kịch Bản Trình Diễn Hệ Thống & Hướng Dẫn Thao Tác (System Demonstration Playbook)
 
-> **Học phần:** Điện toán đám mây (Cloud Computing)  
-> **Đề tài:** Bài tập 11 - MLOps: Hệ Thống Dự Đoán Khách Hàng Rời Bỏ Dịch Vụ (Customer Churn Prediction)  
-> **Mục tiêu:** Phục vụ buổi báo cáo và bảo vệ đồ án trước Hội đồng Giảng viên (Đáp ứng Mục 5.3 Rubric).
+> **Hệ thống:** ChurnGuard MLOps Level 2 Platform  
+> **Kiến trúc:** Feast Feature Store + MLflow Registry + FastAPI Serving + Evidently Drift Monitoring  
+> **Mục tiêu:** Hướng dẫn quy trình vận hành và trình diễn thực nghiệm các phân hệ kỹ thuật  
 
 ---
 
-## 1. Chuẩn Bị Môi Trường Trước Khi Thuyết Trình
+## 1. Chuẩn Bị Môi Trường Vận Hành
 
-Mở Terminal tại thư mục gốc dự án `c:\Users\Nguyen Trong Khoi\Downloads\CLOUD`:
+Mở Terminal tại thư mục gốc dự án:
 
 ```bash
 # Khởi chạy FastAPI Model Serving Server
@@ -19,14 +19,14 @@ Khi server thông báo `Application startup complete. Uvicorn running on http://
 
 ---
 
-## 2. Kịch Bản Demo Từng Bước (Live Demonstration Walkthrough)
+## 2. Kịch Bản Trình Diễn Từng Bước (Live Demonstration Walkthrough)
 
-### 🔹 Bước 1: Giới thiệu Kiến trúc Hệ thống & HealthCheck (Thời lượng: 1 phút)
+### 🔹 Bước 1: Khởi động & Kiểm tra Trạng thái Sức khỏe Hệ thống (HealthCheck)
 1. Mở trình duyệt truy cập: `http://localhost:8000/health`
-2. **Nói với Giảng viên:**
-   - *"Hệ thống ChurnGuard MLOps đã được khởi động ở trạng thái HEALTHY."*
-   - *"Mô hình Champion hiện tại là Random Forest (v1.2.0-prod) được tuyển chọn tự động qua MLflow Registry với ROC-AUC đạt 1.0000 và F1-Score đạt 0.9947."*
-   - *"Feast Online Feature Store (SQLite) và MLflow Tracking Server đã được kết nối thông suốt."*
+2. **Thuyết minh kỹ thuật:**
+   - *"Hệ thống ChurnGuard MLOps đang hoạt động ở trạng thái HEALTHY."*
+   - *"Mô hình Champion hiện tại là XGBoost (hoặc Random Forest) được tuyển chọn tự động qua MLflow Registry với ROC-AUC đạt >0.998."*
+   - *"Feast Online Feature Store (SQLite/Redis) và MLflow Tracking Server đã được kết nối thông suốt."*
 
 ### 🔹 Bước 2: Trình diễn Giao diện Web Dashboard (Thời lượng: 2 phút)
 1. Mở trình duyệt truy cập: `http://localhost:8000/web/` (hoặc mở trực tiếp file `src/web/index.html`).
@@ -56,13 +56,13 @@ Khi server thông báo `Application startup complete. Uvicorn running on http://
 
 ---
 
-## 3. Các Câu Hỏi Phản Biện Tiêu Biểu Của Giảng Viên & Câu Trả Lời Mẫu
+## 3. Các Câu Hỏi Phản Biện Kỹ Thuật Tiêu Biểu & Câu Trả Lời Kiến Trúc (Architecture FAQs)
 
-### ❓ Câu 1: Tại sao nhóm lại chọn Feast Feature Store mà không truy vấn trực tiếp từ Database?
+### ❓ Câu 1: Tại sao hệ thống lại chọn Feast Feature Store mà không truy vấn trực tiếp từ Database?
 > **Trả lời:** *"Feast Feature Store giải quyết triệt để vấn đề **Training-Serving Skew** - một lỗi nghiêm trọng trong MLOps khi đặc trưng dùng lúc train bị sai lệch logic so với lúc inference. Feast đồng bộ hóa nguồn dữ liệu Parquet offline cho huấn luyện và SQLite/Redis online cho phục vụ thời gian thực với độ trễ dưới 1ms, hỗ trợ truy vấn điểm thời gian (point-in-time correct) chống rò rỉ dữ liệu."*
 
 ### ❓ Câu 2: Tại sao kết quả benchmark của Parquet lại vượt trội so với CSV?
-> **Trả lời:** *"Dựa trên thử nghiệm thực tế của nhóm trên 100,000 bản ghi: Parquet nén Snappy theo dạng cột (Columnar Storage), chỉ đọc đúng các cột cần thiết (Column Projection) thay vì quét toàn bộ dòng như CSV. Kết quả thực nghiệm đo được: Parquet tiết kiệm **73% dung lượng đĩa** (giảm 3.7x lần dung lượng) và có tốc độ đọc **nhanh gấp 12.09 lần** (99.31 MB/s so với 30.38 MB/s của CSV)."*
+> **Trả lời:** *"Dựa trên thực nghiệm thực tế trên 442,211 bản ghi: Parquet nén Snappy theo dạng cột (Columnar Storage), chỉ đọc đúng các cột cần thiết (Column Projection) thay vì quét toàn bộ dòng như CSV. Kết quả thực nghiệm đo được: Parquet tiết kiệm **73% dung lượng đĩa** (nén 3.7x lần dung lượng) và có tốc độ đọc **nhanh gấp 14.41 lần** (111.77 MB/s so với 28.68 MB/s của CSV)."*
 
 ### ❓ Câu 3: Làm thế nào để hệ thống tự động nhận biết khi mô hình suy giảm độ chính xác trên Cloud?
-> **Trả lời:** *"Hệ thống tích hợp module Evidently AI và kiểm định thống kê Kolmogorov-Smirnov (KS-test) cùng chỉ số PSI. Khi phân phối của dữ liệu khách hàng thực tế bị trôi dạt (Data Drift) vượt ngưỡng 33% số đặc trưng, endpoint `/drift/status` sẽ gắn cờ cảnh báo và kích hoạt Azure Function (FaaS) để tự động kích hoạt pipeline huấn luyện lại mô hình."*
+> **Trả lời:** *"Hệ thống tích hợp module kiểm định thống kê Kolmogorov-Smirnov (KS-test) hiệu chỉnh Bonferroni cùng chỉ số PSI. Khi phân phối của dữ liệu khách hàng thực tế bị trôi dạt (Data Drift) vượt ngưỡng 30% số đặc trưng (`drift_share >= 0.30`), endpoint `/drift/status` sẽ gắn cờ cảnh báo và kích hoạt luồng tự động tái huấn luyện mô hình."*

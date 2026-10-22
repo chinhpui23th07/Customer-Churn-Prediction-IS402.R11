@@ -1,123 +1,123 @@
 {
-  "timestamp": "2026-10-21T11:12:40.583343",
+  "timestamp": "2026-10-22T22:22:04.108049",
   "reference_samples": 309547,
-  "current_samples": 984,
+  "current_samples": 1106,
   "bonferroni_alpha": 0.003846,
   "features": {
     "age": {
-      "ks_statistic": 0.2066,
+      "ks_statistic": 0.2406,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.3716,
+      "psi_score": 0.4984,
       "drift_detected": true,
       "drift_level": "High"
     },
     "gender_encoded": {
-      "ks_statistic": 0.0878,
+      "ks_statistic": 0.1154,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.031,
+      "psi_score": 0.0535,
       "drift_detected": true,
       "drift_level": "Stable"
     },
     "tenure": {
-      "ks_statistic": 0.1949,
+      "ks_statistic": 0.2334,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.3772,
+      "psi_score": 0.5059,
       "drift_detected": true,
       "drift_level": "High"
     },
     "usage_frequency": {
-      "ks_statistic": 0.1436,
+      "ks_statistic": 0.1684,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.3505,
+      "psi_score": 0.479,
       "drift_detected": true,
       "drift_level": "High"
     },
     "support_calls": {
-      "ks_statistic": 0.0415,
-      "p_value": 0.06663,
+      "ks_statistic": 0.047,
+      "p_value": 0.01484,
       "bonferroni_alpha": 0.003846,
       "ks_drift": false,
-      "psi_score": 0.0386,
+      "psi_score": 0.0494,
       "drift_detected": false,
       "drift_level": "Stable"
     },
     "payment_delay": {
-      "ks_statistic": 0.2196,
+      "ks_statistic": 0.2635,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.3135,
+      "psi_score": 0.428,
       "drift_detected": true,
       "drift_level": "High"
     },
     "subscription_type_encoded": {
-      "ks_statistic": 0.1227,
+      "ks_statistic": 0.1409,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.1603,
+      "psi_score": 0.2222,
       "drift_detected": true,
       "drift_level": "Moderate"
     },
     "contract_length_encoded": {
-      "ks_statistic": 0.1616,
+      "ks_statistic": 0.1972,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.1153,
+      "psi_score": 0.1699,
       "drift_detected": true,
       "drift_level": "Moderate"
     },
     "total_spend": {
-      "ks_statistic": 0.1087,
+      "ks_statistic": 0.1242,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.1176,
+      "psi_score": 0.1524,
       "drift_detected": true,
       "drift_level": "Moderate"
     },
     "last_interaction": {
-      "ks_statistic": 0.1986,
+      "ks_statistic": 0.2289,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.3908,
+      "psi_score": 0.51,
       "drift_detected": true,
       "drift_level": "High"
     },
     "support_calls_per_tenure": {
-      "ks_statistic": 0.0768,
-      "p_value": 2e-05,
+      "ks_statistic": 0.091,
+      "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.0748,
+      "psi_score": 0.0987,
       "drift_detected": true,
       "drift_level": "Stable"
     },
     "spend_per_tenure": {
-      "ks_statistic": 0.0948,
+      "ks_statistic": 0.1119,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.1506,
+      "psi_score": 0.1926,
       "drift_detected": true,
       "drift_level": "Moderate"
     },
     "delay_ratio": {
-      "ks_statistic": 0.2017,
+      "ks_statistic": 0.2387,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.3502,
+      "psi_score": 0.466,
       "drift_detected": true,
       "drift_level": "High"
     }

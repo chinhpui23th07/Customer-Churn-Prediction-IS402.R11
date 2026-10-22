@@ -1,18 +1,16 @@
 # Hướng Dẫn Thực Nghiệm Big Data Cloud Benchmark (>4GB)
 
-> **Học viện:** Trường Đại học Công nghệ Thông tin - ĐHQG-HCM (UIT VNU-HCM)  
-> **Môn học:** IS402 - Điện toán đám mây (Cloud Computing)  
-> **Giảng viên hướng dẫn & Chấm thi:** ThS. Hà Lê Hoài Trung  
-> **Sinh viên:** Nguyễn Trọng Khởi | **MSSV:** 22520695  
-> **Đề tài 11:** MLOps Customer Churn Prediction  
+> **Phân hệ:** Big Data Out-of-Core Processing & I/O Benchmark  
+> **Quy mô dữ liệu:** 5.28 GB / 42,448,764 bản ghi thương mại điện tử thực tế  
+> **Mục tiêu kỹ thuật:** Đo đạc và đối chuẩn hiệu năng I/O (Throughput, RAM peak, thời gian xử lý) giữa CSV tuần tự và Parquet Snappy phân tích  
 
 ---
 
-## 1. Mục Tiêu & Cơ Sở Khoa Học Theo Rubric IS402
+## 1. Mục Tiêu & Cơ Sở Khoa Học Của Thực Nghiệm Quy Mô Lớn (>4GB Scalability Benchmark)
 
-Theo yêu cầu của **Rubric 1.3** và **Rubric 3.1**, sinh viên cần xử lý và đo đạc thực nghiệm trên tập dữ liệu quy mô lớn (>4GB) để chứng minh khả năng mở rộng (Scalability) của hệ thống điện toán đám mây.
+Nhằm chứng minh năng lực mở rộng (Scalability) và tối ưu hóa tài nguyên phần cứng của hệ thống xử lý dữ liệu lớn, thực nghiệm đo đạc và đối sánh tốc độ đọc/ghi, dung lượng lưu trữ và mức tiêu thụ bộ nhớ RAM trên tập dữ liệu quy mô vượt ngưỡng 4GB.
 
-Thay vì sinh dữ liệu giả tạo (fake data) trên máy local, đồ án sử dụng tập dữ liệu thương mại điện tử thực tế chuẩn quốc tế từ Kaggle:
+Thay vì sinh dữ liệu giả tạo (synthetic data), thực nghiệm sử dụng tập dữ liệu hành vi người dùng thực tế quy mô lớn từ Kaggle:
 - **Tên tập dữ liệu:** [eCommerce behavior data from multi category store (REES46)](https://www.kaggle.com/datasets/mkechinov/ecommerce-behavior-data-from-multi-category-store)
 - **Tệp thực nghiệm:** `2019-Oct.csv`
 - **Dung lượng thô:** **5.28 GB** (vượt chuẩn > 4GB)

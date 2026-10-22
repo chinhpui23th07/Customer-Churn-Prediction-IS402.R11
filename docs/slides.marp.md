@@ -2,7 +2,7 @@
 marp: true
 theme: default
 paginate: true
-header: 'UIT - Đề Tài 11: MLOps Customer Churn Platform'
+header: 'ChurnGuard MLOps - Enterprise Customer Retention Platform'
 footer: 'Hệ Thống Dự Đoán Khách Hàng Rời Bỏ Dịch Vụ © 2026'
 style: |
   section {
@@ -33,14 +33,14 @@ style: |
   }
 ---
 
-# BÁO CÁO ĐỒ ÁN MÔN HỌC: ĐIỆN TOÁN ĐÁM MÂY
-## Đề Tài 11: MLOps - Hệ Thống Dự Đoán Khách Hàng Rời Bỏ Dịch Vụ
-### (Customer Churn Prediction Platform)
+# HỆ THỐNG MLOPS DỰ ĐOÁN KHÁCH HÀNG RỜI BỎ DỊCH VỤ
+## ChurnGuard Platform: MLOps Level 2 Architecture
+### (Customer Churn Prediction & Concept Drift Monitoring)
 
-- **Trường:** Đại học Công nghệ Thông tin - ĐHQG-HCM (UIT)
-- **Khoa:** Hệ thống Thông tin
-- **Sinh viên thực hiện:** Nguyễn Trọng Khôi (MSSV: 23520783)
-- **Kiến trúc:** MLOps Level 2 (Feast + MLflow + FastAPI + Google Stitch)
+- **Mô hình kiến trúc:** MLOps Level 2 (Feast + MLflow + FastAPI + Bento Grid UI)
+- **Hạ tầng đám mây:** Hybrid Cloud Native (Azure Container Apps, Redis, ADLS Gen2)
+- **Tập dữ liệu chuẩn:** Kaggle Telco Churn (442,211 thực thể duy nhất)
+- **Mô hình Champion:** XGBoost / Random Forest (Val ROC-AUC: 0.9990)
 
 ---
 
@@ -236,19 +236,19 @@ Hệ thống đã vượt qua 100% các bước kiểm định đối kháng ngh
 # 15. KẾT LUẬN & HƯỚNG MỞ RỘNG
 
 - **Kết quả đạt được:**
-  - Hoàn thành xuất sắc Đề tài 11 đáp ứng điểm tuyệt đối (10.0) theo Rubik UIT.
+  - Hoàn thiện hệ thống MLOps Level 2 đáp ứng chuẩn sẵn sàng sản xuất.
   - Tích hợp thành công Feature Store (Feast) và Data Drift Monitoring (KS/PSI).
-  - Tối ưu hóa I/O dữ liệu bằng Parquet Snappy (tốc độ đọc nhanh hơn 12x).
-  - Cung cấp đầy đủ Báo cáo Word chuẩn KLTN UIT, Slide PowerPoint, và Dashboard Google Stitch.
+  - Tối ưu hóa I/O dữ liệu bằng Parquet Snappy (tốc độ đọc nhanh hơn 14x).
+  - Cung cấp đầy đủ Báo cáo kỹ thuật toàn diện, Slide thuyết trình, và Dashboard Bento Grid.
 - **Hướng phát triển tiếp theo:**
   - Tích hợp Kafka Streaming cho real-time feature ingestion.
   - Thiết lập cơ chế tự động trigger Continuous Training (CT) khi PSI > 0.25.
 
 ---
 
-# 16. HỎI ĐÁP & BẢO VỆ ĐỒ ÁN
+# 16. HỎI ĐÁP & TRAO ĐỔI KỸ THUẬT
 
-### Xin trân trọng cảm ơn Quý Thầy/Cô Hội đồng đã lắng nghe!
+### Trân trọng cảm ơn Quý đồng nghiệp và Hội đồng chuyên gia!
 
 - **Mã nguồn dự án:** Tuân thủ 100% Clean Architecture & 400-Line Code Cap.
 - **Demo trực tiếp:**

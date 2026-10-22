@@ -1,9 +1,8 @@
 # Hướng Dẫn Triển Khai ChurnGuard MLOps Lên Microsoft Azure (1-Click Deployment)
 
-> **Môn học:** IS402 - Điện toán đám mây (Cloud Computing)  
-> **Đề tài 11:** MLOps - Xây dựng hệ thống dự đoán khách hàng rời bỏ dịch vụ  
-> **Học viện:** Trường Đại học Công nghệ Thông tin - ĐHQG-HCM (UIT VNU-HCM)  
-> **Giảng viên:** ThS. Hà Lê Hoài Trung | **Sinh viên:** Nguyễn Trọng Khởi (22520695)  
+> **Hệ thống:** ChurnGuard MLOps Level 2 Enterprise Platform  
+> **Kiến trúc:** Cloud-Native Serverless & Low-Latency Feature Store  
+> **Khu vực mục tiêu:** Đông Nam Á (Singapore - `southeastasia`, RTT < 50ms)  
 
 ---
 

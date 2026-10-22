@@ -1,12 +1,12 @@
-# Báo Cáo Phân Tích Kiến Trúc Điện Toán Đám Mây & Dự Toán Chi Phí (Cloud Architecture & Quotas)
+# Báo Cáo Phân Tích Kiến Trúc Điện Toán Đám Mây & Dự Toán Chi Phí (Cloud Architecture & FinOps TCO)
 
-> **Dự án:** ChurnGuard MLOps - Hệ Thống Dự Đoán Khách Hàng Rời Bỏ Dịch Vụ  
-> **Học phần:** Điện toán đám mây (Cloud Computing - IS402) - Đề tài Bài tập 11  
-> **Mục tiêu:** Đáp ứng trọn vẹn Mục 1.4 và Mục 5.4 trong Rubric Đánh giá Bài tập Lớn.
+> **Dự án:** ChurnGuard MLOps Level 2 Platform  
+> **Kiến trúc:** Hybrid Cloud Native (Serverless Container Apps + In-Memory Feature Store)  
+> **Mục tiêu:** Tối ưu hóa hiệu năng, độ trễ mạng đa vùng và chi phí vận hành TCO trên Microsoft Azure  
 
 ---
 
-## 1. Phân Loại Các Thành Phần Hệ Thống Theo Mô Hình Dịch Vụ Cloud (Mục 1.4 Rubric)
+## 1. Phân Loại Các Thành Phần Hệ Thống Theo Mô Hình Dịch Vụ Cloud (IaaS, PaaS, FaaS, SaaS)
 
 Hệ thống ChurnGuard MLOps được thiết kế theo kiến trúc Hybrid Cloud Native, tận dụng tối đa các mô hình dịch vụ từ hạ tầng đến phần mềm:
 
@@ -19,7 +19,7 @@ Hệ thống ChurnGuard MLOps được thiết kế theo kiến trúc Hybrid Clo
 
 ---
 
-## 2. So Sánh Hiệu Năng & Chi Phí: Máy Chủ Truyền Thống (On-Premise) vs Cloud (Mục 1.3 Rubric)
+## 2. So Sánh Hiệu Năng & Chi Phí: Máy Chủ Truyền Thống (On-Premise) vs Cloud
 
 Dựa trên thực nghiệm xử lý tập dữ liệu 442,211 bản ghi (Track 1) và 42,448,764 bản ghi 5.28 GB (Track 2):
 
@@ -32,7 +32,7 @@ Dựa trên thực nghiệm xử lý tập dữ liệu 442,211 bản ghi (Track 
 
 ---
 
-## 3. Dự Toán Chi Phí & Định Mức Quotas Cho Hệ Thống MLOps (Mục 5.4 Rubric)
+## 3. Dự Toán Chi Phí & Định Mức Quotas Cho Hệ Thống MLOps (FinOps TCO)
 
 ### Bảng Dự Toán Chi Phí Vận Hành Hàng Tháng (Cloud FinOps TCO trên Microsoft Azure)
 
@@ -50,7 +50,7 @@ Kiến trúc thực tế sử dụng SQLite cục bộ (chế độ WAL) kết h
 
 ---
 
-## 4. Định Mức Hạn Ngạch Đám Mây (Cloud Quotas) & Cảnh Báo Ngân Sách (Mục 5.4 Rubric)
+## 4. Định Mức Hạn Ngạch Đám Mây (Cloud Quotas) & Cảnh Báo Ngân Sách
 
 Để kiểm soát rủi ro chi phí vượt ngưỡng (Cost Spikes) và bảo đảm tính sẵn sàng, hệ thống thiết lập bảng định mức hạn ngạch (Quotas) trên Microsoft Azure:
 
@@ -64,7 +64,7 @@ Kiến trúc thực tế sử dụng SQLite cục bộ (chế độ WAL) kết h
 
 ---
 
-## 5. Kết Quả Đo Độ Trễ Thực Tế Đa Vùng Microsoft Azure (Mục 3.3 Rubric)
+## 5. Kết Quả Đo Độ Trễ Thực Tế Đa Vùng Microsoft Azure (Multi-Region Latency)
 
 Thực nghiệm đo đạc độ trễ TCP Handshake và HTTPS Round-Trip Time (RTT) tới các cổng kết nối API Azure toàn cầu (ghi nhận từ `data/processed/region_latency_results.json`):
 
@@ -84,7 +84,7 @@ Hệ thống phân định rành mạch trách nhiệm vận hành theo mô hìn
 
 | Thành viên / Vai trò | Trách nhiệm Kỹ thuật Chính | Phạm vi Mã nguồn | Quyền Hạn Azure IAM RBAC |
 | :--- | :--- | :--- | :--- |
-| **MLOps Lead (Nguyễn Trọng Khôi - 23520783)** | Thiết kế kiến trúc, điều phối CI/CD, tối ưu hóa TCO & nghiệm thu toàn diện | `src/api/`, `configs/`, `.github/`, `deploy/` | **Subscription Contributor / Cost Management Budget Admin** |
+| **MLOps Platform Architect / Tech Lead** | Thiết kế kiến trúc, điều phối CI/CD, tối ưu hóa TCO & nghiệm thu toàn diện | `src/api/`, `configs/`, `.github/`, `deploy/` | **Subscription Contributor / Cost Management Budget Admin** |
 | **Data Engineer** | Quản trị DVC, Feast Feature Store Offline/Online, Out-of-Core ETL | `src/data/`, `src/features/` | **Storage Blob Data Contributor, Redis Cache Contributor** |
 | **ML Engineer** | Huấn luyện mô hình, Optuna Tuning, Model Registry & XAI (SHAP) | `src/models/` | **Azure ML Data Scientist / AcrPush & Registry Contributor** |
 | **DevOps / MLOps SRE** | Giám sát Data Drift (Evidently AI), Docker orchestration, Web UI | `src/monitoring/`, `src/web/` | **Container Apps Operator, Monitoring Metrics Publisher** |
