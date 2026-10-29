@@ -242,8 +242,8 @@ def build_presentation():
             "title": "Khả Năng Phân Tách Nhị Phân & Ma Trận Nhầm Lẫn",
             "bullets": [
                 "Đường cong ROC tiến sát góc trên bên trái, chứng minh độ nhạy cực cao.",
-                "Test Accuracy đạt trên 99.8% cho các mô hình dạng cây, vượt trội so với Baseline (87.27%).",
-                "Tối thiểu hóa False Negatives (khách hàng rời bỏ nhưng đoán nhầm là ở lại), bảo toàn doanh thu doanh nghiệp."
+                "Ma trận nhầm lẫn Test (66,332 mẫu): TN=28,619, FP=70, FN=16, TP=37,627.",
+                "Độ nhạy Recall 99.96%, tối thiểu hóa False Negatives (FN=16) để bảo toàn doanh thu doanh nghiệp."
             ],
             "image": "roc_curves.png",
             "speaker_notes": "Đồ thị ROC curves minh chứng khả năng phân loại vượt trội của các mô hình Gradient Boosting và Random Forest so với Logistic Regression."

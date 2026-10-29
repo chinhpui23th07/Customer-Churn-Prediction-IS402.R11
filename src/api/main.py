@@ -1,13 +1,6 @@
 """FastAPI Model Serving Service cho ChurnGuard MLOps Platform."""
-import os
-import sys
-import time
-import json
-import math
-import threading
-import joblib
-import numpy as np
-import pandas as pd
+import os, sys, time, json, math, threading
+import joblib, shap, numpy as np, pandas as pd
 from typing import List, Optional, Dict, Any
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Body
@@ -15,11 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse, FileResponse, HTMLResponse
 from pydantic import ValidationError
-import shap
 
-from src.api.schemas import (
-    CustomerInput, PredictionResponse, BatchPredictionResponse, HealthResponse, MAX_BATCH_SIZE
-)
+from src.api.schemas import CustomerInput, PredictionResponse, BatchPredictionResponse, HealthResponse, MAX_BATCH_SIZE
 from src.api.utils import (
     init_inference_db, log_inference_prediction, log_batch_inference_predictions,
     verify_api_key, prepare_feature_vector_from_input, compute_shap_attributions,
@@ -33,23 +23,16 @@ if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8")
 if hasattr(sys.stderr, "reconfigure"): sys.stderr.reconfigure(encoding="utf-8")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-MODELS_DIR = os.path.join(BASE_DIR, "data", "models")
-PROCESSED_DIR = os.path.join(BASE_DIR, "data", "processed")
+MODELS_DIR, PROCESSED_DIR = os.path.join(BASE_DIR, "data", "models"), os.path.join(BASE_DIR, "data", "processed")
 INFERENCE_DB = os.path.join(BASE_DIR, "data", "inference_logs.db")
 ONLINE_STORE_DB = os.path.join(BASE_DIR, "data", "feast_repo", "data", "online_store.db")
 MLFLOW_DB = os.path.join(BASE_DIR, "data", "mlflow.db")
-WEB_DIR = os.path.join(BASE_DIR, "src", "web")
-DOCS_DIR = os.path.join(BASE_DIR, "docs")
+WEB_DIR, DOCS_DIR = os.path.join(BASE_DIR, "src", "web"), os.path.join(BASE_DIR, "docs")
 
 START_TIME = time.time()
-MODEL_LOCK = threading.RLock()  # thread-safe reload lock (supersedes threading.Lock)
-
-MODEL_ARTIFACT = None
-CHALLENGER_ARTIFACT = None
-SCALER = None
-METADATA = None
-TREE_EXPLAINER = None
-CHALLENGER_TREE_EXPLAINER = None
+MODEL_LOCK = threading.RLock()
+MODEL_ARTIFACT = CHALLENGER_ARTIFACT = SCALER = METADATA = None
+TREE_EXPLAINER = CHALLENGER_TREE_EXPLAINER = None
 
 
 def _build_shap_explainer(clf):
@@ -67,10 +50,8 @@ def load_artifacts():
     """Nạp Model Champion, Challenger, Scaler và SHAP Explainer an toàn đa luồng."""
     global MODEL_ARTIFACT, CHALLENGER_ARTIFACT, SCALER, METADATA, TREE_EXPLAINER, CHALLENGER_TREE_EXPLAINER
     with MODEL_LOCK:
-        champion_path = os.path.join(MODELS_DIR, "champion_model.joblib")
-        challenger_path = os.path.join(MODELS_DIR, "random_forest.joblib")
-        scaler_path = os.path.join(PROCESSED_DIR, "scaler.joblib")
-        meta_path = os.path.join(PROCESSED_DIR, "metadata.json")
+        champion_path, challenger_path = os.path.join(MODELS_DIR, "champion_model.joblib"), os.path.join(MODELS_DIR, "random_forest.joblib")
+        scaler_path, meta_path = os.path.join(PROCESSED_DIR, "scaler.joblib"), os.path.join(PROCESSED_DIR, "metadata.json")
 
         if os.path.exists(champion_path):
             MODEL_ARTIFACT = joblib.load(champion_path)
@@ -88,14 +69,7 @@ def load_artifacts():
                 pass
 
         if MODEL_ARTIFACT is not None:
-            clf = MODEL_ARTIFACT["model"]
-            try:
-                TREE_EXPLAINER = shap.TreeExplainer(clf)
-            except Exception:
-                try:
-                    TREE_EXPLAINER = shap.LinearExplainer(clf, np.zeros((1, len(FEATURE_COLS))))
-                except Exception:
-                    TREE_EXPLAINER = None
+            TREE_EXPLAINER = _build_shap_explainer(MODEL_ARTIFACT["model"])
 
         if os.path.exists(challenger_path):
             CHALLENGER_ARTIFACT = joblib.load(challenger_path)
@@ -145,11 +119,9 @@ def serve_drift_report_html():
         p = os.path.join(PROCESSED_DIR, fname)
         if os.path.exists(p):
             try:
-                with open(p, "r", encoding="utf-8") as f:
-                    drift_data = json.load(f)
+                with open(p, "r", encoding="utf-8") as f: drift_data = json.load(f)
                 break
-            except Exception:
-                pass
+            except Exception: pass
 
     rows_html = "".join(
         f"<tr><td>{k}</td><td>{float(v.get('psi_score', 0.0)):.4f}</td>"
@@ -159,8 +131,8 @@ def serve_drift_report_html():
     html_content = (
         "<!DOCTYPE html><html lang='vi'><head><meta charset='utf-8'><title>ChurnGuard Data Drift Report</title>"
         "<style>body{font-family:sans-serif;margin:2rem;background:#0f172a;color:#f8fafc}"
-        "table{width:100%;border-collapse:collapse;margin-top:1rem}th,td{border:1px solid #334155;padding:0.6rem}</style>"
-        f"</head><body><h1>Báo cáo Giám sát Data Drift (KS-Test & PSI)</h1><table><thead>"
+        "table{width:100%;border-collapse:collapse;margin-top:1rem}th,td{border:1px solid #334155;padding:0.6rem}</style></head>"
+        f"<body><h1>Báo cáo Giám sát Data Drift (KS-Test & PSI)</h1><table><thead>"
         f"<tr><th>Đặc trưng</th><th>PSI</th><th>KS p-value</th><th>Trạng thái</th></tr></thead><tbody>{rows_html}</tbody></table></body></html>"
     )
     return HTMLResponse(content=html_content, status_code=200)
@@ -169,8 +141,7 @@ def serve_drift_report_html():
 @app.get("/health", response_model=HealthResponse, tags=["General"])
 def health_check():
     """Kiểm tra trạng thái sức khỏe toàn bộ các thành phần MLOps."""
-    if MODEL_ARTIFACT is None:
-        load_artifacts()
+    if MODEL_ARTIFACT is None: load_artifacts()
     return HealthResponse(
         status="HEALTHY" if MODEL_ARTIFACT is not None else "DEGRADED",
         champion_model=MODEL_ARTIFACT["name"] if MODEL_ARTIFACT else "Not Loaded",
@@ -183,8 +154,7 @@ def health_check():
 
 def _execute_feast_online_prediction(customer_id: int) -> PredictionResponse:
     """Truy xuất đặc trưng từ Feast Online Store và thực thi dự đoán trực tuyến."""
-    if MODEL_ARTIFACT is None:
-        load_artifacts()
+    if MODEL_ARTIFACT is None: load_artifacts()
 
     t0 = time.perf_counter()
     online_data = query_online_features([customer_id])
@@ -223,13 +193,10 @@ def _execute_feast_online_prediction(customer_id: int) -> PredictionResponse:
 
 
 @app.get("/predict/customer/{customer_id}", response_model=PredictionResponse, tags=["Feature Store & Serving"])
+@app.get("/predict/feast/online/{customer_id}", response_model=PredictionResponse, tags=["Feature Store & Serving"])
 def predict_from_feast_customer_id(customer_id: int, api_key: str = Depends(verify_api_key)):
     return _execute_feast_online_prediction(customer_id)
-
-
-@app.get("/predict/feast/online/{customer_id}", response_model=PredictionResponse, tags=["Feature Store & Serving"])
-def predict_feast_online_get(customer_id: int, api_key: str = Depends(verify_api_key)):
-    return _execute_feast_online_prediction(customer_id)
+predict_feast_online_get = predict_from_feast_customer_id
 
 
 @app.post("/predict/feast/online", response_model=PredictionResponse, tags=["Feature Store & Serving"])
@@ -246,13 +213,11 @@ def predict_feast_online_post(
 
 @app.post("/predict", response_model=PredictionResponse, tags=["Inference"])
 def predict_single(customer: CustomerInput, api_key: str = Depends(verify_api_key)):
-    if MODEL_ARTIFACT is None:
-        load_artifacts()
+    if MODEL_ARTIFACT is None: load_artifacts()
     t0 = time.perf_counter()
     raw_vec = prepare_feature_vector_from_input(customer)
     with MODEL_LOCK:
         clf, use_scaled, explainer = MODEL_ARTIFACT["model"], MODEL_ARTIFACT["use_scaled"], TREE_EXPLAINER
-
     x_input, pred_class, prob, risk_tier = run_model_inference(clf, raw_vec, SCALER, use_scaled, customer=customer)
     latency = (time.perf_counter() - t0) * 1000.0
     rec = generate_recommendation(prob, customer.support_calls, customer.payment_delay, customer.total_spend, customer.contract_length, customer.tenure)
@@ -269,8 +234,7 @@ def predict_single(customer: CustomerInput, api_key: str = Depends(verify_api_ke
 
 @app.post("/predict/ab_test", response_model=PredictionResponse, tags=["A/B Testing"])
 def predict_ab_test(customer: CustomerInput, api_key: str = Depends(verify_api_key)):
-    if MODEL_ARTIFACT is None:
-        load_artifacts()
+    if MODEL_ARTIFACT is None: load_artifacts()
     t0 = time.perf_counter()
     cid = customer.customer_id if customer.customer_id is not None else 999999
     route_type, version_tag = route_customer_to_model(cid)
@@ -299,8 +263,7 @@ def predict_ab_test(customer: CustomerInput, api_key: str = Depends(verify_api_k
 
 @app.post("/batch_predict", response_model=BatchPredictionResponse, tags=["Inference"])
 def predict_batch(customers: List[CustomerInput], api_key: str = Depends(verify_api_key)):
-    if MODEL_ARTIFACT is None:
-        load_artifacts()
+    if MODEL_ARTIFACT is None: load_artifacts()
     if len(customers) > MAX_BATCH_SIZE:
         raise HTTPException(status_code=422, detail=f"Batch size exceeds maximum limit of {MAX_BATCH_SIZE}")
     if not customers:
@@ -317,7 +280,6 @@ def predict_batch(customers: List[CustomerInput], api_key: str = Depends(verify_
     x_batch = SCALER.transform(raw_vecs) if use_scaled and SCALER is not None else raw_vecs
     x_batch_df = pd.DataFrame(x_batch, columns=FEATURE_COLS)
     x_eval = x_batch_df if hasattr(clf, "feature_names_in_") else x_batch
-
     preds = clf.predict(x_eval).astype(int)
     probs = clf.predict_proba(x_eval)[:, 1] if hasattr(clf, "predict_proba") else preds.astype(float)
     avg_lat = round(((time.perf_counter() - t0) * 1000.0) / len(customers), 2)
@@ -359,8 +321,7 @@ async def predict_from_csv(file: UploadFile = File(...), api_key: str = Depends(
         raise HTTPException(status_code=422, detail=f"Batch size exceeds maximum limit of {MAX_BATCH_SIZE}")
 
     norm = {c.strip().lower().replace(" ", "").replace("_", ""): c for c in df.columns}
-    reqs = ["age", "gender", "tenure", "usagefrequency", "supportcalls",
-            "paymentdelay", "subscriptiontype", "contractlength", "totalspend", "lastinteraction"]
+    reqs = ["age", "gender", "tenure", "usagefrequency", "supportcalls", "paymentdelay", "subscriptiontype", "contractlength", "totalspend", "lastinteraction"]
     for r in reqs:
         if r not in norm:
             raise HTTPException(status_code=400, detail=f"Tệp CSV thiếu cột bắt buộc: {r}")
@@ -376,10 +337,9 @@ async def predict_from_csv(file: UploadFile = File(...), api_key: str = Depends(
             cid_int = int(float(raw_cid)) if not isinstance(raw_cid, str) or raw_cid.strip().isdigit() else int(raw_cid)
             inputs.append(CustomerInput(
                 customer_id=cid_int, age=float(r[norm["age"]]),
-                gender=str(r[norm["gender"]]).strip().capitalize(),
-                tenure=float(r[norm["tenure"]]), usage_frequency=float(r[norm["usagefrequency"]]),
-                support_calls=float(r[norm["supportcalls"]]), payment_delay=float(r[norm["paymentdelay"]]),
-                subscription_type=str(r[norm["subscriptiontype"]]).strip().capitalize(),
+                gender=str(r[norm["gender"]]).strip().capitalize(), tenure=float(r[norm["tenure"]]),
+                usage_frequency=float(r[norm["usagefrequency"]]), support_calls=float(r[norm["supportcalls"]]),
+                payment_delay=float(r[norm["paymentdelay"]]), subscription_type=str(r[norm["subscriptiontype"]]).strip().capitalize(),
                 contract_length=str(r[norm["contractlength"]]).strip().capitalize(),
                 total_spend=float(r[norm["totalspend"]]), last_interaction=float(r[norm["lastinteraction"]])
             ))

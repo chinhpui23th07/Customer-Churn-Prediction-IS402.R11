@@ -1,123 +1,123 @@
 {
-  "timestamp": "2026-10-30T01:54:13.336529",
+  "timestamp": "2026-10-30T03:30:59.346234",
   "reference_samples": 309547,
-  "current_samples": 3136,
+  "current_samples": 5000,
   "bonferroni_alpha": 0.003846,
   "features": {
     "age": {
-      "ks_statistic": 0.2761,
+      "ks_statistic": 0.3361,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.9887,
+      "psi_score": 1.7515,
       "drift_detected": true,
       "drift_level": "High"
     },
     "gender_encoded": {
-      "ks_statistic": 0.2754,
+      "ks_statistic": 0.3673,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.3186,
+      "psi_score": 0.6084,
       "drift_detected": true,
       "drift_level": "High"
     },
     "tenure": {
-      "ks_statistic": 0.3661,
+      "ks_statistic": 0.427,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.8902,
+      "psi_score": 1.314,
       "drift_detected": true,
       "drift_level": "High"
     },
     "usage_frequency": {
-      "ks_statistic": 0.2805,
+      "ks_statistic": 0.3367,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.9821,
+      "psi_score": 1.6676,
       "drift_detected": true,
       "drift_level": "High"
     },
     "support_calls": {
-      "ks_statistic": 0.1271,
+      "ks_statistic": 0.1706,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.34,
+      "psi_score": 0.6454,
       "drift_detected": true,
       "drift_level": "High"
     },
     "payment_delay": {
-      "ks_statistic": 0.4318,
+      "ks_statistic": 0.5018,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.9703,
+      "psi_score": 1.8855,
       "drift_detected": true,
       "drift_level": "High"
     },
     "subscription_type_encoded": {
-      "ks_statistic": 0.2159,
+      "ks_statistic": 0.2503,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.5355,
+      "psi_score": 0.7308,
       "drift_detected": true,
       "drift_level": "High"
     },
     "contract_length_encoded": {
-      "ks_statistic": 0.282,
+      "ks_statistic": 0.302,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.4416,
+      "psi_score": 0.6508,
       "drift_detected": true,
       "drift_level": "High"
     },
     "total_spend": {
-      "ks_statistic": 0.192,
+      "ks_statistic": 0.2291,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.5857,
+      "psi_score": 1.0692,
       "drift_detected": true,
       "drift_level": "High"
     },
     "last_interaction": {
-      "ks_statistic": 0.3229,
+      "ks_statistic": 0.3531,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.9718,
+      "psi_score": 1.3602,
       "drift_detected": true,
       "drift_level": "High"
     },
     "support_calls_per_tenure": {
-      "ks_statistic": 0.1847,
+      "ks_statistic": 0.2593,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.4634,
+      "psi_score": 0.8731,
       "drift_detected": true,
       "drift_level": "High"
     },
     "spend_per_tenure": {
-      "ks_statistic": 0.2742,
+      "ks_statistic": 0.3624,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.6118,
+      "psi_score": 0.9838,
       "drift_detected": true,
       "drift_level": "High"
     },
     "delay_ratio": {
-      "ks_statistic": 0.3936,
+      "ks_statistic": 0.4625,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.7807,
+      "psi_score": 1.2221,
       "drift_detected": true,
       "drift_level": "High"
     }

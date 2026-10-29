@@ -56,7 +56,7 @@
     ]
   },
   "inference_sqlite_wal_db": {
-    "logged_predictions_count": 3002,
+    "logged_predictions_count": 7427,
     "evidence_file": "data/inference_logs.db"
   },
   "io_and_streaming_benchmarks": {
@@ -116,7 +116,7 @@
   },
   "drift_monitoring": {
     "reference_samples": 309547,
-    "current_samples": 2952,
+    "current_samples": 5000,
     "bonferroni_alpha": 0.003846,
     "drifted_features_count": 13,
     "total_features": 13,

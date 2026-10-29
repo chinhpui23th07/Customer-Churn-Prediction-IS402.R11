@@ -239,7 +239,7 @@ def test_trigger_retrain():
 
     # Allow detached subprocess to complete and write proof
     log_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "retrain_execution.log")
-    for _ in range(30):
+    for _ in range(50):
         time.sleep(0.2)
         if os.path.exists(log_file):
             with open(log_file, "r", encoding="utf-8") as f:

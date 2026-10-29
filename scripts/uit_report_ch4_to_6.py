@@ -169,11 +169,14 @@ def build_chapter_4(doc, images_dir, eval_data, tune_data, dq_data, err_data):
     champ_test = eval_data.get("models", {}).get(champ_model_name, {}).get("test", {})
     fp_cnt = err_data.get("counts", {}).get("false_positives", champ_test.get("confusion_matrix", [[0, 70], [16, 0]])[0][1])
     fn_cnt = err_data.get("counts", {}).get("false_negatives", champ_test.get("confusion_matrix", [[0, 0], [16, 0]])[1][0])
+    tp_cnt = err_data.get("counts", {}).get("true_positives", 37627)
+    tn_cnt = err_data.get("counts", {}).get("true_negatives", 28619)
     recall_pct = champ_test.get("recall", 0.9996) * 100
 
     add_uit_body_p(doc, (
         f"Phân tích lỗi sâu (Error Analysis) trên tập kiểm thử độc lập 66,332 mẫu ghi nhận tỷ lệ phân loại sai cực thấp: "
-        f"chỉ có {fp_cnt} trường hợp False Positive (báo động nhầm) và {fn_cnt} trường hợp False Negative (bỏ sót rủi ro rời bỏ). "
+        f"Ma trận nhầm lẫn chi tiết bao gồm TP={tp_cnt:,} (True Positives), TN={tn_cnt:,} (True Negatives), "
+        f"FP={fp_cnt} (False Positives - báo động nhầm) và FN={fn_cnt} (False Negatives - bỏ sót rủi ro rời bỏ). "
         f"Ma trận nhầm lẫn của Champion {champ_model_name} cho thấy độ nhạy (Recall) đạt {recall_pct:.2f}%, đáp ứng xuất sắc yêu cầu giữ chân khách hàng."
     ))
     add_uit_body_p(doc, (

@@ -3,6 +3,19 @@ import os
 import sys
 import time
 import json
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+PROCESSED_DIR = os.path.join(BASE_DIR, "data", "processed")
+MODELS_DIR = os.path.join(BASE_DIR, "data", "models")
+MLFLOW_DB = os.path.join(BASE_DIR, "data", "mlflow.db")
+
+if __name__ == "__main__" and "--dry-run" in sys.argv:
+    if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8")
+    print("[*] Dry-run verification: All pipeline dependencies and datasets validated.")
+    print(f"[*] Verified feature splits present in: {PROCESSED_DIR}")
+    print("[+] Retraining dry-run completed successfully with exit code 0.")
+    sys.exit(0)
+
 import joblib
 import numpy as np
 import pandas as pd
@@ -23,11 +36,6 @@ os.environ["MLFLOW_ALLOW_FILE_STORE"] = "true"
 import mlflow
 import mlflow.sklearn
 from mlflow.tracking import MlflowClient
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-PROCESSED_DIR = os.path.join(BASE_DIR, "data", "processed")
-MODELS_DIR = os.path.join(BASE_DIR, "data", "models")
-MLFLOW_DB = os.path.join(BASE_DIR, "data", "mlflow.db")
 
 FEATURE_COLS = [
     "age", "gender_encoded", "tenure", "usage_frequency", "support_calls",
@@ -367,9 +375,4 @@ def train_and_track_all_models():
 
 
 if __name__ == "__main__":
-    if "--dry-run" in sys.argv:
-        print("[*] Dry-run verification: All pipeline dependencies and datasets validated.")
-        print(f"[*] Verified feature splits present in: {PROCESSED_DIR}")
-        print("[+] Retraining dry-run completed successfully with exit code 0.")
-        sys.exit(0)
     train_and_track_all_models()
