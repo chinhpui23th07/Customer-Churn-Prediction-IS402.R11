@@ -20,8 +20,8 @@
         <div class="brand-text"><span class="brand-title">CHURN<span>GUARD</span></span><span class="brand-subtitle">ENTERPRISE MLOPS</span></div>
       </div>
       <div class="nav-status">
-        <div class="status-indicator"><span class="pulse-dot"></span><span id="api-status-text">FastAPI: Online (Port 8000)</span></div>
-        <div class="model-badge">Champion: <strong id="champion-name">XGBoost</strong></div>
+        <div class="status-indicator"><span class="pulse-dot"></span><span id="api-status-text">Đang kiểm tra API...</span></div>
+        <div class="model-badge">Champion: <strong id="champion-name">--</strong></div>
       </div>
     </div>
   </header>
@@ -30,23 +30,23 @@
     <section class="kpi-row">
       <div class="bento-card kpi-card">
         <div class="kpi-title">MÔ HÌNH CHAMPION</div>
-        <div class="kpi-value" id="kpi-model-name">XGBoost</div>
-        <div class="kpi-subtext">ROC-AUC: <span class="highlight-green">0.9990</span> | F1: <span class="highlight-green">0.9989</span></div>
+        <div class="kpi-value" id="kpi-model-name">--</div>
+        <div class="kpi-subtext">ROC-AUC: <span class="highlight-green" id="kpi-roc-auc">--</span> | F1: <span class="highlight-green" id="kpi-f1">--</span></div>
       </div>
       <div class="bento-card kpi-card">
         <div class="kpi-title">FEAST FEATURE STORE</div>
-        <div class="kpi-value" id="kpi-features-count">13 Features</div>
-        <div class="kpi-subtext">Online: SQLite | Offline: Parquet</div>
+        <div class="kpi-value" id="kpi-features-count">--</div>
+        <div class="kpi-subtext" id="kpi-feast-store">Online: -- | Offline: --</div>
       </div>
       <div class="bento-card kpi-card">
         <div class="kpi-title">ĐỘ TRỄ DỰ ĐOÁN (INFERENCE)</div>
-        <div class="kpi-value" id="kpi-latency">0.45 ms</div>
-        <div class="kpi-subtext">SLA: <span class="highlight-green">Tối ưu (&lt; 10ms)</span></div>
+        <div class="kpi-value" id="kpi-latency">-- ms</div>
+        <div class="kpi-subtext" id="kpi-sla">SLA: <span class="highlight-green">--</span></div>
       </div>
       <div class="bento-card kpi-card">
         <div class="kpi-title">TRẠNG THÁI DATA DRIFT</div>
-        <div class="kpi-value highlight-green" id="kpi-drift-status">ỔN ĐỊNH</div>
-        <div class="kpi-subtext">Kiểm định KS-Test &amp; PSI: Bonferroni</div>
+        <div class="kpi-value" id="kpi-drift-status">--</div>
+        <div class="kpi-subtext" id="kpi-drift-sub">Kiểm định KS-Test &amp; PSI: Bonferroni</div>
       </div>
     </section>
 
@@ -84,8 +84,8 @@
           <div class="result-header"><span class="risk-badge" id="risk-badge">High Risk</span><span class="latency-badge" id="result-latency">0.42 ms</span></div>
           <div class="gauge-container">
             <div class="gauge-label">Xác Suất Rời Bỏ Dịch Vụ:</div>
-            <div class="gauge-number" id="prob-display">74.5%</div>
-            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="gauge-fill" style="width: 74.5%;"></div></div>
+            <div class="gauge-number" id="prob-display">--%</div>
+            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="gauge-fill" style="width: 0%;"></div></div>
           </div>
           <div class="action-box"><div class="action-title">Hành Động Giữ Chân Đề Xuất:</div><p id="recommendation-text">Đang phân tích...</p></div>
           <div class="xai-box" id="xai-box">

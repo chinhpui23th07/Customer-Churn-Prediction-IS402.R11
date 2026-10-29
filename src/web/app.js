@@ -29,38 +29,38 @@ function initTabs() {
     tabBtns.forEach(b => b.classList.remove("active"));
     document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
     btn.classList.add("active");
-    const targetContent = document.getElementById(btn.getAttribute("data-tab"));
-    if (targetContent) targetContent.classList.add("active");
+    const target = document.getElementById(btn.getAttribute("data-tab"));
+    if (target) target.classList.add("active");
   }));
 }
 
 async function checkApiHealth() {
   try {
     const res = await fetch(`${API_BASE}/health`, { headers: getAuthHeaders() });
-    if (res.ok) {
-      const data = await res.json();
-      document.getElementById("api-status-text").textContent = `FastAPI: ${data.status} (Online)`;
-      document.getElementById("champion-name").textContent = data.champion_model;
-      document.getElementById("kpi-model-name").textContent = data.champion_model;
-    }
-  } catch (err) { document.getElementById("api-status-text").textContent = "FastAPI: Offline (Chưa bật server)"; }
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    document.getElementById("api-status-text").textContent = `FastAPI: ${data.status} (Online)`;
+    document.getElementById("champion-name").textContent = data.champion_model;
+    document.getElementById("kpi-model-name").textContent = data.champion_model;
+    const f = document.getElementById("kpi-feast-store"); if (f) f.textContent = data.feast_online_store || "Online: SQLite";
+  } catch (err) {
+    document.getElementById("api-status-text").textContent = "FastAPI: Offline (Chưa bật server)";
+    document.getElementById("kpi-model-name").textContent = "Chưa kết nối";
+  }
 }
 
 function setupSinglePredictionForm() {
   const form = document.getElementById("prediction-form"); if (!form) return;
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const btn = document.getElementById("btn-submit-single");
-    btn.textContent = "Đang Phân Tích..."; btn.disabled = true;
-    const cidEl = document.getElementById("inp-customer-id");
-    const rawCid = cidEl ? parseInt(cidEl.value, 10) : 1001;
+    const btn = document.getElementById("btn-submit-single"); btn.textContent = "Đang Phân Tích..."; btn.disabled = true;
+    const cidEl = document.getElementById("inp-customer-id"), rawCid = cidEl ? parseInt(cidEl.value, 10) : 1001;
+    const gVal = (id) => parseFloat(document.getElementById(id).value), sVal = (id) => document.getElementById(id).value;
     const payload = {
       customer_id: Number.isFinite(rawCid) && rawCid >= 1 ? rawCid : 1001,
-      age: parseFloat(document.getElementById("age").value), gender: document.getElementById("gender").value,
-      tenure: parseFloat(document.getElementById("tenure").value), usage_frequency: parseFloat(document.getElementById("usage_frequency").value),
-      support_calls: parseFloat(document.getElementById("support_calls").value), payment_delay: parseFloat(document.getElementById("payment_delay").value),
-      subscription_type: document.getElementById("subscription_type").value, contract_length: document.getElementById("contract_length").value,
-      total_spend: parseFloat(document.getElementById("total_spend").value), last_interaction: parseFloat(document.getElementById("last_interaction").value)
+      age: gVal("age"), gender: sVal("gender"), tenure: gVal("tenure"), usage_frequency: gVal("usage_frequency"),
+      support_calls: gVal("support_calls"), payment_delay: gVal("payment_delay"), subscription_type: sVal("subscription_type"),
+      contract_length: sVal("contract_length"), total_spend: gVal("total_spend"), last_interaction: gVal("last_interaction")
     };
     try {
       const res = await fetch(`${API_BASE}/predict`, { method: "POST", headers: getAuthHeaders({ "Content-Type": "application/json" }), body: JSON.stringify(payload) });
@@ -73,32 +73,25 @@ function setupSinglePredictionForm() {
 
 function renderSingleResult(data) {
   const resultBox = document.getElementById("prediction-result");
-  const badge = document.getElementById("risk-badge"); const gaugeFill = document.getElementById("gauge-fill");
+  const badge = document.getElementById("risk-badge"), gaugeFill = document.getElementById("gauge-fill");
   resultBox.classList.remove("hidden");
   const pctVal = (Number(data.churn_probability) * 100).toFixed(1);
   document.getElementById("prob-display").textContent = `${pctVal}%`; gaugeFill.style.width = `${pctVal}%`;
   document.getElementById("result-latency").textContent = `${data.latency_ms} ms`;
   document.getElementById("recommendation-text").textContent = data.recommended_action;
+  const isHigh = data.churn_probability >= 0.70, isMed = data.churn_probability >= 0.40;
+  badge.className = `risk-badge ${isHigh ? "risk-high" : (isMed ? "risk-medium" : "risk-low")}`;
+  badge.textContent = isHigh ? "RỦI RO CAO (HIGH RISK)" : (isMed ? "RỦI RO TRUNG BÌNH (MEDIUM RISK)" : "AN TOÀN (LOW RISK)");
+  gaugeFill.style.background = isHigh ? "#EF4444" : (isMed ? "#FBBF24" : "#10B981");
 
-  badge.className = "risk-badge";
-  if (data.churn_probability >= 0.70) {
-    badge.classList.add("risk-high"); badge.textContent = "RỦI RO CAO (HIGH RISK)"; gaugeFill.style.background = "#EF4444";
-  } else if (data.churn_probability >= 0.40) {
-    badge.classList.add("risk-medium"); badge.textContent = "RỦI RO TRUNG BÌNH (MEDIUM RISK)"; gaugeFill.style.background = "#FBBF24";
-  } else {
-    badge.classList.add("risk-low"); badge.textContent = "AN TOÀN (LOW RISK)"; gaugeFill.style.background = "#10B981";
-  }
-
-  const xaiSummary = document.getElementById("xai-summary-text"); const xaiBars = document.getElementById("xai-bars");
+  const xaiSummary = document.getElementById("xai-summary-text"), xaiBars = document.getElementById("xai-bars");
   if (data.explanation_summary && xaiSummary) xaiSummary.textContent = data.explanation_summary;
   if (data.feature_attributions && xaiBars) {
     xaiBars.innerHTML = "";
     for (const [feature, rawWeight] of Object.entries(data.feature_attributions)) {
-      const weight = Number(rawWeight) || 0; const sign = weight >= 0 ? "+" : "";
-      const pct = `${sign}${(weight * 100).toFixed(1)}%`;
+      const weight = Number(rawWeight) || 0, sign = weight >= 0 ? "+" : "", pct = `${sign}${(weight * 100).toFixed(1)}%`;
       const widthPct = Math.min(100, Math.max(5, Math.abs(weight) * 100)).toFixed(0);
-      const fillCls = weight >= 0 ? "xai-bar-fill xai-pos" : "xai-bar-fill xai-neg";
-      const valCls = weight >= 0 ? "xai-bar-val xai-val-pos" : "xai-bar-val xai-val-neg";
+      const fillCls = weight >= 0 ? "xai-bar-fill xai-pos" : "xai-bar-fill xai-neg", valCls = weight >= 0 ? "xai-bar-val xai-val-pos" : "xai-bar-val xai-val-neg";
       const barItem = document.createElement("div"); barItem.className = "xai-bar-item";
       barItem.innerHTML = `<div class="xai-bar-row"><span class="xai-bar-label">${escapeHtml(feature)}</span><span class="${valCls}">${escapeHtml(pct)}</span></div><div class="xai-bar-track"><div class="${fillCls}" style="width: ${widthPct}%;"></div></div>`;
       xaiBars.appendChild(barItem);
@@ -113,7 +106,6 @@ function setupBatchUpload() {
   document.getElementById("btn-sample-batch").addEventListener("click", sendSampleBatch);
   document.getElementById("btn-download-batch-csv").addEventListener("click", downloadBatchCsv);
 }
-
 async function uploadCsvFile(file) {
   const formData = new FormData(); formData.append("file", file);
   try {
@@ -122,7 +114,6 @@ async function uploadCsvFile(file) {
     renderBatchResults(await res.json());
   } catch (err) { alert("Lỗi tải tệp CSV! Đảm bảo các cột đúng định dạng Kaggle Customer Churn."); }
 }
-
 async function sendSampleBatch() {
   const samples = [
     { customer_id: 101, age: 24, gender: "Male", tenure: 3, usage_frequency: 5, support_calls: 7, payment_delay: 14, subscription_type: "Basic", contract_length: "Monthly", total_spend: 150, last_interaction: 22 },
@@ -137,7 +128,6 @@ async function sendSampleBatch() {
     renderBatchResults(await res.json());
   } catch (err) { alert("Không thể gửi dữ liệu mẫu đến API."); }
 }
-
 function renderBatchResults(data) {
   currentBatchPredictions = data.predictions || [];
   document.getElementById("batch-results-container").classList.remove("hidden");
@@ -148,12 +138,11 @@ function renderBatchResults(data) {
   const tbody = document.getElementById("batch-tbody"); tbody.innerHTML = "";
   currentBatchPredictions.slice(0, 10).forEach(p => {
     const tr = document.createElement("tr");
-    const riskColor = p.risk_level === "High Risk" ? "#EF4444" : (p.risk_level === "Medium Risk" ? "#FBBF24" : "#10B981");
-    tr.innerHTML = `<td style="font-weight:600;color:#F8FAFC;">#${escapeHtml(p.customer_id)}</td><td style="font-weight:700;">${escapeHtml((Number(p.churn_probability) * 100).toFixed(1))}%</td><td><span style="color:${riskColor};font-weight:600;">${escapeHtml(p.risk_level)}</span></td><td style="font-size:12px;color:#94A3B8;">${escapeHtml(p.recommended_action)}</td>`;
+    const col = p.risk_level === "High Risk" ? "#EF4444" : (p.risk_level === "Medium Risk" ? "#FBBF24" : "#10B981");
+    tr.innerHTML = `<td style="font-weight:600;color:#F8FAFC;">#${escapeHtml(p.customer_id)}</td><td style="font-weight:700;">${escapeHtml((Number(p.churn_probability) * 100).toFixed(1))}%</td><td><span style="color:${col};font-weight:600;">${escapeHtml(p.risk_level)}</span></td><td style="font-size:12px;color:#94A3B8;">${escapeHtml(p.recommended_action)}</td>`;
     tbody.appendChild(tr);
   });
 }
-
 function downloadBatchCsv() {
   if (currentBatchPredictions.length === 0) return;
   let csv = "CustomerID,ChurnPrediction,ChurnProbability,RiskLevel,RecommendedAction\n";
@@ -164,35 +153,46 @@ function downloadBatchCsv() {
   a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
   a.download = `churn_predictions_annotated_${Date.now()}.csv`; a.click();
 }
-
 async function loadModelsSummary() {
   try {
     const res = await fetch(`${API_BASE}/models/summary`, { headers: getAuthHeaders() });
     if (!res.ok) return;
-    const data = await res.json();
-    const tbody = document.getElementById("models-tbody"); if (!tbody) return;
-    tbody.innerHTML = "";
-    for (const [name, info] of Object.entries(data.models || {})) {
-      const tr = document.createElement("tr"); const t = info.test;
-      const isChamp = (name === data.champion_model) ? " <strong style='color:#F59E0B;'>(Champion)</strong>" : "";
-      tr.innerHTML = `<td style="font-weight:600;color:#F8FAFC;">${escapeHtml(name.replace("_", " "))}${isChamp}</td><td>${escapeHtml(Number(t.accuracy).toFixed(4))}</td><td>${escapeHtml(Number(t.precision).toFixed(4))}</td><td>${escapeHtml(Number(t.recall).toFixed(4))}</td><td>${escapeHtml(Number(t.f1_score).toFixed(4))}</td><td style="font-weight:700;color:#10B981;">${escapeHtml(Number(t.roc_auc).toFixed(4))}</td>`;
-      tbody.appendChild(tr);
+    const data = await res.json(), tbody = document.getElementById("models-tbody");
+    if (tbody) {
+      tbody.innerHTML = "";
+      for (const [name, info] of Object.entries(data.models || {})) {
+        const tr = document.createElement("tr"), t = info.test, isChamp = (name === data.champion_model) ? " <strong style='color:#F59E0B;'>(Champion)</strong>" : "";
+        tr.innerHTML = `<td style="font-weight:600;color:#F8FAFC;">${escapeHtml(name.replace("_", " "))}${isChamp}</td><td>${escapeHtml(Number(t.accuracy).toFixed(4))}</td><td>${escapeHtml(Number(t.precision).toFixed(4))}</td><td>${escapeHtml(Number(t.recall).toFixed(4))}</td><td>${escapeHtml(Number(t.f1_score).toFixed(4))}</td><td style="font-weight:700;color:#10B981;">${escapeHtml(Number(t.roc_auc).toFixed(4))}</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+    const champ = data.champion_model || "XGBoost", ct = data.models?.[champ]?.test;
+    if (ct) {
+      const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      setTxt("kpi-roc-auc", Number(ct.roc_auc).toFixed(4)); setTxt("kpi-f1", Number(ct.f1_score).toFixed(4));
+      setTxt("kpi-latency", `${(Number(ct.latency_per_sample_ms) || 0.45).toFixed(2)} ms`); setTxt("kpi-features-count", "13 Features");
+      const s = document.getElementById("kpi-sla"); if (s) s.innerHTML = "SLA: <span class='highlight-green'>Tối ưu (&lt; 10ms)</span>";
     }
   } catch (err) {}
 }
-
 async function loadDriftStatus() {
   try {
     const res = await fetch(`${API_BASE}/drift/status`, { headers: getAuthHeaders() });
     if (!res.ok) return;
-    const data = await res.json();
-    const tbody = document.getElementById("drift-tbody") || document.getElementById("drift-table"); if (!tbody) return;
-    tbody.innerHTML = "";
-    for (const [feat, info] of Object.entries(data.features || {})) {
-      const tr = document.createElement("tr");
-      const badgeColor = info.drift_level === "Stable" ? "#10B981" : (info.drift_level === "Moderate" ? "#F59E0B" : "#EF4444");
-      tr.innerHTML = `<td style="font-weight:600;color:#F8FAFC;">${escapeHtml(feat)}</td><td>${escapeHtml(info.ks_statistic)}</td><td>${escapeHtml(info.p_value)}</td><td>${escapeHtml(info.psi_score)}</td><td><span style="color:${badgeColor};font-weight:600;">${escapeHtml(info.drift_level)}</span></td>`;
-      tbody.appendChild(tr);
+    const data = await res.json(), tbody = document.getElementById("drift-tbody") || document.getElementById("drift-table");
+    if (tbody) {
+      tbody.innerHTML = "";
+      for (const [feat, info] of Object.entries(data.features || {})) {
+        const tr = document.createElement("tr"), bCol = info.drift_level === "Stable" ? "#10B981" : (info.drift_level === "Moderate" ? "#F59E0B" : "#EF4444");
+        tr.innerHTML = `<td style="font-weight:600;color:#F8FAFC;">${escapeHtml(feat)}</td><td>${escapeHtml(info.ks_statistic)}</td><td>${escapeHtml(info.p_value)}</td><td>${escapeHtml(info.psi_score)}</td><td><span style="color:${bCol};font-weight:600;">${escapeHtml(info.drift_level)}</span></td>`;
+        tbody.appendChild(tr);
+      }
+    }
+    const dEl = document.getElementById("kpi-drift-status");
+    if (dEl) {
+      const isDrift = Boolean(data.drift_share >= 0.3 || data.overall_drift);
+      dEl.textContent = isDrift ? "CẢNH BÁO DRIFT" : "ỔN ĐỊNH";
+      dEl.className = `kpi-value ${isDrift ? "highlight-red" : "highlight-green"}`;
     }
   } catch (err) {}
 }

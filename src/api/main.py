@@ -1,8 +1,4 @@
-"""
-FastAPI Model Serving Service cho ChurnGuard MLOps Platform.
-Tích hợp Feast Feature Store Online, SHAP TreeExplainer, Inference Logging, Giám sát Drift và A/B Testing.
-Tuân thủ Invariant 01 (Clean Architecture) và Invariant 02 (< 400 dòng).
-"""
+"""FastAPI Model Serving Service cho ChurnGuard MLOps Platform."""
 import os
 import sys
 import time
@@ -27,16 +23,14 @@ from src.api.schemas import (
 from src.api.utils import (
     init_inference_db, log_inference_prediction, log_batch_inference_predictions,
     verify_api_key, prepare_feature_vector_from_input, compute_shap_attributions,
-    generate_recommendation, run_model_inference, FEATURE_COLS
+    generate_recommendation, run_model_inference, check_feast_online_status, FEATURE_COLS
 )
 from src.api.ab_testing import route_customer_to_model, CHAMPION_VERSION, CHALLENGER_VERSION
 from src.features.feature_store import query_online_features
 from src.api.routes_management import router as management_router, register_reload_hook
 
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8")
-if hasattr(sys.stderr, "reconfigure"):
-    sys.stderr.reconfigure(encoding="utf-8")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"): sys.stderr.reconfigure(encoding="utf-8")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 MODELS_DIR = os.path.join(BASE_DIR, "data", "models")
@@ -181,7 +175,7 @@ def health_check():
         status="HEALTHY" if MODEL_ARTIFACT is not None else "DEGRADED",
         champion_model=MODEL_ARTIFACT["name"] if MODEL_ARTIFACT else "Not Loaded",
         model_version=CHAMPION_VERSION,
-        feast_online_store="CONNECTED (Redis Cache & SQLite)" if os.path.exists(ONLINE_STORE_DB) else "NOT_FOUND",
+        feast_online_store=check_feast_online_status(ONLINE_STORE_DB),
         mlflow_tracking_db="CONNECTED (MLflow Tracking & Registry)" if os.path.exists(MLFLOW_DB) else "NOT_FOUND",
         uptime_seconds=round(time.time() - START_TIME, 2)
     )

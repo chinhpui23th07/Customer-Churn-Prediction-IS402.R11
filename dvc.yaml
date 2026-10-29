@@ -49,7 +49,7 @@ stages:
       - configs/model_params.yaml:
           - feature_store
     outs:
-      - data/feast_store/customer_features.parquet
+      - data/feast_repo/churn_features.parquet
 
   tune_optuna:
     cmd: python src/models/tune_optuna.py

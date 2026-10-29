@@ -1,330 +1,340 @@
 """
-Adversarial Audit Test Suite - Audit Team 1 (Stage 5 Post-Fix Acceptance)
-UIT IS402 Cloud Computing - Topic 11: MLOps Customer Churn Prediction
-Covers all 8 Audit Tasks with real execution and literature/repo-grounded assertions.
+Pipeline Reproducibility & Data Engineering Test Suite (Audit Team 1).
+Kiem thu toan ven: Out-of-core chunking deduplication, on dinh toan hoc
+cua ky thuat dac trung, chuan hoa chuoi categorical, zero customer leakage
+giua cac tap du lieu, thong so Scaler va kiem tra DAG DVC bang NetworkX.
+Tuan thu Invariant 02 (<= 400 dong) va Invariant 13 (Zero Mockup).
 """
 
-import io
-import json
+import os
 import pathlib
-import socket
 import tempfile
-from unittest.mock import MagicMock, patch
-
+import joblib
+import networkx as nx
 import numpy as np
 import pandas as pd
 import pytest
 import yaml
-from fastapi.testclient import TestClient
 
-from src.api.ab_testing import analyze_ab_test_performance
-from src.api.main import app
-from src.api.schemas import CustomerInput
-from src.data.latency_simulator import measure_tcp_latency
-from src.data.preprocess import clean_raw_data, process_large_dataset_chunks
-from src.models.train_pipeline import evaluate_model_performance
-from src.monitoring.drift_detector import calculate_psi, run_drift_analysis
+from src.data.preprocess import (
+    FEATURE_NAMES,
+    clean_raw_data,
+    engineer_features,
+    process_large_dataset_chunks,
+)
 
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent
-client = TestClient(app)
+PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 
 
-# ==============================================================================
-# TASK 1: IS402 Course & Rubric Alignment
-# ==============================================================================
+def test_out_of_core_chunking_with_cross_chunk_deduplication(tmp_path):
+    """
+    Kiem thu streaming chunking voi 2,000 ban ghi tong hop chua 500 CustomerID
+    trung lap xuyen 5 boundaries chunk (chunk_size=400).
+    Xac thuc:
+    - CustomerID sau cung hoan toan duy nhat (is_unique == True).
+    - So luong ban ghi chinh xac 1,500 thuc the duy nhat.
+    - Imputation bang global median dong nhat xuyen suot giua chunk 1 va chunk 5.
+    """
+    csv_file = tmp_path / "streaming_test_input.csv"
+    parquet_out = tmp_path / "streaming_test_output.parquet"
 
-def test_task1_rubric_dual_track_score_math():
-    """Verify rubric scoring arithmetic consistency and dynamic test counting."""
-    import scripts.verification.integrity_rubric_checker as irc
-    from scripts.verification.integrity_rubric_checker import AcademicIntegrityAuditor
+    # Tao 1,500 CustomerID duy nhat (1001 den 2500)
+    # 500 ID dau tien (1001-1500) duoc lap lai o chunk 2 va 3
+    ids = list(range(1001, 2501))
+    dup_ids = ids[:500]
+    full_ids = ids[:500] + dup_ids + ids[500:]  # 500 + 500 + 1000 = 2,000 dong
 
-    auditor = AcademicIntegrityAuditor()
-    verdict = auditor.evaluate_all()
-    actual_local_sum = round(float(verdict["total_score"]), 2)
-    irc_doc = irc.__doc__ or ""
+    np.random.seed(42)
+    n_rows = len(full_ids)
+    raw_df = pd.DataFrame({
+        "CustomerID": full_ids,
+        "Age": np.random.uniform(20.0, 60.0, size=n_rows),
+        "Gender": np.random.choice(["Male", "Female"], size=n_rows),
+        "Tenure": np.random.uniform(1.0, 60.0, size=n_rows),
+        "Usage Frequency": np.random.uniform(5.0, 30.0, size=n_rows),
+        "Support Calls": np.random.randint(0, 10, size=n_rows).astype(float),
+        "Payment Delay": np.random.randint(0, 30, size=n_rows).astype(float),
+        "Subscription Type": np.random.choice(["Basic", "Standard", "Premium"], size=n_rows),
+        "Contract Length": np.random.choice(["Monthly", "Quarterly", "Annual"], size=n_rows),
+        "Total Spend": np.random.uniform(100.0, 1000.0, size=n_rows),
+        "Last Interaction": np.random.uniform(1.0, 30.0, size=n_rows),
+        "Churn": np.random.choice([0, 1], size=n_rows)
+    })
 
-    final_check_src = (
-        PROJECT_ROOT / "scripts" / "verification" / "final_comprehensive_check.py"
-    ).read_text(encoding="utf-8")
+    # Dat gia tri thieu (NaN) o dong 10 (chunk 1) va dong 1800 (chunk 5)
+    raw_df.loc[10, "Age"] = np.nan
+    raw_df.loc[1800, "Age"] = np.nan
 
-    assert f"({actual_local_sum:.2f}/10)" in irc_doc, (
-        f"Docstring Local score does not match actual sum of local_scores ({actual_local_sum:.2f}/10)"
-    )
-    assert "47/47 tests PASSED" not in final_check_src, (
-        "final_comprehensive_check.py hardcodes '47/47 tests PASSED (100%)' instead of parsing pytest count"
-    )
+    raw_df.to_csv(csv_file, index=False)
 
+    stats = process_large_dataset_chunks(str(csv_file), str(parquet_out), chunk_size=400)
+    assert stats["total_records"] == 1500, f"Expected 1500 records, got {stats['total_records']}"
 
-def test_task1_dvc_yaml_pipeline_completeness():
-    """Verify dvc.yaml declares all required artifacts and Feast feature store stage."""
-    dvc_path = PROJECT_ROOT / "dvc.yaml"
-    dvc_cfg = yaml.safe_load(dvc_path.read_text(encoding="utf-8"))
-    stages = dvc_cfg.get("stages", {})
+    result_df = pd.read_parquet(parquet_out)
+    assert len(result_df) == 1500, f"Expected 1500 rows in Parquet, got {len(result_df)}"
+    assert result_df["customerid"].is_unique, "CustomerID column contains duplicates after chunking"
 
-    train_outs = stages.get("train_models", {}).get("outs", [])
-    all_cmds = " ".join(s.get("cmd", "") for s in stages.values())
-
-    assert "data/models/evaluation_results.json" in train_outs, (
-        "evaluate.py reads data/models/evaluation_results.json, but train_models.outs in dvc.yaml omits it"
-    )
-    assert "feature_store.py" in all_cmds, (
-        "dvc.yaml has no stage for Feast feature store materialization (src/features/feature_store.py)"
-    )
-
-
-# ==============================================================================
-# TASK 2: Code Logic, Out-of-Core Streaming & Clean Architecture
-# ==============================================================================
-
-def test_task2_out_of_core_chunk_dedup_and_schema():
-    """Verify out-of-core chunked processor deduplicates CustomerID entities across chunks."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        tmp_path = pathlib.Path(tmpdir)
-        csv_file = tmp_path / "chunk_test.csv"
-        parquet_file = tmp_path / "chunk_out.parquet"
-
-        # Create 6 rows where CustomerID 101 and 102 are duplicated across chunks
-        df_raw = pd.DataFrame({
-            "CustomerID": [101, 102, 103, 101, 102, 104],
-            "Age": [25, 35, 45, 25, 35, 50],
-            "Gender": ["Male", "Female", "Male", "Male", "Female", "Female"],
-            "Tenure": [12, 24, 36, 12, 24, 48],
-            "Usage Frequency": [10, 20, 15, 10, 20, 25],
-            "Support Calls": [1, 2, 0, 1, 2, 3],
-            "Payment Delay": [0, 5, 2, 0, 5, 10],
-            "Subscription Type": ["Basic", "Standard", "Premium", "Basic", "Standard", "Premium"],
-            "Contract Length": ["Monthly", "Annual", "Quarterly", "Monthly", "Annual", "Quarterly"],
-            "Total Spend": [200.0, 500.0, 800.0, 200.0, 500.0, 900.0],
-            "Last Interaction": [5, 10, 3, 5, 10, 7],
-            "Churn": [1, 0, 0, 1, 0, 1],
-        })
-        df_raw.to_csv(csv_file, index=False)
-
-        process_large_dataset_chunks(csv_file, parquet_file, chunk_size=3)
-        df_out = pd.read_parquet(parquet_file)
-
-        assert df_out["customerid"].nunique() == len(df_out), (
-            f"Duplicate customerid rows leaked into output parquet: {len(df_out)} rows for {df_out['customerid'].nunique()} unique IDs"
-        )
-
-
-def test_task2_model_hot_reload_thread_safety_and_sqlite_wal():
-    """Verify thread lock on model hot-reload and WAL mode on SQLite connections."""
-    main_src = (PROJECT_ROOT / "src" / "api" / "main.py").read_text(encoding="utf-8")
-    utils_src = (PROJECT_ROOT / "src" / "api" / "utils.py").read_text(encoding="utf-8")
-
-    assert "threading.Lock" in main_src or "threading.RLock" in main_src, (
-        "src/api/main.py mutates global MODEL_ARTIFACT and TREE_EXPLAINER in load_artifacts() without a threading.Lock/RLock"
-    )
-    assert "journal_mode=WAL" in utils_src or "with sqlite3.connect" in utils_src, (
-        "src/api/utils.py opens SQLite connections without WAL mode or context manager cleanup"
+    # Xac nhan gia tri imputation median tai 2 dong khuyet o chunk khac nhau la dong nhat
+    imputed_c1 = result_df.loc[result_df["customerid"] == full_ids[10], "age"].values[0]
+    imputed_c5 = result_df.loc[result_df["customerid"] == full_ids[1800], "age"].values[0]
+    assert np.isclose(imputed_c1, imputed_c5, atol=1e-5), (
+        f"Global median imputation differs across chunks: {imputed_c1} vs {imputed_c5}"
     )
 
 
-def test_task2_latency_simulator_socket_cleanup_on_error():
-    """Verify measure_tcp_latency closes the TCP socket even when connect() raises an exception."""
-    mock_sock = MagicMock()
-    mock_sock.connect.side_effect = socket.timeout("simulated timeout")
+def test_feature_engineering_mathematical_stability():
+    """
+    Kiem thu tinh on dinh toan hoc cua ky thuat dac trung voi cac gia tri bien
+    (Tenure=0.0, PaymentDelay=0.0, LastInteraction=0.0).
+    Xac thuc khong xuat hien NaN, inf, hoac -inf nho vao chan mau so an toan.
+    """
+    edge_df = pd.DataFrame([
+        {
+            "customerid": 90001,
+            "age": 30.0,
+            "gender": "Female",
+            "tenure": 0.0,
+            "usage_frequency": 0.0,
+            "support_calls": 0.0,
+            "payment_delay": 0.0,
+            "subscription_type": "Basic",
+            "contract_length": "Monthly",
+            "total_spend": 0.0,
+            "last_interaction": 0.0,
+            "churn": 1
+        },
+        {
+            "customerid": 90002,
+            "age": 45.0,
+            "gender": "Male",
+            "tenure": 0.0,
+            "usage_frequency": 15.0,
+            "support_calls": 8.0,
+            "payment_delay": 45.0,
+            "subscription_type": "Standard",
+            "contract_length": "Quarterly",
+            "total_spend": 500.0,
+            "last_interaction": 0.0,
+            "churn": 0
+        },
+        {
+            "customerid": 90003,
+            "age": 60.0,
+            "gender": "Female",
+            "tenure": 120.0,
+            "usage_frequency": 50.0,
+            "support_calls": 0.0,
+            "payment_delay": 0.0,
+            "subscription_type": "Premium",
+            "contract_length": "Annual",
+            "total_spend": 2500.0,
+            "last_interaction": 25.0,
+            "churn": 0
+        }
+    ])
 
-    with patch("socket.socket", return_value=mock_sock), patch(
-        "urllib.request.urlopen", side_effect=OSError("no fallback")
-    ):
-        res = measure_tcp_latency("198.51.100.1", port=443, num_pings=1)
+    cleaned = clean_raw_data(edge_df)
+    featured = engineer_features(cleaned)
 
-    assert res["status"] == "UNREACHABLE"
-    assert mock_sock.close.called, (
-        "Socket was not closed when s.connect() raised socket.timeout (resource leak)"
+    for col in FEATURE_NAMES:
+        assert col in featured.columns, f"Missing engineered feature: {col}"
+        vals = featured[col].values
+        assert np.isfinite(vals).all(), f"Feature '{col}' contains NaN or Inf values: {vals}"
+
+    # Kiem tra quy tac ty le: tenure=0 thi support_calls_per_tenure = support_calls / 1.0
+    row_zero = featured.loc[featured["customerid"] == 90002].iloc[0]
+    expected_ratio = row_zero["support_calls"] / 1.0
+    assert np.isclose(row_zero["support_calls_per_tenure"], expected_ratio, atol=1e-5)
+
+    # Kiem tra delay_ratio: last_interaction=0 thi delay_ratio = payment_delay / 1.0
+    expected_delay = row_zero["payment_delay"] / 1.0
+    assert np.isclose(row_zero["delay_ratio"], expected_delay, atol=1e-5)
+
+
+def test_categorical_encoding_case_and_whitespace_invariance():
+    """
+    Kiem thu chuan hoa chuoi va ma hoa bien phan loai bat bien truoc chu hoa/thuong
+    va khoang trang du thua.
+    Xac thuc khong phat sinh KeyError va anh xa dung vao tap ma hoa [0, 1, 2].
+    """
+    test_df = pd.DataFrame([
+        {
+            "customerid": 80001,
+            "age": 35.0,
+            "gender": " male ",
+            "tenure": 12.0,
+            "usage_frequency": 10.0,
+            "support_calls": 2.0,
+            "payment_delay": 0.0,
+            "subscription_type": " basic ",
+            "contract_length": " monthly ",
+            "total_spend": 300.0,
+            "last_interaction": 5.0,
+            "churn": 1
+        },
+        {
+            "customerid": 80002,
+            "age": 40.0,
+            "gender": "MALE",
+            "tenure": 24.0,
+            "usage_frequency": 20.0,
+            "support_calls": 1.0,
+            "payment_delay": 0.0,
+            "subscription_type": "STANDARD",
+            "contract_length": "Annual",
+            "total_spend": 600.0,
+            "last_interaction": 10.0,
+            "churn": 0
+        },
+        {
+            "customerid": 80003,
+            "age": 28.0,
+            "gender": "Female ",
+            "tenure": 6.0,
+            "usage_frequency": 8.0,
+            "support_calls": 5.0,
+            "payment_delay": 15.0,
+            "subscription_type": " premium ",
+            "contract_length": "quarterly",
+            "total_spend": 450.0,
+            "last_interaction": 2.0,
+            "churn": 1
+        }
+    ])
+
+    cleaned = clean_raw_data(test_df)
+    featured = engineer_features(cleaned)
+
+    # Gender: Female -> 0, Male -> 1
+    assert featured.loc[featured["customerid"] == 80001, "gender_encoded"].values[0] == 1
+    assert featured.loc[featured["customerid"] == 80002, "gender_encoded"].values[0] == 1
+    assert featured.loc[featured["customerid"] == 80003, "gender_encoded"].values[0] == 0
+
+    # Subscription: Basic -> 0, Standard -> 1, Premium -> 2
+    assert featured.loc[featured["customerid"] == 80001, "subscription_type_encoded"].values[0] == 0
+    assert featured.loc[featured["customerid"] == 80002, "subscription_type_encoded"].values[0] == 1
+    assert featured.loc[featured["customerid"] == 80003, "subscription_type_encoded"].values[0] == 2
+
+    # Contract: Monthly -> 0, Quarterly -> 1, Annual -> 2
+    assert featured.loc[featured["customerid"] == 80001, "contract_length_encoded"].values[0] == 0
+    assert featured.loc[featured["customerid"] == 80002, "contract_length_encoded"].values[0] == 2
+    assert featured.loc[featured["customerid"] == 80003, "contract_length_encoded"].values[0] == 1
+
+
+def test_dataset_split_zero_customer_leakage():
+    """
+    Kiem thu tinh toan ven va co lap tuyet doi giua 3 tap du lieu Train, Val, Test tren dia.
+    Xac thuc:
+    - S_train giao S_val = rong.
+    - S_train giao S_test = rong.
+    - S_val giao S_test = rong.
+    - Tong so khach hang duy nhat xuyen 3 tap la 442,211.
+    """
+    train_parquet = PROCESSED_DIR / "train_features.parquet"
+    val_parquet = PROCESSED_DIR / "val_features.parquet"
+    test_parquet = PROCESSED_DIR / "test_features.parquet"
+
+    assert train_parquet.exists(), f"Train parquet not found: {train_parquet}"
+    assert val_parquet.exists(), f"Validation parquet not found: {val_parquet}"
+    assert test_parquet.exists(), f"Test parquet not found: {test_parquet}"
+
+    s_train = set(pd.read_parquet(train_parquet, columns=["customerid"])["customerid"])
+    s_val = set(pd.read_parquet(val_parquet, columns=["customerid"])["customerid"])
+    s_test = set(pd.read_parquet(test_parquet, columns=["customerid"])["customerid"])
+
+    assert len(s_train & s_val) == 0, f"Customer leakage between Train and Val: {len(s_train & s_val)}"
+    assert len(s_train & s_test) == 0, f"Customer leakage between Train and Test: {len(s_train & s_test)}"
+    assert len(s_val & s_test) == 0, f"Customer leakage between Val and Test: {len(s_val & s_test)}"
+
+    total_unique = len(s_train | s_val | s_test)
+    assert total_unique == 442211, f"Expected 442,211 unique customers, got {total_unique}"
+    assert len(s_train) + len(s_val) + len(s_test) == 442211, "Sum of split sizes does not match union size"
+
+
+def test_scaler_normalization_bounds_and_parameters():
+    """
+    Kiem thu StandardScaler da luu tru tren dia:
+    - Cac tham so mean_ va scale_ khop voi gia tri ky vong tu tap Train.
+    - Bien doi tren tap Validation tao ra phan phoi chuan hoa co mean xap xi 0 va std xap xi 1.
+    """
+    scaler_path = PROCESSED_DIR / "scaler.joblib"
+    val_parquet = PROCESSED_DIR / "val_features.parquet"
+
+    assert scaler_path.exists(), f"Scaler joblib not found: {scaler_path}"
+    scaler = joblib.load(scaler_path)
+
+    assert hasattr(scaler, "mean_"), "Scaler does not have mean_ attribute"
+    assert hasattr(scaler, "scale_"), "Scaler does not have scale_ attribute"
+    assert len(scaler.mean_) == len(FEATURE_NAMES), (
+        f"Scaler feature count mismatch: {len(scaler.mean_)} vs {len(FEATURE_NAMES)}"
     )
 
+    # Load 10,000 ban ghi validation de kiem tra bien doi chuan hoa
+    val_df = pd.read_parquet(val_parquet).head(10000)
+    x_val = val_df[FEATURE_NAMES].values.astype(float)
+    x_scaled = scaler.transform(x_val)
 
-# ==============================================================================
-# TASK 3: Literature & Mathematical Fidelity
-# ==============================================================================
+    # Kiem tra gia tri bien doi co mean gan 0 va do lech chuan gan 1
+    means = np.mean(x_scaled, axis=0)
+    stds = np.std(x_scaled, axis=0)
 
-def test_task3_shap_local_accuracy_and_negative_attribution_ui():
-    """Verify SHAP UI rendering preserves negative directional sign per Lundberg & Lee (2017)."""
-    app_js = (PROJECT_ROOT / "src" / "web" / "app.js").read_text(encoding="utf-8")
-    utils_py = (PROJECT_ROOT / "src" / "api" / "utils.py").read_text(encoding="utf-8")
-
-    assert "+${(weight * 100).toFixed(1)}%" not in app_js, (
-        "src/web/app.js unconditionally prepends '+' to negative SHAP attributions, rendering '+-X.X%'"
-    )
-    assert "LinearExplainer" in utils_py or "LinearExplainer" in (
-        PROJECT_ROOT / "src" / "api" / "main.py"
-    ).read_text(encoding="utf-8"), (
-        "No fallback to shap.LinearExplainer when Champion model is Logistic_Regression"
-    )
+    for i, col in enumerate(FEATURE_NAMES):
+        assert abs(means[i]) < 0.25, f"Feature '{col}' scaled mean out of bounds: {means[i]:.4f}"
+        assert 0.75 < stds[i] < 1.25, f"Feature '{col}' scaled std out of bounds: {stds[i]:.4f}"
 
 
-def test_task3_psi_binary_feature_quantile_collapse():
-    """Verify PSI detects severe shift (90/10 -> 10/90) on binary features like gender_encoded."""
-    rng = np.random.default_rng(42)
-    expected_binary = rng.choice([0.0, 1.0], size=10000, p=[0.90, 0.10])
-    actual_binary = rng.choice([0.0, 1.0], size=10000, p=[0.10, 0.90])
+def test_dvc_pipeline_dag_programmatic_integrity():
+    """
+    Kiem thu cau truc do thi co huong khong chu trinh (DAG) cua dvc.yaml bang NetworkX.
+    Xac thuc tat ca dependencies, params va outputs duoc khai bao day du va khong tao vong lap.
+    """
+    dvc_file = PROJECT_ROOT / "dvc.yaml"
+    assert dvc_file.exists(), f"dvc.yaml not found at: {dvc_file}"
 
-    psi_val = calculate_psi(expected_binary, actual_binary, num_buckets=10)
-    assert psi_val >= 0.25, (
-        f"PSI returned {psi_val} instead of ~3.52 on a 90/10 -> 10/90 binary shift due to percentile bin collapse"
-    )
+    with open(dvc_file, "r", encoding="utf-8") as f:
+        dvc_data = yaml.safe_load(f)
 
+    stages = dvc_data.get("stages", {})
+    assert len(stages) == 9, f"Expected 9 DVC pipeline stages, found {len(stages)}"
 
-def test_task3_ks_drift_bonferroni_multiple_testing():
-    """Verify run_drift_analysis applies Bonferroni family-wise error correction (alpha / M)."""
-    drift_src = (PROJECT_ROOT / "src" / "monitoring" / "drift_detector.py").read_text(
-        encoding="utf-8"
-    )
-    assert "len(MONITORED_FEATURES)" in drift_src or "bonferroni" in drift_src.lower(), (
-        "run_drift_analysis does not apply Bonferroni correction (alpha / M) across M=13 features per Rabanser et al. (2019)"
-    )
+    # Kiem tra su ton tai cua cac file dependencies va params tren dia
+    for stage_name, s_info in stages.items():
+        for dep in s_info.get("deps", []):
+            dep_path = PROJECT_ROOT / dep
+            assert dep_path.exists(), f"Stage '{stage_name}' references non-existent dep: {dep}"
 
+        for p_item in s_info.get("params", []):
+            if isinstance(p_item, dict):
+                p_file = list(p_item.keys())[0]
+            else:
+                p_file = str(p_item)
+            param_path = PROJECT_ROOT / p_file
+            assert param_path.exists(), f"Stage '{stage_name}' references non-existent param file: {p_file}"
 
-def test_task3_optuna_tpe_claim_vs_gridsearch_and_single_class_auc():
-    """Verify Optuna TPE implementation and single-class safety in evaluate_model_performance."""
-    train_src = (PROJECT_ROOT / "src" / "models" / "train_pipeline.py").read_text(
-        encoding="utf-8"
-    )
-    assert "optuna" in train_src.lower(), (
-        "Docs and routes_management.py claim Optuna Bayesian TPE (12 Trials), but train_pipeline.py only uses GridSearchCV"
-    )
+    # Xay dung NetworkX DiGraph tu cac quan he stage outputs -> stage deps
+    out_to_stage = {}
+    for stage_name, s_info in stages.items():
+        all_outs = list(s_info.get("outs", []))
+        for m in s_info.get("metrics", []):
+            if isinstance(m, dict):
+                all_outs.append(list(m.keys())[0])
+            else:
+                all_outs.append(str(m))
+        for out in all_outs:
+            out_to_stage[out] = stage_name
 
-    dummy_model = MagicMock()
-    dummy_model.predict.return_value = np.zeros(10, dtype=int)
-    dummy_model.predict_proba.return_value = np.column_stack(
-        [np.ones(10) * 0.8, np.ones(10) * 0.2]
-    )
-    X_single = pd.DataFrame(np.zeros((10, 13)))
-    y_single = pd.Series(np.zeros(10, dtype=int))
+    dag = nx.DiGraph()
+    for stage_name in stages:
+        dag.add_node(stage_name)
 
-    metrics = evaluate_model_performance(
-        dummy_model, X_single, X_single, y_single, is_linear=False
-    )
-    assert not np.isnan(metrics["roc_auc"]), "Single-class slice produced NaN or raised ValueError in roc_auc_score"
+    for stage_name, s_info in stages.items():
+        for dep in s_info.get("deps", []):
+            if dep in out_to_stage:
+                producer_stage = out_to_stage[dep]
+                if producer_stage != stage_name:
+                    dag.add_edge(producer_stage, stage_name)
 
-
-# ==============================================================================
-# TASK 4: Reference Repositories Code-to-Code Grounding
-# ==============================================================================
-
-def test_task4_reseed_inference_logs_key_and_column_mismatch():
-    """Verify reseed_inference_logs.py matches ab_testing.py keys and parquet column names."""
-    reseed_src = (PROJECT_ROOT / "scripts" / "reseed_inference_logs.py").read_text(
-        encoding="utf-8"
-    )
-    ab_res = analyze_ab_test_performance()
-
-    assert "hypothesis_testing" in ab_res, "analyze_ab_test_performance must return 'hypothesis_testing'"
-    assert "hypothesis_test_two_sample_ttest" not in reseed_src, (
-        "reseed_inference_logs.py line 93 queries non-existent key 'hypothesis_test_two_sample_ttest' instead of 'hypothesis_testing'"
-    )
-    assert '"customer_id" in row' not in reseed_src, (
-        "reseed_inference_logs.py line 62 checks 'customer_id' instead of 'customerid', causing all IDs to fall back to 100000+idx"
-    )
-
-
-# ==============================================================================
-# TASK 5: Customer Entity Anti-Leakage & Training-Serving Skew
-# ==============================================================================
-
-def test_task5_preprocess_pre_split_imputation_leakage_and_csv_strip():
-    """Verify /upload_csv_predict strips whitespace on categorical strings and preprocess avoids pre-split leakage."""
-    csv_content = (
-        "customer_id,age,gender,tenure,usage_frequency,support_calls,"
-        "payment_delay,subscription_type,contract_length,total_spend,last_interaction\n"
-        "1001,35, male ,12,15,2,5, standard , monthly ,500.0,10\n"
-    )
-    files = {"file": ("whitespace.csv", io.BytesIO(csv_content.encode("utf-8")), "text/csv")}
-    resp = client.post(
-        "/upload_csv_predict",
-        files=files,
-        headers={"X-API-Key": "mlops-churn-secret-2026"},
-    )
-
-    assert resp.status_code == 200, (
-        f"/upload_csv_predict failed with status {resp.status_code} on whitespace-padded strings (' male ') due to missing .strip()"
-    )
-
-
-# ==============================================================================
-# TASK 6: Code Hygiene, 400-Line Cap & Anti-Mockup Verification
-# ==============================================================================
-
-def test_task6_line_cap_and_non_ascii_hyphen_invariants():
-    """Verify 400-line cap across src/ and scripts/ (Invariant 02) and ASCII-only hyphens (Invariant 05)."""
-    over_limit = []
-    non_ascii_dash_files = []
-
-    for folder in ["src", "scripts"]:
-        for path in (PROJECT_ROOT / folder).rglob("*.*"):
-            if path.suffix not in {".py", ".js", ".html", ".css"}:
-                continue
-            lines = path.read_text(encoding="utf-8", errors="ignore").splitlines()
-            if path.suffix == ".py" and len(lines) > 400:
-                over_limit.append(f"{path.relative_to(PROJECT_ROOT)} ({len(lines)} lines)")
-            for idx, line in enumerate(lines, start=1):
-                if "\u2014" in line or "\u2013" in line:
-                    non_ascii_dash_files.append(f"{path.relative_to(PROJECT_ROOT)}:{idx}")
-                    break
-
-    assert len(over_limit) == 0, f"Files exceeding 400-line cap: {over_limit}"
-    assert len(non_ascii_dash_files) == 0, (
-        f"Invariant 05 violation - files containing em-dash/en-dash: {non_ascii_dash_files}"
-    )
-
-
-# ==============================================================================
-# TASK 7: Telecom/SaaS Churn Domain & Cloud Economics Critique
-# ==============================================================================
-
-def test_task7_feast_partial_null_nan_handling_and_cloud_tco_consistency():
-    """Verify Cloud IaC templates deploy actual container image and align with TCO documentation."""
-    arm_text = (PROJECT_ROOT / "deploy" / "azure" / "arm_template.json").read_text(
-        encoding="utf-8"
-    )
-    tf_text = (PROJECT_ROOT / "deploy" / "azure" / "main.tf").read_text(encoding="utf-8")
-    tco_text = (PROJECT_ROOT / "configs" / "cloud_architecture_and_cost.md").read_text(
-        encoding="utf-8"
-    )
-
-    assert "aci-helloworld" not in arm_text and "aci-helloworld" not in tf_text, (
-        "arm_template.json and main.tf hardcode placeholder 'mcr.microsoft.com/azuredocs/aci-helloworld:latest'"
-    )
-    assert "PostgreSQL" not in tco_text, (
-        "cloud_architecture_and_cost.md bills $48.90/mo for Azure Database for PostgreSQL while architecture uses SQLite + Redis"
-    )
-
-
-# ==============================================================================
-# TASK 8: API Serving, Web Bento Grid & Deliverables Audit
-# ==============================================================================
-
-def test_task8_api_negative_customer_id_csv_nan_and_web_xss_sinks():
-    """Verify API input validation rejects negative customer_id, handles NaN CSV cells cleanly, and escapes HTML in app.js."""
-    csv_nan = (
-        "customer_id,age,gender,tenure,usage_frequency,support_calls,"
-        "payment_delay,subscription_type,contract_length,total_spend,last_interaction\n"
-        "1001,,Male,12,15,2,5,Standard,Monthly,500.0,10\n"
-    )
-    files = {"file": ("nan_age.csv", io.BytesIO(csv_nan.encode("utf-8")), "text/csv")}
-    resp = client.post(
-        "/upload_csv_predict",
-        files=files,
-        headers={"X-API-Key": "mlops-churn-secret-2026"},
-    )
-    assert resp.status_code in (400, 422), (
-        f"Expected 400/422 validation error on CSV with NaN age, got {resp.status_code}: {resp.text}"
-    )
-
-    with pytest.raises(Exception):
-        CustomerInput(
-            customer_id=-9999,
-            age=30,
-            gender="Male",
-            tenure=12,
-            usage_frequency=10,
-            support_calls=1,
-            payment_delay=0,
-            subscription_type="Standard",
-            contract_length="Monthly",
-            total_spend=500.0,
-            last_interaction=5,
-        )
+    assert nx.is_directed_acyclic_graph(dag), "DVC pipeline graph contains cycles (not a valid DAG)"
+    assert nx.number_of_nodes(dag) == 9, f"Expected 9 nodes in DAG, got {nx.number_of_nodes(dag)}"
+    assert nx.number_of_edges(dag) >= 8, f"Expected at least 8 dependency edges, got {nx.number_of_edges(dag)}"

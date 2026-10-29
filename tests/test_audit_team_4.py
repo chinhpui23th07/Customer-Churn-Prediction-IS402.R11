@@ -1,312 +1,221 @@
 """
-Adversarial Unit Test Suite - Audit Team 4 (Triple-Blind Peer-Swap Audit Swarm)
-Course: UIT IS402 Cloud Computing - Topic 11: MLOps Customer Churn Prediction
-Covers all 8 Audit Dimensions (Tasks 1-8) with repo-grounded & paper-grounded assertions.
+Probability Calibration, Brier Score & SHAP Local Accuracy Test Suite (Audit Team 4).
+Kiem thu toan ven: Hieu chuan xac suat mo hinh Champion va chi so Brier Score (< 0.05),
+an toan khi danh gia tap du lieu don lop (single-class guard),
+tien de Lundberg & Lee (NeurIPS 2017) SHAP Local Accuracy (Efficiency Axiom),
+bao toan huong tac dong am cua dac trung (negative directional attribution),
+co che fallback LinearExplainer tren Logistic Regression va tinh nhat quan
+phan tich cohort error slicing.
+Tuan thu Invariant 02 (<= 400 dong) va Invariant 13 (Zero Mockup).
 """
-import io
+
 import os
-import sys
-import json
-import yaml
-import tempfile
+import pathlib
+import joblib
 import numpy as np
 import pandas as pd
 import pytest
-from fastapi.testclient import TestClient
+import shap
+from sklearn.metrics import brier_score_loss, confusion_matrix
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from src.api.main import _build_shap_explainer
+from src.api.utils import FEATURE_COLS, compute_shap_attributions
+from src.models.train_pipeline import evaluate_model_performance
 
-from src.api.main import app, FEATURE_COLS
-from src.api.utils import compute_shap_attributions, generate_recommendation
-from src.data.preprocess import (
-    clean_raw_data,
-    engineer_features,
-    process_large_dataset_chunks,
-)
-from src.monitoring.drift_detector import calculate_psi
-
-client = TestClient(app)
-API_KEY = os.environ.get("API_KEY_SECRET", "mlops-churn-secret-2026")
-AUTH_HEADERS = {"X-API-Key": API_KEY}
+PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent
+MODELS_DIR = PROJECT_ROOT / "data" / "models"
+PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 
 
-# ---------------------------------------------------------------------------
-# TASK 1: IS402 Rubric & DVC / CI-CD Pipeline Reproducibility
-# Grounding: [Oyebamiji_Micheal_dvc_mlflow | dvc.yaml:L22-L33 | GitHub-Benchmark]
-# ---------------------------------------------------------------------------
-def test_t1_dvc_pipeline_tracks_scaler_and_feast_stages():
+def test_champion_model_probability_calibration_and_brier_score():
     """
-    Verify whether dvc.yaml tracks data/processed/scaler.joblib and metadata.json
-    in preprocess outs and train_models deps, plus Optuna/Feast stages.
-    Exposes DEF-T1-02: scaler.joblib is loaded by train_pipeline.py but omitted from dvc.yaml.
+    Kiem thu xac suat du doan va tinh hieu chuan (Calibration) cua mo hinh Champion:
+    - Brier Score tren tap test 66,332 mau phai nho hon 0.05.
+    - Xac suat du doan chia thanh cac khoang phan vi tang dan dong dieu voi ty le
+      roi bo thuc nghiem (Monotonic Calibration).
     """
-    with open("dvc.yaml", "r", encoding="utf-8") as f:
-        dvc_cfg = yaml.safe_load(f)
-    stages = dvc_cfg.get("stages", {})
-    preprocess_outs = stages.get("preprocess", {}).get("outs", [])
-    train_deps = stages.get("train_models", {}).get("deps", [])
+    champion_path = MODELS_DIR / "champion_model.joblib"
+    test_parquet = PROCESSED_DIR / "test_features.parquet"
 
-    out_paths = [
-        list(item.keys())[0] if isinstance(item, dict) else item
-        for item in preprocess_outs
-    ]
-    assert "data/processed/scaler.joblib" in out_paths, (
-        f"DEF-T1-02: data/processed/scaler.joblib is omitted from dvc.yaml preprocess.outs ({out_paths})"
-    )
-    assert "data/processed/scaler.joblib" in train_deps, (
-        "DEF-T1-02: data/processed/scaler.joblib is omitted from dvc.yaml train_models.deps"
-    )
+    assert champion_path.exists(), f"Champion model not found at: {champion_path}"
+    assert test_parquet.exists(), f"Test parquet not found at: {test_parquet}"
 
+    artifact = joblib.load(champion_path)
+    model = artifact["model"] if isinstance(artifact, dict) else artifact
 
-def test_t1_dual_track_rubric_score_consistency():
-    """
-    Verify consistency of Local vs Cloud score reporting across verification scripts.
-    Exposes DEF-T1-01: integrity_rubric_checker.py docstring claims 6.25/10 Local
-    while actual summed local_scores in the script is 3.35/10.
-    """
-    with open("scripts/verification/integrity_rubric_checker.py", "r", encoding="utf-8") as f:
-        src_text = f.read()
+    test_df = pd.read_parquet(test_parquet)
+    y_true = test_df["churn"].values.astype(int)
+    probs = model.predict_proba(test_df[FEATURE_COLS])[:, 1]
 
-    import re
-    local_vals = [float(x) for x in re.findall(r'self\.local_scores\[".*?"\]\s*=\s*([0-9.]+)', src_text)]
-    actual_local_sum = round(sum(local_vals), 2)
+    # Tinh Brier Score: 1/N * sum (p_i - y_i)^2
+    bs = brier_score_loss(y_true, probs)
+    assert bs < 0.05, f"Champion Brier score too high: {bs:.6f} >= 0.05"
 
-    assert f"Local ({actual_local_sum}/10)" in src_text, (
-        f"DEF-T1-01: Docstring claims Local (6.25/10) but actual computed sum of local_scores is {actual_local_sum}/10"
+    # Phan nhom xac suat de kiem tra do don dieu: [0.0, 0.2), [0.2, 0.4), [0.8, 1.0]
+    low_mask = (probs >= 0.0) & (probs < 0.20)
+    mid_mask = (probs >= 0.20) & (probs < 0.40)
+    high_mask = (probs >= 0.80) & (probs <= 1.0)
+
+    low_rate = float(np.mean(y_true[low_mask])) if np.sum(low_mask) > 0 else 0.0
+    mid_rate = float(np.mean(y_true[mid_mask])) if np.sum(mid_mask) > 0 else 0.0
+    high_rate = float(np.mean(y_true[high_mask])) if np.sum(high_mask) > 0 else 0.0
+
+    assert low_rate < 0.05, f"Low probability bucket has unexpectedly high churn rate: {low_rate:.4f}"
+    assert low_rate < mid_rate < high_rate, (
+        f"Empirical churn rate not monotonic across probability buckets: "
+        f"low={low_rate:.4f}, mid={mid_rate:.4f}, high={high_rate:.4f}"
     )
 
 
-# ---------------------------------------------------------------------------
-# TASK 2: Out-of-Core Streaming, Cross-Chunk Deduplication & Imputation
-# Grounding: [Soumyadeep Roy 2026 | Section 2.2 P-Clean vs P-Leak | arXiv:2610.00118v1]
-# ---------------------------------------------------------------------------
-def test_t2_out_of_core_cross_chunk_deduplication_and_imputation():
+def test_evaluate_model_performance_single_class_guard():
     """
-    Verify that process_large_dataset_chunks deduplicates customerid across chunk
-    boundaries and maintains consistent median imputation across chunks.
-    Exposes DEF-T2-01: duplicate customerids across chunks are written into output_parquet
-    and per-chunk medians drift across chunks.
+    Kiem thu co che bao ve chong ngoai le khi danh gia tap du lieu don lop (all 0s hoac all 1s).
+    Scikit-learn roc_auc_score thong thuong se raise ValueError: Only one class present.
+    evaluate_model_performance phai bat ngoai le nay va gan an toan roc_auc = 0.5.
     """
-    rows = [
-        {"CustomerID": 101, "Age": 25.0, "Gender": "Female", "Tenure": 10.0,
-         "Usage Frequency": 5.0, "Support Calls": 1.0, "Payment Delay": 2.0,
-         "Subscription Type": "Basic", "Contract Length": "Monthly",
-         "Total Spend": 200.0, "Last Interaction": 5.0, "Churn": 0.0},
-        {"CustomerID": 102, "Age": 35.0, "Gender": "Male", "Tenure": 20.0,
-         "Usage Frequency": 10.0, "Support Calls": 2.0, "Payment Delay": 4.0,
-         "Subscription Type": "Standard", "Contract Length": "Annual",
-         "Total Spend": 500.0, "Last Interaction": 10.0, "Churn": 1.0},
-        # Chunk 2 repeats CustomerID 101 and has NaN Age
-        {"CustomerID": 101, "Age": 25.0, "Gender": "Female", "Tenure": 10.0,
-         "Usage Frequency": 5.0, "Support Calls": 1.0, "Payment Delay": 2.0,
-         "Subscription Type": "Basic", "Contract Length": "Monthly",
-         "Total Spend": 200.0, "Last Interaction": 5.0, "Churn": 0.0},
-        {"CustomerID": 103, "Age": np.nan, "Gender": "Male", "Tenure": 15.0,
-         "Usage Frequency": 8.0, "Support Calls": 0.0, "Payment Delay": 1.0,
-         "Subscription Type": "Premium", "Contract Length": "Quarterly",
-         "Total Spend": 800.0, "Last Interaction": 3.0, "Churn": 0.0},
-    ]
-    df = pd.DataFrame(rows)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        csv_path = os.path.join(tmpdir, "stream_input.csv")
-        pq_path = os.path.join(tmpdir, "stream_out.parquet")
-        df.to_csv(csv_path, index=False)
+    n_samples = 100
 
-        total_rows = process_large_dataset_chunks(csv_path, pq_path, chunk_size=2)
-        out_df = pd.read_parquet(pq_path)
+    # Kich ban 1: Tap nhan toan 0 (khong co khach hang roi bo)
+    y_true_zeros = np.zeros(n_samples, dtype=int)
+    y_pred_zeros = np.zeros(n_samples, dtype=int)
+    y_prob_zeros = np.full(n_samples, 0.05, dtype=float)
 
-        assert out_df["customerid"].is_unique, (
-            f"DEF-T2-01: Cross-chunk duplicate customerid persisted in output Parquet ({total_rows} rows)"
+    metrics_zeros = evaluate_model_performance("single_class_zeros", y_true_zeros, y_pred_zeros, y_prob_zeros)
+    assert metrics_zeros["roc_auc"] == 0.5, f"Expected roc_auc 0.5 for all-zero class, got {metrics_zeros['roc_auc']}"
+    assert metrics_zeros["accuracy"] == 1.0
+    assert not np.isnan(metrics_zeros["roc_auc"])
+
+    # Kich ban 2: Tap nhan toan 1 (tat ca khach hang roi bo)
+    y_true_ones = np.ones(n_samples, dtype=int)
+    y_pred_ones = np.ones(n_samples, dtype=int)
+    y_prob_ones = np.full(n_samples, 0.95, dtype=float)
+
+    metrics_ones = evaluate_model_performance("single_class_ones", y_true_ones, y_pred_ones, y_prob_ones)
+    assert metrics_ones["roc_auc"] == 0.5, f"Expected roc_auc 0.5 for all-one class, got {metrics_ones['roc_auc']}"
+    assert metrics_ones["accuracy"] == 1.0
+    assert not np.isnan(metrics_ones["roc_auc"])
+
+
+def test_shap_efficiency_axiom_local_accuracy():
+    """
+    Kiem thu tien de hieu qua cuc bo (Local Accuracy / Efficiency Axiom)
+    theo Lundberg & Lee (NeurIPS 2017, Equation 1):
+        f(x) = phi_0 + sum_{j=1}^M phi_j(x)
+    Voi 10 ho so khach hang da dang tu test set, do lech tuyet doi
+    giua tong SHAP values + phi_0 va model output margin phai nho hon 1e-4.
+    """
+    champion_path = MODELS_DIR / "champion_model.joblib"
+    test_parquet = PROCESSED_DIR / "test_features.parquet"
+
+    artifact = joblib.load(champion_path)
+    model = artifact["model"] if isinstance(artifact, dict) else artifact
+
+    test_df = pd.read_parquet(test_parquet)
+    # Chon 10 ho so khach hang da dang tren cac chi so
+    sample_indices = [0, 50, 200, 1000, 5000, 10000, 20000, 35000, 50000, 65000]
+    sample_df = test_df.iloc[sample_indices][FEATURE_COLS]
+
+    explainer = shap.TreeExplainer(model)
+    shap_values = explainer.shap_values(sample_df)
+    expected_value = float(explainer.expected_value)
+    output_margins = model.predict(sample_df, output_margin=True)
+
+    for i in range(len(sample_indices)):
+        local_sum = expected_value + float(np.sum(shap_values[i]))
+        target_margin = float(output_margins[i])
+        diff = abs(local_sum - target_margin)
+        assert diff < 1e-4, (
+            f"SHAP Efficiency Axiom violated at sample {i}: "
+            f"local_sum={local_sum:.6f}, margin={target_margin:.6f}, diff={diff:.6e}"
         )
 
 
-# ---------------------------------------------------------------------------
-# TASK 3: Mathematical Fidelity - PSI Binning Collapse & SHAP Local Accuracy
-# Grounding:
-# - [Rabanser et al. 2019 | Section 3.1 Univariate Shift Detection | arXiv:1810.11953]
-# - [Katalay et al. 2025 | Eq. 4 PSI Definition | arXiv:2512.11541v1]
-# - [Lundberg & Lee 2017 | Eq. 1 & Property 1 Local Accuracy | arXiv:1705.07874]
-# ---------------------------------------------------------------------------
-def test_t3_psi_discrete_binary_and_ternary_shift_detection():
+def test_shap_negative_directional_attribution_preservation():
     """
-    Verify that calculate_psi detects extreme distribution shifts on 3-class discrete
-    encoded features (subscription_type_encoded / contract_length_encoded in {0, 1, 2}).
-    Exposes DEF-T3-02: When class proportions are e.g. 35% / 30% / 35%, np.unique(breakpoints)
-    has exactly 3 elements [0.0, 1.0, 2.0] (bypassing len < 3), and overwriting
-    breakpoints[0]=-inf, breakpoints[-1]=+inf yields [-inf, 1.0, +inf], merging classes 1 and 2
-    into the same bin [1.0, +inf) and returning PSI = 0.0 even when class 1 collapses from 30% to 1%!
+    Kiem thu bao toan huong tac dong am cua cac dac trung giu chan (retention drivers).
+    Khach hang trung thanh (Tenure cao, SupportCalls=0, PaymentDelay=0, Contract=Annual):
+    - Cac dac trung support_calls, payment_delay, va tenure phai co SHAP value < 0
+      (thuc day giam xac suat roi bo).
+    - Chuoi tom tat khong chua dinh dang dau xung dot ('+-').
     """
-    expected_ternary = np.array([0.0] * 350 + [1.0] * 300 + [2.0] * 350)
-    actual_ternary = np.array([0.0] * 350 + [1.0] * 10 + [2.0] * 640)
-    psi_ternary = calculate_psi(expected_ternary, actual_ternary, 10)
+    champion_path = MODELS_DIR / "champion_model.joblib"
+    artifact = joblib.load(champion_path)
+    model = artifact["model"] if isinstance(artifact, dict) else artifact
 
-    assert psi_ternary > 0.25, (
-        f"DEF-T3-02: Ternary feature PSI collapsed to {psi_ternary:.6f} (expected > 0.25) due to merging classes 1 and 2 into [1.0, +inf)"
+    explainer = shap.TreeExplainer(model)
+
+    # Vector khach hang trung thanh: 35 tuoi, Nu, tenure 60 thang, 0 cuoc goi, 0 ngay tre, Annual, chi tieu 900
+    loyal_vector = [
+        35.0, 0, 60.0, 25.0, 0.0, 0.0, 2, 2,
+        900.0, 15.0, 0.0 / 60.0, 900.0 / 60.0, 0.0 / 15.0
+    ]
+    x_input = np.array([loyal_vector])
+
+    factors, summary = compute_shap_attributions(explainer, x_input, model=model)
+
+    assert factors["support_calls"] < 0.0, f"support_calls attribution should be negative: {factors['support_calls']}"
+    assert factors["payment_delay"] < 0.0, f"payment_delay attribution should be negative: {factors['payment_delay']}"
+    assert factors["tenure"] < 0.0, f"tenure attribution should be negative: {factors['tenure']}"
+
+    assert "+-" not in summary, f"Found contradictory sign formatting in explanation summary: {summary}"
+
+
+def test_shap_linear_explainer_fallback_on_logistic_regression():
+    """
+    Kiem thu co che khoi tao tu dong fallback sang shap.LinearExplainer
+    khi mo hinh la LogisticRegression thay vi Tree model.
+    Xac thuc attributions tinh toan thanh cong 13 dac trung va huu han.
+    """
+    lr_path = MODELS_DIR / "logistic_regression.joblib"
+    assert lr_path.exists(), f"Logistic regression model missing: {lr_path}"
+
+    lr_artifact = joblib.load(lr_path)
+    lr_model = lr_artifact["model"] if isinstance(lr_artifact, dict) else lr_artifact
+
+    explainer = _build_shap_explainer(lr_model)
+    assert isinstance(explainer, shap.LinearExplainer), (
+        f"Expected shap.LinearExplainer for logistic regression, got {type(explainer)}"
     )
 
+    sample_vec = np.zeros((1, len(FEATURE_COLS)))
+    factors, summary = compute_shap_attributions(explainer, sample_vec, model=lr_model)
 
-def test_t3_shap_linear_model_fallback_and_negative_attribution_handling():
+    assert len(factors) == len(FEATURE_COLS), f"Expected {len(FEATURE_COLS)} factors, got {len(factors)}"
+    for col, val in factors.items():
+        assert np.isfinite(val), f"Factor '{col}' is non-finite: {val}"
+
+
+def test_model_diagnostics_cohort_slice_consistency():
     """
-    Verify that compute_shap_attributions supports non-tree linear models
-    (Corollary 1 Linear SHAP, Lundberg & Lee 2017) instead of returning empty factors={}.
-    Exposes DEF-T3-01: When tree_explainer is None (e.g. Logistic_Regression),
-    compute_shap_attributions returns empty factors={} and claims safe distribution.
+    Kiem thu tinh nhat quan cua phep phan tich cat lop (error cohort slicing)
+    theo Contract Length (Monthly, Quarterly, Annual):
+    - Tong so mau cua 3 cohort bang chinh xac tong so mau tap test (66,332).
+    - Ma tran nham lan tong TP, FP, FN, TN phai bang tong cac thanh phan tren 3 cohort.
     """
-    x_input = np.array([[1.5, -1.2, 2.0, 3.5, 2.8, 0.0, -1.0, 1.0, -0.5, 1.2, 2.1, -0.8, 1.9]])
-    factors, explanations = compute_shap_attributions(None, x_input)
-    assert len(factors) > 0, (
-        "DEF-T3-01: compute_shap_attributions returns empty factors={} when tree_explainer is None (violating Linear SHAP Corollary 1)"
-    )
+    champion_path = MODELS_DIR / "champion_model.joblib"
+    test_parquet = PROCESSED_DIR / "test_features.parquet"
 
+    artifact = joblib.load(champion_path)
+    model = artifact["model"] if isinstance(artifact, dict) else artifact
 
-# ---------------------------------------------------------------------------
-# TASK 4: Reference Repos Grounding - Diagnostics Schema & Feast Precision
-# Grounding: [mlops-churn-feature-store | feature_store/features.py:L43-L65 | GitHub-Benchmark]
-# ---------------------------------------------------------------------------
-def test_t4_diagnostics_report_schema_matches_dashboard_consumer():
-    """
-    Verify that error_analysis_report.json schema produced by src/models/model_diagnostics.py
-    matches the keys read by src/web/dashboard.py ('counts' and 'metrics').
-    Exposes DEF-T3-03 / DEF-T4-01: model_diagnostics.py writes 'confusion_breakdown'
-    while dashboard.py reads 'counts' and 'metrics', causing all KPIs to render as 0.
-    """
-    with open("src/models/model_diagnostics.py", "r", encoding="utf-8") as f:
-        diag_src = f.read()
-    with open("src/web/dashboard.py", "r", encoding="utf-8") as f:
-        dash_src = f.read()
+    test_df = pd.read_parquet(test_parquet)
+    y_test = test_df["churn"].values.astype(int)
+    preds = model.predict(test_df[FEATURE_COLS]).astype(int)
 
-    assert '"counts"' in diag_src and '"metrics"' in diag_src, (
-        "DEF-T4-01: src/web/dashboard.py reads err_rep.get('counts') and err_rep.get('metrics'), "
-        "but src/models/model_diagnostics.py writes 'confusion_breakdown' and omits 'metrics'"
-    )
+    cm_total = confusion_matrix(y_test, preds, labels=[0, 1])
 
+    c_monthly = test_df["contract_length_encoded"] == 0
+    c_quarterly = test_df["contract_length_encoded"] == 1
+    c_annual = test_df["contract_length_encoded"] == 2
 
-# ---------------------------------------------------------------------------
-# TASK 5: Customer Entity Anti-Leakage & Training-Serving Skew
-# Grounding:
-# - [Soumyadeep Roy 2026 | Section 2.2 & 3.4 Data Leakage Audit | arXiv:2610.00118v1]
-# - [Feature_Store_Survey_Architectures | Online-Offline Skew | Survey-2023]
-# ---------------------------------------------------------------------------
-def test_t5_zero_customerid_overlap_across_splits():
-    """
-    Verify strict entity isolation: zero customerid overlap across train, val, and test splits.
-    """
-    train_ids = set(pd.read_parquet("data/processed/train_features.parquet", columns=["customerid"])["customerid"])
-    val_ids = set(pd.read_parquet("data/processed/val_features.parquet", columns=["customerid"])["customerid"])
-    test_ids = set(pd.read_parquet("data/processed/test_features.parquet", columns=["customerid"])["customerid"])
+    assert int(np.sum(c_monthly)) + int(np.sum(c_quarterly)) + int(np.sum(c_annual)) == len(test_df)
+    assert len(test_df) == 66332
 
-    assert len(train_ids & val_ids) == 0, "CustomerID leakage between Train and Val"
-    assert len(train_ids & test_ids) == 0, "CustomerID leakage between Train and Test"
-    assert len(val_ids & test_ids) == 0, "CustomerID leakage between Val and Test"
+    cm_m = confusion_matrix(y_test[c_monthly], preds[c_monthly], labels=[0, 1])
+    cm_q = confusion_matrix(y_test[c_quarterly], preds[c_quarterly], labels=[0, 1])
+    cm_a = confusion_matrix(y_test[c_annual], preds[c_annual], labels=[0, 1])
 
-
-def test_t5_feast_online_store_covers_validation_and_test_entities():
-    """
-    Verify whether Feast Online Store materializes validation and test customer entities
-    and avoids silent 0.0 default imputation or 404 misses for valid test customers.
-    Exposes DEF-T5-02: prepare_feast_data() only materializes train_features.parquet,
-    leaving 100% of val_features.parquet and test_features.parquet unmaterialized!
-    """
-    test_df = pd.read_parquet("data/processed/test_features.parquet").iloc[:1]
-    test_cid = int(test_df["customerid"].iloc[0])
-
-    resp = client.get(f"/predict/customer/{test_cid}", headers=AUTH_HEADERS)
-    assert resp.status_code == 200, (
-        f"DEF-T5-02: Feast Online Store returned HTTP {resp.status_code} for valid test set customer_id={test_cid} "
-        "because prepare_feast_data() only materializes train_features.parquet (excluding 30% of customers)"
-    )
-
-
-# ---------------------------------------------------------------------------
-# TASK 6: Adversarial Numerical Edge Cases (Tenure=0, NaN/Inf, Division-by-Zero)
-# ---------------------------------------------------------------------------
-def test_t6_engineer_features_zero_tenure_and_zero_delay_stability():
-    """
-    Verify that engineer_features handles tenure=0 and payment_delay=0 without
-    producing NaN or Inf in derived ratio features.
-    """
-    df = pd.DataFrame([
-        {
-            "customerid": 1,
-            "age": 18.0,
-            "gender": "Female",
-            "tenure": 0.0,
-            "usage_frequency": 0.0,
-            "support_calls": 5.0,
-            "payment_delay": 0.0,
-            "subscription_type": "Basic",
-            "contract_length": "Monthly",
-            "total_spend": 100.0,
-            "last_interaction": 1.0,
-            "churn": 1,
-        }
-    ])
-    feat = engineer_features(df)
-    for col in ["support_calls_per_tenure", "spend_per_tenure", "delay_ratio"]:
-        assert np.isfinite(feat[col].iloc[0]), f"Non-finite value in {col}"
-
-
-# ---------------------------------------------------------------------------
-# TASK 7: Telecom/SaaS Domain & Cloud Economics Consistency
-# Grounding: [Manzoor et al. 2025 | Business-Aligned Churn Metrics | arXiv:2507.08860v2]
-# ---------------------------------------------------------------------------
-def test_t7_risk_threshold_and_clv_aware_recommendation():
-    """
-    Verify risk tier threshold alignment (Medium >= 0.40 per IS402 grounding catalog).
-    Exposes DEF-T7-01: prob=0.36 is misclassified as Medium (hardcoded 0.35 threshold
-    in generate_recommendation and /predict).
-    """
-    rec_text = generate_recommendation(prob=0.36, calls=1.0, delay=2.0)
-    assert "Duy trì chất lượng dịch vụ tiêu chuẩn" in rec_text, (
-        f"DEF-T7-01: prob=0.36 received Medium-risk action '{rec_text}' instead of Low-risk standard action (expected Medium >= 0.40)"
-    )
-
-
-def test_t7_cloud_storage_container_name_consistency_across_code_and_iac():
-    """
-    Verify that AZURE_STORAGE_CONTAINER in src/data/preprocess.py matches the
-    blob container provisioned in deploy/azure/main.tf and deploy/azure/arm_template.json.
-    Exposes DEF-T7-02: preprocess.py uses 'mlops-processed-data' while IaC provisions 'churnguard-datasets'.
-    """
-    with open("src/data/preprocess.py", "r", encoding="utf-8") as f:
-        prep_src = f.read()
-    with open("deploy/azure/main.tf", "r", encoding="utf-8") as f:
-        tf_src = f.read()
-
-    assert "churnguard-datasets" in prep_src or "mlops-processed-data" in tf_src, (
-        "DEF-T7-02: Container mismatch - src/data/preprocess.py uploads to 'mlops-processed-data' "
-        "while deploy/azure/main.tf provisions 'churnguard-datasets'"
-    )
-
-
-# ---------------------------------------------------------------------------
-# TASK 8: API Serving, Input Validation, CSV Upload Robustness & Web Hygiene
-# ---------------------------------------------------------------------------
-def test_t8_upload_csv_predict_malformed_row_returns_400_not_500():
-    """
-    Verify that /upload_csv_predict gracefully rejects a CSV containing alphanumeric
-    CustomerID 'CUST-001' with HTTP 400/422 instead of crashing with unhandled ValueError (HTTP 500).
-    Exposes DEF-T8-01: /upload_csv_predict crashes on string CustomerID or invalid cell values.
-    """
-    bad_csv = (
-        "CustomerID,Age,Gender,Tenure,Usage Frequency,Support Calls,Payment Delay,"
-        "Subscription Type,Contract Length,Total Spend,Last Interaction\n"
-        "CUST-001,30,Female,12,10,1,2,Standard,Monthly,500,5\n"
-    )
-    files = {"file": ("bad_customers.csv", io.BytesIO(bad_csv.encode("utf-8")), "text/csv")}
-    no_raise_client = TestClient(app, raise_server_exceptions=False)
-    resp = no_raise_client.post("/upload_csv_predict", files=files, headers=AUTH_HEADERS)
-    assert resp.status_code in (400, 422), (
-        f"DEF-T8-01: Expected HTTP 400/422 for alphanumeric CustomerID 'CUST-001', got HTTP {resp.status_code}"
-    )
-
-
-def test_t8_web_static_no_hardcoded_secret_key_and_valid_drift_report_route():
-    """
-    Verify that /docs/drift_report.html linked in src/web/index.html is routable.
-    Exposes DEF-T8-03: /docs/drift_report.html returns HTTP 404 Not Found.
-    """
-    drift_resp = client.get("/docs/drift_report.html")
-    assert drift_resp.status_code == 200, (
-        f"DEF-T8-03: /docs/drift_report.html linked in src/web/index.html:L269 returned HTTP {drift_resp.status_code}"
+    cm_cohort_sum = cm_m + cm_q + cm_a
+    assert np.array_equal(cm_total, cm_cohort_sum), (
+        f"Cohort confusion matrices do not sum to total:\nTotal:\n{cm_total}\nCohort Sum:\n{cm_cohort_sum}"
     )

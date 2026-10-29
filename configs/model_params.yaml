@@ -1,0 +1,181 @@
+# ==============================================================================
+# ChurnGuard MLOps - Production Model & Pipeline Configuration
+# Governing Standard: AGENTS.md v3.4 Enterprise Specification
+# Referenced by: dvc.yaml across all 9 MLOps DAG stages
+# ==============================================================================
+
+dataset:
+  raw_train_file: "data/raw/customer_churn_dataset-training-master.csv"
+  raw_test_file: "data/raw/customer_churn_dataset-testing-master.csv"
+  canonical_source: "https://www.kaggle.com/datasets/muhammadshahidazeem/customer-churn-dataset"
+  train_url: "https://raw.githubusercontent.com/faisalghifari17/customer-churn-prediction/main/customer_churn_dataset-training-master.csv"
+  test_url: "https://raw.githubusercontent.com/faisalghifari17/customer-churn-prediction/main/customer_churn_dataset-testing-master.csv"
+  expected_rows_train: 440833
+  expected_rows_test: 64374
+  expected_hashes:
+    train_sha256: "a41be7b96fb85110521bf03d1530879e9ca94b9f5de19866757f6d184300fff7"
+    test_sha256: "330af932f2dc1cae917f3bd0fb29395c4021319dd906189b7dc257d0ad58a617"
+  target_column: "churn"
+  entity_id_column: "customerid"
+
+preprocessing:
+  train_split_ratio: 0.70
+  val_split_ratio: 0.15
+  test_split_ratio: 0.15
+  stratify_column: "churn"
+  random_state: 42
+  out_of_core_chunk_size: 100000
+  feature_names:
+    - "age"
+    - "gender_encoded"
+    - "tenure"
+    - "usage_frequency"
+    - "support_calls"
+    - "payment_delay"
+    - "subscription_type_encoded"
+    - "contract_length_encoded"
+    - "total_spend"
+    - "last_interaction"
+    - "support_calls_per_tenure"
+    - "spend_per_tenure"
+    - "delay_ratio"
+  numeric_cols:
+    - "age"
+    - "tenure"
+    - "usage_frequency"
+    - "support_calls"
+    - "payment_delay"
+    - "total_spend"
+    - "last_interaction"
+  category_mappings:
+    gender:
+      Female: 0
+      Male: 1
+    subscription_type:
+      Basic: 0
+      Standard: 1
+      Premium: 2
+    contract_length:
+      Monthly: 0
+      Quarterly: 1
+      Annual: 2
+
+data_quality:
+  iqr_multiplier: 3.0
+  zscore_threshold: 3.5
+  min_contract_success_rate: 95.0
+  feature_bounds:
+    age: [18.0, 100.0]
+    tenure: [0.0, 120.0]
+    usage_frequency: [0.0, 50.0]
+    support_calls: [0.0, 30.0]
+    payment_delay: [0.0, 90.0]
+    total_spend: [0.0, 100000.0]
+    last_interaction: [0.0, 60.0]
+    gender_encoded: [0, 1]
+    subscription_type_encoded: [0, 2]
+    contract_length_encoded: [0, 2]
+    churn: [0, 1]
+
+feature_store:
+  repo_path: "data/feast_repo"
+  offline_source: "data/feast_repo/churn_features.parquet"
+  online_store_db: "data/feast_repo/data/online_store.db"
+  entity_name: "customer_id"
+  join_key: "customerid"
+  feature_view_name: "customer_churn_features"
+  ttl_days: null
+  redis_cooldown_sec: 30.0
+  redis_timeout_sec: 0.2
+
+optuna:
+  sampler: "TPESampler"
+  direction: "maximize"
+  metric: "roc_auc"
+  n_trials: 12
+  cv_folds: 3
+  seed: 42
+  sample_size: 25000
+  xgboost_search_space:
+    n_estimators_min: 80
+    n_estimators_max: 160
+    n_estimators_step: 20
+    max_depth_min: 4
+    max_depth_max: 8
+    learning_rate_min: 0.04
+    learning_rate_max: 0.12
+    subsample_min: 0.70
+    subsample_max: 0.95
+    colsample_bytree_min: 0.70
+    colsample_bytree_max: 0.95
+  random_forest_search_space:
+    n_estimators_min: 60
+    n_estimators_max: 120
+    n_estimators_step: 20
+    max_depth_min: 8
+    max_depth_max: 14
+    min_samples_split_min: 2
+    min_samples_split_max: 6
+
+models:
+  cv_folds: 5
+  random_state: 42
+  scoring: "roc_auc"
+  champion_algorithm: "XGBoost"
+  challenger_algorithm: "Random_Forest"
+  mlflow_experiment_name: "Customer_Churn_Prediction_Enterprise"
+  registered_model_name: "CustomerChurnChampion"
+  logistic_regression:
+    solver: "lbfgs"
+    max_iter: 1000
+    class_weight: "balanced"
+    penalty: "l2"
+    use_scaled: true
+  random_forest:
+    n_estimators: 150
+    max_depth: 12
+    min_samples_split: 5
+    random_state: 42
+    n_jobs: -1
+    use_scaled: false
+  xgboost:
+    n_estimators: 140
+    max_depth: 5
+    learning_rate: 0.0886
+    subsample: 0.8367
+    random_state: 42
+    n_jobs: -1
+    use_scaled: false
+  lightgbm:
+    n_estimators: 100
+    max_depth: 6
+    learning_rate: 0.05
+    random_state: 42
+    n_jobs: -1
+    use_scaled: false
+
+evaluation:
+  metrics:
+    - "accuracy"
+    - "precision"
+    - "recall"
+    - "f1_score"
+    - "roc_auc"
+    - "pr_auc"
+  primary_metric: "roc_auc"
+  decision_threshold: 0.50
+  calibration_n_bins: 10
+  learning_curve_splits: 3
+  learning_curve_max_samples: 25000
+  subgroup_non_monthly_auc_benchmark: 0.9992
+
+monitoring:
+  ks_p_val_threshold: 0.05
+  bonferroni_correction: true
+  psi_threshold_stable: 0.10
+  psi_threshold_moderate: 0.25
+  dataset_drift_share_threshold: 0.30
+  psi_num_buckets: 10
+  psi_epsilon: 0.0001
+  max_inference_log_window: 5000
+  evidently_sample_size: 3000

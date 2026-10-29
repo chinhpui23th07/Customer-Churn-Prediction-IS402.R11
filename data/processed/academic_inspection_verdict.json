@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-16 11:07:09 UTC",
+  "timestamp": "2026-10-29 16:52:41 UTC",
   "real_academic_score": 3.35,
   "max_score": 10.0,
   "penalized_points": 6.65,
@@ -41,7 +41,7 @@
     ]
   },
   "rubric_breakdown": {
-    "timestamp": "2026-10-16T18:07:09.012433",
+    "timestamp": "2026-10-29T23:52:41.538831",
     "total_score": 3.35,
     "local_real_score": 3.35,
     "target_cloud_score": 9.9,
@@ -106,7 +106,7 @@
       "5.1": "Trừ 0.35đ: Slide 13 slides chuyên nghiệp, đạt chuẩn nhưng cần duyệt chính thức tại buổi báo cáo bảo vệ.",
       "5.2": "Trừ 0.35đ: Báo cáo Word 6 chương chuẩn UIT, TNR 13pt, 1.5 line spacing, IEEE citations.",
       "5.3": "TRỪ TOÀN BỘ 0.50đ: Kịch bản demo E2E 4 Tiers sẵn sàng trên local, nhưng chưa diễn ra buổi thuyết trình bảo vệ trực tiếp.",
-      "5.4": "TRỪ 0.40đ: Đã tính toán TCO $90.75/tháng, bảng Cloud Quotas, IAM RBAC, nhưng chưa gắn với live Azure Subscription."
+      "5.4": "TRỪ 0.40đ: Đã tính toán TCO $74.67/month, bảng Cloud Quotas, IAM RBAC, nhưng chưa gắn với live Azure Subscription."
     },
     "evidence": {
       "1.1": "Phân loại rõ ràng bài toán dự đoán Churn, xử lý dữ liệu và lưu trữ DVC/Feast.",
@@ -126,8 +126,8 @@
       "4.4": "Web UI Bento Grid mounted tại /ui, gọi API /predict và /upload_csv_predict kèm X-API-Key.",
       "5.1": "Slide PPTX chuyên nghiệp 13 slides, cập nhật số liệu thực nghiệm Dual-Track và GVHD ThS. Hà Lê Hoài Trung.",
       "5.2": "Báo cáo Word chuẩn UIT 6 chương, TNR 13pt, 1.5 line spacing, IEEE citations đầy đủ.",
-      "5.3": "Kịch bản demo E2E 4 Tiers, kiểm thử tự động 47 tests 100% Passed, sẵn sàng thuyết trình.",
-      "5.4": "TCO $90.75/tháng, bảng Cloud Quotas, ma trận IAM RBAC, và Serving Hot-Reload Retraining pipeline."
+      "5.3": "Kịch bản demo E2E 4 Tiers, kiểm thử tự động 100% Passed, sẵn sàng thuyết trình.",
+      "5.4": "TCO $74.67/month, bảng Cloud Quotas, ma trận IAM RBAC, và Serving Hot-Reload Retraining pipeline."
     }
   }
 }

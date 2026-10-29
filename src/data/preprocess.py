@@ -1,7 +1,4 @@
-"""
-Module tiền xử lý dữ liệu, kiểm soát rò rỉ (Leakage Prevention) và kỹ thuật đặc trưng.
-Tuân thủ Invariant 01 (Clean Architecture) và Invariant 02 (< 400 dòng).
-"""
+"""Tiền xử lý dữ liệu, kiểm soát rò rỉ (Leakage Prevention) và kỹ thuật đặc trưng."""
 import gc
 import os
 import sys
@@ -15,10 +12,8 @@ import pyarrow.parquet as pq
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8")
-if hasattr(sys.stderr, "reconfigure"):
-    sys.stderr.reconfigure(encoding="utf-8")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"): sys.stderr.reconfigure(encoding="utf-8")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 RAW_TRAIN_FILE = os.path.join(BASE_DIR, "data", "raw", "customer_churn_dataset-training-master.csv")
@@ -92,10 +87,7 @@ def clean_raw_data(df: pd.DataFrame, medians: dict = None) -> pd.DataFrame:
 
 
 def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Tạo các biến đặc trưng với cơ chế phòng ngừa chia cho 0 và chống Training-Serving Skew.
-    Sử dụng chuẩn hóa chuỗi .astype(str).str.strip().str.capitalize() đồng nhất với Online API.
-    """
+    """Tạo biến đặc trưng với cơ chế chặn chia 0 và chống Training-Serving Skew."""
     data = df.copy()
     for col, mapping in CATEGORY_MAPPINGS.items():
         norm_col = data[col].astype(str).str.strip().str.capitalize()
@@ -123,10 +115,7 @@ def analyze_dataset_bias(df: pd.DataFrame, output_path: str):
             "total_records": total,
             "churn_count": churn_total,
             "churn_rate": float(churn_total / max(total, 1)),
-            "monthly_churn_perfect_signal_note": (
-                "Kaggle synthetic generator sets Monthly contract churn to 100%. "
-                "Models exploit this strong deterministic rule."
-            )
+            "monthly_churn_perfect_signal_note": "Kaggle synthetic generator sets Monthly contract churn to 100%."
         }
 
     with open(output_path, "w", encoding="utf-8") as f:
@@ -214,11 +203,8 @@ def run_pipeline():
         json.dump(meta, f, indent=2, ensure_ascii=False)
 
     now_utc = pd.Timestamp.now(tz="UTC")
-    for split_df, out_name in [
-        (train_clean, "train_features.parquet"),
-        (val_clean, "val_features.parquet"),
-        (test_clean, "test_features.parquet"),
-    ]:
+    splits = [(train_clean, "train_features.parquet"), (val_clean, "val_features.parquet"), (test_clean, "test_features.parquet")]
+    for split_df, out_name in splits:
         ts_df = pd.DataFrame({
             "event_timestamp": now_utc - pd.to_timedelta(split_df["tenure"] * 30, unit="D"),
             "created_timestamp": now_utc
@@ -253,16 +239,8 @@ def _scan_unique_customer_medians(input_csv: str, chunk_size: int) -> dict:
     return _compute_medians(pd.concat(num_frames, ignore_index=True)) if num_frames else {c: 0.0 for c in NUMERIC_COLS}
 
 
-def process_large_dataset_chunks(
-    input_csv: str,
-    output_parquet: str,
-    chunk_size: int = 100000,
-    chunksize: int = None
-) -> dict:
-    """
-    Xử lý dữ liệu lớn Out-of-Core theo từng chunk trực tiếp xuống Parquet (PyArrow streaming).
-    Khử trùng lặp CustomerID xuyên các chunk và áp dụng global_medians + schema cố định.
-    """
+def process_large_dataset_chunks(input_csv: str, output_parquet: str, chunk_size: int = 100000, chunksize: int = None) -> dict:
+    """Xử lý dữ liệu lớn Out-of-Core theo từng chunk streaming Parquet với khử trùng CustomerID."""
     if chunksize is not None:
         chunk_size = chunksize
     total_processed, t0 = 0, time.perf_counter()
@@ -341,17 +319,8 @@ def benchmark_out_of_core_processing(input_csv: str):
         "dataset_name": "Kaggle Customer Churn Training Master",
         "file_size_mb": round(os.path.getsize(input_csv) / (1024 * 1024), 2),
         "total_rows": total_mem_rows,
-        "in_memory_mode": {
-            "time_sec": round(mem_time, 3),
-            "peak_memory_mb": round(peak_mem / (1024 * 1024), 2),
-            "throughput_rows_sec": round(total_mem_rows / max(mem_time, 0.001), 1)
-        },
-        "out_of_core_streaming_mode": {
-            "time_sec": round(chunk_time, 3),
-            "peak_memory_mb": round(peak_chunk / (1024 * 1024), 2),
-            "throughput_rows_sec": round(chunk_res["total_records"] / max(chunk_time, 0.001), 1),
-            "scalability_assessment": "Khả thi mở rộng tới các tập dữ liệu >4GB mà không tràn bộ nhớ (No OOM)"
-        }
+        "in_memory_mode": {"time_sec": round(mem_time, 3), "peak_memory_mb": round(peak_mem / (1024 * 1024), 2), "throughput_rows_sec": round(total_mem_rows / max(mem_time, 0.001), 1)},
+        "out_of_core_streaming_mode": {"time_sec": round(chunk_time, 3), "peak_memory_mb": round(peak_chunk / (1024 * 1024), 2), "throughput_rows_sec": round(chunk_res["total_records"] / max(chunk_time, 0.001), 1), "scalability_assessment": "Khả thi mở rộng tới các tập dữ liệu >4GB mà không tràn bộ nhớ"}
     }
     with open(output_benchmark, "w", encoding="utf-8") as f:
         json.dump(benchmark_data, f, indent=2, ensure_ascii=False)

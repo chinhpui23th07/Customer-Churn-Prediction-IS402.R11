@@ -328,3 +328,22 @@ def run_model_inference(
             tenure=float(getattr(customer, "tenure", 12.0)),
         )
     return x_input, pred_class, prob, risk_tier
+
+
+def check_feast_online_status(online_store_db: str) -> str:
+    """Kiểm tra chính xác trạng thái kết nối Feast Online Store (Redis vs SQLite)."""
+    from src.features.feature_store import get_redis_client
+    sqlite_ok = os.path.exists(online_store_db)
+    redis_ok = False
+    try:
+        r = get_redis_client()
+        if r is not None:
+            redis_ok = bool(r.ping())
+    except Exception:
+        redis_ok = False
+
+    if redis_ok and sqlite_ok:
+        return "CONNECTED (Redis Cache & SQLite)"
+    elif sqlite_ok:
+        return "CONNECTED (SQLite Only - Redis Offline)"
+    return "CONNECTED (Redis Cache Only)" if redis_ok else "NOT_FOUND"

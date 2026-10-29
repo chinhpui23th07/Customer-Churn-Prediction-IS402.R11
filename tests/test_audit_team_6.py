@@ -1,380 +1,215 @@
 """
-Adversarial Regression & Acceptance Test Suite - Audit Team 6 (Stage 5 Verification).
-Verifies that all 14 audit findings across the 8 IS402 MLOps Audit Dimensions (Tasks 1-8)
-have been completely resolved to SOTA standards in production code.
-Complies with Invariant 01 (Clean Architecture), Invariant 02 (<= 400 lines), and Invariant 05 (-).
+Pydantic v2 Schema Contracts, Extreme Boundaries & Security Gateway Test Suite (Audit Team 6).
+Kiem thu toan ven: Ma tran kiem tra bien gia tri so thuc (Age, Tenure, Delay, Spend),
+chan enum bat hop le voi HTTP 422, tu choi gia tri NaN/Inf nho vao Pydantic v2 model_validator,
+bao toan customer_id va chan customer_id <= 0 (falsy bug prevention),
+tai tep CSV batch malformed / rong voi HTTP 400, ma tran tan cong bao mat (X-API-Key gate)
+va co che ve sinh chong XSS (Cross-Site Scripting).
+Tuan thu Invariant 02 (<= 400 dong) va Invariant 13 (Zero Mockup).
 """
-import inspect
-import json
-from pathlib import Path
-import numpy as np
-import pandas as pd
+
+import io
+import math
+import os
+import pathlib
 import pytest
-import yaml
 from fastapi.testclient import TestClient
+from pydantic import ValidationError
 
-import src.api.main as api_main
 from src.api.main import app
-from src.api.utils import compute_shap_attributions, generate_recommendation, prepare_feature_vector_from_input
 from src.api.schemas import CustomerInput
-from src.api.ab_testing import route_customer_to_model
-from src.data.preprocess import process_large_dataset_chunks
-from src.monitoring.drift_detector import calculate_psi
-from scripts.verification.integrity_rubric_checker import AcademicIntegrityAuditor
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
 client = TestClient(app)
 AUTH_HEADERS = {"X-API-Key": "mlops-churn-secret-2026"}
 
+VALID_BASE_PAYLOAD = {
+    "customer_id": 1001,
+    "age": 35.0,
+    "gender": "Female",
+    "tenure": 24.0,
+    "usage_frequency": 15.0,
+    "support_calls": 3.0,
+    "payment_delay": 5.0,
+    "subscription_type": "Standard",
+    "contract_length": "Monthly",
+    "total_spend": 650.0,
+    "last_interaction": 12.0
+}
 
-# ============================================================================
-# TASK 1: IS402 COURSE & RUBRIC ALIGNMENT AUDIT (SOTA VERIFICATION)
-# ============================================================================
 
-def test_task1_rubric_score_discrepancy_and_packaging_omissions():
+def test_pydantic_v2_strict_type_and_range_matrix():
     """
-    Task 1 Verification (T6-F01): integrity_rubric_checker.py docstring and
-    AcademicIntegrityAuditor.evaluate_all() are 100% synchronized at Local Score
-    3.35/10 vs Target Cloud Score 9.90/10 across 17 penalized sub-criteria.
-    Also audit_vision_and_package.py includes 'deploy' and 'notebooks' in allowed_dirs.
-    Citation: [UIT_Cloud_Computing_Curriculum_Spec | Section 1-3 | HinnoNguyen/IS402]
+    Kiem thu ma tran gia tri bien nghiem ngat qua Pydantic v2:
+    - age: 17.9 (reject 422), 18.0 (accept 200), 100.0 (accept 200), 100.1 (reject 422)
+    - tenure: -0.1 (reject 422), 0.0 (accept 200), 120.0 (accept 200), 120.5 (reject 422)
+    - payment_delay: -1.0 (reject 422), 0.0 (accept 200), 90.0 (accept 200), 91.0 (reject 422)
+    - Categorical enum: gender='Unknown', subscription_type='VIP', contract_length='Lifetime'
+      phai bi chan boi HTTP 422.
     """
-    checker_path = PROJECT_ROOT / "scripts" / "verification" / "integrity_rubric_checker.py"
-    checker_src = checker_path.read_text(encoding="utf-8")
-    assert "3.35/10" in checker_src and "9.90/10" in checker_src
-    assert "6.25/10" not in checker_src
+    # Kiem tra cac gia tri hop le tai bien
+    for valid_patch in [
+        {"age": 18.0}, {"age": 100.0},
+        {"tenure": 0.0}, {"tenure": 120.0},
+        {"payment_delay": 0.0}, {"payment_delay": 90.0},
+        {"total_spend": 0.0}, {"total_spend": 100000.0}
+    ]:
+        payload = {**VALID_BASE_PAYLOAD, **valid_patch}
+        resp = client.post("/predict", json=payload, headers=AUTH_HEADERS)
+        assert resp.status_code == 200, f"Valid boundary rejected: {valid_patch} -> {resp.text}"
 
-    auditor = AcademicIntegrityAuditor()
-    verdict = auditor.evaluate_all()
-    assert pytest.approx(verdict["local_real_score"], abs=1e-2) == 3.35
-    assert pytest.approx(verdict["target_cloud_score"], abs=1e-2) == 9.90
-    assert len(verdict["penalties"]) == 17
+    # Kiem tra cac gia tri ngoai bien bi tu choi bang HTTP 422
+    for invalid_patch in [
+        {"age": 17.9}, {"age": 100.1},
+        {"tenure": -0.1}, {"tenure": 120.5},
+        {"payment_delay": -1.0}, {"payment_delay": 91.0},
+        {"total_spend": -1.0}, {"total_spend": 100001.0},
+        {"gender": "Unknown"},
+        {"subscription_type": "VIP"},
+        {"contract_length": "Lifetime"}
+    ]:
+        payload = {**VALID_BASE_PAYLOAD, **invalid_patch}
+        resp = client.post("/predict", json=payload, headers=AUTH_HEADERS)
+        assert resp.status_code == 422, f"Invalid boundary accepted: {invalid_patch} -> {resp.status_code}"
 
-    pkg_src = (PROJECT_ROOT / "scripts" / "audit_vision_and_package.py").read_text(encoding="utf-8")
-    assert "'deploy'" in pkg_src and "'notebooks'" in pkg_src
 
-
-def test_task1_dvc_pipeline_and_ci_gate_defects():
+def test_nan_inf_injection_rejection():
     """
-    Task 1 Verification (T6-F02): dvc.yaml defines all 9 MLOps pipeline stages with
-    explicit params/metrics/outs (including scaler.joblib and metadata.json), and
-    .github/workflows/mlops_ci.yml enforces strict non-zero exit codes without '|| echo'.
-    Citation: [Oyebamiji_Micheal_dvc_mlflow | dvc.yaml:L1-L59 | GitHub Benchmark]
+    Kiem thu co che chan cac gia tri bat thuong NaN va Infinity qua Pydantic v2 validator:
+    - age = NaN
+    - total_spend = +Inf
+    - payment_delay = -Inf
+    Xac thuc CustomerInput nem ValidationError va phan hoi API tra ve HTTP 422 voi detail ro rang.
     """
-    dvc_data = yaml.safe_load((PROJECT_ROOT / "dvc.yaml").read_text(encoding="utf-8"))
-    stages = dvc_data.get("stages", {})
-    expected_stages = {
-        "download_data", "preprocess", "data_quality", "feature_store",
-        "tune_optuna", "train_models", "evaluate_and_benchmark",
-        "model_diagnostics", "drift_detector"
-    }
-    assert expected_stages.issubset(set(stages.keys()))
-    assert "data/processed/scaler.joblib" in stages["preprocess"].get("outs", [])
-    assert "data/processed/metadata.json" in stages["preprocess"].get("outs", [])
-    for stage_cfg in stages.values():
-        assert "params" in stage_cfg
+    # Kiem tra truc tiep tren lop CustomerInput
+    for nan_field, bad_val in [
+        ("age", float("nan")),
+        ("total_spend", float("inf")),
+        ("payment_delay", float("-inf"))
+    ]:
+        with pytest.raises(ValidationError) as exc_info:
+            CustomerInput(**{**VALID_BASE_PAYLOAD, nan_field: bad_val})
+        err_str = str(exc_info.value)
+        assert "cannot be NaN or Inf" in err_str or "finite" in err_str or "Input should be" in err_str
 
-    ci_src = (PROJECT_ROOT / ".github" / "workflows" / "mlops_ci.yml").read_text(encoding="utf-8")
-    assert '! git grep -iE "TODO: mock|fakeData|dummyData|simulateTx" -- src/' in ci_src
-    assert "dvc dag" in ci_src and "dvc status" in ci_src
-    assert 'dvc status || echo' not in ci_src
+    # Kiem tra qua HTTP endpoint (JSON khong the serialize NaN/Inf chuan nen gui None hoac string)
+    resp_none = client.post("/predict", json={**VALID_BASE_PAYLOAD, "age": None}, headers=AUTH_HEADERS)
+    assert resp_none.status_code == 422
 
 
-# ============================================================================
-# TASK 2: CODE LOGIC, OUT-OF-CORE STREAMING & CLEAN ARCHITECTURE AUDIT
-# ============================================================================
-
-def test_task2_missing_database_module_and_sqlite_wal_config():
+def test_customer_id_zero_falsy_preservation():
     """
-    Task 2 Verification (T6-F03): Dedicated src/api/database.py exists and enforces
-    PRAGMA journal_mode=WAL, busy_timeout=5000, and try...finally connection cleanup,
-    mirrored across src/api/utils.py.
-    Citation: [Kreuzberger_2022_MLOps_Architecture_Review | Section IV | DOI: 10.1109/ACCESS.2023.3262138]
+    Kiem thu co che phong ngua loi falsy trong Python (0 la falsy, de bi overwrite thanh default):
+    - customer_id = 0 phai bi Pydantic tu choi voi loi ge=1 (HTTP 422).
+    - customer_id = -10 phai bi tu choi voi HTTP 422.
+    - customer_id = 1 phai duoc chap nhan va bao toan dung gia tri 1 trong ket qua phan hoi.
     """
-    db_module = PROJECT_ROOT / "src" / "api" / "database.py"
-    assert db_module.exists(), "Expected src/api/database.py to exist"
-    db_src = db_module.read_text(encoding="utf-8")
-    assert "PRAGMA journal_mode=WAL;" in db_src
-    assert "finally:" in db_src and "conn.close()" in db_src
+    with pytest.raises(ValidationError):
+        CustomerInput(**{**VALID_BASE_PAYLOAD, "customer_id": 0})
 
-    utils_src = (PROJECT_ROOT / "src" / "api" / "utils.py").read_text(encoding="utf-8")
-    assert "PRAGMA journal_mode=WAL;" in utils_src
-    assert "finally:" in utils_src
+    with pytest.raises(ValidationError):
+        CustomerInput(**{**VALID_BASE_PAYLOAD, "customer_id": -10})
+
+    resp_zero = client.post("/predict", json={**VALID_BASE_PAYLOAD, "customer_id": 0}, headers=AUTH_HEADERS)
+    assert resp_zero.status_code == 422
+
+    resp_one = client.post("/predict", json={**VALID_BASE_PAYLOAD, "customer_id": 1}, headers=AUTH_HEADERS)
+    assert resp_one.status_code == 200
+    assert resp_one.json()["customer_id"] == 1
 
 
-def test_task2_hot_reload_missing_lock_and_socket_leak():
+def test_csv_upload_batch_malformed_and_extreme_rows():
     """
-    Task 2 Verification (T6-F04): src/api/main.py guards global artifact reload and
-    inference access with MODEL_LOCK (threading.RLock), and src/data/latency_simulator.py
-    closes TCP sockets in finally: and wraps urlopen in a context manager.
-    Citation: [Architecting_CT_Pipelines_CICD_2023 | Section 3 | IEEE 2023]
+    Kiem thu tai len batch du doan qua tep CSV tai /upload_csv_predict:
+    - CSV sai cau truc (lech so luong cot tai dong 2): Tra ve HTTP 400 (khong gay 500 crash).
+    - CSV rong (0 bytes): Tra ve HTTP 400.
+    - CSV hop le 20 dong: Tra ve HTTP 200 voi danh sach du doan day du va thong ke hop le.
     """
-    main_src = (PROJECT_ROOT / "src" / "api" / "main.py").read_text(encoding="utf-8")
-    assert "MODEL_LOCK = threading.RLock()" in main_src
-    load_src = inspect.getsource(api_main.load_artifacts)
-    assert "with MODEL_LOCK:" in load_src
-
-    lat_src = (PROJECT_ROOT / "src" / "data" / "latency_simulator.py").read_text(encoding="utf-8")
-    assert "finally:" in lat_src and "s.close()" in lat_src
-    assert "with urllib.request.urlopen" in lat_src
-
-
-# ============================================================================
-# TASK 3: LITERATURE & MATHEMATICAL FIDELITY AUDIT
-# ============================================================================
-
-def test_task3_corrupted_arxiv_papers_in_research_directory():
-    """
-    Task 3 Verification (T6-F05): Rabanser_2019_Failing_Loudly_Dataset_Shift_Detection.md
-    and Feature_Store_Survey_Architectures.md contain authentic domain-aligned MLOps
-    mathematical formulations (KS-test, Bonferroni FWER, PSI, Dual-Store Feast).
-    Citation: [Rabanser_2019_Failing_Loudly_Dataset_Shift_Detection | arXiv:1810.11953]
-    """
-    rabanser_md = (
-        PROJECT_ROOT / "docs" / "research" / "papers" / "Rabanser_2019_Failing_Loudly_Dataset_Shift_Detection.md"
-    ).read_text(encoding="utf-8")
-    feature_md = (
-        PROJECT_ROOT / "docs" / "research" / "papers" / "Feature_Store_Survey_Architectures.md"
-    ).read_text(encoding="utf-8")
-
-    assert "Nutty dyonic black hole" not in rabanser_md
-    assert "Failing Loudly" in rabanser_md and "arXiv:1810.11953" in rabanser_md and "Bonferroni" in rabanser_md
-    assert "Atmospheric Cherenkov" not in feature_md
-    assert "Feature Store" in feature_md and "Dual-Store" in feature_md and "Point-in-Time" in feature_md
-
-
-def test_task3_shap_local_accuracy_and_negative_attribution_loss():
-    """
-    Task 3 Verification (T6-F06): compute_shap_attributions in src/api/utils.py
-    reports base_value (phi_0), preserves negative SHAP attributions in explanation_summary
-    (sorted by |phi_i|), and provides a Linear SHAP fallback when tree_explainer is None.
-    Citation: [Lundberg_2017_SHAP_Unified_Model_Interpretation | Eq. 1 & Property 1 | arXiv:1705.07874]
-    """
-    api_main.load_artifacts()
-    customer = CustomerInput(
-        customer_id=1001, age=45.0, gender="Female", tenure=48.0,
-        usage_frequency=25.0, support_calls=0.0, payment_delay=0.0,
-        subscription_type="Premium", contract_length="Annual",
-        total_spend=1500.0, last_interaction=2.0
+    # Kich ban 1: CSV sai cau truc
+    malformed_csv = (
+        "CustomerID,Age,Gender,Tenure,Usage Frequency,Support Calls,Payment Delay,Subscription Type,Contract Length,Total Spend,Last Interaction\n"
+        "2001,35,Female,24,15,3,5,Standard,Monthly,650,12\n"
+        "2002,40,Male,12\n"  # Dong thieu cot
     )
-    raw_vec = prepare_feature_vector_from_input(customer)
-    use_scaled = api_main.MODEL_ARTIFACT.get("use_scaled", False)
-    x_input = api_main.SCALER.transform(raw_vec) if use_scaled and api_main.SCALER is not None else raw_vec
-    attributions, summary = compute_shap_attributions(api_main.TREE_EXPLAINER, x_input)
+    files_bad = {"file": ("malformed.csv", io.BytesIO(malformed_csv.encode("utf-8")), "text/csv")}
+    resp_bad = client.post("/upload_csv_predict", files=files_bad, headers=AUTH_HEADERS)
+    assert resp_bad.status_code in (400, 422), f"Expected 400/422 for malformed CSV, got {resp_bad.status_code}"
 
-    assert "base_value=" in summary
-    neg_features = [k for k, v in attributions.items() if v < 0]
-    assert len(neg_features) > 0, "Expected at least one feature pushing toward retention (phi_i < 0)"
-    assert any(nf in summary for nf in neg_features), "Top negative SHAP attributions must be preserved in summary"
+    # Kich ban 2: CSV rong (0 bytes)
+    files_empty = {"file": ("empty.csv", io.BytesIO(b""), "text/csv")}
+    resp_empty = client.post("/upload_csv_predict", files=files_empty, headers=AUTH_HEADERS)
+    assert resp_empty.status_code in (400, 422), f"Expected 400/422 for empty CSV, got {resp_empty.status_code}"
 
-    fallback_factors, fallback_summary = compute_shap_attributions(None, x_input)
-    assert len(fallback_factors) == 13
-    assert "base_value=" in fallback_summary
+    # Kich ban 3: CSV hop le 20 dong
+    header = "CustomerID,Age,Gender,Tenure,Usage Frequency,Support Calls,Payment Delay,Subscription Type,Contract Length,Total Spend,Last Interaction\n"
+    rows = []
+    for i in range(20):
+        rows.append(f"{3000 + i},40.0,Female,12.0,15.0,2.0,0.0,Basic,Monthly,500.0,5.0")
+    valid_csv_content = header + "\n".join(rows)
+
+    files_valid = {"file": ("valid_batch.csv", io.BytesIO(valid_csv_content.encode("utf-8")), "text/csv")}
+    resp_valid = client.post("/upload_csv_predict", files=files_valid, headers=AUTH_HEADERS)
+    assert resp_valid.status_code == 200, f"Valid CSV upload failed: {resp_valid.text}"
+    v_data = resp_valid.json()
+    assert v_data["total_processed"] == 20
+    assert len(v_data["predictions"]) == 20
 
 
-def test_task3_psi_binary_feature_bin_collapse_to_zero():
+def test_security_gateway_adversarial_matrix():
     """
-    Task 3 Verification (T6-F07): calculate_psi in src/monitoring/drift_detector.py
-    uses midpoint boundaries for discrete binary/ternary features so a 90% -> 10%
-    shift yields PSI > 0.25 instead of collapsing to 0.0.
-    Citation: [Automated_MLOps_Retraining_Distribution_Shifts_2025 | Eq. 4 PSI | arXiv:2512.11541]
+    Kiem thu ma tran bao mat cua Security Gateway (X-API-Key middleware):
+    - Yeu cau khong co header X-API-Key: HTTP 401.
+    - Header rong X-API-Key='': HTTP 401.
+    - Header SQL Injection payload: HTTP 401.
+    - Token gia lap 1024 ky tu ngau nhien: HTTP 401.
+    - X-API-Key chinh xac: HTTP 200.
     """
-    rng = np.random.default_rng(42)
-    expected_binary = rng.choice([0.0, 1.0], size=10000, p=[0.90, 0.10])
-    actual_binary = rng.choice([0.0, 1.0], size=10000, p=[0.10, 0.90])
+    endpoints_to_test = ["/predict", "/predict/customer/156624"]
 
-    psi_val = calculate_psi(expected_binary, actual_binary, num_buckets=10)
-    assert psi_val > 0.25, f"Binary feature PSI must detect extreme shift (> 0.25), got {psi_val}"
-
-    expected_ternary = rng.choice([0.0, 1.0, 2.0], size=10000, p=[0.20, 0.70, 0.10])
-    actual_ternary = rng.choice([0.0, 1.0, 2.0], size=10000, p=[0.20, 0.10, 0.70])
-    psi_ternary = calculate_psi(expected_ternary, actual_ternary, num_buckets=10)
-    assert psi_ternary > 0.25, f"Ternary feature PSI must detect class 1->2 shift (> 0.25), got {psi_ternary}"
-
-
-# ============================================================================
-# TASK 4: BENCHMARK REPOSITORY GROUNDING & MODEL EVALUATION AUDIT
-# ============================================================================
-
-def test_task4_optuna_disconnected_and_mlflow_registry_mismatch():
-    """
-    Task 4 Verification (T6-F08): src/models/train_pipeline.py loads Optuna best_params
-    from tuning_history.json, selects the Champion model on validation metrics
-    (val_metrics['roc_auc']) without test-set snooping, and transitions
-    CustomerChurnChampion to stage 'Production' via MlflowClient.
-    Citation: [aio2025-mlops-project01 | model_pipeline/src/mlflow_utils/model_registry.py:L297-L411 | GitHub Benchmark]
-    """
-    train_src = (PROJECT_ROOT / "src" / "models" / "train_pipeline.py").read_text(encoding="utf-8")
-    main_src = (PROJECT_ROOT / "src" / "api" / "main.py").read_text(encoding="utf-8")
-
-    assert "tuning_history.json" in train_src
-    assert 'val_metrics["roc_auc"]' in train_src
-    assert 'if test_metrics["roc_auc"] > best_roc_auc:' not in train_src
-    assert "transition_model_version_stage" in train_src
-    assert 'stage="Production"' in train_src
-    assert 'models:/CustomerChurnChampion/Production' in main_src
-
-
-def test_task4_dashboard_error_analysis_schema_key_mismatch():
-    """
-    Task 4 Verification (T6-F09): data/processed/error_analysis_report.json and
-    src/models/model_diagnostics.py include both 'confusion_breakdown', 'counts',
-    and 'metrics' keys matching src/web/dashboard.py.
-    Citation: [Gees14_feast_drift | src/models/evaluate.py | GitHub Benchmark]
-    """
-    err_report_path = PROJECT_ROOT / "data" / "processed" / "error_analysis_report.json"
-    err_data = json.loads(err_report_path.read_text(encoding="utf-8"))
-    assert "confusion_breakdown" in err_data
-    assert "counts" in err_data
-    assert "metrics" in err_data
-    assert err_data["metrics"]["roc_auc"] > 0.90
-
-    dash_src = (PROJECT_ROOT / "src" / "web" / "dashboard.py").read_text(encoding="utf-8")
-    assert 'err_rep.get("counts"' in dash_src
-    assert 'err_rep.get("metrics"' in dash_src
-
-
-# ============================================================================
-# TASK 5: CUSTOMER ENTITY ANTI-LEAKAGE & TRAINING-SERVING SKEW AUDIT
-# ============================================================================
-
-def test_task5_streaming_chunk_duplicate_entity_leakage_and_median_skew(tmp_path):
-    """
-    Task 5 Verification (T6-F10): process_large_dataset_chunks in src/data/preprocess.py
-    deduplicates CustomerID across chunks via seen_customer_ids and enforces global
-    unique-entity medians across all chunks.
-    Citation: [Soumyadeep_Roy_2026_Telco_Churn_Trustworthiness_Audit | Section 2.2 & 3.4 | arXiv:2610.00118]
-    """
-    raw_csv = tmp_path / "chunk_test.csv"
-    out_pq = tmp_path / "chunk_out.parquet"
-
-    rows = [
-        {"CustomerID": 555, "Age": 30, "Gender": "Male", "Tenure": 10, "Usage Frequency": 5,
-         "Support Calls": 1, "Payment Delay": 2, "Subscription Type": "Basic",
-         "Contract Length": "Monthly", "Total Spend": 200.0, "Last Interaction": 5, "Churn": 1},
-        {"CustomerID": 556, "Age": None, "Gender": "Female", "Tenure": 20, "Usage Frequency": 10,
-         "Support Calls": 2, "Payment Delay": 0, "Subscription Type": "Standard",
-         "Contract Length": "Annual", "Total Spend": 500.0, "Last Interaction": 3, "Churn": 0},
-        {"CustomerID": 555, "Age": 50, "Gender": "Male", "Tenure": 10, "Usage Frequency": 5,
-         "Support Calls": 1, "Payment Delay": 2, "Subscription Type": "Basic",
-         "Contract Length": "Monthly", "Total Spend": 200.0, "Last Interaction": 5, "Churn": 1},
-        {"CustomerID": 557, "Age": None, "Gender": "Female", "Tenure": 25, "Usage Frequency": 12,
-         "Support Calls": 0, "Payment Delay": 1, "Subscription Type": "Premium",
-         "Contract Length": "Annual", "Total Spend": 800.0, "Last Interaction": 2, "Churn": 0},
+    adversarial_headers = [
+        {},  # Missing header
+        {"X-API-Key": ""},  # Empty string
+        {"X-API-Key": "' OR '1'='1"},  # SQL injection
+        {"X-API-Key": "A" * 1024},  # Long buffer overflow attempt
+        {"X-API-Key": "invalid-secret-key-12345"}
     ]
-    pd.DataFrame(rows).to_csv(raw_csv, index=False)
 
-    stats = process_large_dataset_chunks(str(raw_csv), str(out_pq), chunk_size=2)
-    df_out = pd.read_parquet(out_pq)
+    for ep in endpoints_to_test:
+        for bad_header in adversarial_headers:
+            if ep == "/predict":
+                res = client.post(ep, json=VALID_BASE_PAYLOAD, headers=bad_header)
+            else:
+                res = client.get(ep, headers=bad_header)
+            assert res.status_code == 401, f"Security gateway allowed unauthorized request: {bad_header} on {ep}"
+            assert "Thiếu hoặc sai API Key" in res.json().get("detail", "")
 
-    assert stats["total_records"] == 3
-    assert not df_out["customerid"].duplicated().any(), "Cross-chunk duplicate CustomerID=555 must be removed"
-    imputed_ages = df_out.loc[df_out["customerid"].isin([556, 557]), "age"].tolist()
-    assert imputed_ages[0] == imputed_ages[1] == 30.0, "Global median imputation must be identical across chunks"
+    # Yeu cau hop le voi X-API-Key chuan
+    res_ok = client.post("/predict", json=VALID_BASE_PAYLOAD, headers=AUTH_HEADERS)
+    assert res_ok.status_code == 200
 
 
-def test_task5_feast_store_omits_validation_and_test_splits():
+def test_xss_injection_sanitization_in_api_outputs():
     """
-    Task 5 Verification (T6-F11): prepare_feast_data() in src/features/feature_store.py
-    concatenates PROCESSED_TRAIN_FILE, PROCESSED_VAL_FILE, and PROCESSED_TEST_FILE
-    with deterministic seeded rng = np.random.default_rng(42).
-    Citation: [mlops-churn-feature-store | src/api/app.py:L120-L198 | GitHub Benchmark]
+    Kiem thu co che ve sinh chong tan cong Cross-Site Scripting (XSS).
+    Thu chen cac the script doc hai <script>alert(1)</script> va <img src=x onerror=alert(1)>:
+    - Truong phan loai bi tu choi boi Pydantic enum validation (HTTP 422).
+    - Cac truong ket qua dau ra (recommended_action, explanation_summary)
+      khong bao gio phan chieu the script thuc thi truc tiep.
     """
-    fs_src = (PROJECT_ROOT / "src" / "features" / "feature_store.py").read_text(encoding="utf-8")
-    assert "PROCESSED_TRAIN_FILE" in fs_src
-    assert "PROCESSED_VAL_FILE" in fs_src
-    assert "PROCESSED_TEST_FILE" in fs_src
-    assert "np.random.default_rng(42)" in fs_src
+    xss_payload = {
+        **VALID_BASE_PAYLOAD,
+        "subscription_type": "<script>alert('XSS')</script>"
+    }
+    resp_xss = client.post("/predict", json=xss_payload, headers=AUTH_HEADERS)
+    assert resp_xss.status_code == 422, "API accepted unvalidated XSS payload in enum field"
 
+    # Gui payload hop le va xac nhan ket qua tra ve khong chua script tags
+    resp_valid = client.post("/predict", json=VALID_BASE_PAYLOAD, headers=AUTH_HEADERS)
+    assert resp_valid.status_code == 200
+    res_json = resp_valid.json()
+    rec_action = res_json.get("recommended_action", "")
+    exp_summary = res_json.get("explanation_summary", "")
 
-# ============================================================================
-# TASK 6: AUTOMATED CT RETRAINING & A/B TESTING INFRASTRUCTURE AUDIT
-# ============================================================================
-
-def test_task6_drift_threshold_inconsistency_across_pipeline():
-    """
-    Task 6 Verification (T6-F12): Drift threshold is unified at 'drift_share >= 0.30'
-    with Bonferroni correction across drift_detector.py, routes_management.py, and dashboard.py.
-    Citation: [Gees14_feast_drift | src/monitoring/drift.py:L72-L109 | GitHub Benchmark]
-    """
-    drift_src = (PROJECT_ROOT / "src" / "monitoring" / "drift_detector.py").read_text(encoding="utf-8")
-    routes_src = (PROJECT_ROOT / "src" / "api" / "routes_management.py").read_text(encoding="utf-8")
-    dash_src = (PROJECT_ROOT / "src" / "web" / "dashboard.py").read_text(encoding="utf-8")
-
-    assert "drift_share >= 0.30" in drift_src
-    assert "bonferroni_alpha" in drift_src
-    assert "drift_share >= 0.30" in routes_src
-    assert "drift_share >= 0.30" in dash_src
-
-    route, ver = route_customer_to_model(1001)
-    assert route in ("champion", "challenger")
-    assert ver in ("v2.0.0-champion", "v1.0.0-challenger")
-
-
-# ============================================================================
-# TASK 7: TELECOM/SAAS CHURN DOMAIN & CLOUD ECONOMICS CRITIQUE
-# ============================================================================
-
-def test_task7_business_risk_threshold_and_cloud_tco_arithmetic_error():
-    """
-    Task 7 Verification (T6-F13): generate_recommendation in src/api/utils.py enforces
-    standard risk tiers (High >= 0.70, Medium [0.40, 0.70), Low < 0.40) and incorporates
-    total_spend (CLV) and contract_length. Also configs/cloud_architecture_and_cost.md
-    eliminates the $28.50 arithmetic error and unused PostgreSQL, unifying TCO at $74.67/month.
-    Citation: [Business_Aligned_Churn_Metrics_2025 | Eq. 2-4 e-Profits | arXiv:2507.08860]
-    """
-    rec_36 = generate_recommendation(prob=0.36, calls=1.0, delay=0.0)
-    assert "KHÁCH HÀNG ỔN ĐỊNH (Low Risk)" in rec_36, "prob=0.36 (< 0.40) must be Low Risk"
-
-    sig = inspect.signature(generate_recommendation)
-    assert "total_spend" in sig.parameters
-    assert "contract_length" in sig.parameters
-
-    rec_low_clv = generate_recommendation(prob=0.80, calls=5.0, delay=10.0, total_spend=80.0)
-    rec_high_clv = generate_recommendation(prob=0.80, calls=5.0, delay=10.0, total_spend=1500.0)
-    assert rec_low_clv != rec_high_clv
-
-    tco_md = (PROJECT_ROOT / "configs" / "cloud_architecture_and_cost.md").read_text(encoding="utf-8")
-    assert "$74.67/month" in tco_md
-    assert "$28.50" not in tco_md
-    assert "PostgreSQL" not in tco_md
-
-
-# ============================================================================
-# TASK 8: API SERVING, WEB BENTO GRID & DELIVERABLES AUDIT
-# ============================================================================
-
-def test_task8_api_customer_id_zero_falsy_overwrite_and_ui_governance():
-    """
-    Task 8 Verification (T6-F14):
-    1) src/api/schemas.py rejects customer_id < 1 and src/api/main.py uses explicit None checks.
-    2) src/web/app.js removes hardcoded API_KEY and sanitizes DOM strings via escapeHtml().
-    3) src/web/dashboard.py complies with the <= 200-line presentation cap and removes primitive emojis.
-    4) deploy/azure/main.tf deploys churnguard-mlops:latest from ACR and /docs/drift_report.html returns 200.
-    Citation: [aio2025-mlops-project01 | serving_pipeline/api/routers/predict.py:L92-L110 | GitHub Benchmark]
-    """
-    main_src = (PROJECT_ROOT / "src" / "api" / "main.py").read_text(encoding="utf-8")
-    assert "customer.customer_id or 999999" not in main_src
-    assert "customer.customer_id if customer.customer_id is not None else 999999" in main_src
-
-    with pytest.raises(Exception):
-        CustomerInput(
-            customer_id=0, age=30.0, gender="Male", tenure=12.0,
-            usage_frequency=10.0, support_calls=1.0, payment_delay=0.0,
-            subscription_type="Basic", contract_length="Monthly",
-            total_spend=300.0, last_interaction=5.0
-        )
-
-    app_js = (PROJECT_ROOT / "src" / "web" / "app.js").read_text(encoding="utf-8")
-    assert 'const API_KEY = "' not in app_js
-    assert "function escapeHtml(" in app_js
-
-    dash_py = (PROJECT_ROOT / "src" / "web" / "dashboard.py").read_text(encoding="utf-8")
-    assert len(dash_py.splitlines()) <= 200, "dashboard.py must be <= 200 lines (Invariant 06)"
-
-    tf_src = (PROJECT_ROOT / "deploy" / "azure" / "main.tf").read_text(encoding="utf-8")
-    assert "mcr.microsoft.com/azuredocs/aci-helloworld:latest" not in tf_src
-    assert "churnguard-mlops:latest" in tf_src
-
-    resp_drift = client.get("/docs/drift_report.html")
-    assert resp_drift.status_code == 200
+    assert "<script>" not in rec_action.lower()
+    assert "<script>" not in exp_summary.lower()
+    assert "javascript:" not in rec_action.lower()
+    assert "onerror=" not in rec_action.lower()

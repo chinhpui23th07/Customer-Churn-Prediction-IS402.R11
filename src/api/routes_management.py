@@ -39,7 +39,7 @@ def register_reload_hook(hook):
     RELOAD_HOOK = hook
 
 
-def run_background_retraining():
+def run_background_retraining(dry_run: bool = False):
     """Chạy quy trình tái huấn luyện mô hình thực tế trong background kèm hot-reload và mutex lock."""
     if not RETRAIN_LOCK.acquire(blocking=False):
         return
@@ -48,24 +48,21 @@ def run_background_retraining():
     try:
         os.makedirs(os.path.dirname(log_file), exist_ok=True)
         with open(log_file, "a", encoding="utf-8") as out:
-            out.write(f"\n--- Retraining Triggered at {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())} ---\n")
+            out.write(f"\n--- Retraining Triggered at {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())} (dry_run={dry_run}) ---\n")
             out.flush()
-
-        if "PYTEST_CURRENT_TEST" in os.environ:
-            try:
-                if callable(RELOAD_HOOK):
-                    RELOAD_HOOK()
-            finally:
-                RETRAIN_LOCK.release()
-            return
 
         flags = 0
         if sys.platform == "win32":
             flags = subprocess.CREATE_NEW_PROCESS_GROUP
 
+        cmd = [sys.executable, script_path]
+        retrain_mode = os.getenv("CHURN_RETRAIN_MODE", "").lower()
+        if dry_run or retrain_mode == "dry_run":
+            cmd.append("--dry-run")
+
         log_handle = open(log_file, "a", encoding="utf-8")
         proc = subprocess.Popen(
-            [sys.executable, script_path],
+            cmd,
             stdout=log_handle,
             stderr=subprocess.STDOUT,
             creationflags=flags
@@ -160,7 +157,7 @@ def get_drift_status():
 
 
 @router.post("/api/v1/trigger_retrain", tags=["MLOps Automation"])
-def trigger_retraining(background_tasks: BackgroundTasks, force: bool = False, api_key: str = Depends(verify_api_key)):
+def trigger_retraining(background_tasks: BackgroundTasks, force: bool = False, dry_run: bool = False, api_key: str = Depends(verify_api_key)):
     """Kích hoạt webhook tái huấn luyện mô hình khi phát hiện Concept/Data Drift."""
     drift_res = run_drift_analysis()
     drift_share = float(drift_res.get("drift_share", 0.0))
@@ -177,13 +174,13 @@ def trigger_retraining(background_tasks: BackgroundTasks, force: bool = False, a
                 "message": "Tiến trình tái huấn luyện đang chạy, bỏ qua yêu cầu trùng lặp.",
                 "drift_share": drift_share
             }
-        background_tasks.add_task(run_background_retraining)
+        background_tasks.add_task(run_background_retraining, dry_run=dry_run)
         return {
             "status": "TRIGGERED",
             "message": "Đã kích hoạt tái huấn luyện thành công qua MLOps Pipeline.",
             "drift_share": drift_share,
             "triggered_at": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
-            "job_type": "async_background_execution"
+            "job_type": "dry_run_execution" if dry_run else "async_background_execution"
         }
 
     msg = (

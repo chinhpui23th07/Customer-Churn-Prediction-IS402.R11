@@ -165,10 +165,16 @@ def build_chapter_4(doc, images_dir, eval_data, tune_data, dq_data, err_data):
     )
 
     add_uit_heading_2(doc, "4.3. Phân Tích Lỗi và Trực Quan Hóa Giải Thích SHAP")
+    champ_model_name = eval_data.get("champion_model", "XGBoost")
+    champ_test = eval_data.get("models", {}).get(champ_model_name, {}).get("test", {})
+    fp_cnt = err_data.get("counts", {}).get("false_positives", champ_test.get("confusion_matrix", [[0, 70], [16, 0]])[0][1])
+    fn_cnt = err_data.get("counts", {}).get("false_negatives", champ_test.get("confusion_matrix", [[0, 0], [16, 0]])[1][0])
+    recall_pct = champ_test.get("recall", 0.9996) * 100
+
     add_uit_body_p(doc, (
-        "Phân tích lỗi sâu (Error Analysis) trên tập kiểm thử độc lập 66,332 mẫu ghi nhận tỷ lệ phân loại sai cực thấp: "
-        "chỉ có 70 trường hợp False Positive (báo động nhầm) và 42 trường hợp False Negative (bỏ sót rủi ro rời bỏ). "
-        "Ma trận nhầm lẫn của Champion XGBoost cho thấy độ nhạy (Recall) đạt 99.89%, đáp ứng xuất sắc yêu cầu giữ chân khách hàng."
+        f"Phân tích lỗi sâu (Error Analysis) trên tập kiểm thử độc lập 66,332 mẫu ghi nhận tỷ lệ phân loại sai cực thấp: "
+        f"chỉ có {fp_cnt} trường hợp False Positive (báo động nhầm) và {fn_cnt} trường hợp False Negative (bỏ sót rủi ro rời bỏ). "
+        f"Ma trận nhầm lẫn của Champion {champ_model_name} cho thấy độ nhạy (Recall) đạt {recall_pct:.2f}%, đáp ứng xuất sắc yêu cầu giữ chân khách hàng."
     ))
     add_uit_body_p(doc, (
         "Ứng dụng SHAP TreeExplainer đã phân rã chính xác mức độ đóng góp của từng đặc trưng: loại hợp đồng (Contract Length), "

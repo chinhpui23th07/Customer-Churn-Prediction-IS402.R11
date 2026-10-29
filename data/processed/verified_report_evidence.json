@@ -11,7 +11,7 @@
     "files_over_400_lines": 0,
     "web_ui_line_counts": {
       "src/web/app.js": 198,
-      "src/web/charts.js": 131,
+      "src/web/charts.js": 158,
       "src/web/dashboard.py": 183,
       "src/web/index.html": 181,
       "src/web/style.css": 172
@@ -56,7 +56,7 @@
     ]
   },
   "inference_sqlite_wal_db": {
-    "logged_predictions_count": 1217,
+    "logged_predictions_count": 3002,
     "evidence_file": "data/inference_logs.db"
   },
   "io_and_streaming_benchmarks": {
@@ -116,11 +116,11 @@
   },
   "drift_monitoring": {
     "reference_samples": 309547,
-    "current_samples": 1167,
+    "current_samples": 2952,
     "bonferroni_alpha": 0.003846,
-    "drifted_features_count": 12,
+    "drifted_features_count": 13,
     "total_features": 13,
-    "drift_share": 0.9231,
+    "drift_share": 1.0,
     "evidence_file": "data/processed/drift_metrics.json#L1-L129"
   },
   "region_latency_rtt_ms": {

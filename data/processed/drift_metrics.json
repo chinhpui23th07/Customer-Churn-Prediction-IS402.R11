@@ -1,129 +1,129 @@
 {
-  "timestamp": "2026-10-22T22:33:24.720827",
+  "timestamp": "2026-10-30T01:54:13.336529",
   "reference_samples": 309547,
-  "current_samples": 1167,
+  "current_samples": 3136,
   "bonferroni_alpha": 0.003846,
   "features": {
     "age": {
-      "ks_statistic": 0.2549,
+      "ks_statistic": 0.2761,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.557,
+      "psi_score": 0.9887,
       "drift_detected": true,
       "drift_level": "High"
     },
     "gender_encoded": {
-      "ks_statistic": 0.127,
+      "ks_statistic": 0.2754,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.0649,
+      "psi_score": 0.3186,
       "drift_detected": true,
-      "drift_level": "Stable"
+      "drift_level": "High"
     },
     "tenure": {
-      "ks_statistic": 0.2497,
+      "ks_statistic": 0.3661,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.5655,
+      "psi_score": 0.8902,
       "drift_detected": true,
       "drift_level": "High"
     },
     "usage_frequency": {
-      "ks_statistic": 0.1788,
+      "ks_statistic": 0.2805,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.5387,
+      "psi_score": 0.9821,
       "drift_detected": true,
       "drift_level": "High"
     },
     "support_calls": {
-      "ks_statistic": 0.0493,
-      "p_value": 0.0067,
-      "bonferroni_alpha": 0.003846,
-      "ks_drift": false,
-      "psi_score": 0.0544,
-      "drift_detected": false,
-      "drift_level": "Stable"
-    },
-    "payment_delay": {
-      "ks_statistic": 0.2819,
+      "ks_statistic": 0.1271,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.4817,
+      "psi_score": 0.34,
+      "drift_detected": true,
+      "drift_level": "High"
+    },
+    "payment_delay": {
+      "ks_statistic": 0.4318,
+      "p_value": 0.0,
+      "bonferroni_alpha": 0.003846,
+      "ks_drift": true,
+      "psi_score": 0.9703,
       "drift_detected": true,
       "drift_level": "High"
     },
     "subscription_type_encoded": {
-      "ks_statistic": 0.1486,
+      "ks_statistic": 0.2159,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.2516,
+      "psi_score": 0.5355,
       "drift_detected": true,
       "drift_level": "High"
     },
     "contract_length_encoded": {
-      "ks_statistic": 0.2121,
+      "ks_statistic": 0.282,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.1966,
+      "psi_score": 0.4416,
       "drift_detected": true,
-      "drift_level": "Moderate"
+      "drift_level": "High"
     },
     "total_spend": {
-      "ks_statistic": 0.1307,
+      "ks_statistic": 0.192,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.1688,
+      "psi_score": 0.5857,
       "drift_detected": true,
-      "drift_level": "Moderate"
+      "drift_level": "High"
     },
     "last_interaction": {
-      "ks_statistic": 0.2417,
+      "ks_statistic": 0.3229,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.5651,
+      "psi_score": 0.9718,
       "drift_detected": true,
       "drift_level": "High"
     },
     "support_calls_per_tenure": {
-      "ks_statistic": 0.0969,
+      "ks_statistic": 0.1847,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.1101,
+      "psi_score": 0.4634,
       "drift_detected": true,
-      "drift_level": "Moderate"
+      "drift_level": "High"
     },
     "spend_per_tenure": {
-      "ks_statistic": 0.1197,
+      "ks_statistic": 0.2742,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.2119,
+      "psi_score": 0.6118,
       "drift_detected": true,
-      "drift_level": "Moderate"
+      "drift_level": "High"
     },
     "delay_ratio": {
-      "ks_statistic": 0.2543,
+      "ks_statistic": 0.3936,
       "p_value": 0.0,
       "bonferroni_alpha": 0.003846,
       "ks_drift": true,
-      "psi_score": 0.5197,
+      "psi_score": 0.7807,
       "drift_detected": true,
       "drift_level": "High"
     }
   },
-  "drifted_features_count": 12,
+  "drifted_features_count": 13,
   "total_features": 13,
   "dataset_drift_detected": true,
-  "drift_share": 0.9231
+  "drift_share": 1.0
 }

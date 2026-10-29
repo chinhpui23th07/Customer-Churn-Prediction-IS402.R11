@@ -5,6 +5,8 @@ Validation (422), Observability, A/B Testing, CSV Upload và Trigger Retrain.
 Tuân thủ Invariant 01 (Clean Scaffolding) và Invariant 02 (< 400 dòng).
 """
 import io
+import os
+import time
 import pytest
 import pandas as pd
 from fastapi.testclient import TestClient
@@ -227,12 +229,26 @@ def test_metrics_endpoint():
 
 
 def test_trigger_retrain():
-    """Verify retrain webhook endpoint response."""
-    response = client.post("/api/v1/trigger_retrain?force=true", headers=AUTH_HEADERS)
+    """Verify retrain webhook endpoint response with genuine background execution."""
+    response = client.post("/api/v1/trigger_retrain?force=true&dry_run=true", headers=AUTH_HEADERS)
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "TRIGGERED"
     assert "triggered_at" in data
+    assert data["job_type"] == "dry_run_execution"
+
+    # Allow detached subprocess to complete and write proof
+    log_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "retrain_execution.log")
+    for _ in range(30):
+        time.sleep(0.2)
+        if os.path.exists(log_file):
+            with open(log_file, "r", encoding="utf-8") as f:
+                if "Dry-run verification" in f.read():
+                    break
+    assert os.path.exists(log_file)
+    with open(log_file, "r", encoding="utf-8") as f:
+        content = f.read()
+    assert "Dry-run verification" in content
 
 
 def test_ui_endpoint():
