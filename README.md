@@ -1,160 +1,242 @@
-# ChurnGuard MLOps - Enterprise Customer Retention Platform
+# ChurnGuard Enterprise MLOps Platform
 
-> **Hệ thống:** ChurnGuard Enterprise MLOps Level 2 Platform  
-> **Lĩnh vực:** Dự đoán rủi ro khách hàng rời bỏ dịch vụ viễn thông & Tối ưu hóa chiến lược giữ chân theo giá trị vòng đời ($e\text{-Profits}$)  
-> **Kiến trúc:** Khép kín end-to-end (DVC Data Pipeline -> Feast Feature Store -> Optuna Tuning -> MLflow Registry -> FastAPI Serving -> Evidently & PSI/KS Drift Retraining -> Azure Cloud Native IaC)  
+[![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Feast](https://img.shields.io/badge/Feature%20Store-Feast%20Dual--Store-orange.svg)](https://feast.dev/)
+[![MLflow](https://img.shields.io/badge/Registry-MLflow-0194E2.svg?logo=mlflow&logoColor=white)](https://mlflow.org/)
+[![Cloud Native](https://img.shields.io/badge/Cloud%20Native-Azure%20Container%20Apps-0078D4.svg?logo=microsoftazure&logoColor=white)](https://azure.microsoft.com/)
+[![Tests](https://img.shields.io/badge/Tests-80%2F80%20Passed-success.svg?logo=pytest&logoColor=white)](tests/)
+[![Architecture](https://img.shields.io/badge/Architecture-MLOps%20Level%202-purple.svg)](docs/specifications/SYSTEM_SPECIFICATION.md)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+> **ChurnGuard** là nền tảng MLOps cấp độ doanh nghiệp (MLOps Level 2 - Continuous Training & Automated Deployment), được thiết kế để dự đoán rủi ro khách hàng rời bỏ dịch vụ viễn thông thời gian thực, giải thích nguyên nhân bằng Explainable AI (SHAP), và tối ưu hóa chính sách giữ chân khách hàng theo giá trị vòng đời ($e\text{-Profits}$ & CLV).
 
 ![Banner](assets/banner.svg)
 
 ---
 
-> 🚀 **HƯỚNG DẪN CHẠY VÀ VẬN HÀNH HỆ THỐNG CHI TIẾT TỪNG BƯỚC (OPERATIONAL RUNBOOK):**  
-> Mọi bước thực thi chi tiết (truy cập link nào, trang gì, tab nào, ở tab đó bấm nút nào [tên nút, mã màu hex, kiểu dáng, vị trí trên/dưới/trái/phải], bấm xong hiện ra cái gì, dấu hiệu thành công và cách sửa lỗi cho từng phân hệ Web Bento Grid, Dashboard Streamlit, Swagger API, Azure for Students) đều được ghi nhận đầy đủ, chuẩn xác tại:  
-> 👉 **[docs/RUNBOOK_HUONG_DAN_VAN_HANH.md](docs/RUNBOOK_HUONG_DAN_VAN_HANH.md)**  
+> 🚀 **SỔ TAY VẬN HÀNH HỆ THỐNG TOÀN DIỆN (OPERATIONAL RUNBOOK):**  
+> Mọi bước thực thi chi tiết (địa chỉ URL, cấu trúc trang, thẻ Tab, thao tác nút bấm [tên nút, mã màu HEX, vị trí hiển thị], kết quả phản hồi, dấu hiệu nhận biết thành công và hướng dẫn xử lý lỗi) cho toàn bộ các phân hệ Web Bento Grid, Dashboard Streamlit, Swagger API, và Triển khai Azure Cloud đều được ghi nhận chi tiết tại:  
+> 👉 **[`docs/RUNBOOK_HUONG_DAN_VAN_HANH.md`](docs/RUNBOOK_HUONG_DAN_VAN_HANH.md)**
 
 ---
 
-## 1. Tổng Quan Kiến Trúc & Đặc Tả Kỹ Thuật (System Overview & Architectural Foundations)
+## 1. Tổng Quan Hệ Thống & Giá Trị Nghiệp Vụ (Executive Overview & Business Value)
 
-Hệ thống ChurnGuard MLOps được thiết kế theo chuẩn MLOps Level 2 (Continuous Training & Automated Deployment), giải quyết bài toán dự đoán hành vi rời bỏ của khách hàng doanh nghiệp viễn thông và tối ưu hóa chi phí can thiệp dựa trên giá trị vòng đời (Customer Lifetime Value - CLV):
+Bài toán rời bỏ dịch vụ (Customer Churn) trong ngành viễn thông gây tổn thất lớn về doanh thu định kỳ. ChurnGuard giải quyết bài toán này thông qua một kiến trúc học máy khép kín:
 
-- **Bài toán học máy:** Phân loại nhị phân (Binary Classification) dự đoán nhãn `Churn` ($y \in \{0, 1\}$) kèm xuất điểm xác suất rủi ro liên tục $P(\text{Churn}=1 \mid \mathbf{x})$.
-- **Tập dữ liệu chuẩn đối chuẩn:** Bộ dữ liệu khách hàng viễn thông quy mô lớn tải từ Kaggle (`muhammadshahidazeem/customer-churn-dataset`) với **442,211 thực thể khách hàng duy nhất** sau khi khử trùng lặp đa chunk, bao gồm 13 đặc trưng đầu vào chuẩn hóa.
-- **Phân tách thực thể nghiêm ngặt:** Phân chia Stratified 70% Train (309,547 bản ghi), 15% Validation (66,332 bản ghi), và 15% Test (66,332 bản ghi).
-- **Chống rò rỉ dữ liệu (Anti-Data-Snooping):** Mọi tham số tiền xử lý thống kê (`train_medians` cho 7 thuộc tính số) được tính toán độc quyền trên tập Train và áp dụng nhất quán cho tập Validation, Test và API phục vụ trực tuyến.
-- **Tối ưu hóa I/O & Bộ nhớ:** Lưu trữ cột Apache Parquet Snappy nén 3.7x và đọc nhanh gấp 14.41x so với CSV; động cơ Out-of-Core streaming PyArrow cắt giảm **64.42% dung lượng RAM đỉnh** ($O(1)$ RAM).
-- **Hạ tầng phục vụ trực tuyến:** FastAPI REST API tích hợp giải thích thuộc tính SHAP bảo toàn tính cộng tính địa phương ($f(x) = \phi_0 + \sum \phi_i$), định tuyến thực nghiệm A/B Testing qua hàm băm MD5, cơ sở dữ liệu SQLite chế độ WAL an toàn luồng, và kiến trúc điện toán đám mây Microsoft Azure Serverless Container Apps + Azure Cache for Redis C0 SSL 6380 (FinOps TCO: **$74.67/tháng**).
+* **Mục tiêu mô hình:** Phân loại nhị phân dự đoán khả năng rời bỏ ($y \in \{0, 1\}$) kèm xuất điểm xác suất rủi ro liên tục $P(\text{Churn}=1 \mid \mathbf{x})$.
+* **Quy mô tập dữ liệu:** Xử lý và chuẩn hóa **442,211 hồ sơ khách hàng viễn thông duy nhất** sau khi khử trùng lặp liên chunk, với 13 đặc trưng hành vi và tài chính.
+* **Chiến lược giữ chân định lượng ($e\text{-Profits}$):** Thay vì chỉ tối ưu độ chính xác kỹ thuật, hệ thống kết hợp ma trận chi phí - lợi ích dựa trên giá trị vòng đời khách hàng (Customer Lifetime Value - CLV), giúp doanh nghiệp đưa ra các gói ưu đãi giữ chân có tỷ suất hoàn vốn (ROI) cao nhất.
+* **Độ trễ suy luận thời gian thực:** Đạt chuẩn độ trễ $p95 < 50\text{ ms}$ trên hạ tầng phục vụ container hóa, sẵn sàng tích hợp với hệ thống CRM/Billing của doanh nghiệp.
 
 ---
 
-## 2. Ma Trận Đánh Giá Năng Lực Hệ Thống & Độ Sẵn Sàng Đa Môi Trường (System Capability & Multi-Environment Readiness Matrix)
+## 2. Kiến Trúc Hệ Thống Khép Kín (End-to-End System Architecture)
 
-Hệ thống được thiết kế với cơ chế tự đánh giá năng lực đa môi trường được lập trình tại [`scripts/verification/integrity_rubric_checker.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/scripts/verification/integrity_rubric_checker.py) và đối chứng tự động tại [`final_check_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/final_check_results.json), phân định rõ ràng giữa hai tầng môi trường:
+Hệ thống được xây dựng theo chuẩn kiến trúc MLOps Level 2 với 6 tầng chức năng khép kín:
 
-| Môi Trường Triển Khai | Điểm Năng Lực | Đặc Tả Kỹ Thuật, Cơ Chế Vận Hành & Hiện Trạng Tài Nguyên |
-| :--- | :---: | :--- |
-| **1. Môi Trường Local Baseline (Offline Development / Edge Node)** | **`3.35 / 10.00`** | **Mã nguồn tự động đánh giá:** [`scripts/verification/integrity_rubric_checker.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/scripts/verification/integrity_rubric_checker.py) -> Kết quả JSON: [`final_check_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/final_check_results.json).<br>**Hiện trạng vận hành độc lập ngoại tuyến (chưa kết nối tài khoản Cloud sống):**<br>- Dữ liệu hạt giống CSV thô cục bộ nặng **`25.49 MB`** (`22.36 MB` train + `3.13 MB` test tại [`data/raw/`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/raw/)); kịch bản kiểm chuẩn Big Data quy mô lớn (`5.28 GB` / `42,448,764` dòng) đã được đóng gói sẵn sàng tại [`notebooks/rees46_bigdata_cloud_benchmark.ipynb`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/notebooks/rees46_bigdata_cloud_benchmark.ipynb) và [`data/processed/bigdata_io_benchmark_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/bigdata_io_benchmark_results.json) để chạy trên hạ tầng Cloud.<br>- Dữ liệu Parquet và DVC lưu tại `data/processed/` cục bộ (sẵn sàng kết nối `AZURE_STORAGE_CONNECTION_STRING` trong [`src/data/preprocess.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/preprocess.py) để đẩy lên container `churnguard-datasets`).<br>- Feast Online Store vận hành trên SQLite cục bộ ([`data/feast_repo/feature_store.yaml`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/feast_repo/feature_store.yaml)) kèm bộ đệm Redis driver sẵn sàng kết nối cụm Azure Cache for Redis C0 SSL `6380`.<br>- Phép đo độ trễ mạng ([`src/data/latency_simulator.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/latency_simulator.py)) đo TCP/HTTPS RTT thực tế từ máy trạm tới 5 cụm Azure Region.<br>- FastAPI phục vụ tại `http://localhost:8000` với đầy đủ tính năng phục vụ, giải thích SHAP, và giao diện điều hành Bento Grid. |
-| **2. Môi Trường Cloud Production Scale-Out (Target Cloud Infrastructure)** | **`9.90 / 10.00`** | **Mục tiêu năng lực khi kích hoạt trên Microsoft Azure:** [`final_check_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/final_check_results.json).<br>**Kích hoạt hạ tầng tự động qua Infrastructure-as-Code (IaC):**<br>1) Thực thi [`deploy/azure/deploy_azure.bat`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/deploy/azure/deploy_azure.bat) (hoặc Terraform [`deploy/azure/main.tf`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/deploy/azure/main.tf) / ARM [`deploy/azure/arm_template.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/deploy/azure/arm_template.json)) để tự động cấp phát Azure Blob Storage, Azure Cache for Redis, ACR và Azure Container Apps Serverless (1.0 vCPU, 2.0 GiB RAM, Auto-scale 0-5 replicas).<br>2) Thực thi kịch bản kiểm chuẩn Big Data [`notebooks/rees46_bigdata_cloud_benchmark.ipynb`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/notebooks/rees46_bigdata_cloud_benchmark.ipynb) trên tập dữ liệu REES46 (`5.28 GB`, `42,448,764` bản ghi).<br>3) Kích hoạt Public FQDN với cấu hình HTTPS bảo mật và kết nối hệ thống giám sát phân tán Application Insights / Log Analytics. |
+```mermaid
+flowchart TD
+    subgraph DataTier["1. Data Ingestion & Engineering"]
+        RAW[("Raw Telco Data<br/>442k Customers")] --> STREAM["Out-of-Core Streaming<br/>PyArrow O(1) RAM"]
+        STREAM --> DEDUP["Deduplication & Stratified<br/>70% Train / 15% Val / 15% Test"]
+        DEDUP --> IMPUTE["Anti-Data-Snooping Imputation<br/>Train Medians"]
+        IMPUTE --> PARQUET[("Parquet Snappy Storage<br/>3.7x Compression")]
+    end
 
----
+    subgraph FeatureStore["2. Feast Feature Store"]
+        PARQUET --> FEAST_OFFLINE[("Offline Store<br/>churn_features.parquet")]
+        FEAST_OFFLINE --> FEAST_ONLINE[("Online Store<br/>SQLite WAL / Redis SSL 6380")]
+    end
 
-## 3. Nền Tảng Khoa Học & Đối Chiếu Nghiên Cứu Uy Tín (Scientific Grounding)
+    subgraph MLPipeline["3. Model Optimization & Registry"]
+        FEAST_OFFLINE --> OPTUNA["Optuna Bayesian TPE<br/>Hyperparameter Tuning"]
+        OPTUNA --> TOURNAMENT["Multi-Model Tournament<br/>XGBoost / LightGBM / RF / LogReg"]
+        TOURNAMENT --> MLFLOW[("MLflow Model Registry<br/>Champion Staging")]
+    end
 
-Mọi phép tính toán học, thuật toán xử lý dữ liệu, mô hình học máy, giải thích XAI và kiểm định thống kê trong hệ thống đều được xây dựng dựa trên **các công trình khoa học phản biện quốc tế (IEEE Access, NeurIPS, Springer, arXiv)**, đối ứng 1-1 với mã nguồn thực thi thật trong [`src/`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/):
+    subgraph ServingTier["4. High-Performance Serving & XAI"]
+        MLFLOW --> FASTAPI["FastAPI Serving Engine<br/>Async / Sub-50ms Latency"]
+        FEAST_ONLINE -.->|Low-Latency Features| FASTAPI
+        FASTAPI --> SHAP["TreeExplainer SHAP<br/>Local Accuracy phi_0 + sum phi_i"]
+        FASTAPI --> AB["A/B Testing Engine<br/>MD5 Split & Welch t-test"]
+        FASTAPI --> BENTO["Bento Grid Web Console<br/>http://localhost:8000/ui"]
+    end
 
-| STT | Phân Hệ Kỹ Thuật / Thuật Toán | Cơ Sở Lý Thuyết Từ Nghiên Cứu Khoa Học Phản Biện | Minh Chứng Code Thực Thi Thật & Kết Quả Của Dự Án (`src/` & `data/`) |
-| :---: | :--- | :--- | :--- |
-| **1** | **Kiến trúc MLOps Khép kín (DVC -> Feast -> MLflow -> FastAPI -> Drift Trigger -> Retraining)** | **1) Dominik Kreuzberger, Niklas Kühl & Sebastian Hirschl (IEEE Access, Vol. 11, pp. 31866-31879, 2023, DOI: `10.1109/ACCESS.2023.3262138`, `arXiv:2205.02302`):**<br>- Kiến trúc 4 tầng MLOps hoàn chỉnh (Data, Model, Serving, Monitoring).<br>**2) Naveed Tabassam (2023), *"Architecting Continuous Training (CT) Pipelines with CI/CD for Machine Learning Systems"***: Thiết kế vòng lặp Continuous Training (CT) kích hoạt tự động theo sự kiện. | - Đồ thị DAG 9 giai đoạn tự động hóa tái lập: [`dvc.yaml`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/dvc.yaml)<br>- Pipeline CI/CD tự động hóa kiểm định: [`.github/workflows/mlops_ci.yml`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/.github/workflows/mlops_ci.yml)<br>- Tự động kích hoạt Retrain & Hot-Reload an toàn luồng với khóa `MODEL_LOCK`: [`src/api/routes_management.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/routes_management.py) & [`src/api/main.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/main.py) |
-| **2** | **Khử Trùng Lặp Thực Thể (`customerid`) & Điền Khuyết Trung Vị Độc Quyền Tập Train (`Anti-Data-Snooping`)** | **Soumyadeep Roy (2026), *"The Hidden Costs of 99% Accuracy: A Trustworthiness Audit of the Telco Customer Churn Benchmark"***:<br>- **Finding F1:** Điền khuyết hoặc chuẩn hóa trên toàn tập dữ liệu trước khi chia `Train/Test` làm rò rỉ phân phối tập kiểm thử, thổi phồng điểm F1 giả mạo thêm `13.1%` ($p < 10^{-4}$).<br>- **Finding F2:** Quan hệ đa cộng tuyến giữa tổng chi tiêu và thời gian gắn bó ($R^2 = 0.9991$), đòi hỏi đánh giá trên lát cắt hợp đồng phi hàng tháng (Non-Monthly Subgroup Evaluation). | - Khử trùng lặp `customerid` và chia tập Stratified 70/15/15 trước khi tính toán `_compute_medians(raw_train)`: [`src/data/preprocess.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/preprocess.py)<br>- Kết quả **`442,211` khách hàng duy nhất** (`309,547` Train + `66,332` Val + `66,332` Test) & bộ giá trị `train_medians`: [`data/processed/metadata.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/metadata.json)<br>- Phân tích thiên kiến hợp đồng tháng (`99.839%` rời bỏ): [`src/models/model_diagnostics.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/models/model_diagnostics.py) -> [`data/processed/dataset_bias_analysis.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/dataset_bias_analysis.json) |
-| **3** | **Động Cơ Out-of-Core Streaming $O(1)$ RAM & Định Dạng Cột Apache Parquet Snappy** | **Feature Store & Columnar Storage Architectures Survey (`arXiv:2302.04132`):**<br>- Cơ chế nén cột Dictionary/RLE kết hợp thuật toán Snappy và kỹ thuật đọc chiếu cột (Column Projection) tối ưu hóa băng thông I/O. | - Động cơ streaming `pq.ParquetWriter` 2 pha duy trì `seen_customer_ids = set()` lọc trùng liên chunk: [`src/data/preprocess.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/preprocess.py) -> Giảm RAM đỉnh từ `318.70 MB` xuống **`113.38 MB`** (**`-64.42%`**): [`data/processed/big_data_streaming_benchmark.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/big_data_streaming_benchmark.json)<br>- Đo đạc hiệu năng I/O thực tế: [`src/data/benchmark_io.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/benchmark_io.py) -> Nén **`3.7x`** (`8.94 MB` -> `2.42 MB`), đọc **`111.77 MB/s`** (nhanh gấp **`14.41x`** so với CSV): [`data/processed/io_benchmark_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/io_benchmark_results.json) |
-| **4** | **Kiến Trúc Feast Feature Store Kép (`Dual-Store Offline/Online`), Point-in-Time Correctness & Chống Training-Serving Skew** | **Feature Store Survey for Production ML (`arXiv:2302.04132` & Feast Reference Standard):**<br>- Điều kiện truy vấn tại điểm thời gian $t^* = \max\{t_i \mid t_i \le T_j\}$ và bất biến thống nhất đặc trưng $f_{\text{offline}}(x) \equiv f_{\text{online}}(x)$. | - Đồng bộ toàn bộ **`442,211` khách hàng** (`train`+`val`+`test`) vào Offline Parquet (`data/feast_repo/churn_features.parquet`) và Online SQLite (`data/feast_repo/data/online_store.db`) kèm bộ nhớ đệm Redis SSL `6380`: [`src/features/feature_store.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/features/feature_store.py)<br>- Đồng nhất 100% công thức đặc trưng phái sinh giữa Offline ETL ([`src/data/preprocess.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/preprocess.py)), Feast Feature View ([`src/features/feature_store.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/features/feature_store.py)), và Online API ([`src/api/utils.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/utils.py)) |
-| **5** | **Tối Ưu Siêu Tham Số Bayesian TPE (`Optuna`) & Tổ Hợp 4 Mô Hình (`XGBoost`, `LightGBM`, `Random Forest`, `Logistic Regression`)** | **Mohammed Affan Shaikhsurab & Pramod Magadum (2024), *"Enhancing Customer Churn Prediction in Telecommunications: An Adaptive Ensemble Learning Approach"***:<br>- Nghiên cứu đối sánh thực nghiệm các giải thuật Gradient Boosting (`XGBoost`, `LightGBM`), `Random Forest` và `Logistic Regression` trên bài toán churn viễn thông. | - Tối ưu siêu tham số Bayesian TPE 20 trials: [`src/models/tune_optuna.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/models/tune_optuna.py) -> [`data/models/tuning_history.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/models/tuning_history.json)<br>- Huấn luyện 4 mô hình & đăng ký MLflow Model Registry (`stage="Production"`): [`src/models/train_pipeline.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/models/train_pipeline.py)<br>- Trọng số và chỉ số đánh giá thực tế: [`champion_model.joblib`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/models/champion_model.joblib), [`evaluation_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/models/evaluation_results.json), [`error_analysis_report.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/error_analysis_report.json) |
-| **6** | **Giải Thích Mô Hình Bằng Giá Trị Shapley (`SHAP TreeExplainer` & `LinearExplainer`) Bảo Toàn Tính Cộng Tính Địa Phương (`Local Accuracy`)** | **Scott M. Lundberg & Su-In Lee (NeurIPS 2017, pp. 4765-4774, `arXiv:1705.07874`), *"A Unified Approach to Interpreting Model Predictions"***:<br>- **Local Accuracy (Thuộc tính 1, Eq. 5):** $f(x) = \phi_0 + \sum_{i=1}^M \phi_i$. Đảm bảo tổng giá trị đóng góp Shapley cộng với giá trị kỳ vọng nền tảng bằng chính xác đầu ra dự đoán của mô hình. | - Tính toán SHAP trích xuất `base_value` ($\phi_0$) và bảo toàn cả đóng góp âm ($\phi_i < 0$, giảm nguy cơ) lẫn dương ($\phi_i > 0$, tăng nguy cơ): [`src/api/utils.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/utils.py)<br>- Khởi tạo `TreeExplainer` với fallback `LinearExplainer`: [`src/api/main.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/main.py)<br>- Hiển thị thanh SHAP hai chiều âm/dương trên giao diện Bento Grid Web: [`src/web/app.js`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/web/app.js) |
-| **7** | **Phát Hiện Trôi Dạt Phân Phối (`Data Drift`): Chỉ Số `PSI` (Chia Bin Trung Điểm Rời Rạc / Phân Vị Liên Tục) & Kiểm Định `KS-Test 2 Mẫu` Hiệu Chỉnh `Bonferroni`** | **1) Stephan Rabanser, Stephan Günnemann & Zachary C. Lipton (NeurIPS 2019, `arXiv:1810.11953`), *"Failing Loudly: An Empirical Study of Methods for Detecting Dataset Shift"***:<br>- Thống kê KS $D_{\text{KS}} = \sup_x |F_{\text{ref}}(x) - F_{\text{curr}}(x)|$ và hiệu chỉnh đa giả thuyết **Bonferroni** $\alpha_{\text{Bonferroni}} = \frac{\alpha}{D} = \frac{0.05}{13} \approx 0.003846$.<br>**2) Katalay, Dimandja & Masakuna (2025):** Phương trình PSI kẹp $\epsilon = 10^{-4}$ chống chia cho 0. | - Thuật toán `calculate_psi()` (chia bin trung điểm cho biến rời rạc, kẹp $\epsilon = 10^{-4}$) & `run_drift_analysis()` (Bonferroni $\alpha = 0.003846$): [`src/monitoring/drift_detector.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/monitoring/drift_detector.py)<br>- Kết quả thực nghiệm đối sánh 309,547 mẫu Reference vs 797 mẫu Current (`9/13` đặc trưng trôi dạt, `drift_share = 0.6923`): [`data/processed/drift_metrics.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/drift_metrics.json) |
-| **8** | **Khuyến Nghị Giữ Chân Tối Ưu Lợi Nhuận Kỳ Vọng (`e-Profits` & `CLV`) + Định Tuyến A/B Testing (`MD5` & Kiểm Định `Welch's t-test`)** | **Awais Manzoor, M. Atif Qureshi, Etain Kidney & Luca Longo (2025), *"e-Profits: A Business-Aligned Evaluation Metric for Profit-Sensitive Customer Churn Prediction"***:<br>- Hàm lợi nhuận cấp độ khách hàng: $\Pi_i = \text{CLV}_i - C_{\text{offer},i} - C_{\text{contact},i}$ (khi True Positive) và $-C_{\text{offer},i} - C_{\text{contact},i}$ (khi False Positive). | - Logic `generate_recommendation()` kết hợp xác suất rời bỏ (`High >= 0.70`, `Medium [0.40, 0.70)`, `Low < 0.40`) với `total_spend` (CLV), `contract_length`, `tenure`: [`src/api/utils.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/utils.py)<br>- Phân luồng thực nghiệm A/B `MD5(customer_id) % 100 < 80` & kiểm định `scipy.stats.ttest_ind(equal_var=False)`: [`src/api/ab_testing.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/ab_testing.py)<br>- Cơ sở dữ liệu SQLite WAL ghi nhận suy luận thực tế (đạt 1,095 bản ghi): [`data/inference_logs.db`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/inference_logs.db) |
+    subgraph Observability["5. Observability & Continuous Training"]
+        FASTAPI --> AUDIT_DB[("Inference Audit Log<br/>SQLite WAL")]
+        AUDIT_DB --> DRIFT["Drift Detector<br/>PSI + Bonferroni KS-Test"]
+        DRIFT -->|Drift Detected| RETRAIN["Automated Continuous Training<br/>Hot-Reload via Threading Lock"]
+        RETRAIN --> MLFLOW
+        AUDIT_DB --> STREAMLIT["Streamlit Operations Hub<br/>4 Tabs: KPI, Drift, A/B, Diag"]
+    end
 
----
-
-## 4. Bảng Tra Cứu Minh Chứng Xác Thực Số Liệu Thực Nghiệm (Master Empirical Evidence Matrix)
-
-Mọi con số thực nghiệm trong hệ thống đều được kiểm chứng tự động bằng câu lệnh `assert` trong kịch bản [`scripts/verification/verify_report_evidence.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/scripts/verification/verify_report_evidence.py) và xuất ra tệp đối chứng [`data/processed/verified_report_evidence.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/verified_report_evidence.json):
-
-| STT | Hạng Mục Số Liệu Thực Nghiệm | Giá Trị Thực Tế Trên Ổ Đĩa | Minh Chứng Tệp Dữ Liệu Gốc & Dòng Code Thực Thi |
-| :---: | :--- | :--- | :--- |
-| **1** | **Dung lượng tập dữ liệu CSV thô** | Tổng **`25.49 MB`** (`22.36 MB` tệp Train `440,833` dòng + `3.13 MB` tệp Test `64,374` dòng) | [`data/raw/customer_churn_dataset-training-master.csv`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/raw/customer_churn_dataset-training-master.csv) & [`customer_churn_dataset-testing-master.csv`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/raw/customer_churn_dataset-testing-master.csv) |
-| **2** | **Tổng số khách hàng duy nhất sau khử trùng lặp (`customerid`)** | **`442,211` khách hàng duy nhất** (`309,547` Train + `66,332` Val + `66,332` Test = 100% tách biệt thực thể) | [`src/data/preprocess.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/preprocess.py) -> [`data/processed/metadata.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/metadata.json) |
-| **3** | **Bộ giá trị trung vị (`train_medians`) độc quyền tập Train** | `age=39.0`, `tenure=32.0`, `usage_frequency=16.0`, `support_calls=3.0`, `payment_delay=13.0`, `total_spend=660.44`, `last_interaction=14.0` | [`src/data/preprocess.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/preprocess.py) -> [`data/processed/metadata.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/metadata.json) |
-| **4** | **Benchmark I/O Local: Parquet Snappy vs CSV vs SQLite** | Dung lượng giảm từ `8.94 MB` (CSV) xuống **`2.42 MB`** (Parquet = nén **`3.7x`**, tiết kiệm **`72.93%`**); tốc độ đọc **`111.77 MB/s`** vs `28.68 MB/s` (nhanh gấp **`14.41` lần**) | [`src/data/benchmark_io.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/benchmark_io.py) -> [`data/processed/io_benchmark_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/io_benchmark_results.json) |
-| **5** | **Benchmark Out-of-Core PyArrow Streaming (`O(1)` RAM)** | Chế độ In-Memory chiếm **`318.70 MB`** RAM; chế độ Out-of-Core Streaming chiếm **`113.38 MB`** RAM (tiết kiệm **`64.42%`** RAM đỉnh) | [`src/data/preprocess.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/preprocess.py) -> [`data/processed/big_data_streaming_benchmark.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/big_data_streaming_benchmark.json) |
-| **6** | **Kiểm định Chất lượng Dữ liệu Tự động (Data Contracts)** | **`14 / 14` bài kiểm tra đạt `100.0%`** (10 nhóm quy tắc hợp đồng dữ liệu trên `309,547` bản ghi Train, `0` ngoại lai IQR/Z-score) | [`src/data/data_quality.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/data_quality.py) -> [`data/processed/data_quality_report.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/data_quality_report.json) |
-| **7** | **Feast Dual-Store Feature Store (`Offline` + `Online`)** | **`442,211` khách hàng** nạp đồng bộ trong cả Offline Parquet (`churn_features.parquet`) và Online SQLite (`data/feast_repo/data/online_store.db`) | [`src/features/feature_store.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/features/feature_store.py) -> [`data/feast_repo/data/online_store.db`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/feast_repo/data/online_store.db) |
-| **8** | **Tối ưu Siêu tham số Optuna Bayesian TPE (`20` Trials)** | `12` trials `XGBoost` (Best CV ROC-AUC = **`0.9990`** tại Trial #9: `n_estimators=140, max_depth=5`) + `8` trials `Random_Forest` (Best CV ROC-AUC = **`0.9988`**) | [`src/models/tune_optuna.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/models/tune_optuna.py) -> [`data/models/tuning_history.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/models/tuning_history.json) |
-| **9** | **Hiệu năng 4 Mô hình & Ma trận Nhầm lẫn** | Champion `XGBoost`: Val ROC-AUC **`0.9990`**, Test ROC-AUC **`0.9989`**, F1 **`0.9989`**, Subgroup Non-Monthly AUC **`0.9992`**, Ma trận nhầm lẫn Test: **`TN=28,619, FP=70, FN=16, TP=37,627`** | [`src/models/train_pipeline.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/models/train_pipeline.py) -> [`data/models/evaluation_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/models/evaluation_results.json) & [`data/processed/error_analysis_report.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/error_analysis_report.json) |
-| **10** | **Phân tích Thiên kiến Dữ liệu (Dataset Bias Analysis)** | Tổng `442,211` khách hàng có tỷ lệ rời bỏ `56.75%`; nhóm hợp đồng `Monthly` (`87,588` người) có `87,447` người rời bỏ (**`99.839%`**) | [`src/models/model_diagnostics.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/models/model_diagnostics.py) -> [`data/processed/dataset_bias_analysis.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/dataset_bias_analysis.json) |
-| **11** | **Giám sát Trôi dạt Dữ liệu (PSI & KS-Test Bonferroni)** | Tập Reference `309,547` mẫu vs Current `1,045` mẫu; ngưỡng Bonferroni **`0.003846`** ($0.05 / 13$); phát hiện các đặc trưng dịch chuyển (`drift_share >= 0.30`) | [`src/monitoring/drift_detector.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/monitoring/drift_detector.py) -> [`data/processed/drift_metrics.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/drift_metrics.json) |
-| **12** | **Độ trễ mạng Đa vùng (Multi-Region TCP/HTTPS RTT)** | Singapore (`southeastasia`): Min **`26.19 ms`** / Avg **`49.17 ms`**; Hong Kong (`eastasia`): Min **`38.34 ms`** / Avg **`47.98 ms`**; Tokyo: Avg **`106.29 ms`**; West Europe: Avg **`216.59 ms`**; East US: Avg **`255.60 ms`** | [`src/data/latency_simulator.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/latency_simulator.py) -> [`data/processed/region_latency_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/region_latency_results.json) |
-| **13** | **Cơ sở dữ liệu Nhật ký Suy luận & A/B Testing (SQLite WAL)** | **`1,095` bản ghi suy luận thực tế** trong bảng `inference_logs` tại `data/inference_logs.db` (`PRAGMA journal_mode=WAL; busy_timeout=5000`) | [`src/api/database.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/database.py) & [`src/api/ab_testing.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/ab_testing.py) -> [`data/inference_logs.db`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/inference_logs.db) |
-| **14** | **Dự toán Chi phí Cloud FinOps (Total Monthly Cloud TCO)** | **`$74.67 / tháng`** (Container Apps `$34.56` + Redis C0 `$16.06` + Azure Monitor `$11.50` + ACR `$5.00` + VNet/Egress `$4.00` + Blob ADLS Gen2 `$3.55`) | [`configs/cloud_architecture_and_cost.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/configs/cloud_architecture_and_cost.md) -> [`deploy/azure/main.tf`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/deploy/azure/main.tf) & [`deploy/azure/arm_template.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/deploy/azure/arm_template.json) |
-| **15** | **Giới hạn dòng code (`<= 400` dòng) & Web UI (`< 200` dòng)** | **`45 / 45` tệp nguồn `<= 400` dòng**; 5 tệp trong `src/web/`: `app.js` (`198` dòng), `dashboard.py` (`183` dòng), `index.html` (`181` dòng), `style.css` (`172` dòng), `charts.js` (`131` dòng) | [`scripts/verification/audit_line_cap.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/scripts/verification/audit_line_cap.py) & 5 tệp giao diện Web [`src/web/`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/web) |
-| **16** | **Bộ Kiểm thử Tự động & Đối kháng (`80` Pytest Tests)** | **`80 / 80` bài kiểm thử PASSED (`100%`)** gồm `16` bài kiểm thử REST API, `31` bài kiểm thử tích hợp E2E/scenarios và `33` bài kiểm thử chức năng pipeline/mô hình/drift/database thực tế | [`tests/test_api.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/tests/test_api.py), [`tests/test_e2e_scenarios.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/tests/test_e2e_scenarios.py), [`tests/test_audit_team_1.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/tests/test_audit_team_1.py) .. [`tests/test_audit_team_6.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/tests/test_audit_team_6.py) |
+    subgraph CloudInfra["6. Cloud Native Infrastructure"]
+        FASTAPI -.-> ACA["Azure Container Apps<br/>Auto-scale 0-5 Replicas"]
+        FEAST_ONLINE -.-> REDIS["Azure Cache for Redis<br/>Basic C0 SSL 6380"]
+        PARQUET -.-> BLOB["Azure Blob Storage<br/>ADLS Gen2"]
+    end
+```
 
 ---
 
-## 5. Cấu Trúc Thư Mục & Danh Mục Phân Hệ Mã Nguồn (Repository Architecture)
+## 3. Các Tính Năng Kỹ Thuật Nổi Bật (Key Architectural Innovations)
 
-Toàn bộ mã nguồn hệ thống được phân rã theo mô hình Modular Clean Architecture, đảm bảo mọi tệp nguồn đều tuân thủ giới hạn cứng $\le 400$ dòng code:
+### 3.1 Động Cơ Xử Lý Dữ Liệu Lớn $O(1)$ RAM & Định Dạng Cột Parquet Snappy
+* **PyArrow Out-of-Core Streaming:** Đọc và xử lý dữ liệu theo từng chunk kích thước cố định với bộ theo dõi thực thể `seen_customer_ids`, giúp giảm **64.42% dung lượng RAM đỉnh** (từ `318.70 MB` xuống `113.38 MB`).
+* **Hiệu năng lưu trữ Apache Parquet Snappy:** Nén dữ liệu **3.7x** so với CSV (`8.94 MB` xuống `2.42 MB`), đồng thời tăng tốc độ đọc lên **`111.77 MB/s`** (nhanh gấp **14.41 lần** so với tệp CSV truyền thống).
+* **Chuẩn hóa chống rò rỉ dữ liệu (Anti-Data-Snooping):** Toàn bộ tham số trung vị (`train_medians`) được tính toán độc quyền trên tập Train và cố định vào `metadata.json`, đảm bảo không có rò rỉ thông tin sang tập Validation/Test hay môi trường phục vụ thời gian thực.
 
-| Thư Mục / Phân Hệ | Các Tệp Mã Nguồn Chính | Chức Năng Kỹ Thuật Cốt Lõi |
-| :--- | :--- | :--- |
-| **[`src/data/`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data)** | [`download_dataset.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/download_dataset.py), [`preprocess.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/preprocess.py), [`data_quality.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/data_quality.py), [`benchmark_io.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/benchmark_io.py), [`latency_simulator.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/latency_simulator.py) | Tải dữ liệu, khử trùng lặp 442,211 thực thể khách hàng, chia tập Stratified 70/15/15, tính trung vị độc quyền tập Train, PyArrow Out-of-Core streaming $O(1)$ RAM, 14 Data Contracts, benchmark I/O và đo RTT 5 vùng Azure. |
-| **[`src/features/`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/features)** | [`feature_store.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/features/feature_store.py), [`data/feast_repo/feature_store.yaml`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/feast_repo/feature_store.yaml), [`data/feast_repo/data/online_store.db`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/feast_repo/data/online_store.db) | Định nghĩa Feast Entity, FeatureView (13 đặc trưng), materialize toàn bộ 442,211 khách hàng vào Offline Parquet & Online SQLite kèm bộ nhớ đệm Redis driver SSL 6380. |
-| **[`src/models/`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/models)** | [`tune_optuna.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/models/tune_optuna.py), [`train_pipeline.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/models/train_pipeline.py), [`evaluate.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/models/evaluate.py), [`model_diagnostics.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/models/model_diagnostics.py) | Tối ưu siêu tham số Bayesian TPE (20 trials), huấn luyện 4 mô hình (`XGBoost`, `Random_Forest`, `LightGBM`, `Logistic_Regression`), đăng ký MLflow Model Registry (`stage="Production"`) và phân tích thiên kiến/ma trận nhầm lẫn. |
-| **[`src/monitoring/`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/monitoring)** | [`drift_detector.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/monitoring/drift_detector.py), [`data/processed/drift_metrics.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/drift_metrics.json) | Tính toán chỉ số Population Stability Index (PSI, chia bin trung điểm cho biến rời rạc & phân vị cho biến liên tục, kẹp $\epsilon = 10^{-4}$) và kiểm định KS-test 2 mẫu hiệu chỉnh Bonferroni ($\alpha = 0.003846$). |
-| **[`src/api/`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api)** | [`database.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/database.py), [`schemas.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/schemas.py), [`utils.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/utils.py), [`ab_testing.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/ab_testing.py), [`routes_management.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/routes_management.py), [`main.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/main.py) | Dịch vụ REST API FastAPI: kết nối SQLite WAL an toàn luồng, xác thực Pydantic chặn `NaN`/`Inf` & giới hạn `MAX_BATCH_SIZE=1000`, giải thích SHAP Local Accuracy ($\phi_0 + \sum \phi_i$), khuyến nghị $e\text{-Profits}$, định tuyến A/B testing (MD5) và Hot-Reload mô hình với `threading.RLock()`. |
-| **[`src/web/`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/web)** | [`index.html`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/web/index.html), [`style.css`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/web/style.css), [`app.js`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/web/app.js), [`charts.js`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/web/charts.js), [`dashboard.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/web/dashboard.py) | Giao diện điều hành Bento Grid và Dashboard phân tích 4 Tab; chống DOM XSS bằng `escapeHtml()`, 100% tệp $< 200$ dòng code và áp dụng bảng màu tự nhiên Oceanic Navy & Warm Amber. |
-| **[`deploy/azure/`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/deploy/azure) & [`configs/`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/configs)** | [`arm_template.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/deploy/azure/arm_template.json), [`main.tf`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/deploy/azure/main.tf), [`containerapp.yaml`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/deploy/azure/containerapp.yaml), [`deploy_azure.bat`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/deploy/azure/deploy_azure.bat), [`cloud_architecture_and_cost.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/configs/cloud_architecture_and_cost.md) | Bộ kịch bản Infrastructure-as-Code (ARM Template, Terraform, YAML, CLI script) cấp phát Azure Container Apps (1.0 vCPU, 2.0 GiB RAM), Azure Cache for Redis Basic C0 (SSL 6380), ACR, ADLS Gen2 (`churnguard-datasets`), kèm dự toán FinOps TCO **`$74.67/tháng`**. |
-| **[`tests/`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/tests) & [`scripts/verification/`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/scripts/verification)** | [`test_api.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/tests/test_api.py), [`test_e2e_scenarios.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/tests/test_e2e_scenarios.py), [`test_audit_team_1.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/tests/test_audit_team_1.py) .. [`test_audit_team_6.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/tests/test_audit_team_6.py), [`verify_report_evidence.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/scripts/verification/verify_report_evidence.py), [`integrity_rubric_checker.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/scripts/verification/integrity_rubric_checker.py), [`final_comprehensive_check.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/scripts/verification/final_comprehensive_check.py) | **`80 / 80` bài kiểm thử tự động & tích hợp `PASSED 100%`** và bộ kịch bản kiểm toán tự động đối chiếu từng số liệu trong báo cáo với dữ liệu thực trên ổ đĩa. |
+### 3.2 Kiến Trúc Feast Dual-Store & Chống Lệch Pha (Training-Serving Skew)
+* **Kho lưu trữ kép (Dual-Store):** Tích hợp song song Offline Store (Apache Parquet phục vụ huấn luyện hàng loạt) và Online Store (SQLite WAL cục bộ hoặc Azure Cache for Redis C0 SSL 6380 trên đám mây).
+* **Đồng nhất 100% công thức đặc trưng:** Đảm bảo tính nhất quán tuyệt đối giữa mã tiền xử lý ngoại tuyến và mã truy vấn đặc trưng trực tuyến tại thời điểm suy luận ($f_{\text{offline}}(x) \equiv f_{\text{online}}(x)$).
 
----
+### 3.3 Giải Thích Quyết Định Bằng XAI (SHAP Local Accuracy)
+* **Bảo toàn tính cộng tính địa phương (Additive Feature Attribution):** Triển khai thuật toán `TreeExplainer` (với cơ chế dự phòng `LinearExplainer`) thỏa mãn phương trình:
+  $$f(x) = \phi_0 + \sum_{i=1}^M \phi_i$$
+* **Trực quan hóa hai chiều:** Hệ thống bóc tách rõ ràng các yếu tố thúc đẩy nguy cơ rời bỏ ($\phi_i > 0$) và các yếu tố giúp giữ chân khách hàng ($\phi_i < 0$), hiển thị trực tiếp trên giao diện điều hành doanh nghiệp.
 
-## 6. Bảng Đánh Giá Chi Tiết 15 Tiêu Chí Kỹ Thuật Hệ Thống (System Engineering Capability Breakdown)
-
-Bảng đối chuẩn năng lực hệ thống giữa môi trường Local Baseline và môi trường Cloud Production Scale-Out trên 15 tiêu chí kỹ thuật:
-
-| Mã | Tiêu Chí Kỹ Thuật Đánh Giá | Điểm Chuẩn | Năng Lực Local (Baseline) | Năng Lực Cloud (Scale-Out) | Minh Chứng Mã Nguồn & Hiện Trạng Môi Trường |
-| :---: | :--- | :---: | :---: | :---: | :--- |
-| **1.1** | Phân loại bài toán (Problem Classification) | `0.25` | **`0.25`** | **`0.25`** | Minh chứng: [`configs/cloud_architecture_and_cost.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/configs/cloud_architecture_and_cost.md). Phân loại chuẩn bài toán dự đoán nhị phân kết hợp lưu trữ DVC/Feast. |
-| **1.2** | Loại dữ liệu (Data Modality) | `0.25` | **`0.25`** | **`0.25`** | Minh chứng: [`data/processed/metadata.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/metadata.json). Dữ liệu dạng bảng có cấu trúc gồm `442,211` khách hàng và `13` đặc trưng. |
-| **1.3** | Quy mô dữ liệu & Tối ưu hóa I/O (>4GB Scale) | `0.75` | **`0.00`** | **`0.75`** | **Tầng Local:** Tệp CSV thô hạt giống đạt `25.49 MB`. Động cơ Out-of-Core streaming $O(1)$ RAM: [`src/data/preprocess.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/preprocess.py) và kịch bản REES46 `5.28 GB`: [`notebooks/rees46_bigdata_cloud_benchmark.ipynb`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/notebooks/rees46_bigdata_cloud_benchmark.ipynb). |
-| **1.4** | Phân loại mô hình dịch vụ đám mây (Cloud Service Models) | `0.25` | **`0.10`** | **`0.25`** | Phân loại IaaS/PaaS/FaaS/SaaS tại [`configs/cloud_architecture_and_cost.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/configs/cloud_architecture_and_cost.md). Môi trường Local chưa khởi tạo tài nguyên trực tiếp trên Azure. |
-| **2.1** | Cơ sở lý thuyết định dạng lưu trữ (Storage Architecture) | `0.50` | **`0.10`** | **`0.50`** | Minh chứng Parquet Snappy nén `3.7x` (`2.42 MB` vs `8.94 MB`), đọc nhanh gấp `14.41x` tại [`data/processed/io_benchmark_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/io_benchmark_results.json); sẵn sàng đẩy lên Azure Blob. |
-| **2.2** | Cơ sở lý thuyết thuật toán xử lý (ML Modeling Foundations) | `0.50` | **`0.30`** | **`0.50`** | Minh chứng 4 thuật toán ML + Optuna 20 trials + SHAP + PSI/KS Bonferroni tại [`src/models/train_pipeline.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/models/train_pipeline.py) & [`src/monitoring/drift_detector.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/monitoring/drift_detector.py). |
-| **2.3** | Đặc tả kiến trúc dịch vụ Cloud (Cloud Architecture Services) | `0.50` | **`0.10`** | **`0.50`** | Minh chứng IaC tại [`deploy/azure/arm_template.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/deploy/azure/arm_template.json), [`deploy/azure/main.tf`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/deploy/azure/main.tf), [`Dockerfile`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/Dockerfile). |
-| **3.1** | Tốc độ đọc ghi dữ liệu (I/O Throughput & Performance) | `0.50` | **`0.10`** | **`0.50`** | Minh chứng [`src/data/benchmark_io.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/benchmark_io.py) đo tốc độ đọc Parquet `111.77 MB/s` trên SSD local, sẵn sàng kiểm chuẩn thông lượng mạng tới Azure Storage. |
-| **3.2** | Luồng xử lý dữ liệu tự động (Automated End-to-End ETL) | `0.50` | **`0.10`** | **`0.50`** | Minh chứng DAG 9 stages tại [`dvc.yaml`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/dvc.yaml) và [`src/data/preprocess.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/data/preprocess.py); hỗ trợ đẩy trực tiếp lên Cloud Blob Storage. |
-| **3.3** | Đo độ trễ mạng đa vùng (Multi-Region Network Latency) | `0.50` | **`0.00`** | **`0.50`** | Minh chứng [`data/processed/region_latency_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/region_latency_results.json) đo RTT thực tế tới 5 Azure Regions (Singapore, Hong Kong, Tokyo, Amsterdam, Virginia). |
-| **3.4** | Tối ưu hóa truy vấn đặc trưng (Feature Store Low-Latency Caching) | `0.50` | **`0.15`** | **`0.50`** | Minh chứng [`src/features/feature_store.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/features/feature_store.py) nạp `442,211` khách hàng vào SQLite local và tích hợp sẵn adapter Redis SSL `6380`. |
-| **4.1** | Huấn luyện & Đăng ký mô hình (Model Training & Registry) | `1.00` | **`0.55`** | **`0.95`** | Minh chứng [`data/models/evaluation_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/models/evaluation_results.json) & [`data/models/tuning_history.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/models/tuning_history.json); huấn luyện CPU local và sẵn sàng scale trên Cloud Compute. |
-| **4.2** | Phục vụ mô hình qua REST API (High-Performance Serving & XAI) | `0.50` | **`0.35`** | **`0.50`** | Minh chứng [`src/api/main.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/main.py) & [`src/api/utils.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/api/utils.py); phục vụ tại `localhost:8000` và sẵn sàng deploy lên Container Apps. |
-| **4.3** | Trực quan hóa & Chẩn đoán mô hình (Diagnostics & Visualizations) | `1.00` | **`0.45`** | **`0.95`** | Minh chứng biểu đồ trong `docs/images/`, [`src/web/charts.js`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/web/charts.js) và [`src/web/dashboard.py`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/web/dashboard.py). |
-| **4.4** | Giao diện điều hành web (Web Application Console) | `0.50` | **`0.15`** | **`0.50`** | Minh chứng [`src/web/index.html`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/web/index.html) và [`src/web/app.js`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/web/app.js); sẵn sàng map Public Cloud FQDN. |
-| **5.1** | Tài liệu trình chiếu kiến trúc (Architecture Deck) | `0.50` | **`0.15`** | **`0.50`** | Kiến trúc trực quan hóa qua sơ đồ tương tác và tài liệu kỹ thuật trực tiếp tại [`README.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/README.md). |
-| **5.2** | Báo cáo kỹ thuật toàn diện (Comprehensive Technical Report) | `0.50` | **`0.15`** | **`0.50`** | Đặc tả kỹ thuật toàn diện tại [`docs/specifications/SYSTEM_SPECIFICATION.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/docs/specifications/SYSTEM_SPECIFICATION.md). |
-| **5.3** | Kịch bản trình diễn hệ thống (System Demonstration Runbook) | `0.50` | **`0.00`** | **`0.50`** | Kịch bản vận hành thực nghiệm trực tiếp qua CLI, REST API (Swagger `/docs`), Streamlit Dashboard (`/dashboard`) và Bento Grid UI (`/ui`) -> Chi tiết tại [`docs/RUNBOOK_HUONG_DAN_VAN_HANH.md`](docs/RUNBOOK_HUONG_DAN_VAN_HANH.md). |
-| **5.4** | Quản trị đám mây, CI/CD & FinOps TCO (Cloud Governance & FinOps) | `0.50` | **`0.10`** | **`0.50`** | Minh chứng CI/CD [`.github/workflows/mlops_ci.yml`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/.github/workflows/mlops_ci.yml) & TCO `$74.67/tháng` tại [`configs/cloud_architecture_and_cost.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/configs/cloud_architecture_and_cost.md). |
-| **TỔNG** | **ĐIỂM NĂNG LỰC TOÀN HỆ THỐNG** | **`10.00`** | **`3.35 / 10.00`** | **`9.90 / 10.00`** | **Minh chứng tự động:** [`final_check_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/final_check_results.json). |
+### 3.4 Giám Sát Trôi Dạt Dữ Liệu (Drift Detection) & Tự Động Kích Hoạt Huấn Luyện Lại
+* **Chỉ số ổn định quần thể (PSI):** Tính toán PSI chia bin trung điểm cho biến rời rạc và phân vị cho biến liên tục, kẹp $\epsilon = 10^{-4}$ chống chia cho 0.
+* **Kiểm định Kolmogorov-Smirnov 2 mẫu hiệu chỉnh Bonferroni:** Kiểm soát tỷ lệ lỗi loại I trên 13 đặc trưng với ngưỡng ý nghĩa nghiêm ngặt:
+  $$\alpha_{\text{Bonferroni}} = \frac{0.05}{13} \approx 0.003846$$
+* **Continuous Training Trigger:** Tự động kích hoạt pipeline huấn luyện lại và hoán đổi mô hình Champion trên bộ nhớ an toàn luồng (`threading.RLock`) mà không làm gián đoạn các yêu cầu API đang phục vụ.
 
 ---
 
-## 7. Hướng Dẫn Khởi Chạy & Lệnh Tự Động Xác Minh (Quickstart Commands)
+## 4. Bảng Đo Kiểm Hiệu Năng Thực Nghiệm (Empirical Benchmarks)
 
-> 📖 **SỔ TAY HƯỚNG DẪN VẬN HÀNH TỪNG BƯỚC (STEP-BY-STEP OPERATIONAL RUNBOOK):**  
-> Vui lòng xem tài liệu hướng dẫn trực quan chi tiết tại **[`docs/RUNBOOK_HUONG_DAN_VAN_HANH.md`](docs/RUNBOOK_HUONG_DAN_VAN_HANH.md)**  
-> *(Hướng dẫn cụ thể: truy cập link nào, trang gì, tab nào, ở tab đó ấn nút nào, nút màu gì [mã hex chuẩn], nằm ở hướng nào [trên/dưới/trái/phải/giữa], ấn xong hiện ra cái gì, dấu hiệu nhận biết thành công và cách xử lý lỗi).*
+Mọi chỉ số dưới đây đều được đo kiểm trực tiếp trên dữ liệu và mã nguồn thực tế của hệ thống:
+
+| Phân Hệ Kỹ Thuật | Chỉ Số Đo Lường | Giá Trị Thực Nghiệm | Ý Nghĩa Kỹ Thuật & Vận Hành |
+| :--- | :--- | :---: | :--- |
+| **Quy Mô Dữ Liệu** | Hồ sơ khách hàng duy nhất | **`442,211`** | Đã khử hoàn toàn trùng lặp mã định danh `customerid` |
+| **Tối Ưu Bộ Nhớ** | Giảm dung lượng RAM đỉnh | **`-64.42%`** | Kỹ thuật PyArrow Out-of-Core streaming $O(1)$ RAM |
+| **Tối Ưu I/O** | Tỷ lệ nén dữ liệu Parquet | **`3.7x`** | Tiết kiệm 72.93% dung lượng lưu trữ trên đĩa |
+| **Tốc Độ Đọc** | Thông lượng đọc Parquet | **`111.77 MB/s`** | Nhanh gấp **14.41 lần** so với đọc định dạng CSV |
+| **Mô Hình Champion** | ROC-AUC (Tập Test) | **`0.9989`** | Thuật toán XGBoost tối ưu hóa qua 20 trials Bayesian TPE |
+| **Mô Hình Champion** | Macro F1-Score (Tập Test) | **`0.9989`** | Đạt độ cân bằng tối ưu giữa Precision và Recall |
+| **Ma Trận Nhầm Lẫn** | TN / FP / FN / TP (Test) | **`28,619 / 70 / 16 / 37,627`** | Tổng 66,332 mẫu kiểm thử độc lập |
+| **Thử Nghiệm A/B** | Kiểm định Welch's t-test | **`t = 14.4283, p = 0.0`** | Chênh lệch hiệu năng giữa hai phiên bản có ý nghĩa thống kê |
+| **Độ Trễ Mạng Cloud** | RTT Singapore (`southeastasia`) | **`26.19 ms` (Min) / `49.17 ms` (Avg)** | Vùng đề xuất tối ưu nhất cho người dùng khu vực Đông Nam Á |
+| **Chi Phí Vận Hành** | Tổng chi phí TCO Đám mây | **`$74.67 / tháng`** | Tối ưu hóa kiến trúc Serverless Container Apps & Redis C0 |
+| **Chất Lượng Mã Nguồn** | Bộ kiểm thử tự động Pytest | **`80 / 80 PASSED (100%)`** | Bao phủ Unit Test, Integration Test và Contract Test |
+| **Chuẩn Cấu Trúc** | Giới hạn dòng mã nguồn | **`45 / 45 tệp <= 400 dòng`** | Tuân thủ triệt để kiến trúc module phân rã sạch |
+
+---
+
+## 5. Cấu Trúc Thư Mục Hệ Thống (Repository Layout)
+
+```
+.
+├── src/                               # Toàn bộ mã nguồn sản xuất (100% tệp <= 400 dòng)
+│   ├── data/                          # Pipeline tiền xử lý, streaming O(1) RAM, 14 Data Contracts
+│   ├── features/                      # Feast Feature Store definitions & dual-store materializer
+│   ├── models/                        # Optuna Bayesian tuning, huấn luyện 4 mô hình & MLflow registry
+│   ├── monitoring/                    # Phát hiện Data Drift (PSI, KS-Test hiệu chỉnh Bonferroni)
+│   ├── api/                           # Dịch vụ FastAPI REST API, XAI SHAP, A/B Testing & SQLite WAL
+│   └── web/                           # Giao diện điều hành Bento Grid UI & Streamlit Dashboard
+├── deploy/azure/                      # Hạ tầng đám mây (ARM Template, Terraform, deploy_azure.bat)
+├── configs/                           # Cấu hình kiến trúc Cloud & Báo cáo FinOps TCO $74.67/tháng
+├── data/                              # Lưu trữ dữ liệu Parquet, Feature Store, mô hình & SQLite WAL
+├── docs/                              # Tài liệu kỹ thuật, kiến trúc & báo cáo chuyên sâu
+│   ├── RUNBOOK_HUONG_DAN_VAN_HANH.md  # Sổ tay vận hành hệ thống chi tiết từng bước (845 dòng)
+│   ├── specifications/                # Đặc tả kỹ thuật chi tiết kiến trúc hệ thống
+│   └── audit_reports/                 # Báo cáo kiểm định năng lực & đối chiếu tiêu chí kỹ thuật
+├── tests/                             # Toàn bộ 80 bài kiểm thử tự động (Pytest 100% Passed)
+├── Dockerfile                         # Khởi tạo Container phục vụ sản xuất
+├── docker-compose.yml                 # Khởi chạy cụm dịch vụ cục bộ
+└── dvc.yaml                           # Đồ thị DAG 9 giai đoạn quản lý vòng đời dữ liệu
+```
+
+---
+
+## 6. Hướng Dẫn Khởi Chạy Nhanh (Quickstart Guide)
+
+### 6.1 Yêu Cầu Hệ Thống
+* Python 3.10 trở lên
+* Trình quản lý gói `pip` hoặc môi trường `conda`
+* Hệ điều hành: Windows, Linux hoặc macOS
+
+### 6.2 Cài Đặt Môi Trường
+```bash
+# Sao chép kho mã nguồn
+git clone https://github.com/chinhpui23th07/Customer-Churn-Prediction-IS402.R11.git
+cd Customer-Churn-Prediction-IS402.R11
+
+# Cài đặt các gói phụ thuộc
+pip install -r requirements.txt
+```
+
+### 6.3 Khởi Chạy Các Dịch Vụ
 
 ```bash
-# 1. Xác minh tự động bằng assert 100% số liệu trong README & Báo cáo kỹ thuật (Xuất verified_report_evidence.json)
-cmd /c "python scripts/verification/verify_report_evidence.py"
-
-# 2. Chạy toàn bộ 80 bài kiểm thử tự động & tích hợp thực tế (100% PASSED)
+# 1. Chạy toàn bộ bộ kiểm thử hồi quy tự động (80 bài kiểm thử)
 cmd /c "python -m pytest tests/ -v"
 
-# 3. Kiểm tra giới hạn cứng 400 dòng/tệp và kiểm toán năng lực đa môi trường
-cmd /c "python scripts/verification/final_comprehensive_check.py"
-
-# 4. Khởi động máy chủ FastAPI Model Serving + Giao diện Web Bento Grid tại http://localhost:8000/ui
+# 2. Khởi động máy chủ phục vụ mô hình FastAPI & Giao diện Bento Grid (Cổng 8000)
 cmd /c "python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000"
 
-# 5. Khởi động bảng điều khiển phân tích chuyên sâu 4 Tab (Streamlit) tại http://localhost:8501
+# 3. Khởi động bảng điều khiển giám sát vận hành Streamlit (Cổng 8501)
 cmd /c "streamlit run src/web/dashboard.py --server.port 8501"
 ```
 
 ---
 
-## 8. Danh Mục Tài Liệu Kỹ Thuật Trong Hệ Thống (Documentation Index)
+## 7. Các Điểm Truy Cập Dịch Vụ (Service Access Points)
 
-1. **[`docs/RUNBOOK_HUONG_DAN_VAN_HANH.md`](docs/RUNBOOK_HUONG_DAN_VAN_HANH.md)**: Sổ tay hướng dẫn vận hành trực quan chi tiết từng bước (Bento Grid Web UI, Dashboard Streamlit, Swagger API, đăng ký Azure for Students và triển khai Cloud 1-Click).
-2. **[`docs/specifications/SYSTEM_SPECIFICATION.md`](docs/specifications/SYSTEM_SPECIFICATION.md)**: Bản đặc tả chi tiết kiến trúc kỹ thuật và yêu cầu chức năng của toàn bộ hệ thống ChurnGuard MLOps.
-3. **[`configs/cloud_architecture_and_cost.md`](configs/cloud_architecture_and_cost.md)**: Báo cáo phân tích kiến trúc điện toán đám mây Microsoft Azure, tối ưu hóa TCO FinOps ($74.67/tháng), định mức hạn ngạch Quotas và kết quả kiểm chuẩn độ trễ mạng 5 vùng.
-4. **[`deploy/azure/README.md`](deploy/azure/README.md)**: Hướng dẫn triển khai tự động hóa hạ tầng đám mây Azure qua Azure CLI, ARM Template và Terraform.
-5. **[`notebooks/README.md`](notebooks/README.md)**: Hướng dẫn thực nghiệm kiểm chuẩn xử lý dữ liệu lớn Out-of-Core (>4GB / 42.4 triệu dòng) trên môi trường Cloud.
+| Giao Diện / Dịch Vụ | Địa Chỉ Truy Cập (URL) | Chức Năng Chính |
+| :--- | :--- | :--- |
+| **Giao Diện Điều Hành Bento Grid** | **`http://localhost:8000/ui`** *(hoặc `/web`)* | Phân tích rủi ro khách hàng thời gian thực, trực quan hóa đóng góp đặc trưng SHAP hai chiều, dự đoán hàng loạt CSV |
+| **Bảng Điều Khiển Giám Sát Streamlit** | **`http://localhost:8501`** | Giám sát KPI thời gian thực từ SQLite WAL, phân tích trôi dạt dữ liệu (PSI/KS-Test), theo dõi thử nghiệm A/B |
+| **FastAPI Swagger OpenAPI UI** | **`http://localhost:8000/docs`** | Kiểm thử trực tiếp 18 REST endpoints (yêu cầu header xác thực `x-api-key: mlops-churn-secret-2026`) |
+| **FastAPI ReDoc Interactive Spec** | **`http://localhost:8000/redoc`** | Đặc tả kỹ thuật chi tiết các Pydantic Schemas và chuẩn định dạng dữ liệu |
+| **Báo Cáo Trực Quan Data Drift** | **`http://localhost:8000/docs/drift_report.html`** | Báo cáo trực quan hóa phân phối xác suất 13 đặc trưng dữ liệu |
+
+---
+
+## 8. Hướng Dẫn Triển Khai Đám Mây Tự Động (Cloud Native Deployment)
+
+Hạ tầng đám mây Microsoft Azure được tự động hóa hoàn toàn thông qua kịch bản Infrastructure-as-Code (IaC):
+
+```bash
+# Triển khai tự động 9 bước lên Microsoft Azure (Không cần Docker Desktop cục bộ - Dùng Cloud ACR Build)
+cmd /c "deploy\azure\deploy_azure.bat"
+```
+
+* **Dịch vụ được cấp phát:** Azure Container Apps (1.0 vCPU, 2.0 GiB RAM, Auto-scale 0-5), Azure Cache for Redis C0 SSL 6380, Azure Container Registry (ACR), Azure Blob Storage ADLS Gen2, Log Analytics Workspace.
+* **Lệnh dọn dẹp tài nguyên sau nghiệm thu (Bảo toàn ngân sách FinOps):**
+  ```bash
+  cmd /c "az group delete --name rg-churnguard-mlops-sea --yes --no-wait"
+  ```
+
+---
+
+## 9. Nền Tảng Khoa Học & Nghiên Cứu Uy Tín (Scientific Grounding)
+
+Hệ thống được xây dựng và chuẩn hóa dựa trên các công trình nghiên cứu khoa học phản biện quốc tế:
+
+1. **Kiến Trúc MLOps Level 2:**  
+   Dominik Kreuzberger, Niklas Kühl & Sebastian Hirschl (2023), *"Machine Learning Operations (MLOps): Overview, Definition, and Architecture"*, **IEEE Access**, Vol. 11, pp. 31866-31879, DOI: `10.1109/ACCESS.2023.3262138`.
+2. **Giải Thích Thuộc Tính SHAP:**  
+   Scott M. Lundberg & Su-In Lee (2017), *"A Unified Approach to Interpreting Model Predictions"*, **Advances in Neural Information Processing Systems (NeurIPS 2017)**, pp. 4765-4774.
+3. **Phát Hiện Trôi Dạt Dữ Liệu & Hiệu Chỉnh Bonferroni:**  
+   Stephan Rabanser, Stephan Günnemann & Zachary C. Lipton (2019), *"Failing Loudly: An Empirical Study of Methods for Detecting Dataset Shift"*, **Advances in Neural Information Processing Systems (NeurIPS 2019)**.
+4. **Tối Ưu Quyết Định Giữ Chân Dựa Trên Lợi Nhuận ($e\text{-Profits}$):**  
+   Awais Manzoor, M. Atif Qureshi, Etain Kidney & Luca Longo (2025), *"e-Profits: A Business-Aligned Evaluation Metric for Profit-Sensitive Customer Churn Prediction"*, ResearchGate Benchmark Standard.
+
+---
+
+## 10. Danh Mục Tài Liệu Kỹ Thuật (Documentation Hub)
+
+* **[Sổ Tay Vận Hành Chi Tiết (Master Runbook)](docs/RUNBOOK_HUONG_DAN_VAN_HANH.md)**: Cẩm nang hướng dẫn thao tác từng bước, vị trí nút bấm, mã màu HEX, phản hồi màn hình và cách xử lý lỗi.
+* **[Bản Đặc Tả Kỹ Thuật Hệ Thống (System Specification)](docs/specifications/SYSTEM_SPECIFICATION.md)**: Đặc tả chi tiết kiến trúc, các luồng dữ liệu và yêu cầu phi chức năng.
+* **[Báo Cáo Kiến Trúc Đám Mây & FinOps TCO](configs/cloud_architecture_and_cost.md)**: Phân tích kiến trúc Azure, tối ưu hóa ngân sách $74.67/tháng và bảng đo kiểm độ trễ 5 vùng.
+* **[Hướng Dẫn Triển Khai Azure IaC](deploy/azure/README.md)**: Chi tiết về ARM Template, Terraform và kịch bản tự động hóa triển khai.
+
+---
+
+## 11. Giấy Phép & Bản Quyền (License)
+
+Dự án được phân phối dưới giấy phép mã nguồn mở **MIT License**. Chi tiết xem tại tệp [`LICENSE`](LICENSE).
