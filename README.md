@@ -122,6 +122,10 @@ Bảng đối chuẩn năng lực hệ thống giữa môi trường Local Basel
 
 ## 7. Hướng Dẫn Khởi Chạy & Lệnh Tự Động Xác Minh (Quickstart Commands)
 
+> 📖 **SỔ TAY HƯỚNG DẪN VẬN HÀNH TỪNG BƯỚC (STEP-BY-STEP OPERATIONAL RUNBOOK):**  
+> Vui lòng xem tài liệu hướng dẫn trực quan chi tiết tại **[`docs/RUNBOOK_HUONG_DAN_VAN_HANH.md`](docs/RUNBOOK_HUONG_DAN_VAN_HANH.md)**  
+> *(Hướng dẫn cụ thể: truy cập link nào, trang gì, tab nào, ở tab đó ấn nút nào, nút màu gì nằm ở hướng nào [trên/dưới/trái/phải], ấn xong hiện ra cái gì, dấu hiệu nhận biết thành công và cách xử lý lỗi).*
+
 ```bash
 # 1. Xác minh tự động bằng assert 100% số liệu trong README & Báo cáo kỹ thuật (Xuất verified_report_evidence.json)
 cmd /c "python scripts/verification/verify_report_evidence.py"
@@ -143,7 +147,8 @@ cmd /c "streamlit run src/web/dashboard.py --server.port 8501"
 
 ## 8. Danh Mục Tài Liệu Kỹ Thuật Trong Hệ Thống (Documentation Index)
 
-1. **[`docs/specifications/SYSTEM_SPECIFICATION.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/docs/specifications/SYSTEM_SPECIFICATION.md)**: Bản đặc tả chi tiết kiến trúc kỹ thuật và yêu cầu chức năng của toàn bộ hệ thống ChurnGuard MLOps.
-2. **[`configs/cloud_architecture_and_cost.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/configs/cloud_architecture_and_cost.md)**: Báo cáo phân tích kiến trúc điện toán đám mây Microsoft Azure, tối ưu hóa TCO FinOps ($74.67/tháng), định mức hạn ngạch Quotas và kết quả kiểm chuẩn độ trễ mạng 5 vùng.
-3. **[`deploy/azure/README.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/deploy/azure/README.md)**: Hướng dẫn triển khai tự động hóa hạ tầng đám mây Azure qua Azure CLI, ARM Template và Terraform.
-4. **[`notebooks/README.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/notebooks/README.md)**: Hướng dẫn thực nghiệm kiểm chuẩn xử lý dữ liệu lớn Out-of-Core (>4GB / 42.4 triệu dòng) trên môi trường Cloud.
+1. **[`docs/RUNBOOK_HUONG_DAN_VAN_HANH.md`](docs/RUNBOOK_HUONG_DAN_VAN_HANH.md)**: Sổ tay hướng dẫn vận hành trực quan chi tiết từng bước (Bento Grid Web UI, Dashboard Streamlit, Swagger API, đăng ký Azure for Students và triển khai Cloud 1-Click).
+2. **[`docs/specifications/SYSTEM_SPECIFICATION.md`](docs/specifications/SYSTEM_SPECIFICATION.md)**: Bản đặc tả chi tiết kiến trúc kỹ thuật và yêu cầu chức năng của toàn bộ hệ thống ChurnGuard MLOps.
+3. **[`configs/cloud_architecture_and_cost.md`](configs/cloud_architecture_and_cost.md)**: Báo cáo phân tích kiến trúc điện toán đám mây Microsoft Azure, tối ưu hóa TCO FinOps ($74.67/tháng), định mức hạn ngạch Quotas và kết quả kiểm chuẩn độ trễ mạng 5 vùng.
+4. **[`deploy/azure/README.md`](deploy/azure/README.md)**: Hướng dẫn triển khai tự động hóa hạ tầng đám mây Azure qua Azure CLI, ARM Template và Terraform.
+5. **[`notebooks/README.md`](notebooks/README.md)**: Hướng dẫn thực nghiệm kiểm chuẩn xử lý dữ liệu lớn Out-of-Core (>4GB / 42.4 triệu dòng) trên môi trường Cloud.
