@@ -8,6 +8,12 @@
 
 ---
 
+> 🚀 **HƯỚNG DẪN CHẠY VÀ VẬN HÀNH HỆ THỐNG CHI TIẾT TỪNG BƯỚC (OPERATIONAL RUNBOOK):**  
+> Mọi bước thực thi chi tiết (truy cập link nào, trang gì, tab nào, ở tab đó bấm nút nào [tên nút, mã màu hex, kiểu dáng, vị trí trên/dưới/trái/phải], bấm xong hiện ra cái gì, dấu hiệu thành công và cách sửa lỗi cho từng phân hệ Web Bento Grid, Dashboard Streamlit, Swagger API, Azure for Students) đều được ghi nhận đầy đủ, chuẩn xác tại:  
+> 👉 **[docs/RUNBOOK_HUONG_DAN_VAN_HANH.md](docs/RUNBOOK_HUONG_DAN_VAN_HANH.md)**  
+
+---
+
 ## 1. Tổng Quan Kiến Trúc & Đặc Tả Kỹ Thuật (System Overview & Architectural Foundations)
 
 Hệ thống ChurnGuard MLOps được thiết kế theo chuẩn MLOps Level 2 (Continuous Training & Automated Deployment), giải quyết bài toán dự đoán hành vi rời bỏ của khách hàng doanh nghiệp viễn thông và tối ưu hóa chi phí can thiệp dựa trên giá trị vòng đời (Customer Lifetime Value - CLV):
@@ -114,7 +120,7 @@ Bảng đối chuẩn năng lực hệ thống giữa môi trường Local Basel
 | **4.4** | Giao diện điều hành web (Web Application Console) | `0.50` | **`0.15`** | **`0.50`** | Minh chứng [`src/web/index.html`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/web/index.html) và [`src/web/app.js`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/src/web/app.js); sẵn sàng map Public Cloud FQDN. |
 | **5.1** | Tài liệu trình chiếu kiến trúc (Architecture Deck) | `0.50` | **`0.15`** | **`0.50`** | Kiến trúc trực quan hóa qua sơ đồ tương tác và tài liệu kỹ thuật trực tiếp tại [`README.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/README.md). |
 | **5.2** | Báo cáo kỹ thuật toàn diện (Comprehensive Technical Report) | `0.50` | **`0.15`** | **`0.50`** | Đặc tả kỹ thuật toàn diện tại [`docs/specifications/SYSTEM_SPECIFICATION.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/docs/specifications/SYSTEM_SPECIFICATION.md). |
-| **5.3** | Kịch bản trình diễn hệ thống (System Demonstration Runbook) | `0.50` | **`0.00`** | **`0.50`** | Kịch bản vận hành thực nghiệm trực tiếp qua CLI, REST API (Swagger `/docs`) và Bento Grid UI (`/web`). |
+| **5.3** | Kịch bản trình diễn hệ thống (System Demonstration Runbook) | `0.50` | **`0.00`** | **`0.50`** | Kịch bản vận hành thực nghiệm trực tiếp qua CLI, REST API (Swagger `/docs`), Streamlit Dashboard (`/dashboard`) và Bento Grid UI (`/ui`) -> Chi tiết tại [`docs/RUNBOOK_HUONG_DAN_VAN_HANH.md`](docs/RUNBOOK_HUONG_DAN_VAN_HANH.md). |
 | **5.4** | Quản trị đám mây, CI/CD & FinOps TCO (Cloud Governance & FinOps) | `0.50` | **`0.10`** | **`0.50`** | Minh chứng CI/CD [`.github/workflows/mlops_ci.yml`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/.github/workflows/mlops_ci.yml) & TCO `$74.67/tháng` tại [`configs/cloud_architecture_and_cost.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/configs/cloud_architecture_and_cost.md). |
 | **TỔNG** | **ĐIỂM NĂNG LỰC TOÀN HỆ THỐNG** | **`10.00`** | **`3.35 / 10.00`** | **`9.90 / 10.00`** | **Minh chứng tự động:** [`final_check_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/final_check_results.json). |
 
@@ -124,7 +130,7 @@ Bảng đối chuẩn năng lực hệ thống giữa môi trường Local Basel
 
 > 📖 **SỔ TAY HƯỚNG DẪN VẬN HÀNH TỪNG BƯỚC (STEP-BY-STEP OPERATIONAL RUNBOOK):**  
 > Vui lòng xem tài liệu hướng dẫn trực quan chi tiết tại **[`docs/RUNBOOK_HUONG_DAN_VAN_HANH.md`](docs/RUNBOOK_HUONG_DAN_VAN_HANH.md)**  
-> *(Hướng dẫn cụ thể: truy cập link nào, trang gì, tab nào, ở tab đó ấn nút nào, nút màu gì nằm ở hướng nào [trên/dưới/trái/phải], ấn xong hiện ra cái gì, dấu hiệu nhận biết thành công và cách xử lý lỗi).*
+> *(Hướng dẫn cụ thể: truy cập link nào, trang gì, tab nào, ở tab đó ấn nút nào, nút màu gì [mã hex chuẩn], nằm ở hướng nào [trên/dưới/trái/phải/giữa], ấn xong hiện ra cái gì, dấu hiệu nhận biết thành công và cách xử lý lỗi).*
 
 ```bash
 # 1. Xác minh tự động bằng assert 100% số liệu trong README & Báo cáo kỹ thuật (Xuất verified_report_evidence.json)
@@ -136,10 +142,10 @@ cmd /c "python -m pytest tests/ -v"
 # 3. Kiểm tra giới hạn cứng 400 dòng/tệp và kiểm toán năng lực đa môi trường
 cmd /c "python scripts/verification/final_comprehensive_check.py"
 
-# 4. Khởi động máy chủ FastAPI Model Serving + Giao diện Web Bento Grid tại http://localhost:8000
+# 4. Khởi động máy chủ FastAPI Model Serving + Giao diện Web Bento Grid tại http://localhost:8000/ui
 cmd /c "python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000"
 
-# 5. Khởi động bảng điều khiển phân tích chuyên sâu 5 Tab (Streamlit)
+# 5. Khởi động bảng điều khiển phân tích chuyên sâu 4 Tab (Streamlit) tại http://localhost:8501
 cmd /c "streamlit run src/web/dashboard.py --server.port 8501"
 ```
 
