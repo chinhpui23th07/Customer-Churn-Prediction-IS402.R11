@@ -56,7 +56,7 @@
     ]
   },
   "inference_sqlite_wal_db": {
-    "logged_predictions_count": 8791,
+    "logged_predictions_count": 10203,
     "evidence_file": "data/inference_logs.db"
   },
   "io_and_streaming_benchmarks": {
