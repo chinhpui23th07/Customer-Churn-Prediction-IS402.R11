@@ -156,7 +156,8 @@ def run_subgroup_error_analysis(clf, X_test, X_test_scaled=None, y_test=None, us
 def train_and_track_all_models():
     """Quy trình huấn luyện và ghi nhận thí nghiệm với MLflow và Optuna TPE."""
     os.makedirs(MODELS_DIR, exist_ok=True)
-    sqlite_uri = f"sqlite:///{MLFLOW_DB.replace('\\', '/')}"
+    db_path_posix = MLFLOW_DB.replace("\\", "/")
+    sqlite_uri = f"sqlite:///{db_path_posix}"
     mlflow.set_tracking_uri(sqlite_uri)
     mlflow.set_experiment("Customer_Churn_Prediction_Enterprise")
 
