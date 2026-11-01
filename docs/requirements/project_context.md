@@ -58,3 +58,17 @@
 - **Slide báo cáo (PowerPoint):** `docs/Slide_Thuyet_Trinh_MLOps_Customer_Churn.pptx`
 - **Giao diện Web:** `src/web/index.html` (Bento Grid)
 - **Tệp nộp bài chuẩn UIT:** `23520783_BTL_Cloud_Computing_MLOps.zip`
+
+---
+
+## 7. Danh Mục Công Cụ & Repos Kiểm Thử Độc Lập Bên Ngoài (Tầng 3 Recheck Tools)
+- **Công cụ quét An ninh mạng & DevSecOps (SAST / IaC):**
+  * Checkov (Bridgecrew): Quét toàn diện lỗ hổng hạ tầng đám mây Terraform, ARM, Dockerfile (`reports/checkov_real_report.json`).
+  * Trivy (Aqua Security): Quét lỗ hổng image container và CVE phụ thuộc thư viện (`reports/trivy_real_report.json`).
+  * Pytest DevSecOps Suite: `tests/test_devsecops_compliance.py` (tự động hóa fail build nếu có vi phạm an ninh).
+- **Công cụ kiểm tra Cú pháp, Ngữ nghĩa & Kiến trúc:**
+  * Python AST Compiler: `python -m py_compile` kiểm tra lỗi cú pháp tĩnh.
+  * Domain Semantic Integrity Auditor: `scripts/verification/assert_domain_semantic_integrity.py` (Invariant 20).
+  * Line Cap Auditor: `.agents/skills/modular-code-decomposer/scripts/check_file_lines.py` (Invariant 02).
+- **Bộ Kiểm Thử & Benchmark Đối Chuẩn Tái Sử Dụng:**
+  * Cloned Benchmark Repos: 27 kho lưu trữ mẫu tại `docs/research/repos/` dùng để đối soát thuật toán và kiến trúc MLOps.
