@@ -59,8 +59,9 @@ jobs:
           dvc dag
           dvc status
 
-      - name: Initialize Feast Online Feature Store
+      - name: Initialize Dataset & Feast Online Store
         run: |
+          python src/data/download_dataset.py
           python src/features/feature_store.py
 
       - name: Execute Pytest Suite (100% Passed)
