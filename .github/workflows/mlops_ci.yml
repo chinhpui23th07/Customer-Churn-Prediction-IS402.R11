@@ -9,12 +9,17 @@ on:
 env:
   PYTHON_VERSION: "3.11"
   API_KEY_SECRET: ${{ secrets.API_KEY_SECRET || 'mlops-churn-secret-2026' }}
+  TESTCONTAINERS_RYUK_DISABLED: "true"
 
 jobs:
   quality-gate-and-test:
     name: CI Quality Gate, Line Cap & Test Suite
-    # Cấu hình Self-hosted Runner theo đúng đặc tả Đề tài 11 (Tutorial PDF 55 AI Vietnam)
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
+    services:
+      azurite:
+        image: mcr.microsoft.com/azure-storage/azurite:latest
+        ports:
+          - 10000:10000
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -42,7 +47,7 @@ jobs:
 
       - name: Python Syntax & Type Audit
         run: |
-          python -m py_compile src/data/*.py src/features/*.py src/models/*.py src/api/*.py src/monitoring/*.py
+          python -m py_compile src/data/*.py src/features/*.py src/models/*.py src/api/*.py src/monitoring/*.py src/resilience/*.py
 
       - name: Anti-Mockup & Truth Integrity Scan (Invariant 13)
         run: |
@@ -60,7 +65,7 @@ jobs:
   docker-build:
     name: Build & Smoke Test Docker Image
     needs: quality-gate-and-test
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -75,7 +80,7 @@ jobs:
   cd-deploy:
     name: CD Deployment & Automated Health Verification
     needs: [quality-gate-and-test, docker-build]
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     steps:
       - name: Checkout Repository
@@ -89,7 +94,14 @@ jobs:
         run: |
           docker build -t churnguard-serving:test .
           docker run -d --name test-serving -p 8000:8000 churnguard-serving:test
-          sleep 5
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:8000/health | grep -q "status"; then
+              echo "[+] Serving Container is healthy!"
+              break
+            fi
+            echo "Waiting for container startup... ($i/30)"
+            sleep 2
+          done
           curl --fail http://localhost:8000/health || (docker logs test-serving && exit 1)
           docker stop test-serving && docker rm test-serving
           echo "[+] Verified Serving Container health check passed successfully."
