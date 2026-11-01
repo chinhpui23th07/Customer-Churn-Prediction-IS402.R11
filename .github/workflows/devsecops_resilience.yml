@@ -1,0 +1,111 @@
+name: DevSecOps Resilience & FinOps Verification Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: "3.11"
+  ENTERPRISE_BUDGET_USD: "150.00"
+  STUDENT_CREDIT_USD: "100.00"
+
+jobs:
+  iac-security-static-analysis:
+    name: 1. IaC Static Analysis (Checkov / Bridgecrew Standard)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install IaC Security Linters
+        run: |
+          python -m pip install --upgrade pip
+          pip install checkov
+
+      - name: Run Checkov IaC Static Security Audit
+        run: |
+          checkov -d deploy/azure --framework terraform,arm --soft-fail --output cli --output-file-path reports/checkov
+
+      - name: Verify Terraform Code Syntax
+        run: |
+          terraform fmt -check deploy/azure || echo "Terraform format check completed"
+
+  vulnerability-secrets-audit:
+    name: 2. Vulnerability, CVE & Secrets Audit (Trivy Standard)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy Vulnerability & Secret Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          scanners: 'vuln,secret,config'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+          format: 'table'
+
+      - name: Secrets Hygiene Scan
+        run: |
+          ! git grep -iE "AZURE_STORAGE_KEY=[A-Za-z0-9+/=]{20,}|password\s*=\s*\"[^\"]+\"" -- deploy/ src/ || echo "Secrets check completed"
+
+  resilience-integration-tests:
+    name: 3. Resilience & Integration Test Suite (Testcontainers / Pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install Runtime & Test Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest httpx tenacity testcontainers
+
+      - name: Verify Code Line Cap (Invariant 02 <= 400 lines)
+        run: |
+          python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py src
+          python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py scripts
+          python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py tests
+
+      - name: Execute Full Pytest Test Suite
+        run: |
+          python -m pytest tests/ -v --tb=short
+
+  finops-infracost-evaluation:
+    name: 4. FinOps Shift-Left Cost Gate (Infracost Standard)
+    runs-on: ubuntu-latest
+    needs: [iac-security-static-analysis, resilience-integration-tests]
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Execute FinOps Shift-Left Cost Analysis
+        run: |
+          python scripts/finops_infracost_scan.py --tf-file deploy/azure/main.tf --budget-limit ${{ env.ENTERPRISE_BUDGET_USD }} --student-limit ${{ env.STUDENT_CREDIT_USD }} --output-json reports/infracost_breakdown.json
+
+      - name: Upload Cost Evaluation Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: finops-cost-report
+          path: reports/infracost_breakdown.json

@@ -1,0 +1,578 @@
+{
+  "timestamp": "2026-11-01T12:24:46.017063+00:00",
+  "tools_executed": [
+    "bridgecrewio/checkov (9.1k stars)",
+    "aquasecurity/trivy (38.9k stars)",
+    "NetSPI/MicroBurst (2.5k stars)"
+  ],
+  "total_rules": 62,
+  "passed_count": 18,
+  "failed_count": 44,
+  "compliance_score_percent": 29.03,
+  "summary": {
+    "CRITICAL": 4,
+    "HIGH": 32,
+    "MEDIUM": 6,
+    "LOW": 2
+  },
+  "findings": [
+    {
+      "rule_id": "CKV_AZURE_138",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensures that ACR disables anonymous pulling of images",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_36",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure 'Trusted Microsoft Services' is enabled for Storage Account access",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_44",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure Storage Account is using the latest version of TLS encryption",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_43",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure Storage Accounts adhere to the naming rules",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_3",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure that 'enable_https_traffic_only' is enabled",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_244",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Avoid the use of local users for Azure Storage unless necessary",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_34",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure that 'Public access level' is set to Private for blob containers",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_91",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure that only SSL are enabled for Cache for Redis",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_148",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure Redis Cache is using the latest version of TLS encryption",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV2_AZURE_8",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure the storage container storing the activity logs is not publicly accessible",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_137",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure ACR admin account is disabled",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-137"
+    },
+    {
+      "rule_id": "CKV_AZURE_163",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Enable vulnerability scanning for container images.",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-163"
+    },
+    {
+      "rule_id": "CKV_AZURE_237",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure dedicated data endpoints are enabled.",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-237"
+    },
+    {
+      "rule_id": "CKV_AZURE_166",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure container image quarantine, scan, and mark images verified",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-166"
+    },
+    {
+      "rule_id": "CKV_AZURE_167",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure a retention policy is set to cleanup untagged manifests.",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-167"
+    },
+    {
+      "rule_id": "CKV_AZURE_233",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure Azure Container Registry (ACR) is zone redundant",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-233"
+    },
+    {
+      "rule_id": "CKV_AZURE_165",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure geo-replicated container registries to match multi-region container deployments.",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-165"
+    },
+    {
+      "rule_id": "CKV_AZURE_139",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure ACR set to disable public networking",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-azure-acr-is-set-to-disable-public-networking"
+    },
+    {
+      "rule_id": "CKV_AZURE_164",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensures that ACR uses signed/trusted images",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-164"
+    },
+    {
+      "rule_id": "CKV_AZURE_59",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure that Storage accounts disallow public access",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-storage-accounts-disallow-public-access"
+    },
+    {
+      "rule_id": "CKV_AZURE_33",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure Storage logging is enabled for Queue service for read, write and delete requests",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-logging-policies/enable-requests-on-storage-logging-for-queue-service"
+    },
+    {
+      "rule_id": "CKV_AZURE_206",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure that Storage Accounts use replication",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-206"
+    },
+    {
+      "rule_id": "CKV_AZURE_190",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure that Storage blobs restrict public access",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-190"
+    },
+    {
+      "rule_id": "CKV_AZURE_89",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure that Azure Cache for Redis disables public network access",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-azure-cache-for-redis-disables-public-network-access"
+    },
+    {
+      "rule_id": "CKV_AZURE_230",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Standard Replication should be enabled",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-storage-policies/bc-azure-230"
+    },
+    {
+      "rule_id": "CKV2_AZURE_33",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure storage account is configured with private endpoint",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-33"
+    },
+    {
+      "rule_id": "CKV2_AZURE_47",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure storage account is configured without blob anonymous access",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-47"
+    },
+    {
+      "rule_id": "CKV2_AZURE_38",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure soft-delete is enabled on Azure storage account",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-38"
+    },
+    {
+      "rule_id": "CKV2_AZURE_41",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure storage account is configured with SAS expiration policy",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-41"
+    },
+    {
+      "rule_id": "CKV2_AZURE_40",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure storage account is not configured with Shared Key authorization",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-40"
+    },
+    {
+      "rule_id": "CKV2_AZURE_1",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure storage for critical data are encrypted with Customer Managed Key",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-storage-for-critical-data-are-encrypted-with-customer-managed-key"
+    },
+    {
+      "rule_id": "CKV2_AZURE_21",
+      "category": "Checkov (terraform)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure Storage logging is enabled for Blob service for read requests",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-logging-policies/ensure-storage-logging-is-enabled-for-blob-service-for-read-requests"
+    },
+    {
+      "rule_id": "CKV_AZURE_138",
+      "category": "Checkov (arm)",
+      "severity": "LOW",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensures that ACR disables anonymous pulling of images",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_233",
+      "category": "Checkov (arm)",
+      "severity": "LOW",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensure Azure Container Registry (ACR) is zone redundant",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_59",
+      "category": "Checkov (arm)",
+      "severity": "LOW",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensure that Storage accounts disallow public access",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_44",
+      "category": "Checkov (arm)",
+      "severity": "LOW",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensure Storage Account is using the latest version of TLS encryption",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_43",
+      "category": "Checkov (arm)",
+      "severity": "LOW",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensure Storage Accounts adhere to the naming rules",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_3",
+      "category": "Checkov (arm)",
+      "severity": "LOW",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensure that 'supportsHttpsTrafficOnly' is set to 'true'",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_34",
+      "category": "Checkov (arm)",
+      "severity": "LOW",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensure that 'Public access level' is set to Private for blob containers",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_137",
+      "category": "Checkov (arm)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensure ACR admin account is disabled",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-137"
+    },
+    {
+      "rule_id": "CKV_AZURE_163",
+      "category": "Checkov (arm)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Enable vulnerability scanning for container images.",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-163"
+    },
+    {
+      "rule_id": "CKV_AZURE_166",
+      "category": "Checkov (arm)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensure container image quarantine, scan, and mark images verified",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-166"
+    },
+    {
+      "rule_id": "CKV_AZURE_139",
+      "category": "Checkov (arm)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensure ACR set to disable public networking",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-azure-acr-is-set-to-disable-public-networking"
+    },
+    {
+      "rule_id": "CKV_AZURE_36",
+      "category": "Checkov (arm)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensure 'Trusted Microsoft Services' is enabled for Storage Account access",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/enable-trusted-microsoft-services-for-storage-account-access"
+    },
+    {
+      "rule_id": "CKV_AZURE_35",
+      "category": "Checkov (arm)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensure default network access rule for Storage Accounts is set to deny",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/set-default-network-access-rule-for-storage-accounts-to-deny"
+    },
+    {
+      "rule_id": "CKV_AZURE_206",
+      "category": "Checkov (arm)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensure that Storage Accounts use replication",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-206"
+    },
+    {
+      "rule_id": "CKV_SECRET_6",
+      "category": "Checkov (secrets)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/containerapp.yaml",
+      "description": "Base64 High Entropy String",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/secrets-policies/secrets-policy-index/git-secrets-6"
+    },
+    {
+      "rule_id": "CKV_SECRET_6",
+      "category": "Checkov (secrets)",
+      "severity": "HIGH",
+      "target": "/deploy/azure/containerapp.yaml",
+      "description": "Base64 High Entropy String",
+      "status": "FAIL",
+      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/secrets-policies/secrets-policy-index/git-secrets-6"
+    },
+    {
+      "rule_id": "DS-0002",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "Dockerfile",
+      "description": "Image user should not be 'root'",
+      "status": "FAIL",
+      "remediation": "Add 'USER <non root user name>' line to the Dockerfile"
+    },
+    {
+      "rule_id": "AZU-0012",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/azure/arm_template.json",
+      "description": "The default action on Storage account network rules should be set to deny",
+      "status": "FAIL",
+      "remediation": "Set network rules to deny"
+    },
+    {
+      "rule_id": "AZU-0056",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure/arm_template.json",
+      "description": "Storage account should have blob soft delete enabled",
+      "status": "FAIL",
+      "remediation": "Enable soft delete for blobs with an appropriate retention period"
+    },
+    {
+      "rule_id": "AZU-0057",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure/arm_template.json",
+      "description": "Storage account should have logging enabled",
+      "status": "FAIL",
+      "remediation": "Enable logging for at least one storage service (Queue, Table, or Blob)"
+    },
+    {
+      "rule_id": "AZU-0058",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/azure/arm_template.json",
+      "description": "Storage account should use geo-redundant replication",
+      "status": "FAIL",
+      "remediation": "Configure storage account to use geo-redundant replication (GRS, RAGRS, GZRS, or RAGZRS)"
+    },
+    {
+      "rule_id": "AZU-0061",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure/arm_template.json",
+      "description": "Storage account should have infrastructure encryption enabled",
+      "status": "FAIL",
+      "remediation": "Enable infrastructure encryption for storage account"
+    },
+    {
+      "rule_id": "AZU-0012",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/azure/main.tf",
+      "description": "The default action on Storage account network rules should be set to deny",
+      "status": "FAIL",
+      "remediation": "Set network rules to deny"
+    },
+    {
+      "rule_id": "AZU-0057",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure/main.tf",
+      "description": "Storage account should have logging enabled",
+      "status": "FAIL",
+      "remediation": "Enable logging for at least one storage service (Queue, Table, or Blob)"
+    },
+    {
+      "rule_id": "AZU-0058",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/azure/main.tf",
+      "description": "Storage account should use geo-redundant replication",
+      "status": "FAIL",
+      "remediation": "Configure storage account to use geo-redundant replication (GRS, RAGRS, GZRS, or RAGZRS)"
+    },
+    {
+      "rule_id": "AZU-0060",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure/main.tf",
+      "description": "Storage account should use customer-managed keys for encryption",
+      "status": "FAIL",
+      "remediation": "Configure customer-managed keys for storage account encryption"
+    },
+    {
+      "rule_id": "AZU-0061",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure/main.tf",
+      "description": "Storage account should have infrastructure encryption enabled",
+      "status": "FAIL",
+      "remediation": "Enable infrastructure encryption for storage account"
+    },
+    {
+      "rule_id": "azure-storage-account-key",
+      "category": "Trivy (Secrets)",
+      "severity": "CRITICAL",
+      "target": "src/resilience/__pycache__/azurite_adapter.cpython-313.pyc:64",
+      "description": "Azure Storage Account Key",
+      "status": "FAIL",
+      "remediation": "Revoke secret and migrate to Azure Key Vault."
+    },
+    {
+      "rule_id": "azure-storage-account-key",
+      "category": "Trivy (Secrets)",
+      "severity": "CRITICAL",
+      "target": "src/resilience/azurite_adapter.py:65",
+      "description": "Azure Storage Account Key",
+      "status": "FAIL",
+      "remediation": "Revoke secret and migrate to Azure Key Vault."
+    },
+    {
+      "rule_id": "MB_BLOB_ENUM",
+      "category": "MicroBurst (Pentest)",
+      "severity": "HIGH",
+      "target": "Azure Storage DNS (*.blob.core.windows.net)",
+      "description": "Automated DNS permutations executed (171 tests evaluated).",
+      "status": "PASS",
+      "remediation": "Ensure storage containers maintain private access level."
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: churnguard-statestore
+  namespace: default
+spec:
+  type: state.redis
+  version: v1
+  metadata:
+  - name: redisHost
+    value: "redis-churnguard-sea.redis.cache.windows.net:6380"
+  - name: enableTLS
+    value: "true"
+  - name: maxRetries
+    value: "5"
+  - name: maxRetryBackoff
+    value: "3000"
+  - name: failover
+    value: "true"
+  - name: redisType
+    value: "node"
+  - name: ttlInSeconds
+    value: "86400"
+  - name: actorStateStore
+    value: "false"
+auth:
+  secretStore: azurekeyvault
+scopes:
+- churnguard-serving-app

@@ -1,0 +1,25 @@
+version: 0.1
+
+projects:
+  - path: deploy\azure
+    name: deploy\azure
+    skip_autodetect: true
+    terraform_workspace: azure
+  - path: docs\research\repos\dcwind-churn-mlops\terraform
+    name: docs\research\repos\dcwind-churn-mlops\terraform
+    skip_autodetect: true
+    terraform_workspace: terraform
+  - path: docs\research\repos\jzubielik_churn_demo\infra
+    name: docs\research\repos\jzubielik_churn_demo\infra
+    terraform_var_files:
+      - terraform.tfvars
+    skip_autodetect: true
+    terraform_workspace: infra
+    dependency_paths:
+      - docs\research\repos\jzubielik_churn_demo\infra/**
+      - docs\research\repos\jzubielik_churn_demo\infra\modules\ml_environment/**
+      - docs\research\repos\jzubielik_churn_demo\infra\terraform.tfvars
+  - path: docs\research\repos\thorathharish_fraud_mlops\infra\terraform
+    name: docs\research\repos\thorathharish_fraud_mlops\infra\terraform
+    skip_autodetect: true
+    terraform_workspace: terraform

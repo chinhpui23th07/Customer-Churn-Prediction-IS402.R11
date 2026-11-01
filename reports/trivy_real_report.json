@@ -1,0 +1,6758 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "0.76.1"
+  },
+  "ReportID": "01a19710-a9f1-7911-8654-8e0af325014b",
+  "CreatedAt": "2026-11-01T19:23:34.1295943+07:00",
+  "ArtifactID": "sha256:3867196472cc6dac51a856923814f5daa35bce066f89a000d38f5cbb3fb1a636",
+  "ArtifactName": ".",
+  "ArtifactType": "repository",
+  "Metadata": {
+    "RepoURL": "https://github.com/chinhpui23th07/Customer-Churn-Prediction-IS402.R11.git",
+    "Branch": "master",
+    "Commit": "97a20abd7c37202596dfc03b9d4dc5a8b46cb0cf",
+    "CommitMsg": "chore: remove temporary push script",
+    "Author": "khoinguyen59 \u003c23520783@gm.uit.edu.vn\u003e",
+    "Committer": "khoinguyen59 \u003c23520783@gm.uit.edu.vn\u003e"
+  },
+  "Results": [
+    {
+      "Target": "mlruns/0/models/m-1e5406e5fde146bfa024f6d875064f4c/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "1fc38ee2c227604a"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "c2f4f31adb467ce2"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "5d4c0843bee674bc"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "454ee9353f7441f5"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "9711296bb615aa0f"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "c0927ed0334e81be"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "7978fb94f45f359e"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "11a1d95ba681d2b2"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xgboost",
+          "Identifier": {
+            "PURL": "pkg:pypi/xgboost@3.2.0",
+            "UID": "4e77b30e58224ed4"
+          },
+          "Version": "3.2.0",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-0440381980274103bd2e51d2f4be951f/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "69ac72c0fabe74e"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "f793da38b4e12aca"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "62ee6dc42212106c"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "645fa898bc541031"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "6ca3b5b82e3f0193"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "90cfbc71e7889156"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "f9bcdb1bcc4e219a"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "e9b6c10bae60708e"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-09448ec0c1664bb69e495cdca92d5258/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "a095c4642862ce00"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "b45db42624d257f0"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "326c197bf885d24e"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "2b6715a8c8ee5f6f"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "e13c3f244ba75061"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "3e93b05d60f1ae0"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "43c902f7e701e128"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "ca9f738f796f1b7c"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xgboost",
+          "Identifier": {
+            "PURL": "pkg:pypi/xgboost@3.2.0",
+            "UID": "adb7acfbbce6bb72"
+          },
+          "Version": "3.2.0",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-0d49236a1d0c412ea0c5ac7574d18de6/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "bffbcc4e8bd00819"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "a7db08fd57b8a901"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "a87a6318ed7c09c3"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "db27fddcd7232052"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "aa4adf2642c75b98"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "cde24046da5fdc99"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "8cc7993fa55ab7d5"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "93201c2422c53dd"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xgboost",
+          "Identifier": {
+            "PURL": "pkg:pypi/xgboost@3.2.0",
+            "UID": "327eb2947520981b"
+          },
+          "Version": "3.2.0",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-1125a147364b48e6ac5a5f70814a1ee6/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "bottleneck",
+          "Identifier": {
+            "PURL": "pkg:pypi/bottleneck@1.4.2",
+            "UID": "f2bae4486ed05647"
+          },
+          "Version": "1.4.2",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "cytoolz",
+          "Identifier": {
+            "PURL": "pkg:pypi/cytoolz@1.1.0",
+            "UID": "314045f7d7452ba8"
+          },
+          "Version": "1.1.0",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "defusedxml",
+          "Identifier": {
+            "PURL": "pkg:pypi/defusedxml@0.7.1",
+            "UID": "37d44bb6d5057306"
+          },
+          "Version": "0.7.1",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "distributed",
+          "Identifier": {
+            "PURL": "pkg:pypi/distributed@2025.11.0",
+            "UID": "d16d13fd5e8efa54"
+          },
+          "Version": "2025.11.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "graphviz",
+          "Identifier": {
+            "PURL": "pkg:pypi/graphviz@0.21",
+            "UID": "67f84ccfbbdac9f9"
+          },
+          "Version": "0.21",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "lightgbm",
+          "Identifier": {
+            "PURL": "pkg:pypi/lightgbm@4.6.0",
+            "UID": "141656ad7624c65d"
+          },
+          "Version": "4.6.0",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "fd3d67e0b5166fdd"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "matplotlib",
+          "Identifier": {
+            "PURL": "pkg:pypi/matplotlib@3.10.6",
+            "UID": "212bb004239836b0"
+          },
+          "Version": "3.10.6",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "b5c9195ffce4a0ca"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mmh3",
+          "Identifier": {
+            "PURL": "pkg:pypi/mmh3@5.3.0",
+            "UID": "c63237a267d7d701"
+          },
+          "Version": "5.3.0",
+          "Locations": [
+            {
+              "StartLine": 10,
+              "EndLine": 10
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "a7ae1daeb233a34f"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 11,
+              "EndLine": 11
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "3715b7afa772da0a"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 12,
+              "EndLine": 12
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "98fc86ed39c892c8"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 13,
+              "EndLine": 13
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "dadb44d782dca926"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 14,
+              "EndLine": 14
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "76311c40ecef6b7c"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 15,
+              "EndLine": 15
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xarray",
+          "Identifier": {
+            "PURL": "pkg:pypi/xarray@2025.10.1",
+            "UID": "1256dd98a3272a91"
+          },
+          "Version": "2025.10.1",
+          "Locations": [
+            {
+              "StartLine": 16,
+              "EndLine": 16
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xxhash",
+          "Identifier": {
+            "PURL": "pkg:pypi/xxhash@3.8.0",
+            "UID": "bac464240524b638"
+          },
+          "Version": "3.8.0",
+          "Locations": [
+            {
+              "StartLine": 17,
+              "EndLine": 17
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "zstandard",
+          "Identifier": {
+            "PURL": "pkg:pypi/zstandard@0.24.0",
+            "UID": "e38400b2714159d2"
+          },
+          "Version": "0.24.0",
+          "Locations": [
+            {
+              "StartLine": 18,
+              "EndLine": 18
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-18cae35a21904ba4897e1a73e6c2ebf1/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "bottleneck",
+          "Identifier": {
+            "PURL": "pkg:pypi/bottleneck@1.4.2",
+            "UID": "c0e2fcb54b94d164"
+          },
+          "Version": "1.4.2",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "cytoolz",
+          "Identifier": {
+            "PURL": "pkg:pypi/cytoolz@1.1.0",
+            "UID": "98684f401c87fb1b"
+          },
+          "Version": "1.1.0",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "defusedxml",
+          "Identifier": {
+            "PURL": "pkg:pypi/defusedxml@0.7.1",
+            "UID": "364cd70176bb0581"
+          },
+          "Version": "0.7.1",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "distributed",
+          "Identifier": {
+            "PURL": "pkg:pypi/distributed@2025.11.0",
+            "UID": "1c3b3175cfa7aa7"
+          },
+          "Version": "2025.11.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "graphviz",
+          "Identifier": {
+            "PURL": "pkg:pypi/graphviz@0.21",
+            "UID": "92af7cbe36fbcd2a"
+          },
+          "Version": "0.21",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "lightgbm",
+          "Identifier": {
+            "PURL": "pkg:pypi/lightgbm@4.6.0",
+            "UID": "ef0ffe8db074386a"
+          },
+          "Version": "4.6.0",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "936b098148d7449e"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "matplotlib",
+          "Identifier": {
+            "PURL": "pkg:pypi/matplotlib@3.10.6",
+            "UID": "b18f073a92f969cf"
+          },
+          "Version": "3.10.6",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "d4135c909333b32d"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mmh3",
+          "Identifier": {
+            "PURL": "pkg:pypi/mmh3@5.3.0",
+            "UID": "b7b1aaaf3210afba"
+          },
+          "Version": "5.3.0",
+          "Locations": [
+            {
+              "StartLine": 10,
+              "EndLine": 10
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "9fb9a10ae9edddc"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 11,
+              "EndLine": 11
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "3f9387f5589defd"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 12,
+              "EndLine": 12
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "724180e486fad6bf"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 13,
+              "EndLine": 13
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "781b1916481d9cfd"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 14,
+              "EndLine": 14
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "b1914a5c48b46003"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 15,
+              "EndLine": 15
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xarray",
+          "Identifier": {
+            "PURL": "pkg:pypi/xarray@2025.10.1",
+            "UID": "37dcadbb797f1f52"
+          },
+          "Version": "2025.10.1",
+          "Locations": [
+            {
+              "StartLine": 16,
+              "EndLine": 16
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xxhash",
+          "Identifier": {
+            "PURL": "pkg:pypi/xxhash@3.8.0",
+            "UID": "43d7ec0d58e8af6f"
+          },
+          "Version": "3.8.0",
+          "Locations": [
+            {
+              "StartLine": 17,
+              "EndLine": 17
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "zstandard",
+          "Identifier": {
+            "PURL": "pkg:pypi/zstandard@0.24.0",
+            "UID": "3a5817e635f2e38d"
+          },
+          "Version": "0.24.0",
+          "Locations": [
+            {
+              "StartLine": 18,
+              "EndLine": 18
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-26609eff80d94e57a1fe468ecd6a6ae6/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "94f2f110a2a09232"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "d228a2e2643869ba"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "b99f744a96e970cc"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "252ad727920da7ad"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "781b9ec0c772f8db"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "828ae5a10e6a852e"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "9956089697c46a32"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "c75244dac82b012a"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-27cf1b50e42847f0b2b4b197901df501/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "d5d123d981cce66b"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "a1e2e0d75939dbbf"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "d8aed3c2d1681231"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "9d7f6b052a15fa88"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "1263548a789d7422"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "4bbeb0a603c03e6b"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "181a604afefcb137"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "70372c02c9a3f1e7"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-371085b7b0e24475b84df953726f9402/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "5b9d433b2a82cf3c"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "59fed69c3179d164"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "5d67a34fef21320e"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "959f5ab2e401e003"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "2b7401f52bd3454d"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "e1b844334e3ca7cc"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "bb835973cb17c3c8"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "333faf8899ebb328"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-42326d0c30c649f48e65027970298c7d/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "bottleneck",
+          "Identifier": {
+            "PURL": "pkg:pypi/bottleneck@1.4.2",
+            "UID": "e096be302d22bfe8"
+          },
+          "Version": "1.4.2",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "cytoolz",
+          "Identifier": {
+            "PURL": "pkg:pypi/cytoolz@1.1.0",
+            "UID": "f60f0cc439b943e3"
+          },
+          "Version": "1.1.0",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "defusedxml",
+          "Identifier": {
+            "PURL": "pkg:pypi/defusedxml@0.7.1",
+            "UID": "f1fccffd5a4aa0d1"
+          },
+          "Version": "0.7.1",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "distributed",
+          "Identifier": {
+            "PURL": "pkg:pypi/distributed@2025.11.0",
+            "UID": "2fddef9169a198cf"
+          },
+          "Version": "2025.11.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "graphviz",
+          "Identifier": {
+            "PURL": "pkg:pypi/graphviz@0.21",
+            "UID": "c46fa52241a0a48a"
+          },
+          "Version": "0.21",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "lightgbm",
+          "Identifier": {
+            "PURL": "pkg:pypi/lightgbm@4.6.0",
+            "UID": "4456911d8d28686"
+          },
+          "Version": "4.6.0",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "80bdadc49f63252"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "matplotlib",
+          "Identifier": {
+            "PURL": "pkg:pypi/matplotlib@3.10.6",
+            "UID": "bd320d61835cb4b"
+          },
+          "Version": "3.10.6",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "c2acf71c21ddd655"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mmh3",
+          "Identifier": {
+            "PURL": "pkg:pypi/mmh3@5.3.0",
+            "UID": "e3023dcd72ac340e"
+          },
+          "Version": "5.3.0",
+          "Locations": [
+            {
+              "StartLine": 10,
+              "EndLine": 10
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "acf64cfd725052b4"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 11,
+              "EndLine": 11
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "4e1202c803298df1"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 12,
+              "EndLine": 12
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "c27e0c30187854d7"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 13,
+              "EndLine": 13
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "2f58397995e49e11"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 14,
+              "EndLine": 14
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "e9bd23235a3d5c7"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 15,
+              "EndLine": 15
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xarray",
+          "Identifier": {
+            "PURL": "pkg:pypi/xarray@2025.10.1",
+            "UID": "dd14fb02691ed196"
+          },
+          "Version": "2025.10.1",
+          "Locations": [
+            {
+              "StartLine": 16,
+              "EndLine": 16
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xxhash",
+          "Identifier": {
+            "PURL": "pkg:pypi/xxhash@3.8.0",
+            "UID": "51b90134f3bb953"
+          },
+          "Version": "3.8.0",
+          "Locations": [
+            {
+              "StartLine": 17,
+              "EndLine": 17
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "zstandard",
+          "Identifier": {
+            "PURL": "pkg:pypi/zstandard@0.24.0",
+            "UID": "76921274a83c7bb5"
+          },
+          "Version": "0.24.0",
+          "Locations": [
+            {
+              "StartLine": 18,
+              "EndLine": 18
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-42707797c25d4fdfbc9f9c70f70d30ff/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "d9465a73827c1a2f"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "2e4242f1b80934f3"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "c9bd9700749d6cb5"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "aca7d1b1a0299d74"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "6b9d24d7114286b6"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "880ffc765317a173"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "41c6f9ae8b178ee3"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "6e7870735a7d7567"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xgboost",
+          "Identifier": {
+            "PURL": "pkg:pypi/xgboost@3.2.0",
+            "UID": "717bf29bc3d45905"
+          },
+          "Version": "3.2.0",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-4c6e92029ae64a719252486e963c85a0/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "17bf5730b7f8e6c1"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "499e34b28d1027d9"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "ca48789a2ccf9bbf"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "c8ad4f8da86a11aa"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "b0061fe8e800b764"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "634069d57c244095"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "ed1ef0980c7422a1"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "5700346066a2360d"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xgboost",
+          "Identifier": {
+            "PURL": "pkg:pypi/xgboost@3.2.0",
+            "UID": "ca962684bccd5bd3"
+          },
+          "Version": "3.2.0",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-56478c21955a4739b9d3396fb4c6d4cc/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "24c6a840b61986a7"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "1e043382875b88c3"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "8f25427fc1b2d7f1"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "7318658f0e84c280"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "4bb845c9e2056586"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "e379863334bb257"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "df3cf0716f0beeeb"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "ab1494cb42c303bf"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-56dedf7c64b3443fa8fb1b3e109a3f3c/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "3286913cedac729f"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "c709da6bdc87a9b3"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "4e2f7c2b9b83fb35"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "fe1ec239c0d28124"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "757dbeea1b135c02"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "8cebd0a79511acbb"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "f75e4135aed30103"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "dc678b8be36addb"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xgboost",
+          "Identifier": {
+            "PURL": "pkg:pypi/xgboost@3.2.0",
+            "UID": "25d21feb4760e441"
+          },
+          "Version": "3.2.0",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-586924b26c2746baa4d5a42e1ee2dab7/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "ba055f85a33771e9"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "d9318f60c4b9aacd"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "9c2fa75548ea684f"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "94324a3024ac715a"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "e40d1ce4199c06d4"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "c3b3de9704863aa1"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "c062d124c15e2929"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "8f1b73a78130cb19"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-60f12138a9ca47eda3b719d704127d00/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "bottleneck",
+          "Identifier": {
+            "PURL": "pkg:pypi/bottleneck@1.4.2",
+            "UID": "c1b3b55b239d2d6b"
+          },
+          "Version": "1.4.2",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "cytoolz",
+          "Identifier": {
+            "PURL": "pkg:pypi/cytoolz@1.1.0",
+            "UID": "5b3be2c235e7721c"
+          },
+          "Version": "1.1.0",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "defusedxml",
+          "Identifier": {
+            "PURL": "pkg:pypi/defusedxml@0.7.1",
+            "UID": "f84b07f8438181a6"
+          },
+          "Version": "0.7.1",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "distributed",
+          "Identifier": {
+            "PURL": "pkg:pypi/distributed@2025.11.0",
+            "UID": "afb814d7b92675a4"
+          },
+          "Version": "2025.11.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "graphviz",
+          "Identifier": {
+            "PURL": "pkg:pypi/graphviz@0.21",
+            "UID": "ab94338257d823e1"
+          },
+          "Version": "0.21",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "lightgbm",
+          "Identifier": {
+            "PURL": "pkg:pypi/lightgbm@4.6.0",
+            "UID": "7190c369c521f29d"
+          },
+          "Version": "4.6.0",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "493a90ee35fa2c8d"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "matplotlib",
+          "Identifier": {
+            "PURL": "pkg:pypi/matplotlib@3.10.6",
+            "UID": "40f2ea8a95794bd4"
+          },
+          "Version": "3.10.6",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "2736767362916a"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mmh3",
+          "Identifier": {
+            "PURL": "pkg:pypi/mmh3@5.3.0",
+            "UID": "61b6cbd50b02c82d"
+          },
+          "Version": "5.3.0",
+          "Locations": [
+            {
+              "StartLine": 10,
+              "EndLine": 10
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "b318f3654bd9b47f"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 11,
+              "EndLine": 11
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "59ffb1e63e210d82"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 12,
+              "EndLine": 12
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "b32962aec617e264"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 13,
+              "EndLine": 13
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "2fa3a4c361f4b052"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 14,
+              "EndLine": 14
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "4bfb038b8d889600"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 15,
+              "EndLine": 15
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xarray",
+          "Identifier": {
+            "PURL": "pkg:pypi/xarray@2025.10.1",
+            "UID": "733c4c92d5eb365"
+          },
+          "Version": "2025.10.1",
+          "Locations": [
+            {
+              "StartLine": 16,
+              "EndLine": 16
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xxhash",
+          "Identifier": {
+            "PURL": "pkg:pypi/xxhash@3.8.0",
+            "UID": "b812918f7cc9125c"
+          },
+          "Version": "3.8.0",
+          "Locations": [
+            {
+              "StartLine": 17,
+              "EndLine": 17
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "zstandard",
+          "Identifier": {
+            "PURL": "pkg:pypi/zstandard@0.24.0",
+            "UID": "35f4fa828e5ab3f6"
+          },
+          "Version": "0.24.0",
+          "Locations": [
+            {
+              "StartLine": 18,
+              "EndLine": 18
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-660cbdd4c5014f8d89a21f6915fae70e/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "664fe1dff7128629"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "373a1b87adf75445"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "e426c896b523d677"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "4d11c5c71ef0c692"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "3fe596b9bdd71e8"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "eb7346affd4e7c09"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "80c22b22f2653e6d"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "6a537e468cce0fe1"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-674d3f949ff3405783caf6783e56cb60/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "dd5d186e02574c66"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "c6a241b88808dd7e"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "290a378c1f55d7e0"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "ca9499ebd5d47299"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "52772caf1746b987"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "9d9816014de07dc2"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "65c1f5dad24dc016"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "e6c244e2f539d9d6"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-73c82690d04c4000912e509b507042f7/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "18b499eb22e6c7fb"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "a50b345e4b3139bb"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "488d02b5b96d0215"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "8e5bee0b3bd9347c"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "a2b04aa14724deee"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "bde5ea2a0919e4a3"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "c1657c5a8d6a2b57"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "219c51b8b722652b"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xgboost",
+          "Identifier": {
+            "PURL": "pkg:pypi/xgboost@3.2.0",
+            "UID": "92632e8eaeacc85d"
+          },
+          "Version": "3.2.0",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-8a7dbbea12be40a5976ee5deaf44ad8c/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "3880280e88ec2bcd"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "9d9146ad4b5947fd"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "c986d4eef3e7e817"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "8df4364d7c79bbae"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "36c5b8d45d6a1010"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "c59aa1c985a2bf41"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "6587eff6cc5aebd1"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "ddc2e81bf3812f5"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-8c93592fc32443ef92861db191bb006c/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "2c0f6234b35ba2"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "3bb6d7ffb3c99ea"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "7bc1dfd78a9e9c80"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "12e128af8f77d8c9"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "7332965c9ef61753"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "84b77c9a486bf19e"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "707afec01fa1cc7a"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "cd23fd39dfd5ec2e"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-9a72885b293548c199826a157b3a3794/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "63167c0b31438418"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "f2ecdbaefcc71538"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "3fb53c1a35efd446"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "e7a74c6f32dbde4f"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "343ea3170bfe141"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "d7ac7f9756d5e1bc"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "ea49881ab4b6f448"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "e541344f67f87c30"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-a134b3a1cb984bed85108c5133c0d634/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "bottleneck",
+          "Identifier": {
+            "PURL": "pkg:pypi/bottleneck@1.4.2",
+            "UID": "1cfbf5acc01553b9"
+          },
+          "Version": "1.4.2",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "cytoolz",
+          "Identifier": {
+            "PURL": "pkg:pypi/cytoolz@1.1.0",
+            "UID": "b5e2db3c9aaada36"
+          },
+          "Version": "1.1.0",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "dask",
+          "Identifier": {
+            "PURL": "pkg:pypi/dask@2025.11.0",
+            "UID": "b7f9f148ce077550"
+          },
+          "Version": "2025.11.0",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "dill",
+          "Identifier": {
+            "PURL": "pkg:pypi/dill@0.3.9",
+            "UID": "cc8ec0ad7cd08ec8"
+          },
+          "Version": "0.3.9",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "be64822f32e93fd"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "c4895d0237f0c778"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mmh3",
+          "Identifier": {
+            "PURL": "pkg:pypi/mmh3@5.3.0",
+            "UID": "7a8af0b469ae4c85"
+          },
+          "Version": "5.3.0",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "3159ee1f2bfcda41"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpydoc",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpydoc@1.9.0",
+            "UID": "553dfe95acb4acf3"
+          },
+          "Version": "1.9.0",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "opt-einsum",
+          "Identifier": {
+            "PURL": "pkg:pypi/opt-einsum@3.4.0",
+            "UID": "a525979b9f09ebe0"
+          },
+          "Version": "3.4.0",
+          "Locations": [
+            {
+              "StartLine": 10,
+              "EndLine": 10
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "be48c25de1ecca4d"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 11,
+              "EndLine": 11
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "6923056af13dcf72"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 12,
+              "EndLine": 12
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "ad3bd6ac2540a8c2"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 13,
+              "EndLine": 13
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pydot",
+          "Identifier": {
+            "PURL": "pkg:pypi/pydot@4.0.1",
+            "UID": "c8a8ca55e91eed19"
+          },
+          "Version": "4.0.1",
+          "Locations": [
+            {
+              "StartLine": 14,
+              "EndLine": 14
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pytest",
+          "Identifier": {
+            "PURL": "pkg:pypi/pytest@8.4.2",
+            "UID": "3d264e7c85e000ac"
+          },
+          "Version": "8.4.2",
+          "Locations": [
+            {
+              "StartLine": 15,
+              "EndLine": 15
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "ba8cae4b14e49a79"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 16,
+              "EndLine": 16
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "c71e78fa948d40bf"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 17,
+              "EndLine": 17
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "skops",
+          "Identifier": {
+            "PURL": "pkg:pypi/skops@0.15.0",
+            "UID": "b6ccbecf8a16bdfa"
+          },
+          "Version": "0.15.0",
+          "Locations": [
+            {
+              "StartLine": 18,
+              "EndLine": 18
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "tblib",
+          "Identifier": {
+            "PURL": "pkg:pypi/tblib@3.1.0",
+            "UID": "8efabc6b6289201f"
+          },
+          "Version": "3.1.0",
+          "Locations": [
+            {
+              "StartLine": 19,
+              "EndLine": 19
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "torch",
+          "Identifier": {
+            "PURL": "pkg:pypi/torch@2.10.0",
+            "UID": "90f91160e1f991a6"
+          },
+          "Version": "2.10.0",
+          "Locations": [
+            {
+              "StartLine": 20,
+              "EndLine": 20
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "tqdm",
+          "Identifier": {
+            "PURL": "pkg:pypi/tqdm@4.67.1",
+            "UID": "28b9098e8728acdd"
+          },
+          "Version": "4.67.1",
+          "Locations": [
+            {
+              "StartLine": 21,
+              "EndLine": 21
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xarray",
+          "Identifier": {
+            "PURL": "pkg:pypi/xarray@2025.10.1",
+            "UID": "e057cdeeb356cf36"
+          },
+          "Version": "2025.10.1",
+          "Locations": [
+            {
+              "StartLine": 22,
+              "EndLine": 22
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xxhash",
+          "Identifier": {
+            "PURL": "pkg:pypi/xxhash@3.8.0",
+            "UID": "95f586d9c43f21b8"
+          },
+          "Version": "3.8.0",
+          "Locations": [
+            {
+              "StartLine": 23,
+              "EndLine": 23
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-afcde866d02349aea094174cd93dcf83/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "df75cd0faa07656e"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "9bc075e56b8de17e"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "a3a5dd1554fe3f8"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "9ef1dcaeea3394e1"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "f600e2d44a2fe9e3"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "1745f1bc07f7a7a2"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "12d6c744a2e90436"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "d53ba02a08ebeeda"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xgboost",
+          "Identifier": {
+            "PURL": "pkg:pypi/xgboost@3.2.0",
+            "UID": "2b26fd03c26bde68"
+          },
+          "Version": "3.2.0",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-c0ed97385902406097e0b0beb475aa7c/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "54d72f76fd098f91"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "d7989fc827309715"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "5e167ef3b1e4603b"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "e29c67614f19c232"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "855323f0734788f4"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "d1945e60426a8b15"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "4b53faa63073d911"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "b44b488f9e937ad"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-d8654921b31c40068802b87a12184463/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "bottleneck",
+          "Identifier": {
+            "PURL": "pkg:pypi/bottleneck@1.4.2",
+            "UID": "591e1ff5d08c40d9"
+          },
+          "Version": "1.4.2",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "cytoolz",
+          "Identifier": {
+            "PURL": "pkg:pypi/cytoolz@1.1.0",
+            "UID": "d8d34cfa15640bc6"
+          },
+          "Version": "1.1.0",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "defusedxml",
+          "Identifier": {
+            "PURL": "pkg:pypi/defusedxml@0.7.1",
+            "UID": "9086159559b99934"
+          },
+          "Version": "0.7.1",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "distributed",
+          "Identifier": {
+            "PURL": "pkg:pypi/distributed@2025.11.0",
+            "UID": "e12fb95ecbe6c62"
+          },
+          "Version": "2025.11.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "graphviz",
+          "Identifier": {
+            "PURL": "pkg:pypi/graphviz@0.21",
+            "UID": "ff7fdd933c1091e7"
+          },
+          "Version": "0.21",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "lightgbm",
+          "Identifier": {
+            "PURL": "pkg:pypi/lightgbm@4.6.0",
+            "UID": "703e55ebc4b24753"
+          },
+          "Version": "4.6.0",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "ab4f92316dc1d06f"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "matplotlib",
+          "Identifier": {
+            "PURL": "pkg:pypi/matplotlib@3.10.6",
+            "UID": "f28eab6f09727ca2"
+          },
+          "Version": "3.10.6",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "9284425eea91658"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mmh3",
+          "Identifier": {
+            "PURL": "pkg:pypi/mmh3@5.3.0",
+            "UID": "1a8e14e839acee0f"
+          },
+          "Version": "5.3.0",
+          "Locations": [
+            {
+              "StartLine": 10,
+              "EndLine": 10
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "d0d62c5354a4b4c1"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 11,
+              "EndLine": 11
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "1aa3306d9d00dd00"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 12,
+              "EndLine": 12
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "f037bf263e13fe7e"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 13,
+              "EndLine": 13
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "7ff41e0b3a44a7a8"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 14,
+              "EndLine": 14
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "bce239656ee2e9a"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 15,
+              "EndLine": 15
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xarray",
+          "Identifier": {
+            "PURL": "pkg:pypi/xarray@2025.10.1",
+            "UID": "aba5f460c8554e7b"
+          },
+          "Version": "2025.10.1",
+          "Locations": [
+            {
+              "StartLine": 16,
+              "EndLine": 16
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xxhash",
+          "Identifier": {
+            "PURL": "pkg:pypi/xxhash@3.8.0",
+            "UID": "eaa866107a73219a"
+          },
+          "Version": "3.8.0",
+          "Locations": [
+            {
+              "StartLine": 17,
+              "EndLine": 17
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "zstandard",
+          "Identifier": {
+            "PURL": "pkg:pypi/zstandard@0.24.0",
+            "UID": "2a7d4b5e7d0c4"
+          },
+          "Version": "0.24.0",
+          "Locations": [
+            {
+              "StartLine": 18,
+              "EndLine": 18
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-dc57a8586c194e7190efb686db78fc68/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "bottleneck",
+          "Identifier": {
+            "PURL": "pkg:pypi/bottleneck@1.4.2",
+            "UID": "98c3e73b9391245f"
+          },
+          "Version": "1.4.2",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "cytoolz",
+          "Identifier": {
+            "PURL": "pkg:pypi/cytoolz@1.1.0",
+            "UID": "1c98cde6d31655c4"
+          },
+          "Version": "1.1.0",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "defusedxml",
+          "Identifier": {
+            "PURL": "pkg:pypi/defusedxml@0.7.1",
+            "UID": "37b996ace80dd54a"
+          },
+          "Version": "0.7.1",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "distributed",
+          "Identifier": {
+            "PURL": "pkg:pypi/distributed@2025.11.0",
+            "UID": "310739fd42c2a374"
+          },
+          "Version": "2025.11.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "graphviz",
+          "Identifier": {
+            "PURL": "pkg:pypi/graphviz@0.21",
+            "UID": "1cb8ce31a56c5d19"
+          },
+          "Version": "0.21",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "lightgbm",
+          "Identifier": {
+            "PURL": "pkg:pypi/lightgbm@4.6.0",
+            "UID": "96f0b95720ec270d"
+          },
+          "Version": "4.6.0",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "d3d96c14966c599d"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "matplotlib",
+          "Identifier": {
+            "PURL": "pkg:pypi/matplotlib@3.10.6",
+            "UID": "a099df310949f47c"
+          },
+          "Version": "3.10.6",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "547e426a098627e2"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mmh3",
+          "Identifier": {
+            "PURL": "pkg:pypi/mmh3@5.3.0",
+            "UID": "8fec5810d9c46609"
+          },
+          "Version": "5.3.0",
+          "Locations": [
+            {
+              "StartLine": 10,
+              "EndLine": 10
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "8d79b9d6de89f51f"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 11,
+              "EndLine": 11
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "1c3a6aa6fb0254ee"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 12,
+              "EndLine": 12
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "b6290d76b56441fc"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 13,
+              "EndLine": 13
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "beb364541127ff16"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 14,
+              "EndLine": 14
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "fb6e8145d0e17730"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 15,
+              "EndLine": 15
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xarray",
+          "Identifier": {
+            "PURL": "pkg:pypi/xarray@2025.10.1",
+            "UID": "2954ae2941aaa3fd"
+          },
+          "Version": "2025.10.1",
+          "Locations": [
+            {
+              "StartLine": 16,
+              "EndLine": 16
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xxhash",
+          "Identifier": {
+            "PURL": "pkg:pypi/xxhash@3.8.0",
+            "UID": "6e6713545e27c02c"
+          },
+          "Version": "3.8.0",
+          "Locations": [
+            {
+              "StartLine": 17,
+              "EndLine": 17
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "zstandard",
+          "Identifier": {
+            "PURL": "pkg:pypi/zstandard@0.24.0",
+            "UID": "764160e44611f54e"
+          },
+          "Version": "0.24.0",
+          "Locations": [
+            {
+              "StartLine": 18,
+              "EndLine": 18
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-e3599310d1744f8db7cb853d46d5d03b/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "afd041e204e68b4"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "29fb40d617ea6254"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "f3eb72466c7f15be"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "fc8a8086894d5703"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "199bdb8d863f5bdd"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "d31e9f09ad027cf4"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "4fefc45eb6086ae4"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "6b1ed6cb42a2f1e4"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xgboost",
+          "Identifier": {
+            "PURL": "pkg:pypi/xgboost@3.2.0",
+            "UID": "3f824ad315b96ba6"
+          },
+          "Version": "3.2.0",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-e8f133f814da4e08bbd34253b0a65f86/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "6f0d7c0f2c3d2326"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "109a0e9774b83c42"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "889c9a7db0fe33f4"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "baaff2b2b9b8ecd9"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "73c5bd3abb0af2f"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "ecfdfdfeffba9c12"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "f9310cb2a1c3172a"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "e9b195339ebd82e6"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xgboost",
+          "Identifier": {
+            "PURL": "pkg:pypi/xgboost@3.2.0",
+            "UID": "c953e5c0883dab98"
+          },
+          "Version": "3.2.0",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-e90e09e518bb4500b1a93e11e57ec034/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "cf5a5812997b8e8"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "2e180deb4bdf0cc0"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "30accbe0a26ae14a"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "b52c1c94f893dc3f"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "333adcf7f1a29bcd"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "e43d9dfa6401fa3c"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "644a4d6cd039c5d8"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "a9705f54635c2e74"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "xgboost",
+          "Identifier": {
+            "PURL": "pkg:pypi/xgboost@3.2.0",
+            "UID": "3818c67456c0f146"
+          },
+          "Version": "3.2.0",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-ebd2e675ec1e472fbd00da4e3fbc3470/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "20075451338de803"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "c389f75b607bf663"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "6d15ede62f7cad1"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "225e873cdbbe345c"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "42a9b5ba6529fc5e"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "c11f298038ec9dc7"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "c9f43257cac4756b"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "ce63e2f22ff85c2b"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "mlruns/1/models/m-ec620b23ea004fbf8b116ae0f367dcdc/artifacts/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "lz4",
+          "Identifier": {
+            "PURL": "pkg:pypi/lz4@4.4.5",
+            "UID": "8a874bb0c608559f"
+          },
+          "Version": "4.4.5",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "mlflow",
+          "Identifier": {
+            "PURL": "pkg:pypi/mlflow@3.16.1",
+            "UID": "bbeb48e6e4b6f57b"
+          },
+          "Version": "3.16.1",
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "numpy",
+          "Identifier": {
+            "PURL": "pkg:pypi/numpy@2.3.5",
+            "UID": "858e1b75bf1e2729"
+          },
+          "Version": "2.3.5",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pandas",
+          "Identifier": {
+            "PURL": "pkg:pypi/pandas@2.3.3",
+            "UID": "e54cea0eef436080"
+          },
+          "Version": "2.3.3",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "psutil",
+          "Identifier": {
+            "PURL": "pkg:pypi/psutil@7.0.0",
+            "UID": "f671f50d3c1eda7a"
+          },
+          "Version": "7.0.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "pyarrow",
+          "Identifier": {
+            "PURL": "pkg:pypi/pyarrow@21.0.0",
+            "UID": "e6257d6c68a4758f"
+          },
+          "Version": "21.0.0",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scikit-learn",
+          "Identifier": {
+            "PURL": "pkg:pypi/scikit-learn@1.7.2",
+            "UID": "ff4519ce33cbe66f"
+          },
+          "Version": "1.7.2",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "pip"
+        },
+        {
+          "Name": "scipy",
+          "Identifier": {
+            "PURL": "pkg:pypi/scipy@1.16.3",
+            "UID": "948492c7269d41c7"
+          },
+          "Version": "1.16.3",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "pip"
+        }
+      ]
+    },
+    {
+      "Target": "Dockerfile",
+      "Class": "config",
+      "Type": "dockerfile",
+      "MisconfSummary": {
+        "Successes": 26,
+        "Failures": 1
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS-0002",
+          "Title": "Image user should not be 'root'",
+          "Description": "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
+          "Message": "Specify at least 1 USER command in Dockerfile with non-root user as argument",
+          "Namespace": "builtin.dockerfile.DS002",
+          "Query": "data.builtin.dockerfile.DS002.deny",
+          "Resolution": "Add 'USER \u003cnon root user name\u003e' line to the Dockerfile",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds-0002",
+          "References": [
+            "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
+            "https://avd.aquasec.com/misconfig/ds-0002"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general"
+          }
+        }
+      ]
+    },
+    {
+      "Target": "deploy/azure",
+      "Class": "config",
+      "Type": "terraform",
+      "MisconfSummary": {
+        "Successes": 46,
+        "Failures": 0
+      }
+    },
+    {
+      "Target": "deploy/azure/arm_template.json",
+      "Class": "config",
+      "Type": "azure-arm",
+      "MisconfSummary": {
+        "Successes": 7,
+        "Failures": 5
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Azure ARM Security Check",
+          "ID": "AZU-0012",
+          "Title": "The default action on Storage account network rules should be set to deny",
+          "Description": "The default_action for network rules should come into effect when no other rules are matched.\nThe default action should be set to Deny.\n",
+          "Message": "A network rule is configured to allow access.",
+          "Namespace": "builtin.azure.storage.azure0012",
+          "Query": "data.builtin.azure.storage.azure0012.deny",
+          "Resolution": "Set network rules to deny",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/azu-0012",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/firewall/rule-processing",
+            "https://avd.aquasec.com/misconfig/azu-0012"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Provider": "Azure",
+            "Service": "storage",
+            "StartLine": 57,
+            "EndLine": 71,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 1,
+                  "Content": "{",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "{",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 2,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 57,
+                  "Content": "    {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 58,
+                  "Content": "      \"type\": \"Microsoft.Storage/storageAccounts\",",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      \u001b[38;5;33m\"type\"\u001b[0m: \u001b[38;5;37m\"Microsoft.Storage/storageAccounts\"\u001b[0m,",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 59,
+                  "Content": "      \"apiVersion\": \"2023-01-01\",",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      \u001b[38;5;33m\"apiVersion\"\u001b[0m: \u001b[38;5;37m\"2023-01-01\"\u001b[0m,",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 60,
+                  "Content": "      \"name\": \"[parameters('storageAccountName')]\",",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      \u001b[38;5;33m\"name\"\u001b[0m: \u001b[38;5;37m\"[parameters('storageAccountName')]\"\u001b[0m,",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 61,
+                  "Content": "      \"location\": \"[parameters('location')]\",",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      \u001b[38;5;33m\"location\"\u001b[0m: \u001b[38;5;37m\"[parameters('location')]\"\u001b[0m,",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 62,
+                  "Content": "      \"sku\": {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      \u001b[38;5;33m\"sku\"\u001b[0m: {",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 63,
+                  "Content": "        \"name\": \"Standard_LRS\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33m\"name\"\u001b[0m: \u001b[38;5;37m\"Standard_LRS\"",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 64,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Filename": "deploy/azure/arm_template.json",
+                "Location": {
+                  "StartLine": 1,
+                  "EndLine": 183
+                }
+              },
+              {
+                "Filename": "deploy/azure/arm_template.json",
+                "Location": {}
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Azure ARM Security Check",
+          "ID": "AZU-0056",
+          "Title": "Storage account should have blob soft delete enabled",
+          "Description": "Blob soft delete protects blob data from being accidentally or erroneously modified or deleted.\nWhen blob soft delete is enabled, deleted blobs are retained in the system for a specified retention period.\nDuring the retention period, you can restore a soft-deleted blob to its state at the time it was deleted.\n",
+          "Message": "Storage account does not have blob soft delete enabled.",
+          "Namespace": "builtin.azure.storage.azure0056",
+          "Query": "data.builtin.azure.storage.azure0056.deny",
+          "Resolution": "Enable soft delete for blobs with an appropriate retention period",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/azu-0056",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/storage/blobs/soft-delete-blob-overview",
+            "https://avd.aquasec.com/misconfig/azu-0056"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Provider": "Azure",
+            "Service": "storage",
+            "StartLine": 66,
+            "EndLine": 70,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 1,
+                  "Content": "{",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "{",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 2,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 66,
+                  "Content": "      \"properties\": {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      \u001b[38;5;33m\"properties\"\u001b[0m: {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 67,
+                  "Content": "        \"accessTier\": \"Hot\",",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33m\"accessTier\"\u001b[0m: \u001b[38;5;37m\"Hot\"\u001b[0m,",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 68,
+                  "Content": "        \"supportsHttpsTrafficOnly\": true,",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33m\"supportsHttpsTrafficOnly\"\u001b[0m: \u001b[38;5;166mtrue\u001b[0m,",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 69,
+                  "Content": "        \"minimumTlsVersion\": \"TLS1_2\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33m\"minimumTlsVersion\"\u001b[0m: \u001b[38;5;37m\"TLS1_2\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 70,
+                  "Content": "      }",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m      }",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 182,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 183,
+                  "Content": "}",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "resources[1]",
+                "Filename": "deploy/azure/arm_template.json",
+                "Location": {
+                  "StartLine": 57,
+                  "EndLine": 71
+                }
+              },
+              {
+                "Filename": "deploy/azure/arm_template.json",
+                "Location": {
+                  "StartLine": 1,
+                  "EndLine": 183
+                }
+              },
+              {
+                "Filename": "deploy/azure/arm_template.json",
+                "Location": {}
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Azure ARM Security Check",
+          "ID": "AZU-0057",
+          "Title": "Storage account should have logging enabled",
+          "Description": "Storage Analytics logs detailed information about successful and failed requests to a storage service.\nThis information can be used to monitor individual requests and to diagnose issues with a storage service.\nLogging should be enabled for at least one storage service type.\n",
+          "Message": "Storage account does not have logging enabled for any service.",
+          "Namespace": "builtin.azure.storage.azure0057",
+          "Query": "data.builtin.azure.storage.azure0057.deny",
+          "Resolution": "Enable logging for at least one storage service (Queue, Table, or Blob)",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/azu-0057",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/storage/common/storage-analytics-logging",
+            "https://avd.aquasec.com/misconfig/azu-0057"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Provider": "Azure",
+            "Service": "storage",
+            "StartLine": 66,
+            "EndLine": 70,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 1,
+                  "Content": "{",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "{",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 2,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 66,
+                  "Content": "      \"properties\": {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      \u001b[38;5;33m\"properties\"\u001b[0m: {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 67,
+                  "Content": "        \"accessTier\": \"Hot\",",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33m\"accessTier\"\u001b[0m: \u001b[38;5;37m\"Hot\"\u001b[0m,",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 68,
+                  "Content": "        \"supportsHttpsTrafficOnly\": true,",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33m\"supportsHttpsTrafficOnly\"\u001b[0m: \u001b[38;5;166mtrue\u001b[0m,",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 69,
+                  "Content": "        \"minimumTlsVersion\": \"TLS1_2\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33m\"minimumTlsVersion\"\u001b[0m: \u001b[38;5;37m\"TLS1_2\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 70,
+                  "Content": "      }",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m      }",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 182,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 183,
+                  "Content": "}",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "resources[1]",
+                "Filename": "deploy/azure/arm_template.json",
+                "Location": {
+                  "StartLine": 57,
+                  "EndLine": 71
+                }
+              },
+              {
+                "Filename": "deploy/azure/arm_template.json",
+                "Location": {
+                  "StartLine": 1,
+                  "EndLine": 183
+                }
+              },
+              {
+                "Filename": "deploy/azure/arm_template.json",
+                "Location": {}
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Azure ARM Security Check",
+          "ID": "AZU-0058",
+          "Title": "Storage account should use geo-redundant replication",
+          "Description": "Geo-redundant storage (GRS) replicates your data to a secondary region that is hundreds of miles away from the primary region.\nThis provides an additional level of durability for your data in the event of a complete regional outage or a disaster.\nOptions include GRS, RAGRS, GZRS, and RAGZRS for geo-redundancy.\n",
+          "Message": "Storage account does not use geo-redundant replication.",
+          "Namespace": "builtin.azure.storage.azure0058",
+          "Query": "data.builtin.azure.storage.azure0058.deny",
+          "Resolution": "Configure storage account to use geo-redundant replication (GRS, RAGRS, GZRS, or RAGZRS)",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/azu-0058",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy",
+            "https://avd.aquasec.com/misconfig/azu-0058"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Provider": "Azure",
+            "Service": "storage",
+            "StartLine": 66,
+            "EndLine": 70,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 1,
+                  "Content": "{",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "{",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 2,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 66,
+                  "Content": "      \"properties\": {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      \u001b[38;5;33m\"properties\"\u001b[0m: {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 67,
+                  "Content": "        \"accessTier\": \"Hot\",",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33m\"accessTier\"\u001b[0m: \u001b[38;5;37m\"Hot\"\u001b[0m,",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 68,
+                  "Content": "        \"supportsHttpsTrafficOnly\": true,",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33m\"supportsHttpsTrafficOnly\"\u001b[0m: \u001b[38;5;166mtrue\u001b[0m,",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 69,
+                  "Content": "        \"minimumTlsVersion\": \"TLS1_2\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33m\"minimumTlsVersion\"\u001b[0m: \u001b[38;5;37m\"TLS1_2\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 70,
+                  "Content": "      }",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m      }",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 182,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 183,
+                  "Content": "}",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "resources[1]",
+                "Filename": "deploy/azure/arm_template.json",
+                "Location": {
+                  "StartLine": 57,
+                  "EndLine": 71
+                }
+              },
+              {
+                "Filename": "deploy/azure/arm_template.json",
+                "Location": {
+                  "StartLine": 1,
+                  "EndLine": 183
+                }
+              },
+              {
+                "Filename": "deploy/azure/arm_template.json",
+                "Location": {}
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Azure ARM Security Check",
+          "ID": "AZU-0061",
+          "Title": "Storage account should have infrastructure encryption enabled",
+          "Description": "Infrastructure encryption provides an additional layer of encryption at the infrastructure level.\nWhen infrastructure encryption is enabled, data in the storage account is encrypted twice -\nonce at the service level and once at the infrastructure level with two different encryption algorithms.\nThis provides double encryption for enhanced security.\n",
+          "Message": "Storage account does not have infrastructure encryption enabled.",
+          "Namespace": "builtin.azure.storage.azure0061",
+          "Query": "data.builtin.azure.storage.azure0061.deny",
+          "Resolution": "Enable infrastructure encryption for storage account",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/azu-0061",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/storage/common/infrastructure-encryption-enable",
+            "https://avd.aquasec.com/misconfig/azu-0061"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Provider": "Azure",
+            "Service": "storage",
+            "StartLine": 66,
+            "EndLine": 70,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 1,
+                  "Content": "{",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "{",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 2,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 66,
+                  "Content": "      \"properties\": {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      \u001b[38;5;33m\"properties\"\u001b[0m: {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 67,
+                  "Content": "        \"accessTier\": \"Hot\",",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33m\"accessTier\"\u001b[0m: \u001b[38;5;37m\"Hot\"\u001b[0m,",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 68,
+                  "Content": "        \"supportsHttpsTrafficOnly\": true,",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33m\"supportsHttpsTrafficOnly\"\u001b[0m: \u001b[38;5;166mtrue\u001b[0m,",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 69,
+                  "Content": "        \"minimumTlsVersion\": \"TLS1_2\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33m\"minimumTlsVersion\"\u001b[0m: \u001b[38;5;37m\"TLS1_2\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 70,
+                  "Content": "      }",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m      }",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 182,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 183,
+                  "Content": "}",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "resources[1]",
+                "Filename": "deploy/azure/arm_template.json",
+                "Location": {
+                  "StartLine": 57,
+                  "EndLine": 71
+                }
+              },
+              {
+                "Filename": "deploy/azure/arm_template.json",
+                "Location": {
+                  "StartLine": 1,
+                  "EndLine": 183
+                }
+              },
+              {
+                "Filename": "deploy/azure/arm_template.json",
+                "Location": {}
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "Target": "deploy/azure/main.tf",
+      "Class": "config",
+      "Type": "terraform",
+      "MisconfSummary": {
+        "Successes": 0,
+        "Failures": 5
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Terraform Security Check",
+          "ID": "AZU-0012",
+          "Title": "The default action on Storage account network rules should be set to deny",
+          "Description": "The default_action for network rules should come into effect when no other rules are matched.\nThe default action should be set to Deny.\n",
+          "Message": "No network rules defined and default action allows access.",
+          "Namespace": "builtin.azure.storage.azure0012",
+          "Query": "data.builtin.azure.storage.azure0012.deny",
+          "Resolution": "Set network rules to deny",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/azu-0012",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/firewall/rule-processing",
+            "https://avd.aquasec.com/misconfig/azu-0012"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "azurerm_storage_account.sa",
+            "Provider": "Azure",
+            "Service": "storage",
+            "StartLine": 54,
+            "EndLine": 61,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 54,
+                  "Content": "resource \"azurerm_storage_account\" \"sa\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"azurerm_storage_account\"\u001b[0m \u001b[38;5;37m\"sa\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 55,
+                  "Content": "  name                     = \"stchurnguardsea2026\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m                     = \u001b[38;5;37m\"stchurnguardsea2026\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 56,
+                  "Content": "  resource_group_name      = azurerm_resource_group.rg.name",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mresource_group_name\u001b[0m      = azurerm_resource_group.rg.name",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 57,
+                  "Content": "  location                 = azurerm_resource_group.rg.location",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mlocation\u001b[0m                 = azurerm_resource_group.rg.location",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 58,
+                  "Content": "  account_tier             = \"Standard\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245maccount_tier\u001b[0m             = \u001b[38;5;37m\"Standard\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 59,
+                  "Content": "  account_replication_type = \"LRS\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245maccount_replication_type\u001b[0m = \u001b[38;5;37m\"LRS\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 60,
+                  "Content": "  min_tls_version          = \"TLS1_2\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mmin_tls_version\u001b[0m          = \u001b[38;5;37m\"TLS1_2\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 61,
+                  "Content": "}",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m}",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "AZU-0057",
+          "Title": "Storage account should have logging enabled",
+          "Description": "Storage Analytics logs detailed information about successful and failed requests to a storage service.\nThis information can be used to monitor individual requests and to diagnose issues with a storage service.\nLogging should be enabled for at least one storage service type.\n",
+          "Message": "Storage account does not have logging enabled for any service.",
+          "Namespace": "builtin.azure.storage.azure0057",
+          "Query": "data.builtin.azure.storage.azure0057.deny",
+          "Resolution": "Enable logging for at least one storage service (Queue, Table, or Blob)",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/azu-0057",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/storage/common/storage-analytics-logging",
+            "https://avd.aquasec.com/misconfig/azu-0057"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "azurerm_storage_account.sa",
+            "Provider": "Azure",
+            "Service": "storage",
+            "StartLine": 54,
+            "EndLine": 61,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 54,
+                  "Content": "resource \"azurerm_storage_account\" \"sa\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"azurerm_storage_account\"\u001b[0m \u001b[38;5;37m\"sa\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 55,
+                  "Content": "  name                     = \"stchurnguardsea2026\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m                     = \u001b[38;5;37m\"stchurnguardsea2026\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 56,
+                  "Content": "  resource_group_name      = azurerm_resource_group.rg.name",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mresource_group_name\u001b[0m      = azurerm_resource_group.rg.name",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 57,
+                  "Content": "  location                 = azurerm_resource_group.rg.location",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mlocation\u001b[0m                 = azurerm_resource_group.rg.location",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 58,
+                  "Content": "  account_tier             = \"Standard\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245maccount_tier\u001b[0m             = \u001b[38;5;37m\"Standard\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 59,
+                  "Content": "  account_replication_type = \"LRS\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245maccount_replication_type\u001b[0m = \u001b[38;5;37m\"LRS\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 60,
+                  "Content": "  min_tls_version          = \"TLS1_2\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mmin_tls_version\u001b[0m          = \u001b[38;5;37m\"TLS1_2\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 61,
+                  "Content": "}",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m}",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "AZU-0058",
+          "Title": "Storage account should use geo-redundant replication",
+          "Description": "Geo-redundant storage (GRS) replicates your data to a secondary region that is hundreds of miles away from the primary region.\nThis provides an additional level of durability for your data in the event of a complete regional outage or a disaster.\nOptions include GRS, RAGRS, GZRS, and RAGZRS for geo-redundancy.\n",
+          "Message": "Storage account does not use geo-redundant replication.",
+          "Namespace": "builtin.azure.storage.azure0058",
+          "Query": "data.builtin.azure.storage.azure0058.deny",
+          "Resolution": "Configure storage account to use geo-redundant replication (GRS, RAGRS, GZRS, or RAGZRS)",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/azu-0058",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy",
+            "https://avd.aquasec.com/misconfig/azu-0058"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "azurerm_storage_account.sa",
+            "Provider": "Azure",
+            "Service": "storage",
+            "StartLine": 59,
+            "EndLine": 59,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 54,
+                  "Content": "resource \"azurerm_storage_account\" \"sa\" {",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"azurerm_storage_account\"\u001b[0m \u001b[38;5;37m\"sa\"\u001b[0m {",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 55,
+                  "Content": "  name                     = \"stchurnguardsea2026\"",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m                     = \u001b[38;5;37m\"stchurnguardsea2026\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 56,
+                  "Content": "  resource_group_name      = azurerm_resource_group.rg.name",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mresource_group_name\u001b[0m      = azurerm_resource_group.rg.name",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 57,
+                  "Content": "  location                 = azurerm_resource_group.rg.location",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mlocation\u001b[0m                 = azurerm_resource_group.rg.location",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 58,
+                  "Content": "  account_tier             = \"Standard\"",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245maccount_tier\u001b[0m             = \u001b[38;5;37m\"Standard\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 59,
+                  "Content": "  account_replication_type = \"LRS\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245maccount_replication_type\u001b[0m = \u001b[38;5;37m\"LRS\"",
+                  "FirstCause": true,
+                  "LastCause": true
+                },
+                {
+                  "Number": 60,
+                  "Content": "  min_tls_version          = \"TLS1_2\"",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mmin_tls_version\u001b[0m          = \u001b[38;5;37m\"TLS1_2\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 61,
+                  "Content": "}",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m}",
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "azurerm_storage_account.sa",
+                "Filename": "deploy/azure/main.tf",
+                "Location": {
+                  "StartLine": 54,
+                  "EndLine": 61
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "AZU-0060",
+          "Title": "Storage account should use customer-managed keys for encryption",
+          "Description": "Storage accounts should use customer-managed keys (CMK) for encryption to provide additional control over the encryption keys.\nCustomer-managed keys allow you to create, rotate, disable, and revoke access controls.\nThey also provide greater flexibility to audit the encryption keys that are used to protect your data.\n",
+          "Message": "Storage account with blob containers should use customer-managed keys for encryption.",
+          "Namespace": "builtin.azure.storage.azure0060",
+          "Query": "data.builtin.azure.storage.azure0060.deny",
+          "Resolution": "Configure customer-managed keys for storage account encryption",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/azu-0060",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/storage/common/customer-managed-keys-overview",
+            "https://avd.aquasec.com/misconfig/azu-0060"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "azurerm_storage_account.sa",
+            "Provider": "Azure",
+            "Service": "storage",
+            "StartLine": 54,
+            "EndLine": 61,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 54,
+                  "Content": "resource \"azurerm_storage_account\" \"sa\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"azurerm_storage_account\"\u001b[0m \u001b[38;5;37m\"sa\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 55,
+                  "Content": "  name                     = \"stchurnguardsea2026\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m                     = \u001b[38;5;37m\"stchurnguardsea2026\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 56,
+                  "Content": "  resource_group_name      = azurerm_resource_group.rg.name",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mresource_group_name\u001b[0m      = azurerm_resource_group.rg.name",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 57,
+                  "Content": "  location                 = azurerm_resource_group.rg.location",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mlocation\u001b[0m                 = azurerm_resource_group.rg.location",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 58,
+                  "Content": "  account_tier             = \"Standard\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245maccount_tier\u001b[0m             = \u001b[38;5;37m\"Standard\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 59,
+                  "Content": "  account_replication_type = \"LRS\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245maccount_replication_type\u001b[0m = \u001b[38;5;37m\"LRS\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 60,
+                  "Content": "  min_tls_version          = \"TLS1_2\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mmin_tls_version\u001b[0m          = \u001b[38;5;37m\"TLS1_2\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 61,
+                  "Content": "}",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m}",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "AZU-0061",
+          "Title": "Storage account should have infrastructure encryption enabled",
+          "Description": "Infrastructure encryption provides an additional layer of encryption at the infrastructure level.\nWhen infrastructure encryption is enabled, data in the storage account is encrypted twice -\nonce at the service level and once at the infrastructure level with two different encryption algorithms.\nThis provides double encryption for enhanced security.\n",
+          "Message": "Storage account does not have infrastructure encryption enabled.",
+          "Namespace": "builtin.azure.storage.azure0061",
+          "Query": "data.builtin.azure.storage.azure0061.deny",
+          "Resolution": "Enable infrastructure encryption for storage account",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/azu-0061",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/storage/common/infrastructure-encryption-enable",
+            "https://avd.aquasec.com/misconfig/azu-0061"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "azurerm_storage_account.sa",
+            "Provider": "Azure",
+            "Service": "storage",
+            "StartLine": 54,
+            "EndLine": 61,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 54,
+                  "Content": "resource \"azurerm_storage_account\" \"sa\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"azurerm_storage_account\"\u001b[0m \u001b[38;5;37m\"sa\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 55,
+                  "Content": "  name                     = \"stchurnguardsea2026\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m                     = \u001b[38;5;37m\"stchurnguardsea2026\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 56,
+                  "Content": "  resource_group_name      = azurerm_resource_group.rg.name",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mresource_group_name\u001b[0m      = azurerm_resource_group.rg.name",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 57,
+                  "Content": "  location                 = azurerm_resource_group.rg.location",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mlocation\u001b[0m                 = azurerm_resource_group.rg.location",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 58,
+                  "Content": "  account_tier             = \"Standard\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245maccount_tier\u001b[0m             = \u001b[38;5;37m\"Standard\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 59,
+                  "Content": "  account_replication_type = \"LRS\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245maccount_replication_type\u001b[0m = \u001b[38;5;37m\"LRS\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 60,
+                  "Content": "  min_tls_version          = \"TLS1_2\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mmin_tls_version\u001b[0m          = \u001b[38;5;37m\"TLS1_2\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 61,
+                  "Content": "}",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m}",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "Target": "deploy/dapr/statestore.yaml",
+      "Class": "config",
+      "Type": "kubernetes",
+      "MisconfSummary": {
+        "Successes": 61,
+        "Failures": 0
+      }
+    },
+    {
+      "Target": "src/resilience/__pycache__/azurite_adapter.cpython-313.pyc",
+      "Class": "secret",
+      "Secrets": [
+        {
+          "RuleID": "azure-storage-account-key",
+          "Category": "Azure",
+          "Severity": "CRITICAL",
+          "Title": "Azure Storage Account Key",
+          "StartLine": 64,
+          "EndLine": 64,
+          "Code": {
+            "Lines": null
+          },
+          "Match": "Binary file \"src/resilience/__pycache__/azurite_adapter.cpython-313.pyc\" matches a rule \"Azure Storage Account Key\"",
+          "Offset": 1216
+        }
+      ]
+    },
+    {
+      "Target": "src/resilience/azurite_adapter.py",
+      "Class": "secret",
+      "Secrets": [
+        {
+          "RuleID": "azure-storage-account-key",
+          "Category": "Azure",
+          "Severity": "CRITICAL",
+          "Title": "Azure Storage Account Key",
+          "StartLine": 65,
+          "EndLine": 65,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 63,
+                "Content": "    \"DefaultEndpointsProtocol=http;\"",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "    \"DefaultEndpointsProtocol=http;\"",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 64,
+                "Content": "    \"AccountName=devstoreaccount1;\"",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "    \"AccountName=devstoreaccount1;\"",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 65,
+                "Content": "    \"AccountKey=****************************************************************************************;\"",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "    \"AccountKey=****************************************************************************************;\"",
+                "FirstCause": true,
+                "LastCause": true
+              },
+              {
+                "Number": 66,
+                "Content": "    \"BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;\"",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "    \"BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;\"",
+                "FirstCause": false,
+                "LastCause": false
+              }
+            ]
+          },
+          "Match": "    \"AccountKey=****************************************************************************************;\"",
+          "Offset": 2213
+        }
+      ]
+    }
+  ]
+}
