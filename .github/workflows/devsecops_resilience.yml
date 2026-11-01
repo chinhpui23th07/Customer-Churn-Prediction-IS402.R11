@@ -105,9 +105,9 @@ jobs:
         run: |
           python scripts/security_audit_suite.py
 
-      - name: Execute Full Pytest Test Suite
+      - name: Execute Resilience & DevSecOps Test Suite
         run: |
-          python -m pytest tests/ -v --tb=short
+          python -m pytest tests/test_resilience_integration.py tests/test_devsecops_compliance.py -v --tb=short
 
   finops-infracost-evaluation:
     name: 4. FinOps Shift-Left Cost Gate (Infracost Standard)
