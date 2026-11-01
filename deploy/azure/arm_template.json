@@ -51,7 +51,8 @@
         "name": "Basic"
       },
       "properties": {
-        "adminUserEnabled": true
+        "adminUserEnabled": false,
+        "publicNetworkAccess": "Disabled"
       }
     },
     {
@@ -60,13 +61,95 @@
       "name": "[parameters('storageAccountName')]",
       "location": "[parameters('location')]",
       "sku": {
-        "name": "Standard_LRS"
+        "name": "Standard_GRS"
       },
       "kind": "StorageV2",
       "properties": {
         "accessTier": "Hot",
         "supportsHttpsTrafficOnly": true,
-        "minimumTlsVersion": "TLS1_2"
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": false,
+        "publicNetworkAccess": "Disabled",
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "defaultAction": "Deny"
+        },
+        "encryption": {
+          "services": {
+            "blob": {
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage",
+          "requireInfrastructureEncryption": true
+        },
+        "sku": {
+          "name": "GRS"
+        },
+        "blobServices": {
+          "properties": {
+            "deleteRetentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          }
+        },
+        "queueServices": {
+          "properties": {
+            "logging": {
+              "delete": true,
+              "read": true,
+              "write": true,
+              "retentionPolicy": {
+                "enabled": true,
+                "days": 7
+              }
+            }
+          }
+        }
+      },
+      "resources": [
+        {
+          "type": "blobServices",
+          "apiVersion": "2023-01-01",
+          "name": "default",
+          "properties": {
+            "deleteRetentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          }
+        },
+        {
+          "type": "queueServices",
+          "apiVersion": "2023-01-01",
+          "name": "default",
+          "properties": {
+            "logging": {
+              "delete": true,
+              "read": true,
+              "write": true,
+              "retentionPolicy": {
+                "enabled": true,
+                "days": 7
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2023-01-01",
+      "name": "[format('{0}/default', parameters('storageAccountName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ],
+      "properties": {
+        "deleteRetentionPolicy": {
+          "enabled": true,
+          "days": 7
+        }
       }
     },
     {
@@ -74,7 +157,8 @@
       "apiVersion": "2023-01-01",
       "name": "[format('{0}/default/{1}', parameters('storageAccountName'), variables('blobContainerName'))]",
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]"
       ],
       "properties": {
         "publicAccess": "None"
@@ -91,6 +175,7 @@
           "family": "C",
           "capacity": 0
         },
+        "publicNetworkAccess": "Disabled",
         "enableNonSslPort": false,
         "minimumTlsVersion": "1.2",
         "redisConfiguration": {

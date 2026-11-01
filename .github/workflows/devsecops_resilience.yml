@@ -32,11 +32,11 @@ jobs:
 
       - name: Run Checkov IaC Static Security Audit
         run: |
-          checkov -d deploy/azure --framework terraform,arm --soft-fail --output cli --output-file-path reports/checkov
+          checkov -d deploy/azure --config-file .checkov.yml --output cli --output-file-path reports/checkov
 
       - name: Verify Terraform Code Syntax
         run: |
-          terraform fmt -check deploy/azure || echo "Terraform format check completed"
+          terraform fmt -check deploy/azure
 
   vulnerability-secrets-audit:
     name: 2. Vulnerability, CVE & Secrets Audit (Trivy Standard)
@@ -52,12 +52,12 @@ jobs:
           scan-ref: '.'
           scanners: 'vuln,secret,config'
           severity: 'CRITICAL,HIGH'
-          exit-code: '0'
+          exit-code: '1'
           format: 'table'
 
       - name: Secrets Hygiene Scan
         run: |
-          ! git grep -iE "AZURE_STORAGE_KEY=[A-Za-z0-9+/=]{20,}|password\s*=\s*\"[^\"]+\"" -- deploy/ src/ || echo "Secrets check completed"
+          ! git grep -iE "AZURE_STORAGE_KEY=[A-Za-z0-9+/=]{20,}|password\s*=\s*\"[^\"]+\"" -- deploy/ src/
 
   resilience-integration-tests:
     name: 3. Resilience & Integration Test Suite (Testcontainers / Pytest)
@@ -82,6 +82,10 @@ jobs:
           python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py src
           python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py scripts
           python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py tests
+
+      - name: Execute Unified Security Audit Gate
+        run: |
+          python scripts/security_audit_suite.py
 
       - name: Execute Full Pytest Test Suite
         run: |

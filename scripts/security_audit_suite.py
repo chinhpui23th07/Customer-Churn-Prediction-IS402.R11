@@ -131,8 +131,47 @@ class RealSecurityToolIngestor:
         return findings
 
 
-def execute_security_audit(workspace: Path) -> Dict[str, Any]:
+def run_live_scanners(workspace: Path) -> None:
+    """Execute authentic Checkov and Trivy scanners to refresh reports."""
+    reports_dir = workspace / "reports"
+    reports_dir.mkdir(parents=True, exist_ok=True)
+
+    checkov_py = workspace / "tools" / "checkov_env" / "Scripts" / "python.exe"
+    checkov_cfg = workspace / ".checkov.yml"
+    if checkov_py.exists():
+        print("[Live Scanner] Executing authentic Checkov scan...")
+        cmd = [
+            str(checkov_py), "-m", "checkov.main",
+            "-d", "deploy/azure",
+            "--config-file", str(checkov_cfg),
+            "-o", "json",
+        ]
+        res = subprocess.run(cmd, cwd=str(workspace), capture_output=True, text=True)
+        if res.stdout.strip():
+            (reports_dir / "checkov_real_report.json").write_text(res.stdout, encoding="utf-8")
+            print("[Live Scanner] Checkov scan refreshed.")
+
+    trivy_bin = workspace / "tools" / "trivy" / "trivy.exe"
+    if trivy_bin.exists():
+        print("[Live Scanner] Executing authentic Trivy scan...")
+        cmd = [
+            str(trivy_bin), "fs",
+            "--scanners", "vuln,secret,misconfig",
+            "--include-non-failures",
+            "--format", "json",
+            "-o", str(reports_dir / "trivy_real_report.json"),
+            "--skip-dirs", "tools,docs",
+            ".",
+        ]
+        subprocess.run(cmd, cwd=str(workspace), capture_output=True, text=True)
+        print("[Live Scanner] Trivy scan refreshed.")
+
+
+def execute_security_audit(workspace: Path, live: bool = False) -> Dict[str, Any]:
     """Load authentic reports or execute tools to compile unified report."""
+    if live:
+        run_live_scanners(workspace)
+
     reports_dir = workspace / "reports"
     reports_dir.mkdir(parents=True, exist_ok=True)
 
@@ -194,7 +233,8 @@ def main() -> int:
     print("  Genuine Execution: Checkov (9.1k*), Trivy (38.9k*), MicroBurst (2.5k*)")
     print("=" * 76)
 
-    report = execute_security_audit(workspace)
+    live_mode = "--live" in sys.argv
+    report = execute_security_audit(workspace, live=live_mode)
     print(f"Audit Completed at: {report['timestamp']}")
     print(f"Total Rules Evaluated: {report['total_rules']}")
     print(f"Passed: {report['passed_count']} | Failed: {report['failed_count']}")
@@ -210,7 +250,16 @@ def main() -> int:
         print(f"... and {len(report['findings']) - 25} additional genuine findings.")
     print("-" * 76)
     print(f"\nUnified Enterprise Report written to: reports/security_audit_report.json")
-    print("Audit execution completed successfully.")
+    crit_count = report["summary"].get("CRITICAL", 0)
+    high_count = report["summary"].get("HIGH", 0)
+    if crit_count > 0 or high_count > 0:
+        print(
+            f"[SECURITY GATE FAILED] {crit_count} CRITICAL and {high_count} HIGH "
+            f"security violations detected!"
+        )
+        return 1
+
+    print("Audit execution completed successfully. Zero CRITICAL/HIGH violations.")
     return 0
 
 

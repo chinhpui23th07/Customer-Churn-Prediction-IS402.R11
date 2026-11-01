@@ -1,0 +1,22 @@
+# Checkov Enterprise Policy Configuration & Scope Justification
+# Project: ChurnGuard MLOps Level 2 Enterprise Platform
+# Constraint Baseline: Student Subscription Cap ($100 USD Budget) & Single-Region SEA Architecture
+
+framework:
+  - terraform
+  - arm
+
+skip-check:
+  - CKV_AZURE_165  # ACR Geo-replication: Multi-region ACR replication exceeds $100 student subscription budget; project targets Southeast Asia (Singapore) single region.
+  - CKV_AZURE_233  # ACR Zone Redundancy: Requires ACR Premium SKU which exceeds academic student budget quota; Basic SKU evaluated for student baseline.
+  - CKV_AZURE_163  # ACR Vulnerability Scanning: Requires Microsoft Defender for Containers, exceeding academic budget tier.
+  - CKV_AZURE_164  # ACR Content Trust: Requires ACR Premium SKU for Docker Content Trust (DCT) key signing.
+  - CKV_AZURE_166  # ACR Quarantine Policy: Requires ACR Premium SKU to isolate unscanned images.
+  - CKV_AZURE_237  # ACR Dedicated Data Endpoints: Requires ACR Premium SKU for dedicated storage endpoints.
+  - CKV_AZURE_206  # Storage Replication: Academic evaluation uses Standard_LRS (Locally Redundant Storage) to remain within the $100 student grant.
+  - CKV_AZURE_230  # Redis Standard Replication: Redis Basic SKU used due to student budget tier; clustered cache exceeds $100 ceiling.
+  - CKV2_AZURE_1   # Storage Customer Managed Keys (CMK): Requires Dedicated HSM / Key Vault Premium Key Management, exceeding educational budget.
+  - CKV2_AZURE_33  # Storage Private Endpoint: Private Endpoints require VNet peering, Private DNS Zones and NAT gateway, outside single-node student scope.
+  - CKV2_AZURE_41  # Storage SAS Expiration Policy: IAM uses Managed Identity instead of SAS tokens; explicit SAS policy not required for headless service.
+  - CKV2_AZURE_21  # Blob Service Logging: Managed diagnostic settings via Log Analytics workspace (law-churnguard-mlops).
+  - CKV_SECRET_6   # False positive on environment variable secretRef token substitutions in containerapp.yaml.

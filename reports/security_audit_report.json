@@ -1,21 +1,30 @@
 {
-  "timestamp": "2026-11-01T12:24:46.017063+00:00",
+  "timestamp": "2026-11-01T14:37:27.245309+00:00",
   "tools_executed": [
     "bridgecrewio/checkov (9.1k stars)",
     "aquasecurity/trivy (38.9k stars)",
     "NetSPI/MicroBurst (2.5k stars)"
   ],
-  "total_rules": 62,
-  "passed_count": 18,
-  "failed_count": 44,
-  "compliance_score_percent": 29.03,
+  "total_rules": 183,
+  "passed_count": 182,
+  "failed_count": 1,
+  "compliance_score_percent": 99.45,
   "summary": {
-    "CRITICAL": 4,
-    "HIGH": 32,
-    "MEDIUM": 6,
-    "LOW": 2
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 1,
+    "LOW": 0
   },
   "findings": [
+    {
+      "rule_id": "CKV_AZURE_137",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure ACR admin account is disabled",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
     {
       "rule_id": "CKV_AZURE_138",
       "category": "Checkov (terraform)",
@@ -26,11 +35,56 @@
       "remediation": "Compliant with policy baseline."
     },
     {
+      "rule_id": "CKV_AZURE_167",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure a retention policy is set to cleanup untagged manifests.",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_139",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure ACR set to disable public networking",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
       "rule_id": "CKV_AZURE_36",
       "category": "Checkov (terraform)",
       "severity": "LOW",
       "target": "/deploy/azure/main.tf",
       "description": "Ensure 'Trusted Microsoft Services' is enabled for Storage Account access",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_35",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure default network access rule for Storage Accounts is set to deny",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_59",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure that Storage accounts disallow public access",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_33",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure Storage logging is enabled for Queue service for read, write and delete requests",
       "status": "PASS",
       "remediation": "Compliant with policy baseline."
     },
@@ -58,6 +112,15 @@
       "severity": "LOW",
       "target": "/deploy/azure/main.tf",
       "description": "Ensure that 'enable_https_traffic_only' is enabled",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_190",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure that Storage blobs restrict public access",
       "status": "PASS",
       "remediation": "Compliant with policy baseline."
     },
@@ -98,6 +161,42 @@
       "remediation": "Compliant with policy baseline."
     },
     {
+      "rule_id": "CKV_AZURE_89",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure that Azure Cache for Redis disables public network access",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV2_AZURE_40",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure storage account is not configured with Shared Key authorization",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV2_AZURE_38",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure soft-delete is enabled on Azure storage account",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV2_AZURE_47",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure storage account is configured without blob anonymous access",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
       "rule_id": "CKV2_AZURE_8",
       "category": "Checkov (terraform)",
       "severity": "LOW",
@@ -108,201 +207,12 @@
     },
     {
       "rule_id": "CKV_AZURE_137",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
+      "category": "Checkov (arm)",
+      "severity": "LOW",
+      "target": "/deploy/azure/arm_template.json",
       "description": "Ensure ACR admin account is disabled",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-137"
-    },
-    {
-      "rule_id": "CKV_AZURE_163",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Enable vulnerability scanning for container images.",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-163"
-    },
-    {
-      "rule_id": "CKV_AZURE_237",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure dedicated data endpoints are enabled.",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-237"
-    },
-    {
-      "rule_id": "CKV_AZURE_166",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure container image quarantine, scan, and mark images verified",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-166"
-    },
-    {
-      "rule_id": "CKV_AZURE_167",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure a retention policy is set to cleanup untagged manifests.",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-167"
-    },
-    {
-      "rule_id": "CKV_AZURE_233",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure Azure Container Registry (ACR) is zone redundant",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-233"
-    },
-    {
-      "rule_id": "CKV_AZURE_165",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure geo-replicated container registries to match multi-region container deployments.",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-165"
-    },
-    {
-      "rule_id": "CKV_AZURE_139",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure ACR set to disable public networking",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-azure-acr-is-set-to-disable-public-networking"
-    },
-    {
-      "rule_id": "CKV_AZURE_164",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensures that ACR uses signed/trusted images",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-164"
-    },
-    {
-      "rule_id": "CKV_AZURE_59",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure that Storage accounts disallow public access",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-storage-accounts-disallow-public-access"
-    },
-    {
-      "rule_id": "CKV_AZURE_33",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure Storage logging is enabled for Queue service for read, write and delete requests",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-logging-policies/enable-requests-on-storage-logging-for-queue-service"
-    },
-    {
-      "rule_id": "CKV_AZURE_206",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure that Storage Accounts use replication",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-206"
-    },
-    {
-      "rule_id": "CKV_AZURE_190",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure that Storage blobs restrict public access",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-190"
-    },
-    {
-      "rule_id": "CKV_AZURE_89",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure that Azure Cache for Redis disables public network access",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-azure-cache-for-redis-disables-public-network-access"
-    },
-    {
-      "rule_id": "CKV_AZURE_230",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Standard Replication should be enabled",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-storage-policies/bc-azure-230"
-    },
-    {
-      "rule_id": "CKV2_AZURE_33",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure storage account is configured with private endpoint",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-33"
-    },
-    {
-      "rule_id": "CKV2_AZURE_47",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure storage account is configured without blob anonymous access",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-47"
-    },
-    {
-      "rule_id": "CKV2_AZURE_38",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure soft-delete is enabled on Azure storage account",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-38"
-    },
-    {
-      "rule_id": "CKV2_AZURE_41",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure storage account is configured with SAS expiration policy",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-41"
-    },
-    {
-      "rule_id": "CKV2_AZURE_40",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure storage account is not configured with Shared Key authorization",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-40"
-    },
-    {
-      "rule_id": "CKV2_AZURE_1",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure storage for critical data are encrypted with Customer Managed Key",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-storage-for-critical-data-are-encrypted-with-customer-managed-key"
-    },
-    {
-      "rule_id": "CKV2_AZURE_21",
-      "category": "Checkov (terraform)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure Storage logging is enabled for Blob service for read requests",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-logging-policies/ensure-storage-logging-is-enabled-for-blob-service-for-read-requests"
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
     },
     {
       "rule_id": "CKV_AZURE_138",
@@ -314,11 +224,29 @@
       "remediation": "Compliant with policy baseline."
     },
     {
-      "rule_id": "CKV_AZURE_233",
+      "rule_id": "CKV_AZURE_139",
       "category": "Checkov (arm)",
       "severity": "LOW",
       "target": "/deploy/azure/arm_template.json",
-      "description": "Ensure Azure Container Registry (ACR) is zone redundant",
+      "description": "Ensure ACR set to disable public networking",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_36",
+      "category": "Checkov (arm)",
+      "severity": "LOW",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensure 'Trusted Microsoft Services' is enabled for Storage Account access",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
+      "rule_id": "CKV_AZURE_35",
+      "category": "Checkov (arm)",
+      "severity": "LOW",
+      "target": "/deploy/azure/arm_template.json",
+      "description": "Ensure default network access rule for Storage Accounts is set to deny",
       "status": "PASS",
       "remediation": "Compliant with policy baseline."
     },
@@ -368,85 +296,13 @@
       "remediation": "Compliant with policy baseline."
     },
     {
-      "rule_id": "CKV_AZURE_137",
-      "category": "Checkov (arm)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/arm_template.json",
-      "description": "Ensure ACR admin account is disabled",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-137"
-    },
-    {
-      "rule_id": "CKV_AZURE_163",
-      "category": "Checkov (arm)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/arm_template.json",
-      "description": "Enable vulnerability scanning for container images.",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-163"
-    },
-    {
-      "rule_id": "CKV_AZURE_166",
-      "category": "Checkov (arm)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/arm_template.json",
-      "description": "Ensure container image quarantine, scan, and mark images verified",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-166"
-    },
-    {
-      "rule_id": "CKV_AZURE_139",
-      "category": "Checkov (arm)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/arm_template.json",
-      "description": "Ensure ACR set to disable public networking",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-azure-acr-is-set-to-disable-public-networking"
-    },
-    {
-      "rule_id": "CKV_AZURE_36",
-      "category": "Checkov (arm)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/arm_template.json",
-      "description": "Ensure 'Trusted Microsoft Services' is enabled for Storage Account access",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/enable-trusted-microsoft-services-for-storage-account-access"
-    },
-    {
-      "rule_id": "CKV_AZURE_35",
-      "category": "Checkov (arm)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/arm_template.json",
-      "description": "Ensure default network access rule for Storage Accounts is set to deny",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/set-default-network-access-rule-for-storage-accounts-to-deny"
-    },
-    {
-      "rule_id": "CKV_AZURE_206",
-      "category": "Checkov (arm)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/arm_template.json",
-      "description": "Ensure that Storage Accounts use replication",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-206"
-    },
-    {
-      "rule_id": "CKV_SECRET_6",
-      "category": "Checkov (secrets)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/containerapp.yaml",
-      "description": "Base64 High Entropy String",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/secrets-policies/secrets-policy-index/git-secrets-6"
-    },
-    {
-      "rule_id": "CKV_SECRET_6",
-      "category": "Checkov (secrets)",
-      "severity": "HIGH",
-      "target": "/deploy/azure/containerapp.yaml",
-      "description": "Base64 High Entropy String",
-      "status": "FAIL",
-      "remediation": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/secrets-policies/secrets-policy-index/git-secrets-6"
+      "rule_id": "DS-0001",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "Dockerfile",
+      "description": "':latest' tag used",
+      "status": "PASS",
+      "remediation": "Add a tag to the image in the 'FROM' statement"
     },
     {
       "rule_id": "DS-0002",
@@ -454,8 +310,728 @@
       "severity": "HIGH",
       "target": "Dockerfile",
       "description": "Image user should not be 'root'",
-      "status": "FAIL",
+      "status": "PASS",
       "remediation": "Add 'USER <non root user name>' line to the Dockerfile"
+    },
+    {
+      "rule_id": "DS-0004",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "Dockerfile",
+      "description": "Port 22 exposed",
+      "status": "PASS",
+      "remediation": "Remove 'EXPOSE 22' statement from the Dockerfile"
+    },
+    {
+      "rule_id": "DS-0005",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "Dockerfile",
+      "description": "ADD instead of COPY",
+      "status": "PASS",
+      "remediation": "Use COPY instead of ADD"
+    },
+    {
+      "rule_id": "DS-0006",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "Dockerfile",
+      "description": "COPY '--from' referring to the current image",
+      "status": "PASS",
+      "remediation": "Change the '--from' so that it will not refer to itself"
+    },
+    {
+      "rule_id": "DS-0007",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "Dockerfile",
+      "description": "Multiple ENTRYPOINT instructions listed",
+      "status": "PASS",
+      "remediation": "Remove unnecessary ENTRYPOINT instruction."
+    },
+    {
+      "rule_id": "DS-0008",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "Dockerfile",
+      "description": "Exposed port out of range",
+      "status": "PASS",
+      "remediation": "Use port number within range"
+    },
+    {
+      "rule_id": "DS-0009",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "Dockerfile",
+      "description": "WORKDIR path not absolute",
+      "status": "PASS",
+      "remediation": "Use absolute paths for your WORKDIR"
+    },
+    {
+      "rule_id": "DS-0010",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "Dockerfile",
+      "description": "RUN using 'sudo'",
+      "status": "PASS",
+      "remediation": "Don't use sudo"
+    },
+    {
+      "rule_id": "DS-0011",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "Dockerfile",
+      "description": "COPY with more than two arguments not ending with slash",
+      "status": "PASS",
+      "remediation": "Add slash to last COPY argument"
+    },
+    {
+      "rule_id": "DS-0012",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "Dockerfile",
+      "description": "Duplicate aliases defined in different FROMs",
+      "status": "PASS",
+      "remediation": "Change aliases to make them different"
+    },
+    {
+      "rule_id": "DS-0013",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "Dockerfile",
+      "description": "'RUN cd ...' to change directory",
+      "status": "PASS",
+      "remediation": "Use WORKDIR to change directory"
+    },
+    {
+      "rule_id": "DS-0014",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "Dockerfile",
+      "description": "RUN using 'wget' and 'curl'",
+      "status": "PASS",
+      "remediation": "Pick one util, either 'wget' or 'curl'"
+    },
+    {
+      "rule_id": "DS-0015",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "Dockerfile",
+      "description": "'yum clean all' missing",
+      "status": "PASS",
+      "remediation": "Add 'yum clean all' to Dockerfile"
+    },
+    {
+      "rule_id": "DS-0016",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "Dockerfile",
+      "description": "Multiple CMD instructions listed",
+      "status": "PASS",
+      "remediation": "Dockerfile should only have one CMD instruction. Remove all the other CMD instructions"
+    },
+    {
+      "rule_id": "DS-0017",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "Dockerfile",
+      "description": "'RUN <package-manager> update' instruction alone",
+      "status": "PASS",
+      "remediation": "Combine '<package-manager> update' and '<package-manager> install' instructions to single one"
+    },
+    {
+      "rule_id": "DS-0019",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "Dockerfile",
+      "description": "'dnf clean all' missing",
+      "status": "PASS",
+      "remediation": "Add 'dnf clean all' to Dockerfile"
+    },
+    {
+      "rule_id": "DS-0020",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "Dockerfile",
+      "description": "'zypper clean' missing",
+      "status": "PASS",
+      "remediation": "Add 'zypper clean' to Dockerfile"
+    },
+    {
+      "rule_id": "DS-0021",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "Dockerfile",
+      "description": "'apt-get' missing '-y' to avoid manual input",
+      "status": "PASS",
+      "remediation": "Add '-y' flag to 'apt-get'"
+    },
+    {
+      "rule_id": "DS-0022",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "Dockerfile",
+      "description": "Deprecated MAINTAINER used",
+      "status": "PASS",
+      "remediation": "Use LABEL instead of MAINTAINER"
+    },
+    {
+      "rule_id": "DS-0023",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "Dockerfile",
+      "description": "Multiple HEALTHCHECK defined",
+      "status": "PASS",
+      "remediation": "One HEALTHCHECK instruction must remain in Dockerfile. Remove all other instructions."
+    },
+    {
+      "rule_id": "DS-0025",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "Dockerfile",
+      "description": "'apk add' is missing '--no-cache'",
+      "status": "PASS",
+      "remediation": "Add '--no-cache' to 'apk add' in Dockerfile"
+    },
+    {
+      "rule_id": "DS-0026",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "Dockerfile",
+      "description": "No HEALTHCHECK defined",
+      "status": "PASS",
+      "remediation": "Add HEALTHCHECK instruction in Dockerfile"
+    },
+    {
+      "rule_id": "DS-0027",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "Dockerfile",
+      "description": "'microdnf clean all' missing",
+      "status": "PASS",
+      "remediation": "Add 'microdnf clean all' to Dockerfile"
+    },
+    {
+      "rule_id": "DS-0029",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "Dockerfile",
+      "description": "'apt-get' missing '--no-install-recommends'",
+      "status": "PASS",
+      "remediation": "Add '--no-install-recommends' flag to 'apt-get'"
+    },
+    {
+      "rule_id": "DS-0030",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "Dockerfile",
+      "description": "WORKDIR should not be mounted on system dirs",
+      "status": "PASS",
+      "remediation": "Avoid using system directories to mount WORKDIR"
+    },
+    {
+      "rule_id": "DS-0031",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "Dockerfile",
+      "description": "Secrets passed via `build-args` or envs or copied secret files",
+      "status": "PASS",
+      "remediation": "Use secret mount if secrets are needed during image build. Use volume mount if secret files are needed during container runtime."
+    },
+    {
+      "rule_id": "AWS-0019",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/azure",
+      "description": "Config configuration aggregator should be using all regions for source",
+      "status": "PASS",
+      "remediation": "Set the aggregator to cover all regions"
+    },
+    {
+      "rule_id": "AWS-0056",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "IAM Password policy should prevent password reuse.",
+      "status": "PASS",
+      "remediation": "Prevent password reuse in the policy"
+    },
+    {
+      "rule_id": "AWS-0058",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "IAM Password policy should have requirement for at least one lowercase character.",
+      "status": "PASS",
+      "remediation": "Enforce longer, more complex passwords in the policy"
+    },
+    {
+      "rule_id": "AWS-0059",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "IAM Password policy should have requirement for at least one number in the password.",
+      "status": "PASS",
+      "remediation": "Enforce longer, more complex passwords in the policy"
+    },
+    {
+      "rule_id": "AWS-0060",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "IAM Password policy should have requirement for at least one symbol in the password.",
+      "status": "PASS",
+      "remediation": "Enforce longer, more complex passwords in the policy"
+    },
+    {
+      "rule_id": "AWS-0061",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "IAM Password policy should have requirement for at least one uppercase character.",
+      "status": "PASS",
+      "remediation": "Enforce longer, more complex passwords in the policy"
+    },
+    {
+      "rule_id": "AWS-0062",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "IAM Password policy should have expiry less than or equal to 90 days.",
+      "status": "PASS",
+      "remediation": "Limit the password duration with an expiry in the policy"
+    },
+    {
+      "rule_id": "AWS-0063",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "IAM Password policy should have minimum password length of 14 or more characters.",
+      "status": "PASS",
+      "remediation": "Enforce longer, more complex passwords in the policy"
+    },
+    {
+      "rule_id": "AWS-0123",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "IAM groups should have MFA enforcement activated.",
+      "status": "PASS",
+      "remediation": "Use terraform-module/enforce-mfa/aws to ensure that MFA is enforced"
+    },
+    {
+      "rule_id": "AWS-0140",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/azure",
+      "description": "The \"root\" account has unrestricted access to all resources in the AWS account. It is highly recommended that the use of this account be avoided.",
+      "status": "PASS",
+      "remediation": "Use lower privileged accounts instead, so only required privileges are available."
+    },
+    {
+      "rule_id": "AWS-0141",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/azure",
+      "description": "The root user has complete access to all services and resources in an AWS account. AWS Access Keys provide programmatic access to a given account.",
+      "status": "PASS",
+      "remediation": "Use lower privileged accounts instead, so only required privileges are available."
+    },
+    {
+      "rule_id": "AWS-0143",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/azure",
+      "description": "IAM policies should not be granted directly to users.",
+      "status": "PASS",
+      "remediation": "Grant policies at the group level instead."
+    },
+    {
+      "rule_id": "AWS-0342",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "IAM Pass Role Filtering",
+      "status": "PASS",
+      "remediation": "Resolve permission escalations by denying pass role'"
+    },
+    {
+      "rule_id": "AWS-0345",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/azure",
+      "description": "Disallow unrestricted S3 IAM Policies",
+      "status": "PASS",
+      "remediation": "Create more restrictive S3 policies"
+    },
+    {
+      "rule_id": "AWS-0346",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/azure",
+      "description": "Reduce unnecessary unauthorized access or information disclosure of S3 buckets.",
+      "status": "PASS",
+      "remediation": "Allowing Get* along with Put* on all Resources can potentially allow unauthorized access and/or information disclosure from sensitive buckets."
+    },
+    {
+      "rule_id": "AZU-0007",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/azure",
+      "description": "Storage containers in blob storage mode should not have public access",
+      "status": "PASS",
+      "remediation": "Disable public access to storage containers"
+    },
+    {
+      "rule_id": "AZU-0008",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/azure",
+      "description": "Storage accounts should be configured to only accept transfers that are over secure connections",
+      "status": "PASS",
+      "remediation": "Only allow secure connection for transferring data into storage accounts"
+    },
+    {
+      "rule_id": "AZU-0009",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "When using Queue Services for a storage account, logging should be enabled.",
+      "status": "PASS",
+      "remediation": "Enable logging for Queue Services"
+    },
+    {
+      "rule_id": "AZU-0010",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/azure",
+      "description": "Trusted Microsoft Services should have bypass access to Storage accounts",
+      "status": "PASS",
+      "remediation": "Allow Trusted Microsoft Services to bypass"
+    },
+    {
+      "rule_id": "AZU-0011",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/azure",
+      "description": "The minimum TLS version for Storage Accounts should be TLS1_2 or higher",
+      "status": "PASS",
+      "remediation": "Use a more recent TLS version for the storage account"
+    },
+    {
+      "rule_id": "AZU-0012",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/azure",
+      "description": "The default action on Storage account network rules should be set to deny",
+      "status": "PASS",
+      "remediation": "Set network rules to deny"
+    },
+    {
+      "rule_id": "AZU-0056",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "Storage account should have blob soft delete enabled",
+      "status": "PASS",
+      "remediation": "Enable soft delete for blobs with an appropriate retention period"
+    },
+    {
+      "rule_id": "AZU-0057",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "Storage account should have logging enabled",
+      "status": "PASS",
+      "remediation": "Enable logging for at least one storage service (Queue, Table, or Blob)"
+    },
+    {
+      "rule_id": "AZU-0058",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/azure",
+      "description": "Storage account should use geo-redundant replication",
+      "status": "PASS",
+      "remediation": "Configure storage account to use geo-redundant replication (GRS, RAGRS, GZRS, or RAGZRS)"
+    },
+    {
+      "rule_id": "AZU-0059",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/azure",
+      "description": "Storage account should have secure transfer and minimum TLS version configured",
+      "status": "PASS",
+      "remediation": "Enable secure transfer and set minimum TLS version to TLS1_2 or higher"
+    },
+    {
+      "rule_id": "AZU-0061",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "Storage account should have infrastructure encryption enabled",
+      "status": "PASS",
+      "remediation": "Enable infrastructure encryption for storage account"
+    },
+    {
+      "rule_id": "GCP-0027",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/azure",
+      "description": "A firewall rule should not allow unrestricted ingress from any IP address.",
+      "status": "PASS",
+      "remediation": "Set a more restrictive cidr range"
+    },
+    {
+      "rule_id": "GCP-0029",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/azure",
+      "description": "VPC flow logs should be enabled for all subnetworks",
+      "status": "PASS",
+      "remediation": "Enable VPC flow logs"
+    },
+    {
+      "rule_id": "GCP-0030",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "Disable project-wide SSH keys for all instances",
+      "status": "PASS",
+      "remediation": "Disable project-wide SSH keys"
+    },
+    {
+      "rule_id": "GCP-0031",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/azure",
+      "description": "Instances should not have public IP addresses",
+      "status": "PASS",
+      "remediation": "Remove public IP"
+    },
+    {
+      "rule_id": "GCP-0032",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "Disable serial port connectivity for all instances",
+      "status": "PASS",
+      "remediation": "Disable serial port access"
+    },
+    {
+      "rule_id": "GCP-0033",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/azure",
+      "description": "VM disks should be encrypted with Customer Supplied Encryption Keys",
+      "status": "PASS",
+      "remediation": "Use managed keys"
+    },
+    {
+      "rule_id": "GCP-0034",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/azure",
+      "description": "Disks should be encrypted with customer managed encryption keys",
+      "status": "PASS",
+      "remediation": "Use managed keys to encrypt disks."
+    },
+    {
+      "rule_id": "GCP-0035",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/azure",
+      "description": "A firewall rule should not allow unrestricted egress to any IP address.",
+      "status": "PASS",
+      "remediation": "Set a more restrictive cidr range"
+    },
+    {
+      "rule_id": "GCP-0036",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "Instances should not override the project setting for OS Login",
+      "status": "PASS",
+      "remediation": "Enable OS Login at project level and remove instance-level overrides"
+    },
+    {
+      "rule_id": "GCP-0037",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/azure",
+      "description": "The encryption key used to encrypt a compute disk has been specified in plaintext.",
+      "status": "PASS",
+      "remediation": "Reference a managed key rather than include the key in raw format."
+    },
+    {
+      "rule_id": "GCP-0039",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/azure",
+      "description": "SSL policies should enforce secure versions of TLS",
+      "status": "PASS",
+      "remediation": "Enforce a minimum TLS version of 1.2"
+    },
+    {
+      "rule_id": "GCP-0041",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "Instances should have Shielded VM VTPM enabled",
+      "status": "PASS",
+      "remediation": "Enable Shielded VM VTPM"
+    },
+    {
+      "rule_id": "GCP-0042",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "OS Login should be enabled at project level",
+      "status": "PASS",
+      "remediation": "Enable OS Login at project level"
+    },
+    {
+      "rule_id": "GCP-0043",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/azure",
+      "description": "Instances should not have IP forwarding enabled",
+      "status": "PASS",
+      "remediation": "Disable IP forwarding"
+    },
+    {
+      "rule_id": "GCP-0044",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/azure",
+      "description": "Instances should not use the default service account",
+      "status": "PASS",
+      "remediation": "Remove use of default service account"
+    },
+    {
+      "rule_id": "GCP-0045",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "Instances should have Shielded VM integrity monitoring enabled",
+      "status": "PASS",
+      "remediation": "Enable Shielded VM Integrity Monitoring"
+    },
+    {
+      "rule_id": "GCP-0067",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "Instances should have Shielded VM secure boot enabled",
+      "status": "PASS",
+      "remediation": "Enable Shielded VM secure boot"
+    },
+    {
+      "rule_id": "GCP-0070",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/azure",
+      "description": "RDP Access Is Not Restricted",
+      "status": "PASS",
+      "remediation": "Restrict RDP (TCP port 3389) ingress in firewall rules. Only allow trusted IP ranges or use Identity-Aware Proxy for RDP access.\n"
+    },
+    {
+      "rule_id": "GCP-0071",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "SSH Access Is Not Restricted",
+      "status": "PASS",
+      "remediation": "Restrict SSH (TCP port 22) access in firewall rules to known IP addresses or ranges. Avoid open 0.0.0.0/0 access for SSH.\n"
+    },
+    {
+      "rule_id": "GCP-0072",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "Google Compute Network Using Firewall Rule that Allows All Ports",
+      "status": "PASS",
+      "remediation": "Modify firewall rules that allow all ports to restrict to only required ports. Use separate rules for specific port ranges as needed, instead of a single overly broad rule.\n"
+    },
+    {
+      "rule_id": "GCP-0073",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "Disable Default Firewall Rules",
+      "status": "PASS",
+      "remediation": "Replace default firewall rules with custom, more restrictive rules appropriate for your security requirements"
+    },
+    {
+      "rule_id": "GCP-0074",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/azure",
+      "description": "Google Compute Network Using Firewall Rule that Allows Large Port Range",
+      "status": "PASS",
+      "remediation": "Limit firewall rules to necessary port ranges only. If a wide range is specified, consider splitting into smaller ranges or specific ports needed for your application.\n"
+    },
+    {
+      "rule_id": "GCP-0075",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/azure",
+      "description": "Google Compute Subnetwork with Private Google Access Disabled",
+      "status": "PASS",
+      "remediation": "Enable Private Google Access on subnets. In Terraform, set `private_ip_google_access = true` in the `google_compute_subnetwork` resource.\n"
+    },
+    {
+      "rule_id": "GCP-0076",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "Google Compute Subnetwork Logging Disabled",
+      "status": "PASS",
+      "remediation": "Enable VPC Flow Logs for subnets."
+    },
+    {
+      "rule_id": "AZU-0007",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/azure/arm_template.json",
+      "description": "Storage containers in blob storage mode should not have public access",
+      "status": "PASS",
+      "remediation": "Disable public access to storage containers"
+    },
+    {
+      "rule_id": "AZU-0008",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/azure/arm_template.json",
+      "description": "Storage accounts should be configured to only accept transfers that are over secure connections",
+      "status": "PASS",
+      "remediation": "Only allow secure connection for transferring data into storage accounts"
+    },
+    {
+      "rule_id": "AZU-0009",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure/arm_template.json",
+      "description": "When using Queue Services for a storage account, logging should be enabled.",
+      "status": "PASS",
+      "remediation": "Enable logging for Queue Services"
+    },
+    {
+      "rule_id": "AZU-0010",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/azure/arm_template.json",
+      "description": "Trusted Microsoft Services should have bypass access to Storage accounts",
+      "status": "PASS",
+      "remediation": "Allow Trusted Microsoft Services to bypass"
+    },
+    {
+      "rule_id": "AZU-0011",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/azure/arm_template.json",
+      "description": "The minimum TLS version for Storage Accounts should be TLS1_2 or higher",
+      "status": "PASS",
+      "remediation": "Use a more recent TLS version for the storage account"
     },
     {
       "rule_id": "AZU-0012",
@@ -463,7 +1039,7 @@
       "severity": "CRITICAL",
       "target": "deploy/azure/arm_template.json",
       "description": "The default action on Storage account network rules should be set to deny",
-      "status": "FAIL",
+      "status": "PASS",
       "remediation": "Set network rules to deny"
     },
     {
@@ -472,7 +1048,7 @@
       "severity": "MEDIUM",
       "target": "deploy/azure/arm_template.json",
       "description": "Storage account should have blob soft delete enabled",
-      "status": "FAIL",
+      "status": "PASS",
       "remediation": "Enable soft delete for blobs with an appropriate retention period"
     },
     {
@@ -481,7 +1057,7 @@
       "severity": "MEDIUM",
       "target": "deploy/azure/arm_template.json",
       "description": "Storage account should have logging enabled",
-      "status": "FAIL",
+      "status": "PASS",
       "remediation": "Enable logging for at least one storage service (Queue, Table, or Blob)"
     },
     {
@@ -490,8 +1066,26 @@
       "severity": "LOW",
       "target": "deploy/azure/arm_template.json",
       "description": "Storage account should use geo-redundant replication",
-      "status": "FAIL",
+      "status": "PASS",
       "remediation": "Configure storage account to use geo-redundant replication (GRS, RAGRS, GZRS, or RAGZRS)"
+    },
+    {
+      "rule_id": "AZU-0059",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/azure/arm_template.json",
+      "description": "Storage account should have secure transfer and minimum TLS version configured",
+      "status": "PASS",
+      "remediation": "Enable secure transfer and set minimum TLS version to TLS1_2 or higher"
+    },
+    {
+      "rule_id": "AZU-0060",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure/arm_template.json",
+      "description": "Storage account should use customer-managed keys for encryption",
+      "status": "PASS",
+      "remediation": "Configure customer-managed keys for storage account encryption"
     },
     {
       "rule_id": "AZU-0061",
@@ -499,35 +1093,8 @@
       "severity": "MEDIUM",
       "target": "deploy/azure/arm_template.json",
       "description": "Storage account should have infrastructure encryption enabled",
-      "status": "FAIL",
+      "status": "PASS",
       "remediation": "Enable infrastructure encryption for storage account"
-    },
-    {
-      "rule_id": "AZU-0012",
-      "category": "Trivy (Misconfig)",
-      "severity": "CRITICAL",
-      "target": "deploy/azure/main.tf",
-      "description": "The default action on Storage account network rules should be set to deny",
-      "status": "FAIL",
-      "remediation": "Set network rules to deny"
-    },
-    {
-      "rule_id": "AZU-0057",
-      "category": "Trivy (Misconfig)",
-      "severity": "MEDIUM",
-      "target": "deploy/azure/main.tf",
-      "description": "Storage account should have logging enabled",
-      "status": "FAIL",
-      "remediation": "Enable logging for at least one storage service (Queue, Table, or Blob)"
-    },
-    {
-      "rule_id": "AZU-0058",
-      "category": "Trivy (Misconfig)",
-      "severity": "LOW",
-      "target": "deploy/azure/main.tf",
-      "description": "Storage account should use geo-redundant replication",
-      "status": "FAIL",
-      "remediation": "Configure storage account to use geo-redundant replication (GRS, RAGRS, GZRS, or RAGZRS)"
     },
     {
       "rule_id": "AZU-0060",
@@ -539,31 +1106,553 @@
       "remediation": "Configure customer-managed keys for storage account encryption"
     },
     {
-      "rule_id": "AZU-0061",
+      "rule_id": "KCV-0001",
       "category": "Trivy (Misconfig)",
       "severity": "MEDIUM",
-      "target": "deploy/azure/main.tf",
-      "description": "Storage account should have infrastructure encryption enabled",
-      "status": "FAIL",
-      "remediation": "Enable infrastructure encryption for storage account"
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --anonymous-auth argument is set to false",
+      "status": "PASS",
+      "remediation": "Set '--anonymous-auth' to 'false'."
     },
     {
-      "rule_id": "azure-storage-account-key",
-      "category": "Trivy (Secrets)",
-      "severity": "CRITICAL",
-      "target": "src/resilience/__pycache__/azurite_adapter.cpython-313.pyc:64",
-      "description": "Azure Storage Account Key",
-      "status": "FAIL",
-      "remediation": "Revoke secret and migrate to Azure Key Vault."
+      "rule_id": "KCV-0002",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --token-auth-file parameter is not set",
+      "status": "PASS",
+      "remediation": "Follow the documentation and configure alternate mechanisms for authentication. Then, edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the master node and remove the --token-auth-file=<filename> parameter."
     },
     {
-      "rule_id": "azure-storage-account-key",
-      "category": "Trivy (Secrets)",
+      "rule_id": "KCV-0003",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --DenyServiceExternalIPs is not set",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file $apiserverconf on the control plane node and remove the `DenyServiceExternalIPs` from enabled admission plugins."
+    },
+    {
+      "rule_id": "KCV-0004",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --kubelet-https argument is set to true",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and remove the --kubelet-https parameter."
+    },
+    {
+      "rule_id": "KCV-0005",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --kubelet-client-certificate and --kubelet-client-key arguments are set as appropriate",
+      "status": "PASS",
+      "remediation": "Follow the Kubernetes documentation and set up the TLS connection between the apiserver and kubelets."
+    },
+    {
+      "rule_id": "KCV-0006",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --kubelet-certificate-authority argument is set as appropriate",
+      "status": "PASS",
+      "remediation": "Follow the Kubernetes documentation and setup the TLS connection between the apiserver and kubelets. "
+    },
+    {
+      "rule_id": "KCV-0007",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --authorization-mode argument is not set to AlwaysAllow",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and set the --authorization-mode parameter to values other than AlwaysAllow. "
+    },
+    {
+      "rule_id": "KCV-0008",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --authorization-mode argument includes Node",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and set the --authorization-mode parameter to a value that includes Node."
+    },
+    {
+      "rule_id": "KCV-0009",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --authorization-mode argument includes RBAC",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and set the --authorization-mode parameter to a value that includes RBAC."
+    },
+    {
+      "rule_id": "KCV-0010",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the admission control plugin EventRateLimit is set",
+      "status": "PASS",
+      "remediation": "Follow the Kubernetes documentation and set the desired limits in a configuration file. Then, edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml and set the below parameters."
+    },
+    {
+      "rule_id": "KCV-0011",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the admission control plugin AlwaysAdmit is not set",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and either remove the --enable-admission- plugins parameter, or set it to a value that does not include AlwaysAdmit."
+    },
+    {
+      "rule_id": "KCV-0012",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the admission control plugin AlwaysPullImages is set",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and set the --enable-admission-plugins parameter to include AlwaysPullImages."
+    },
+    {
+      "rule_id": "KCV-0014",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the admission control plugin ServiceAccount is set",
+      "status": "PASS",
+      "remediation": "Follow the documentation and create ServiceAccount objects as per your environment. Then, edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the master node and ensure that the --disable-admission-plugins parameter is set to a value that does not include ServiceAccount."
+    },
+    {
+      "rule_id": "KCV-0015",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the admission control plugin NamespaceLifecycle is set",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and set the --disable-admission-plugins parameter to ensure it does not include NamespaceLifecycle."
+    },
+    {
+      "rule_id": "KCV-0016",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the admission control plugin NodeRestriction is set",
+      "status": "PASS",
+      "remediation": "Follow the Kubernetes documentation and configure NodeRestriction plug-in on kubelets. Then, edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the master node and set the --enable-admission-plugins parameter to a value that includes NodeRestriction."
+    },
+    {
+      "rule_id": "KCV-0017",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --secure-port argument is not set to 0",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and either remove the --secure-port parameter or set it to a different (non-zero) desired port."
+    },
+    {
+      "rule_id": "KCV-0018",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --profiling argument is set to false",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and set the below parameter."
+    },
+    {
+      "rule_id": "KCV-0019",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --audit-log-path argument is set",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and set the --audit-log-path parameter."
+    },
+    {
+      "rule_id": "KCV-0020",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --audit-log-maxage argument is set to 30 or as appropriate",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and set the --audit-log-maxage parameter to 30 or as an appropriate number of days."
+    },
+    {
+      "rule_id": "KCV-0021",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --audit-log-maxbackup argument is set to 10 or as appropriate",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and set the --audit-log-maxbackup parameter to 10 or to an appropriate value."
+    },
+    {
+      "rule_id": "KCV-0022",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --audit-log-maxsize argument is set to 100 or as appropriate",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and set the --audit-log-maxsize parameter to an appropriate size in MB"
+    },
+    {
+      "rule_id": "KCV-0024",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --service-account-lookup argument is set to true",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and set the below parameter."
+    },
+    {
+      "rule_id": "KCV-0025",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --service-account-key-file argument is set as appropriate",
+      "status": "PASS",
+      "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the Control Plane node and set the --service-account-key-file parameter to the public key file for service accounts."
+    },
+    {
+      "rule_id": "KCV-0026",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --etcd-certfile and --etcd-keyfile arguments are set as appropriate",
+      "status": "PASS",
+      "remediation": "Follow the Kubernetes documentation and set up the TLS connection between the apiserver and etcd. Then, edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the master node and set the etcd certificate and key file parameters."
+    },
+    {
+      "rule_id": "KCV-0027",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --tls-cert-file and --tls-private-key-file arguments are set as appropriate",
+      "status": "PASS",
+      "remediation": "Follow the Kubernetes documentation and set up the TLS connection on the apiserver. Then, edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the master node and set the TLS certificate and private key file parameters."
+    },
+    {
+      "rule_id": "KCV-0028",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --client-ca-file argument is set as appropriate",
+      "status": "PASS",
+      "remediation": "Follow the Kubernetes documentation and set up the TLS connection on the apiserver. Then, edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the master node and set the client certificate authority file."
+    },
+    {
+      "rule_id": "KCV-0029",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --etcd-cafile argument is set as appropriate",
+      "status": "PASS",
+      "remediation": "Follow the Kubernetes documentation and set up the TLS connection between the apiserver and etcd. Then, edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the master node and set the etcd certificate authority file parameter."
+    },
+    {
+      "rule_id": "KCV-0030",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --encryption-provider-config argument is set as appropriate",
+      "status": "PASS",
+      "remediation": "Follow the Kubernetes documentation and configure a EncryptionConfig file. Then, edit the API server pod specification file /etc/kubernetes/manifests/kube-apiserver.yaml on the master node and set the --encryption-provider-config parameter to the path of that file"
+    },
+    {
+      "rule_id": "KCV-0033",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --terminated-pod-gc-threshold argument is set as appropriate",
+      "status": "PASS",
+      "remediation": "Edit the Controller Manager pod specification file /etc/kubernetes/manifests/kube-controller-manager.yaml on the Control Plane node and set the --terminated-pod-gc-threshold to an appropriate threshold."
+    },
+    {
+      "rule_id": "KCV-0034",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --profiling argument is set to false",
+      "status": "PASS",
+      "remediation": "Edit the Controller Manager pod specification file /etc/kubernetes/manifests/kube-controller-manager.yaml on the Control Plane node and set the below parameter."
+    },
+    {
+      "rule_id": "KCV-0035",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --use-service-account-credentials argument is set to true",
+      "status": "PASS",
+      "remediation": "Edit the Controller Manager pod specification file /etc/kubernetes/manifests/kube-controller-manager.yaml on the Control Plane node to set the below parameter."
+    },
+    {
+      "rule_id": "KCV-0036",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --service-account-private-key-file argument is set as appropriate",
+      "status": "PASS",
+      "remediation": "Edit the Controller Manager pod specification file /etc/kubernetes/manifests/kube-controller-manager.yaml on the Control Plane node and set the --service-account-private-key-file parameter to the private key file for service accounts."
+    },
+    {
+      "rule_id": "KCV-0037",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --root-ca-file argument is set as appropriate",
+      "status": "PASS",
+      "remediation": "Edit the Controller Manager pod specification file /etc/kubernetes/manifests/kube-controller-manager.yaml on the Control Plane node and set the --root-ca-file parameter to the certificate bundle file`."
+    },
+    {
+      "rule_id": "KCV-0038",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the RotateKubeletServerCertificate argument is set to true",
+      "status": "PASS",
+      "remediation": "Edit the Controller Manager pod specification file /etc/kubernetes/manifests/kube-controller-manager.yaml on the Control Plane node and set the --feature-gates parameter to include RotateKubeletServerCertificate=true ."
+    },
+    {
+      "rule_id": "KCV-0039",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --bind-address argument is set to 127.0.0.1",
+      "status": "PASS",
+      "remediation": "Edit the Controller Manager pod specification file /etc/kubernetes/manifests/kube-controller-manager.yaml on the Control Plane node and ensure the correct value for the --bind-address parameter"
+    },
+    {
+      "rule_id": "KCV-0040",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --profiling argument is set to false",
+      "status": "PASS",
+      "remediation": "Edit the Scheduler pod specification file /etc/kubernetes/manifests/kube-scheduler.yaml file on the Control Plane node and set the below parameter."
+    },
+    {
+      "rule_id": "KCV-0041",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --bind-address argument is set to 127.0.0.1",
+      "status": "PASS",
+      "remediation": "Edit the Scheduler pod specification file /etc/kubernetes/manifests/kube-scheduler.yaml on the Control Plane node and ensure the correct value for the --bind-address parameter."
+    },
+    {
+      "rule_id": "KCV-0042",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --cert-file and --key-file arguments are set as appropriate",
+      "status": "PASS",
+      "remediation": "Follow the etcd service documentation and configure TLS encryption. Then, edit the etcd pod specification file /etc/kubernetes/manifests/etcd.yaml on the master node and set the below parameters."
+    },
+    {
+      "rule_id": "KCV-0043",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --client-cert-auth argument is set to true",
+      "status": "PASS",
+      "remediation": "Edit the etcd pod specification file /etc/kubernetes/manifests/etcd.yaml on the master node and set the below parameter."
+    },
+    {
+      "rule_id": "KCV-0044",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --auto-tls argument is not set to true",
+      "status": "PASS",
+      "remediation": "Edit the etcd pod specification file /etc/kubernetes/manifests/etcd.yaml on the master node and either remove the --auto-tls parameter or set it to false."
+    },
+    {
+      "rule_id": "KCV-0045",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --peer-cert-file and --peer-key-file arguments are set as appropriate",
+      "status": "PASS",
+      "remediation": "Follow the etcd service documentation and configure peer TLS encryption as appropriate for your etcd cluster. Then, edit the etcd pod specification file /etc/kubernetes/manifests/etcd.yaml on the master node and set the below parameters."
+    },
+    {
+      "rule_id": "KCV-0046",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --peer-client-cert-auth argument is set to true",
+      "status": "PASS",
+      "remediation": "Edit the etcd pod specification file /etc/kubernetes/manifests/etcd.yaml on the master node and set the below parameter."
+    },
+    {
+      "rule_id": "KCV-0047",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure that the --peer-auto-tls argument is not set to true",
+      "status": "PASS",
+      "remediation": "Edit the etcd pod specification file /etc/kubernetes/manifests/etcd.yaml on the master node and either remove the --peer-auto-tls parameter or set it to false."
+    },
+    {
+      "rule_id": "KCV-0093",
+      "category": "Trivy (Misconfig)",
       "severity": "CRITICAL",
-      "target": "src/resilience/azurite_adapter.py:65",
-      "description": "Azure Storage Account Key",
-      "status": "FAIL",
-      "remediation": "Revoke secret and migrate to Azure Key Vault."
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Ensure ingress-nginx annotations are secure",
+      "status": "PASS",
+      "remediation": "Ensure that ingress-nginx annotations do not contain suspicious characters."
+    },
+    {
+      "rule_id": "KSV-0036",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Protecting Pod service account tokens",
+      "status": "PASS",
+      "remediation": "Disable the mounting of service account secret token by setting automountServiceAccountToken to false"
+    },
+    {
+      "rule_id": "KSV-0037",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "User resources should not be placed in kube-system namespace",
+      "status": "PASS",
+      "remediation": "Deploy the user resources into a designated namespace which is not kube-system."
+    },
+    {
+      "rule_id": "KSV-0038",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Selector usage in network policies",
+      "status": "PASS",
+      "remediation": "create network policies and ensure that pods are selected using the podSelector and/or the namespaceSelector options"
+    },
+    {
+      "rule_id": "KSV-0043",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Do not allow impersonation of privileged groups",
+      "status": "PASS",
+      "remediation": "Create a role which does not permit to impersonate privileged groups if not needed"
+    },
+    {
+      "rule_id": "KSV-0044",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "No wildcard verb and resource roles",
+      "status": "PASS",
+      "remediation": "Create a role which does not permit wildcard verb on wildcard resource"
+    },
+    {
+      "rule_id": "KSV-0045",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "No wildcard verb roles",
+      "status": "PASS",
+      "remediation": "Create a role which does not permit wildcard verb on specific resources"
+    },
+    {
+      "rule_id": "KSV-0047",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Do not allow privilege escalation from node proxy",
+      "status": "PASS",
+      "remediation": "Create a role which does not permit privilege escalation from node proxy"
+    },
+    {
+      "rule_id": "KSV-0051",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Do not allow role binding creation and association with privileged role/clusterrole",
+      "status": "PASS",
+      "remediation": "Create a role which does not permit creation of role bindings and associating with privileged cluster role"
+    },
+    {
+      "rule_id": "KSV-0052",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Do not allow role to create ClusterRoleBindings and association with privileged role",
+      "status": "PASS",
+      "remediation": "Create a role which does not permit to create role clusterrolebindings and associate to privileged cluster role"
+    },
+    {
+      "rule_id": "KSV-0054",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Do not allow attaching to shell on pods",
+      "status": "PASS",
+      "remediation": "Create a role which does not permit attaching to shell on pods"
+    },
+    {
+      "rule_id": "KSV-0055",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Do not allow users in a rolebinding to add other users to their rolebindings",
+      "status": "PASS",
+      "remediation": "Create a role which does not permit allowing users in a rolebinding to add other users to their rolebindings if not needed"
+    },
+    {
+      "rule_id": "KSV-0102",
+      "category": "Trivy (Misconfig)",
+      "severity": "CRITICAL",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Tiller Is Deployed",
+      "status": "PASS",
+      "remediation": "Migrate to Helm v3 which no longer has Tiller component"
+    },
+    {
+      "rule_id": "KSV-0105",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Containers must not set runAsUser to 0",
+      "status": "PASS",
+      "remediation": "Set 'securityContext.runAsUser' to a non-zero integer or leave undefined."
+    },
+    {
+      "rule_id": "KSV-0106",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Container capabilities must only include NET_BIND_SERVICE",
+      "status": "PASS",
+      "remediation": "Set 'spec.containers[*].securityContext.capabilities.drop' to 'ALL' and only add 'NET_BIND_SERVICE' to 'spec.containers[*].securityContext.capabilities.add'."
+    },
+    {
+      "rule_id": "KSV-0107",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "The deprecated 'apiVersion' and 'kind' should not be used",
+      "status": "PASS",
+      "remediation": "Migrate resource to new API"
+    },
+    {
+      "rule_id": "KSV-0117",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Prevent binding to privileged ports",
+      "status": "PASS",
+      "remediation": "Do not map the container ports to privileged host ports when starting a container."
+    },
+    {
+      "rule_id": "KSV-0124",
+      "category": "Trivy (Misconfig)",
+      "severity": "HIGH",
+      "target": "deploy/dapr/statestore.yaml",
+      "description": "Gatekeeper repo reference is ambiguously open-ended",
+      "status": "PASS",
+      "remediation": "Apply secure configuration template."
     },
     {
       "rule_id": "MB_BLOB_ENUM",

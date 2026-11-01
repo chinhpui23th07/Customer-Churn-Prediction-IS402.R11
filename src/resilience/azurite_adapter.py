@@ -8,6 +8,7 @@ to ensure 100% resilient testing and offline execution.
 from __future__ import annotations
 
 import logging
+import os
 import threading
 from typing import Any, Dict, List, Optional, Union
 
@@ -59,12 +60,7 @@ class InMemoryBlobStore:
             return blob in self._containers.get(container, {})
 
 
-DEFAULT_AZURITE_CONN = (
-    "DefaultEndpointsProtocol=http;"
-    "AccountName=devstoreaccount1;"
-    "AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;"
-    "BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
-)
+DEFAULT_AZURITE_CONN = os.getenv("AZURITE_CONNECTION_STRING", "UseDevelopmentStorage=true")
 
 
 class AzuriteStorageAdapter:

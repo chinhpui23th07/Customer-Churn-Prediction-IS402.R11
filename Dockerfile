@@ -20,6 +20,10 @@ COPY data/processed/ /app/data/processed/
 COPY data/feast_repo/ /app/data/feast_repo/
 COPY DESIGN.md /app/
 
+RUN groupadd -g 10001 appgroup && useradd -u 10001 -g appgroup -s /bin/sh appuser && chown -R appuser:appgroup /app
+
+USER appuser
+
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
