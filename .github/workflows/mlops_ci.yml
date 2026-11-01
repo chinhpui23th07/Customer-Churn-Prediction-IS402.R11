@@ -59,6 +59,10 @@ jobs:
           dvc dag
           dvc status
 
+      - name: Initialize Feast Online Feature Store
+        run: |
+          python src/features/feature_store.py
+
       - name: Execute Pytest Suite (100% Passed)
         run: |
           python -m pytest tests/ -v --junitxml=junit/test-results.xml

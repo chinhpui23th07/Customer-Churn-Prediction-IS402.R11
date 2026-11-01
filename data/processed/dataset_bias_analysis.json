@@ -20,6 +20,6 @@
     "total_records": 442211,
     "churn_count": 250949,
     "churn_rate": 0.567487014117695,
-    "monthly_churn_perfect_signal_note": "Kaggle synthetic generator sets Monthly contract churn to 100%. Models exploit this strong deterministic rule."
+    "monthly_churn_perfect_signal_note": "Kaggle synthetic generator sets Monthly contract churn to 100%."
   }
 }
