@@ -1,0 +1,52 @@
+{
+  "manifest_path": "deploy\\azure\\main.tf",
+  "items": [
+    {
+      "resource_type": "azurerm_container_registry",
+      "resource_name": "acr",
+      "sku_or_tier": "Basic",
+      "monthly_cost_usd": 5.0,
+      "unit_description": "1 registry instance / month",
+      "notes": "Basic SKU (10GB included storage)"
+    },
+    {
+      "resource_type": "azurerm_storage_account",
+      "resource_name": "sa",
+      "sku_or_tier": "Standard_GRS",
+      "monthly_cost_usd": 4.8,
+      "unit_description": "~100GB hot data geo-replicated",
+      "notes": "Geo-redundant blob storage"
+    },
+    {
+      "resource_type": "azurerm_redis_cache",
+      "resource_name": "redis",
+      "sku_or_tier": "Basic_C0",
+      "monthly_cost_usd": 16.06,
+      "unit_description": "250MB cache node / month",
+      "notes": "Basic C0 single node cache"
+    },
+    {
+      "resource_type": "azurerm_log_analytics_workspace",
+      "resource_name": "law",
+      "sku_or_tier": "PerGB2018",
+      "monthly_cost_usd": 4.41,
+      "unit_description": "~1.5 GB ingestion / month",
+      "notes": "Per-GB ingestion + 30-day retention"
+    },
+    {
+      "resource_type": "azurerm_container_app",
+      "resource_name": "app",
+      "sku_or_tier": "1.0 vCPU, 2.0Gi",
+      "monthly_cost_usd": 46.8,
+      "unit_description": "1.0 vCPU + 2.0GiB RAM (~100k req/mo)",
+      "notes": "Container Apps active consumption"
+    }
+  ],
+  "total_monthly_usd": 77.07,
+  "enterprise_budget_usd": 150.0,
+  "student_credit_usd": 100.0,
+  "within_enterprise_budget": true,
+  "within_student_credit": true,
+  "enterprise_headroom_usd": 72.93,
+  "student_headroom_usd": 22.93
+}

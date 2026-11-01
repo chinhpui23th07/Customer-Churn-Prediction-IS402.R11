@@ -82,9 +82,9 @@ resource "azurerm_storage_account" "sa" {
 
   queue_properties {
     logging {
-      delete                = true
-      read                  = true
-      write                 = true
+      delete = true
+      read   = true
+      write  = true
       retention_policy {
         enabled = true
         days    = 7

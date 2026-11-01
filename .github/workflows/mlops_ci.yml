@@ -32,8 +32,13 @@ jobs:
 
       - name: Check 400-Line Hard Cap (Invariant 02)
         run: |
-          python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py src
-          python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py scripts
+          if [ -f ".agents/skills/modular-code-decomposer/scripts/check_file_lines.py" ]; then
+            python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py src
+            python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py scripts
+          else
+            python scripts/check_file_lines.py src
+            python scripts/check_file_lines.py scripts
+          fi
 
       - name: Python Syntax & Type Audit
         run: |

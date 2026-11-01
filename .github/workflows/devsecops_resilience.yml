@@ -11,6 +11,7 @@ env:
   PYTHON_VERSION: "3.11"
   ENTERPRISE_BUDGET_USD: "150.00"
   STUDENT_CREDIT_USD: "100.00"
+  TESTCONTAINERS_RYUK_DISABLED: "true"
 
 jobs:
   iac-security-static-analysis:
@@ -24,6 +25,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Setup HashiCorp Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.0"
+          terraform_wrapper: false
 
       - name: Install IaC Security Linters
         run: |
@@ -62,6 +69,11 @@ jobs:
   resilience-integration-tests:
     name: 3. Resilience & Integration Test Suite (Testcontainers / Pytest)
     runs-on: ubuntu-latest
+    services:
+      azurite:
+        image: mcr.microsoft.com/azure-storage/azurite:latest
+        ports:
+          - 10000:10000
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -79,9 +91,15 @@ jobs:
 
       - name: Verify Code Line Cap (Invariant 02 <= 400 lines)
         run: |
-          python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py src
-          python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py scripts
-          python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py tests
+          if [ -f ".agents/skills/modular-code-decomposer/scripts/check_file_lines.py" ]; then
+            python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py src
+            python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py scripts
+            python .agents/skills/modular-code-decomposer/scripts/check_file_lines.py tests
+          else
+            python scripts/check_file_lines.py src
+            python scripts/check_file_lines.py scripts
+            python scripts/check_file_lines.py tests
+          fi
 
       - name: Execute Unified Security Audit Gate
         run: |
