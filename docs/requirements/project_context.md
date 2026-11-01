@@ -1,6 +1,6 @@
-# ĐẶC TẢ NGỮ CẢNH DỰ ÁN & BỘ BIẾN SỐ ĐỘNG (PROJECT CONTEXT SPECIFICATION)
+# ĐẶC TẢ NGỮ CẢNH DỰ ÁN & BỘ BIẾN SỐ ĐỘNG (PROJECT SPECIFICATION & CONTEXT)
 
-> **Mục đích:** Tệp cấu hình đặc tả trung tâm lưu trữ toàn bộ các thông tin động, biến số thực nghiệm, metadata tác giả, bộ dữ liệu và tiêu chí đánh giá của dự án. Tầng quy chuẩn quản trị (`AGENTS.md` và `.agents/rules/`) giữ nguyên tắc phổ quát, độc lập và đọc các thông số từ tệp này để tránh ghép cặp cứng (Decoupled Governance Architecture).
+> **Mục đích:** Tệp cấu hình đặc tả trung tâm lưu trữ toàn bộ các thông tin động, biến số thực nghiệm, metadata tác giả, bộ dữ liệu và tiêu chí đánh giá của dự án theo nguyên tắc Phân tách Tri thức Động (Dynamic Data Decoupling). Toàn bộ bộ luật cốt lõi (`AGENTS.md` và `.agents/rules/`) giữ nguyên tắc phổ quát, độc lập và đọc các thông số từ tệp này để tránh ghép cặp cứng (Decoupled Governance Architecture).
 
 ---
 
@@ -44,7 +44,21 @@
 
 ---
 
-## 5. Tiêu Chuẩn Rubric & Cơ Chế Đánh Giá
+## 5. Danh Mục Công Cụ & Repo Kiểm Thử Độc Lập Bên Ngoài (Tầng 3 Recheck Tools)
+- **Công cụ quét An ninh mạng & DevSecOps (SAST / IaC):**
+  * Checkov (Bridgecrew Standard): Quét toàn diện lỗ hổng hạ tầng đám mây Terraform, ARM, Dockerfile (`reports/checkov_real_report.json`).
+  * Trivy (Aqua Security Standard): Quét lỗ hổng image container và CVE phụ thuộc thư viện (`reports/trivy_real_report.json`).
+  * Pytest DevSecOps Suite: `tests/test_devsecops_compliance.py` (tự động hóa fail build nếu có vi phạm an ninh).
+- **Công cụ kiểm tra Cú pháp, Kiểu dữ liệu & Ngữ nghĩa Domain:**
+  * Python AST Compiler: `python -m py_compile` kiểm tra lỗi cú pháp tĩnh.
+  * Domain Semantic Integrity Auditor: `scripts/verification/assert_domain_semantic_integrity.py` (Invariant 20).
+  * Line Cap Auditor: `scripts/verification/audit_line_cap.py` (Invariant 02 <= 400 dòng).
+- **Bộ Kiểm Thử & Benchmark Đối Chuẩn Tái Sử Dụng:**
+  * Cloned Benchmark Repos: 27 kho lưu trữ mẫu tại `docs/research/repos/` dùng để đối soát thuật toán, kịch bản kiểm thử biên và kiến trúc MLOps.
+
+---
+
+## 6. Tiêu Chuẩn Rubric & Cơ Chế Đánh Giá
 - **Bảng phân công & Rubric gốc:** `docs/requirements/Phan_cong_MLOps_KKBox_Azure.xlsx`.
 - **Cơ chế đánh giá Dual-Track:**
   * **Trạng thái thực tế cục bộ (Local Real Execution State):** Đánh giá trung thực năng lực chạy trên máy trạm cục bộ, ghi nhận chính xác các hạng mục cần live cloud subscription để đạt trọn điểm.
@@ -52,23 +66,9 @@
 
 ---
 
-## 6. Danh Mục Tệp Sản Phẩm Đầu Ra (Deliverables)
+## 7. Danh Mục Tệp Sản Phẩm Đầu Ra (Deliverables)
 - **Báo cáo thuyết minh (Word):** `docs/Bao_Cao_Bai_Tap_Lon_MLOps_Customer_Churn.docx`
 - **Báo cáo PDF chính thức:** `docs/Bao_Cao_Bai_Tap_Lon_MLOps_Customer_Churn.pdf`
 - **Slide báo cáo (PowerPoint):** `docs/Slide_Thuyet_Trinh_MLOps_Customer_Churn.pptx`
 - **Giao diện Web:** `src/web/index.html` (Bento Grid)
 - **Tệp nộp bài chuẩn UIT:** `23520783_BTL_Cloud_Computing_MLOps.zip`
-
----
-
-## 7. Danh Mục Công Cụ & Repos Kiểm Thử Độc Lập Bên Ngoài (Tầng 3 Recheck Tools)
-- **Công cụ quét An ninh mạng & DevSecOps (SAST / IaC):**
-  * Checkov (Bridgecrew): Quét toàn diện lỗ hổng hạ tầng đám mây Terraform, ARM, Dockerfile (`reports/checkov_real_report.json`).
-  * Trivy (Aqua Security): Quét lỗ hổng image container và CVE phụ thuộc thư viện (`reports/trivy_real_report.json`).
-  * Pytest DevSecOps Suite: `tests/test_devsecops_compliance.py` (tự động hóa fail build nếu có vi phạm an ninh).
-- **Công cụ kiểm tra Cú pháp, Ngữ nghĩa & Kiến trúc:**
-  * Python AST Compiler: `python -m py_compile` kiểm tra lỗi cú pháp tĩnh.
-  * Domain Semantic Integrity Auditor: `scripts/verification/assert_domain_semantic_integrity.py` (Invariant 20).
-  * Line Cap Auditor: `.agents/skills/modular-code-decomposer/scripts/check_file_lines.py` (Invariant 02).
-- **Bộ Kiểm Thử & Benchmark Đối Chuẩn Tái Sử Dụng:**
-  * Cloned Benchmark Repos: 27 kho lưu trữ mẫu tại `docs/research/repos/` dùng để đối soát thuật toán và kiến trúc MLOps.
