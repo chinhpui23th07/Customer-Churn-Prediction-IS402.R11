@@ -1,7 +1,6 @@
 """
 Module quản lý Feature Store sử dụng Feast.
-Đáp ứng yêu cầu Bài tập 11: Feature Store với Feast (Offline/Online store).
-Tuân thủ Invariant 01 và Invariant 02 (< 400 dòng).
+Quản lý vòng đời đặc trưng và phục vụ Feature Store (Feast Offline/Online Store).
 """
 import os
 import sys

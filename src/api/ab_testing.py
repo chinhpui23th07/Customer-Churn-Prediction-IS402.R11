@@ -1,7 +1,6 @@
 """
 Module thử nghiệm A/B Testing và điều hướng lưu lượng Champion / Challenger.
 Hiện thực định tuyến tất định (Deterministic Routing) và kiểm định thống kê T-test / Chi-square.
-Tuân thủ Invariant 01 (Clean Architecture) và Invariant 02 (< 400 dòng).
 """
 import os
 import sys

@@ -1,6 +1,5 @@
 """
 Module tiện ích hỗ trợ cho API Serving: Logging, SHAP attributions, Database và Khuyến nghị.
-Tuân thủ Invariant 01 và Invariant 02 (< 400 dòng).
 """
 import os
 import json

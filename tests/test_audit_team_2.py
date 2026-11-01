@@ -3,7 +3,6 @@ Concurrency, SQLite WAL & Model Hot-Reload Test Suite (Audit Team 2).
 Kiem thu toan ven: Che do SQLite WAL pragmas, truy cap dong thoi da luong
 doc/ghi khong khoa database, reload model trong dieu kien tai cao khong gay
 race condition, dong ket noi database triet de va cleanup socket TCP.
-Tuan thu Invariant 02 (<= 400 dong) va Invariant 13 (Zero Mockup).
 """
 
 import concurrent.futures

@@ -5,7 +5,6 @@ Bonferroni FWER theo Rabanser et al. (NeurIPS 2019), do nhay KS drift tren
 injected mean shift, tinh chuan xac phan vi PSI cho bien lien tuc theo
 Yurdakul (2020) va bien roi rac (binary/ternary) khong bi sup do bin,
 cung voi gioi han lam min epsilon bounds chong loi chia 0.
-Tuan thu Invariant 02 (<= 400 dong) va Invariant 13 (Zero Mockup).
 """
 
 import os

@@ -5,7 +5,6 @@ chan enum bat hop le voi HTTP 422, tu choi gia tri NaN/Inf nho vao Pydantic v2 m
 bao toan customer_id va chan customer_id <= 0 (falsy bug prevention),
 tai tep CSV batch malformed / rong voi HTTP 400, ma tran tan cong bao mat (X-API-Key gate)
 va co che ve sinh chong XSS (Cross-Site Scripting).
-Tuan thu Invariant 02 (<= 400 dong) va Invariant 13 (Zero Mockup).
 """
 
 import io

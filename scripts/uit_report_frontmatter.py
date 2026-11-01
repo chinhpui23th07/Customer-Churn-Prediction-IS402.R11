@@ -4,7 +4,6 @@ Phần đầu (Front Matter) của Báo Cáo Khóa Luận / Đồ Án chuẩn UI
 - Thông tin Hội đồng chấm bảo vệ
 - Lời cam đoan, Lời cảm ơn, Tóm tắt song ngữ
 - Mục lục phân cấp, Danh mục hình ảnh, Danh mục bảng biểu và Danh mục từ viết tắt.
-Tuân thủ Invariant 01, Invariant 02 (< 400 dòng) và Invariant 16.
 """
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT, WD_TAB_LEADER
@@ -183,7 +182,7 @@ def add_pledge_and_thanks(doc):
     add_uit_body_p(doc, UIT_FRONT_MATTER["pledge"])
     p_sig_p = doc.add_paragraph()
     p_sig_p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    r_sp = p_sig_p.add_run("TP. Hồ Chí Minh, ngày 22 tháng 09 năm 2026\nSinh viên thực hiện\n(Ký và ghi rõ họ tên)\n\n\nNguyễn Trọng Khởi")
+    r_sp = p_sig_p.add_run("TP. Hồ Chí Minh, ngày 22 tháng 09 năm 2026\nSinh viên thực hiện\n(Ký và ghi rõ họ tên)\n\n\nNguyễn Trọng Khôi")
     r_sp.font.name = 'Times New Roman'
     r_sp.font.italic = True
     doc.add_page_break()
@@ -192,7 +191,7 @@ def add_pledge_and_thanks(doc):
     add_uit_body_p(doc, UIT_FRONT_MATTER["acknowledgments"])
     p_sig_a = doc.add_paragraph()
     p_sig_a.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    r_sa = p_sig_a.add_run("Sinh viên thực hiện\n\nNguyễn Trọng Khởi")
+    r_sa = p_sig_a.add_run("Sinh viên thực hiện\n\nNguyễn Trọng Khôi")
     r_sa.font.name = 'Times New Roman'
     r_sa.font.italic = True
     doc.add_page_break()

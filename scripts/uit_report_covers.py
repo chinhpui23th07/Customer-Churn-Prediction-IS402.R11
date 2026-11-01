@@ -1,7 +1,6 @@
 """
 Khung viền trang và Trang bìa (Bìa ngoài & Bìa phụ) chuẩn Đại học Công nghệ Thông tin (UIT).
 Tuân thủ cấu trúc chuẩn học thuật, hai trang đầu đồng bộ thứ tự nội dung, không màu nền, không viền trang dư thừa.
-Tuân thủ Invariant 01, Invariant 02 (< 400 dòng) và Invariant 16.
 """
 import os
 from docx.shared import Inches, Pt, RGBColor

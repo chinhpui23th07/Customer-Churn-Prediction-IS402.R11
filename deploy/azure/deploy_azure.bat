@@ -1,8 +1,7 @@
 @echo off
 REM ==============================================================================
-REM UIT IS402 - 1-CLICK AZURE CLOUD DEPLOYMENT SCRIPT (WINDOWS BATCH)
-REM De tai 11: MLOps Customer Churn Prediction
-REM Sinh vien: Nguyen Trong Khoi - MSSV: 22520695 | GV: ThS. Ha Le Hoai Trung
+REM CHURNGUARD MLOPS - 1-CLICK AZURE CLOUD DEPLOYMENT SCRIPT (WINDOWS BATCH)
+REM Production-Grade Automated Cloud Infrastructure Provisioning
 REM ==============================================================================
 
 setlocal enabledelayedexpansion

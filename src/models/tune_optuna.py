@@ -1,7 +1,6 @@
 """
 Module tối ưu hóa siêu tham số bằng Optuna (Bayesian Optimization với TPE Sampler).
 Tìm kiếm cấu hình tối ưu cho Champion XGBoost và Challenger Random Forest.
-Tuân thủ Invariant 01 (Clean Architecture), Invariant 02 (< 400 dòng) và Invariant 13 (Real Execution).
 """
 import os
 import sys

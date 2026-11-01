@@ -3,7 +3,6 @@ Pipeline Reproducibility & Data Engineering Test Suite (Audit Team 1).
 Kiem thu toan ven: Out-of-core chunking deduplication, on dinh toan hoc
 cua ky thuat dac trung, chuan hoa chuoi categorical, zero customer leakage
 giua cac tap du lieu, thong so Scaler va kiem tra DAG DVC bang NetworkX.
-Tuan thu Invariant 02 (<= 400 dong) va Invariant 13 (Zero Mockup).
 """
 
 import os

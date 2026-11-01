@@ -15,9 +15,9 @@
 
 ---
 
-> 🚀 **SỔ TAY VẬN HÀNH HỆ THỐNG TOÀN DIỆN (OPERATIONAL RUNBOOK):**  
+> **SỔ TAY VẬN HÀNH HỆ THỐNG TOÀN DIỆN (OPERATIONAL RUNBOOK):**  
 > Mọi bước thực thi chi tiết (địa chỉ URL, cấu trúc trang, thẻ Tab, thao tác nút bấm [tên nút, mã màu HEX, vị trí hiển thị], kết quả phản hồi, dấu hiệu nhận biết thành công và hướng dẫn xử lý lỗi) cho toàn bộ các phân hệ Web Bento Grid, Dashboard Streamlit, Swagger API, và Triển khai Azure Cloud đều được ghi nhận chi tiết tại:  
-> 👉 **[`docs/RUNBOOK_HUONG_DAN_VAN_HANH.md`](docs/RUNBOOK_HUONG_DAN_VAN_HANH.md)**
+> **[`docs/RUNBOOK_HUONG_DAN_VAN_HANH.md`](docs/RUNBOOK_HUONG_DAN_VAN_HANH.md)**
 
 ---
 
@@ -162,8 +162,8 @@ Mọi chỉ số dưới đây đều được đo kiểm trực tiếp trên d�
 ### 6.2 Cài Đặt Môi Trường
 ```bash
 # Sao chép kho mã nguồn
-git clone https://github.com/chinhpui23th07/Customer-Churn-Prediction-IS402.R11.git
-cd Customer-Churn-Prediction-IS402.R11
+git clone https://github.com/nguyentrongkhoi/churnguard-mlops.git
+cd churnguard-mlops
 
 # Cài đặt các gói phụ thuộc
 pip install -r requirements.txt

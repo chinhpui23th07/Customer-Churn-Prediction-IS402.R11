@@ -1,7 +1,7 @@
 """
 UIT IS402 - BIG DATA CLOUD I/O BENCHMARK (>4GB SCALE)
 Dataset: REES46 eCommerce Behavior Data (2019-Oct.csv) - 5.28 GB (Real Kaggle Data)
-Evaluator: ThS. Ha Le Hoai Trung | Sinh vien: Nguyen Trong Khoi - 22520695
+Evaluator: ThS. Ha Le Hoai Trung | Sinh vien: Nguyen Trong Khoi - 23520783
 """
 
 import os
@@ -102,7 +102,7 @@ print(f"[+] Toc do doc Parquet nhanh hon CSV: {speedup:.2f} lan!")
 # 4. Xuat ket qua chuan hoa ra JSON
 benchmark_data = {
     "dataset_name": "REES46 eCommerce Behavior Data (Kaggle Official)",
-    "scale_rubric_verified": ">4GB (Rubric 1.3)",
+    "scale_benchmark_verified": ">4GB (Big Data Scale Verified)",
     "kaggle_source": "mkechinov/ecommerce-behavior-data-from-multi-category-store",
     "dataset_metrics": {
         "total_records": int(total_records),

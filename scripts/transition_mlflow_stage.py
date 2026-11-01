@@ -3,7 +3,7 @@
 MLflow Model Registry Stage Transition Script.
 Quan ly vong doi mo hinh MLflow: Chuyen trang thai CustomerChurnChampion sang Production
 va CustomerChurn_Random_Forest sang Staging phuc vu he thong Serving va A/B Testing.
-Tuan thu Invariant 01, Invariant 02 (<= 400 dong) va luu tru truc tiep vao data/mlflow.db.
+Luu tru metadata truc tiep vao data/mlflow.db.
 """
 import os
 import sys

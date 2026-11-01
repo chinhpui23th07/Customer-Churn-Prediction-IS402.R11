@@ -1,7 +1,6 @@
 """
-Module giám sát Data Drift và Model Drift (Mục Giám sát Drift Bài tập 11).
+Module giám sát Data Drift và Model Drift cho luồng suy luận thời gian thực.
 Sử dụng kiểm định thống kê Kolmogorov-Smirnov (KS-test), PSI và Evidently AI.
-Tuân thủ Invariant 01 (Clean Architecture) và Invariant 02 (< 400 dòng).
 """
 import os
 import sys

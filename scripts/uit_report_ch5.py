@@ -1,7 +1,6 @@
 """
 Nội dung Chương 5: Đánh Giá Đối Chuẩn Đám Mây và Tối Ưu Hiệu Năng chuẩn UIT.
 Đo đạc thực nghiệm I/O Parquet vs CSV, Big Data >4GB DuckDB Out-of-Core, Azure Multi-Region Latency, Drift và TCO.
-Tuân thủ Invariant 01, Invariant 02 (< 400 dòng), Invariant 05 và Invariant 16.
 """
 import os
 import json
@@ -110,7 +109,7 @@ def build_chapter_5(doc, images_dir, io_data, lat_data, bias_data):
     add_uit_body_p(doc, (
         f"Kết quả thực nghiệm trên Track 1 (Customer Churn 442k bản ghi) chứng minh Parquet Snappy giúp tiết kiệm {pq_sav:.1f}% chi phí lưu trữ trên Cloud Object Storage "
         f"và tăng tốc độ đọc dữ liệu phục vụ huấn luyện mô hình lên gấp {pq_spd:.2f} lần so với tệp CSV.\n\n"
-        f"Đồng thời, trên Track 2 (Big Data Cloud Benchmark quy mô lớn >4GB theo chuẩn Rubric 1.3), hệ thống đã thực nghiệm trên {bd_rows:,} bản ghi "
+        f"Đồng thời, trên Track 2 (Big Data Cloud Benchmark quy mô lớn >4GB theo chuẩn Big Data Cloud Benchmark), hệ thống đã thực nghiệm trên {bd_rows:,} bản ghi "
         f"({bd_gb:.2f} GB CSV thô). Khi chuyển đổi và truy vấn Out-of-Core qua DuckDB với giới hạn bộ nhớ khóa cứng 1,200 MB, định dạng Parquet Snappy "
         f"đạt tỷ lệ nén {bd_comp:.2f}x (giảm từ {bd_mb:.1f} MB xuống còn {bd_pmb:.1f} MB, tiết kiệm {bd_saved:.1f}% không gian lưu trữ), thông lượng đọc phân tích đạt {bd_pread:,.1f} MB/s "
         f"(nhanh hơn {bd_spd:.2f} lần so với quét tuần tự CSV {bd_cread:.1f} MB/s). Đỉnh RAM thực tế ghi nhận qua psutil chỉ {bd_ram:.2f} MB, khẳng định hệ thống duy trì độ phức tạp O(1) "
@@ -245,7 +244,7 @@ def build_chapter_5(doc, images_dir, io_data, lat_data, bias_data):
         format_table_cell(t_rb.rows[0].cells[i], h, bold=True, font_size=11, color_rgb=RGBColor(0, 0, 0), fill_hex=None)
 
     rbac_rows = [
-        ("MLOps Lead (Nguyễn Trọng Khởi)", "Kiến trúc tổng thể, CI/CD, Serving API, Quotas", "Subscription Contributor / Budget Admin"),
+        ("MLOps Lead (Nguyễn Trọng Khôi)", "Kiến trúc tổng thể, CI/CD, Serving API, Quotas", "Subscription Contributor / Budget Admin"),
         ("Data Engineer", "DVC versioning, Feast Store, Out-of-Core ETL", "Storage Blob Data Contributor, Redis Contributor"),
         ("ML Engineer", "Huấn luyện 4 mô hình, Optuna, MLflow, SHAP", "Azure ML Data Scientist / Registry Contributor"),
         ("DevOps / MLOps SRE", "Evidently AI Data Drift, Docker, Web UI", "Container Apps Operator, Monitor Metrics Publisher")

@@ -1,6 +1,5 @@
 """
 Nội dung Chương 6, Tài liệu tham khảo IEEE và Phụ lục chuẩn UIT.
-Tuân thủ Invariant 01, Invariant 02 (< 400 dòng) và Invariant 16.
 """
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH

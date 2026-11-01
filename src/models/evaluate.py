@@ -1,7 +1,6 @@
 """
-Module trực quan hóa và đánh giá chi tiết mô hình (Mục 4.3 của Rubric).
+Module trực quan hóa và đánh giá chi tiết chất lượng mô hình phân loại.
 Xuất biểu đồ ROC Curve, Confusion Matrix và Feature Importance độ phân giải cao.
-Tuân thủ Invariant 01 và Invariant 02 (< 400 dòng).
 """
 import os
 import sys

@@ -1,6 +1,5 @@
 """
 Dữ liệu chuẩn học thuật và hàm định dạng cho Báo Cáo Khóa Luận / Đồ Án UIT.
-Tuân thủ Invariant 01, Invariant 02 (< 400 dòng) và Invariant 16 (UIT Thesis Standard).
 """
 import os
 import json

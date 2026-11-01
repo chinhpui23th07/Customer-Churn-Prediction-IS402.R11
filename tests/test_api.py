@@ -2,7 +2,6 @@
 Integration & Unit Test Suite for MLOps FastAPI Serving.
 Kiểm thử toàn diện: Health, Auth (401), Serving, Feast Online Store (200 & 404),
 Validation (422), Observability, A/B Testing, CSV Upload và Trigger Retrain.
-Tuân thủ Invariant 01 (Clean Scaffolding) và Invariant 02 (< 400 dòng).
 """
 import io
 import os

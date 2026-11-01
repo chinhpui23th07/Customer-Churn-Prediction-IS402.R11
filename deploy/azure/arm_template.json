@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "metadata": {
     "title": "ChurnGuard MLOps Infrastructure on Azure",
-    "description": "ARM Template for deploying Azure Container Apps, Azure Blob Storage, Azure Container Registry, and Azure Cache for Redis for UIT IS402 Project 11."
+    "description": "ARM Template for deploying Azure Container Apps, Azure Blob Storage, Azure Container Registry, and Azure Cache for Redis for ChurnGuard MLOps Platform."
   },
   "parameters": {
     "environmentName": {

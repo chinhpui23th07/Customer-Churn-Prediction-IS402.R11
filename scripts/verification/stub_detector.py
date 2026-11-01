@@ -1,7 +1,6 @@
 """
 Module Thanh tra Vạch trần Mã Giả, Tác vụ Rỗng và Điểm Nghẽn Kiến Trúc.
 Nhiệm vụ: Phát hiện các điểm vi phạm liêm chính học thuật (stubs, mocks, echo deploy, local downgrades).
-Tuân thủ Invariant 01 (Clean Architecture) và Invariant 02 (< 400 dòng).
 """
 import os
 import sys

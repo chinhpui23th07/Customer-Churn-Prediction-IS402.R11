@@ -2,7 +2,6 @@
 Script làm sạch và tái thiết lập dữ liệu suy luận (Inference Logs) thực tế.
 Lấy mẫu từ test_features.parquet, dự đoán thực tế qua Champion & Challenger.
 Đảm bảo phương sai thực tế, triệt tiêu lỗi suy biến thống kê (catastrophic cancellation).
-Tuân thủ Invariant 01 và Invariant 02 (< 400 dòng).
 """
 import os
 import sys

@@ -6,7 +6,6 @@ tien de Lundberg & Lee (NeurIPS 2017) SHAP Local Accuracy (Efficiency Axiom),
 bao toan huong tac dong am cua dac trung (negative directional attribution),
 co che fallback LinearExplainer tren Logistic Regression va tinh nhat quan
 phan tich cohort error slicing.
-Tuan thu Invariant 02 (<= 400 dong) va Invariant 13 (Zero Mockup).
 """
 
 import os

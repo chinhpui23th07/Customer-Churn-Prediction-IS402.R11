@@ -1,6 +1,6 @@
 """
 Module đo kiểm và phân tích độ trễ mạng (Network Latency & Delay) khi triển khai đa vùng (Multi-region).
-Đáp ứng Mục 3.3 của Rubric Đánh giá. Tuân thủ Invariant 02 (< 400 dòng).
+Hỗ trợ mô phỏng độ trễ mạng phân tán và kiểm thử SLA thời gian thực.
 """
 import os
 import sys

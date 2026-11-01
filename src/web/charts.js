@@ -1,7 +1,6 @@
 /**
  * ChurnGuard MLOps - Interactive Visualization Engine (Chart.js)
- * Cung cap bieu do truc quan dong cho So sanh Mo hinh va Toi uu hoa Optuna.
- * Tuan thu Invariant 02, Invariant 05 va Invariant 06 (< 200 dong).
+ * Cung cấp biểu đồ trực quan hóa so sánh mô hình và tiến trình tối ưu hóa siêu tham số.
  */
 
 let modelChartInstance = null;
@@ -25,7 +24,7 @@ function showChartOfflineNotice(canvasId, msg = "Chưa kết nối API (Port 800
     notice.className = "chart-offline-notice";
     parent.style.position = "relative";
     notice.style.cssText = "position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(15,23,42,0.88);color:#94A3B8;font-size:12px;font-weight:600;border-radius:8px;z-index:5;";
-    notice.innerHTML = `<span style="color:#EF4444;font-size:14px;margin-bottom:4px;">⚠️ Mất Kết Nối Backend API</span><span>${msg}</span>`;
+    notice.innerHTML = `<span style="color:#EF4444;font-size:13px;font-weight:700;margin-bottom:4px;">[CẢNH BÁO] Mất Kết Nối Backend API</span><span>${msg}</span>`;
     parent.appendChild(notice);
   }
 }
@@ -81,7 +80,7 @@ async function renderModelMetricsChart() {
       throw new Error("Invalid model payload");
     }
   } catch (e) {
-    showChartOfflineNotice("chartModelMetrics", "Khởi động FastAPI tại port 8000");
+    showChartOfflineNotice("chartModelMetrics", "Dịch vụ FastAPI chưa khả dụng trên cổng 8000");
   }
 
   if (modelChartInstance) modelChartInstance.destroy();
@@ -129,7 +128,7 @@ async function renderOptunaConvergenceChart() {
       throw new Error("Empty trials payload");
     }
   } catch (e) {
-    showChartOfflineNotice("chartOptunaConvergence", "Khởi động FastAPI tại port 8000");
+    showChartOfflineNotice("chartOptunaConvergence", "Dịch vụ FastAPI chưa khả dụng trên cổng 8000");
   }
 
   if (optunaChartInstance) optunaChartInstance.destroy();
@@ -139,7 +138,7 @@ async function renderOptunaConvergenceChart() {
       labels: trialLabels,
       datasets: [
         { label: "Giá trị Trial (ROC-AUC)", data: trialScores, borderColor: "#38BDF8", backgroundColor: "rgba(56, 189, 248, 0.15)", pointRadius: 4, pointBackgroundColor: "#38BDF8", tension: 0.2 },
-        { label: "Best Objective So Far", data: bestScores, borderColor: "#10B981", borderDash: [5, 5], pointRadius: 0, fill: false, tension: 0 }
+        { label: "Điểm Tối Ưu Tích Lũy (Best ROC-AUC)", data: bestScores, borderColor: "#10B981", borderDash: [5, 5], pointRadius: 0, fill: false, tension: 0 }
       ]
     },
     options: {

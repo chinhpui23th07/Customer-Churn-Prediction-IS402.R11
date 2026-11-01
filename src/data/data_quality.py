@@ -1,7 +1,6 @@
 """
 Module kiểm định chất lượng dữ liệu nâng cao (Advanced Data Quality & Outlier Detection).
 Hiện thực phát hiện dị biệt (IQR, Z-score) và xác thực hợp đồng dữ liệu (Data Contracts).
-Tuân thủ Invariant 01 (Clean Architecture) và Invariant 02 (< 400 dòng).
 """
 import os
 import sys

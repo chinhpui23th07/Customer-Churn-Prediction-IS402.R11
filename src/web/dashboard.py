@@ -1,7 +1,7 @@
 """
 Streamlit Monitoring & Observability Dashboard cho ChurnGuard MLOps Platform.
-Hien thi KPI thoi gian thuc, Giam sat Data Drift (PSI / KS), A/B Testing & Chan doan mo hinh.
-Tuan thu Invariant 01, Invariant 02, Invariant 03, Invariant 04 (No Emoji) va Invariant 06 (< 200 dong).
+Hiển thị KPI thời gian thực, Giám sát Data Drift (PSI / KS), A/B Testing & Chẩn đoán mô hình.
+Bảng điều khiển trực quan hóa thời gian thực các chỉ số suy luận, giám sát trôi dạt dữ liệu và chẩn đoán mô hình.
 """
 import os
 import sys
@@ -65,14 +65,14 @@ st.sidebar.markdown("---")
 if st.sidebar.button("Làm mới ngay (Refresh)"):
     st.rerun()
 
-st.title("[MONITOR] ChurnGuard Enterprise MLOps Monitoring Dashboard")
+st.title("ChurnGuard Enterprise MLOps Monitoring Dashboard")
 st.caption("Hệ thống giám sát toàn diện: Suy luận thời gian thực, Data Drift (PSI), A/B Testing và Chẩn đoán lỗi mô hình.")
 
 tab_kpi, tab_drift, tab_ab, tab_diag = st.tabs([
-    "[KPI] Giám Sát Suy Luận & KPI",
-    "[DRIFT] Giám Sát Data Drift & Cảnh Báo",
-    "[A/B] Thử Nghiệm A/B Testing",
-    "[DIAG] Chẩn Đoán Mô Hình & Lỗi Dự Đoán"
+    "Giám Sát Suy Luận & KPI",
+    "Giám Sát Data Drift & Cảnh Báo",
+    "Thử Nghiệm A/B Testing",
+    "Chẩn Đoán Mô Hình & Phân Tích Lỗi"
 ])
 
 with tab_kpi:
@@ -87,16 +87,16 @@ with tab_kpi:
     c1.markdown(f'<div class="metric-card"><div class="metric-title">Tổng Lượt Suy Luận</div><div class="metric-val">{total_inf:,}</div><div class="metric-sub">Lưu trữ trong SQLite Database</div></div>', unsafe_allow_html=True)
     c2.markdown(f'<div class="metric-card"><div class="metric-title">Tỷ Lệ Dự Đoán Rời Bỏ</div><div class="metric-val">{churn_rate:.1f}%</div><div class="metric-sub">{churn_cnt:,} / {total_inf:,} khách hàng</div></div>', unsafe_allow_html=True)
     c3.markdown(f'<div class="metric-card"><div class="metric-title">Điều Hướng Champion</div><div class="metric-val">{champ_pct:.1f}%</div><div class="metric-sub">Mục tiêu: 80% (XGBoost)</div></div>', unsafe_allow_html=True)
-    c4.markdown('<div class="metric-card"><div class="metric-title">Trạng Thái Phục Vụ</div><div class="metric-val" style="color: #06D6A0;">[ONLINE] HOẠT ĐỘNG</div><div class="metric-sub">FastAPI + Feast Online Store</div></div>', unsafe_allow_html=True)
+    c4.markdown('<div class="metric-card"><div class="metric-title">Trạng Thái Phục Vụ</div><div class="metric-val" style="color: #06D6A0;">HOẠT ĐỘNG (ONLINE)</div><div class="metric-sub">FastAPI + Feast Online Store</div></div>', unsafe_allow_html=True)
 
-    st.subheader("[LOG] Nhật Ký Suy Luận Thời Gian Thực Gần Nhất")
+    st.subheader("Nhật Ký Suy Luận Thời Gian Thực Gần Nhất")
     if not logs_df.empty:
         disp_df = logs_df.copy()
-        disp_df["churn_prediction"] = disp_df["churn_prediction"].apply(lambda x: "[WARNING] Rời bỏ (1)" if x == 1 else "[OK] Giữ chân (0)")
+        disp_df["churn_prediction"] = disp_df["churn_prediction"].apply(lambda x: "Rời bỏ (1)" if x == 1 else "Giữ chân (0)")
         disp_df["churn_probability"] = disp_df["churn_probability"].apply(lambda p: f"{p:.4f}")
         st.dataframe(disp_df, use_container_width=True, height=320)
     else:
-        st.info("Chưa có lượt suy luận nào được ghi nhận. Hãy gửi yêu cầu dự đoán qua REST API.")
+        st.info("Chưa ghi nhận dữ liệu suy luận trong phiên làm việc. Dữ liệu sẽ tự động hiển thị khi phát sinh yêu cầu qua REST API.")
 
 with tab_drift:
     drift_data = load_json_file(os.path.join(PROCESSED_DIR, "drift_metrics.json"))
@@ -105,9 +105,9 @@ with tab_drift:
         drift_feats = [f for f, v in features.items() if v.get("drift_detected", False)]
         drift_share = len(drift_feats) / max(len(features), 1)
         if drift_share >= 0.30:
-            st.error(f"[ALERT] CẢNH BÁO DATA DRIFT: Phát hiện {len(drift_feats)}/{len(features)} đặc trưng bị lệch phân phối (Tỷ lệ: {drift_share*100:.1f}% >= ngưỡng 30%). Khuyến nghị kích hoạt Webhook tái huấn luyện tự động!")
+            st.error(f"CẢNH BÁO DATA DRIFT: Phát hiện {len(drift_feats)}/{len(features)} đặc trưng bị lệch phân phối (Tỷ lệ: {drift_share*100:.1f}% >= ngưỡng 30%). Kích hoạt webhook tái huấn luyện tự động.")
         else:
-            st.success(f"[OK] HỆ THỐNG ỔN ĐỊNH: Tỷ lệ đặc trưng biến động {drift_share*100:.1f}% nằm trong ngưỡng kiểm soát an toàn (< 30%).")
+            st.success(f"HỆ THỐNG ỔN ĐỊNH: Tỷ lệ đặc trưng biến động {drift_share*100:.1f}% nằm trong ngưỡng kiểm soát an toàn (< 30%).")
 
         psi_df = pd.DataFrame([
             {"Đặc trưng": feat, "PSI Score": val.get("psi_score", 0.0), "P-Value (KS)": val.get("p_value", 1.0), "Mức độ": val.get("drift_level", "Stable"), "Lệch phân phối": "Có" if val.get("drift_detected", False) else "Không"}
@@ -121,7 +121,7 @@ with tab_drift:
         st.subheader("Bảng Đối Soát Thống Kê Kolmogorov-Smirnov (KS-Test)")
         st.dataframe(psi_df.sort_values(by="PSI Score", ascending=False), use_container_width=True)
     else:
-        st.warning("[WARNING] Chưa tìm thấy tệp drift_metrics.json. Vui lòng chạy pipeline drift detection.")
+        st.warning("Chưa có tệp số liệu drift_metrics.json. Dữ liệu giám sát sẽ sẵn sàng sau khi tiến trình drift detection hoàn tất.")
 
 with tab_ab:
     from src.api.ab_testing import analyze_ab_test_performance

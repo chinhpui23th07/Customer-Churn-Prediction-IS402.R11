@@ -5,8 +5,6 @@ Covers 4 Quality Tiers:
 - Tier 2: Boundary & Corner Cases (schema limits, negative values, zero-division, empty batches)
 - Tier 3: Cross-Feature Combinations & Consistency (A/B hash routing, batch vs single parity)
 - Tier 4: Real-World Operational Scenarios & SLAs (Feast latency SLA, schema contracts, throughput)
-
-Tuân thủ Invariant 01 (Clean Architecture) và Invariant 02 (< 400 dòng mã).
 """
 import io
 import time

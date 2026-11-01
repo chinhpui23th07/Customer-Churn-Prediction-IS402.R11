@@ -1,7 +1,6 @@
 """
 Module quản lý kết nối SQLite tập trung với chế độ WAL (Write-Ahead Logging)
 và cơ chế đóng kết nối an toàn trong khối try...finally.
-Tuân thủ Invariant 01 (Clean Architecture) và Invariant 02 (< 400 dòng).
 """
 import os
 import sqlite3

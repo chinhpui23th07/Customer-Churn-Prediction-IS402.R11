@@ -5,7 +5,6 @@ Tập hợp toàn bộ kết quả thanh tra:
 - Big Data I/O Inspector (Dung lượng dữ liệu & Ngưỡng >4GB)
 - Integrity Rubric Auditor (Chấm điểm nghiêm khắc 15 tiêu chí)
 Xuất báo cáo ACADEMIC_INTEGRITY_AUDIT_REPORT.md và JSON verdict.
-Tuân thủ Invariant 01 và Invariant 02 (< 400 dòng).
 """
 import os
 import sys

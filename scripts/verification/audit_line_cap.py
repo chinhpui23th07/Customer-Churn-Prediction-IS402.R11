@@ -1,5 +1,5 @@
 """
-Module kiểm tra Invariant 02: Giới hạn cứng 400 dòng mã trên mỗi tệp nguồn (src/ và scripts/).
+Module kiểm tra giới hạn cứng 400 dòng mã trên mỗi tệp nguồn (src/ và scripts/).
 """
 import os
 import sys

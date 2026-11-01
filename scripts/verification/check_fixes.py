@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Kiểm tra kỹ càng các fixes mà user đã thực hiện
+Kiểm tra và thẩm định toàn diện các bản sửa lỗi hệ thống (System Fixes Verification)
 """
 import sys
 import os

@@ -1,7 +1,6 @@
 /**
  * ChurnGuard MLOps Web App Frontend Logic
- * Ket noi REST API FastAPI, truc quan hoa rui ro SHAP va xu ly batch.
- * Tuan thu Invariant 01, Invariant 02, Invariant 05 va Invariant 06 (< 200 dong).
+ * Kết nối REST API FastAPI, trực quan hóa rủi ro SHAP và xử lý phân tích hàng loạt.
  */
 const API_BASE = (window.location.protocol.startsWith("http") && window.location.origin && window.location.origin !== "null")
   ? window.location.origin : "http://localhost:8000";
@@ -44,7 +43,7 @@ async function checkApiHealth() {
     document.getElementById("kpi-model-name").textContent = data.champion_model;
     const f = document.getElementById("kpi-feast-store"); if (f) f.textContent = data.feast_online_store || "Online: SQLite";
   } catch (err) {
-    document.getElementById("api-status-text").textContent = "FastAPI: Offline (Chưa bật server)";
+    document.getElementById("api-status-text").textContent = "FastAPI: Ngoại tuyến (Mất kết nối máy chủ)";
     document.getElementById("kpi-model-name").textContent = "Chưa kết nối";
   }
 }
@@ -66,7 +65,7 @@ function setupSinglePredictionForm() {
       const res = await fetch(`${API_BASE}/predict`, { method: "POST", headers: getAuthHeaders({ "Content-Type": "application/json" }), body: JSON.stringify(payload) });
       if (!res.ok) throw new Error("API trả về lỗi");
       renderSingleResult(await res.json());
-    } catch (err) { alert("Không thể kết nối đến FastAPI Serving Endpoint! Đảm bảo server đang chạy tại port 8000."); }
+    } catch (err) { alert("Không thể kết nối đến máy chủ dự đoán FastAPI. Vui lòng kiểm tra trạng thái dịch vụ tại cổng 8000."); }
     finally { btn.textContent = "Phân Tích Nguy Cơ Rời Bỏ"; btn.disabled = false; }
   });
 }
@@ -112,7 +111,7 @@ async function uploadCsvFile(file) {
     const res = await fetch(`${API_BASE}/upload_csv_predict`, { method: "POST", headers: getAuthHeaders(), body: formData });
     if (!res.ok) throw new Error("Lỗi xử lý file CSV");
     renderBatchResults(await res.json());
-  } catch (err) { alert("Lỗi tải tệp CSV! Đảm bảo các cột đúng định dạng Kaggle Customer Churn."); }
+  } catch (err) { alert("Lỗi tải tệp CSV! Vui lòng đảm bảo tệp chứa đầy đủ các cột dữ liệu theo định dạng chuẩn."); }
 }
 async function sendSampleBatch() {
   const samples = [
@@ -126,7 +125,7 @@ async function sendSampleBatch() {
     const res = await fetch(`${API_BASE}/batch_predict`, { method: "POST", headers: getAuthHeaders({ "Content-Type": "application/json" }), body: JSON.stringify(samples) });
     if (!res.ok) throw new Error("Lỗi API batch");
     renderBatchResults(await res.json());
-  } catch (err) { alert("Không thể gửi dữ liệu mẫu đến API."); }
+  } catch (err) { alert("Không thể gửi dữ liệu phân tích mẫu đến máy chủ API."); }
 }
 function renderBatchResults(data) {
   currentBatchPredictions = data.predictions || [];

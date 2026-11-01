@@ -1,6 +1,5 @@
 """
 Nội dung Chương 1, 2 và 3 của Báo Cáo Khóa Luận / Đồ Án chuẩn UIT.
-Tuân thủ Invariant 01, Invariant 02 (< 400 dòng) và Invariant 16.
 """
 import os
 import json
@@ -29,7 +28,7 @@ def _load_bigdata_benchmark():
 
 
 def build_chapter_1(doc, images_dir):
-    """Chương 1: Tổng quan về đề tài (Chuẩn hóa đối chiếu Rubric 1.1 - 1.4)."""
+    """Chương 1: Tổng quan về đề tài và cơ sở khoa học."""
     h1 = add_uit_heading_1(doc, "CHƯƠNG 1: TỔNG QUAN VỀ ĐỀ TÀI")
     h1.paragraph_format.space_before = Pt(10)
     h1.paragraph_format.space_after = Pt(4)
@@ -90,7 +89,7 @@ def build_chapter_1(doc, images_dir):
     p_b3 = add_uit_body_p(doc, (
         f"Về quy mô và khả năng mở rộng dữ liệu, đồ án triển khai Chiến lược Kiến trúc Nhị phân (Dual-Track Architecture): "
         f"1) Track 1 (MLOps Serving): Huấn luyện và phục vụ mô hình trên tập dữ liệu thực tế 442,211 bản ghi khách hàng duy nhất sau khi khử trùng lặp; "
-        f"2) Track 2 (Big Data Cloud Benchmark): Hiện thực hóa kịch bản đối chuẩn đọc/ghi dữ liệu quy mô lớn >4GB theo chuẩn Rubric 1.3 với "
+        f"2) Track 2 (Big Data Cloud Benchmark): Hiện thực hóa kịch bản đối chuẩn đọc/ghi dữ liệu quy mô lớn >4GB theo chuẩn Big Data Cloud Benchmark với "
         f"{rows_cnt:,} bản ghi doanh nghiệp, dung lượng thô {raw_gb:.2f} GB ({raw_mb:.1f} MB) xử lý Out-of-Core qua DuckDB với giới hạn bộ nhớ khóa cứng 1,200 MB. "
         f"Thực nghiệm đo đạc runtime thực tế ghi nhận: Định dạng Apache Parquet Snappy phân tán giúp nén dữ liệu xuống còn {p_mb:.1f} MB "
         f"(tỷ lệ nén {comp_ratio:.2f}x, tiết kiệm {savings_pct:.1f}% dung lượng), tốc độ đọc phân tích truy vấn chỉ mất {p_read_s:.2f}s "

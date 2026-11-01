@@ -11,8 +11,8 @@ Mỗi thao tác trong tài liệu đều quy định rõ: **Truy cập đường
 
 | Phân Hệ / Giao Diện | Địa Chỉ Truy Cập Mạng (Exact URL) | Giao Thức / Port | Chức Năng Chính & Lưu Ý Điều Hướng |
 | :--- | :--- | :--- | :--- |
-| **Giao Diện Điều Hành Web Bento Grid** | **`http://localhost:8000/ui`**<br>*(Alias: `http://localhost:8000/web`)* | HTTP / 8000 | **Bàn làm việc điều hành chính:** Form dự đoán thời gian thực cho từng khách hàng, giải thích XAI SHAP, dự đoán hàng loạt CSV, so sánh 4 mô hình và theo dõi drift.<br>⚠️ **Lưu ý kiến trúc & điều hướng:** Tệp giao diện được phục vụ trực tiếp từ `src/web/` (`index.html`, `app.js`, `style.css`, `charts.js`), không tồn tại thư mục `src/web/static/`. Đường dẫn gốc `http://localhost:8000/` tự động chuyển hướng (`HTTP 307 Temporary Redirect`) sang `/docs`. Để vào Bento Grid, **bắt buộc truy cập `/ui`**. |
-| **Bảng Điều Khiển Giám Sát Streamlit** | **`http://localhost:8501`** | HTTP / 8501 | **Trung tâm giám sát vận hành:** 4 tab chuyên sâu gồm `[KPI] Giám Sát Suy Luận & KPI` (SQLite WAL 9,276 bản ghi), `[DRIFT] Giám Sát Data Drift & Cảnh Báo` (PSI & KS-Test), `[A/B] Thử Nghiệm A/B Testing` (Welch t-test) và `[DIAG] Chẩn Đoán Mô Hình & Lỗi Dự Đoán`. |
+| **Giao Diện Điều Hành Web Bento Grid** | **`http://localhost:8000/ui`**<br>*(Alias: `http://localhost:8000/web`)* | HTTP / 8000 | **Bàn làm việc điều hành chính:** Form dự đoán thời gian thực cho từng khách hàng, giải thích XAI SHAP, dự đoán hàng loạt CSV, so sánh 4 mô hình và theo dõi drift.<br>**Lưu ý kiến trúc & điều hướng:** Tệp giao diện được phục vụ trực tiếp từ `src/web/` (`index.html`, `app.js`, `style.css`, `charts.js`), không tồn tại thư mục `src/web/static/`. Đường dẫn gốc `http://localhost:8000/` tự động chuyển hướng (`HTTP 307 Temporary Redirect`) sang `/docs`. Để vào Bento Grid, **bắt buộc truy cập `/ui`**. |
+| **Bảng Điều Khiển Giám Sát Streamlit** | **`http://localhost:8501`** | HTTP / 8501 | **Trung tâm giám sát vận hành:** 4 tab chuyên sâu gồm `Giám Sát Suy Luận & KPI` (SQLite WAL 9,276 bản ghi), `Giám Sát Data Drift & Cảnh Báo` (PSI & KS-Test), `Thử Nghiệm A/B Testing` (Welch t-test) và `Chẩn Đoán Mô Hình & Phân Tích Lỗi`. |
 | **FastAPI Swagger OpenAPI UI** | **`http://localhost:8000/docs`** | HTTP / 8000 | **Kiểm thử REST API tương tác:** Tiêu đề `ChurnGuard MLOps Serving API` v2.0.0. Thực thi trực tiếp các endpoint `/predict`, `/batch_predict`, `/upload_csv_predict`, `/api/v1/trigger_retrain`, `/api/v1/reload_model`. Yêu cầu header xác thực `x-api-key: mlops-churn-secret-2026`. |
 | **FastAPI ReDoc Interactive Spec** | **`http://localhost:8000/redoc`** | HTTP / 8000 | **Tài liệu kỹ thuật 3 cột:** Đặc tả chi tiết từng schema Pydantic, tham số header, body JSON và các mã trạng thái phản hồi HTTP. |
 | **Tệp Cấu Trúc OpenAPI 3.1.0 JSON** | **`http://localhost:8000/openapi.json`** | HTTP / 8000 | **Định dạng cấu trúc máy đọc:** Phục vụ tích hợp Postman, Swagger Codegen, kịch bản CI/CD và kiểm toán tự động. |
@@ -180,7 +180,7 @@ Sau khi bấm, khối `#prediction-result` trượt mở ra với animation `fad
    - Tiêu đề: `HÀNH ĐỘNG GIỮ CHÂN ĐỀ XUẤT:` (chữ hoa màu cam `#F59E0B`, font 11px, font-weight 700).
    - Đoạn văn khuyến nghị (`#recommendation-text`): Sinh ra từ hàm chuẩn hóa $e\text{-Profits}$ (`src/api/utils.py`).
      *Đối với bộ dữ liệu mặc định của Form* (Tuổi 38, Nam, Gắn bó 24 tháng, Gọi hỗ trợ 4 lần, Chậm trả 8 ngày, Gói Standard, Hợp đồng Monthly, Tổng chi $450, Tương tác cuối 15 ngày):
-     👉 **`ƯU TIÊN KHẨN CẤP (CLV Cao $450, Hợp đồng Monthly): Điều động chuyên viên VIP giải quyết khiếu nại kỹ thuật và tặng 1 tháng dịch vụ.`**
+      **`ƯU TIÊN KHẨN CẤP (CLV Cao $450, Hợp đồng Monthly): Điều động chuyên viên VIP giải quyết khiếu nại kỹ thuật và tặng 1 tháng dịch vụ.`**
 6. **Khung giải thích mô hình XAI SHAP Attributions (`#xai-box`):**
    - Tiêu đề: `GIẢI THÍCH MÔ HÌNH (XAI - SHAP ATTRIBUTIONS)` màu `#38BDF8`, kèm badge `NeurIPS 2017`.
    - Tóm tắt tự động (`#xai-summary-text`): Ví dụ `"Đặc trưng thúc đẩy rời bỏ chính (base_value=-0.124): support_calls (SHAP: +0.284) | payment_delay (SHAP: +0.195) | ..."`
@@ -202,7 +202,7 @@ Sau khi bấm, khối `#prediction-result` trượt mở ra với animation `fad
      * Nút submit lập tức chuyển trạng thái từ `Đang Phân Tích...` trở lại `Phân Tích Nguy Cơ Rời Bỏ`, kích hoạt lại quyền bấm (`disabled = false`).
      * Trên thanh Navbar: Chữ trạng thái `#api-status-text` đổi thành **`FastAPI: Offline (Chưa bật server)`**, huy hiệu Champion đổi thành **`Chưa kết nối`**.
      * Trên Tab 2 (So Sánh Mô Hình): Hai khung biểu đồ Chart.js phủ lớp thông báo lỗi nền xám đậm `rgba(15, 23, 42, 0.88)`:  
-       **`⚠️ Mất Kết Nối Backend API`** (màu đỏ `#EF4444`)  
+       **`[CẢNH BÁO] Mất Kết Nối Backend API`** (màu đỏ `#EF4444`)  
        **`Khởi động FastAPI tại port 8000`** (màu xám `#94A3B8`).
 
 ---
@@ -275,7 +275,7 @@ Sau khi bấm, khối `#prediction-result` trượt mở ra với animation `fad
   - **Biểu đồ cột bên trái:** Đồ thị tương tác Chart.js so sánh trực quan các chỉ số giữa 4 giải thuật.
   - **Biểu đồ đường bên phải:** Đồ thị hội tụ siêu tham số Optuna Bayesian TPE qua 12 trials, thể hiện ROC-AUC tăng dần đến điểm cực trị `0.9990`.
 - **Dấu hiệu LỖI:** Nếu mất kết nối API, hai khung biểu đồ Chart.js phủ lớp thông báo lỗi `.chart-offline-notice` (nền `rgba(15, 23, 42, 0.88)`):  
-  **`⚠️ Mất Kết Nối Backend API`** (màu đỏ `#EF4444`)  
+  **`[CẢNH BÁO] Mất Kết Nối Backend API`** (màu đỏ `#EF4444`)  
   **`Khởi động FastAPI tại port 8000`** (màu xám `#94A3B8`).
 
 ---
@@ -295,7 +295,7 @@ Sau khi bấm, khối `#prediction-result` trượt mở ra với animation `fad
     * **Kiểu dáng:** Nút viền ngoài mỏng `1px solid #38BDF8`, chữ màu Xanh Da Trời `#38BDF8`, padding `6px 12px`, font 12px.
     * **Vị trí chính xác:** Nằm ở **GÓC TRÊN BÊN PHẢI của khung tiêu đề Giám Sát Drift** (trong `.drift-header-box`).
   - Bấm vào nút này -> Trình duyệt tự động mở tab mới truy cập:  
-    👉 **`http://localhost:8000/docs/drift_report.html`** hiển thị toàn bộ biểu đồ phân phối xác suất tương tác Evidently/Plotly.
+    **`http://localhost:8000/docs/drift_report.html`** hiển thị toàn bộ biểu đồ phân phối xác suất tương tác Evidently/Plotly.
 - **Dấu hiệu LỖI:** Nếu trình duyệt báo `404 Not Found`, tệp HTML chưa được sinh. Chạy lệnh: `cmd /c "python src/monitoring/drift_detector.py"`.
 
 ---
@@ -326,11 +326,11 @@ Sau khi bấm, khối `#prediction-result` trượt mở ra với animation `fad
      * **Tên nhãn nút:** **`"Làm mới ngay (Refresh)"`**
      * **Vị trí:** Nằm ở **DƯỚI CÙNG của Sidebar**, ngay bên dưới đường kẻ phân cách thứ 2.
      * **Hành vi khi bấm:** Kích hoạt lệnh `st.rerun()`. Hàm `load_inference_logs()` kết nối trực tiếp SQLite WAL (`PRAGMA journal_mode=WAL;`) và không dùng cache, nạp lại tức thì toàn bộ bản ghi mới nhất từ `data/inference_logs.db`.
-   - ⚠️ **Xác nhận thành phần loại trừ:** Trong Sidebar **HOÀN TOÀN KHÔNG CÓ** bộ chọn ngày tháng (Date Range Picker) hay bất kỳ widget bộ lọc nào (Selectbox/Multiselect). Thiết kế tối giản, tập trung vào quan sát thời gian thực.
+   - **Xác nhận thành phần loại trừ:** Trong Sidebar **HOÀN TOÀN KHÔNG CÓ** bộ chọn ngày tháng (Date Range Picker) hay bất kỳ widget bộ lọc nào (Selectbox/Multiselect). Thiết kế tối giản, tập trung vào quan sát thời gian thực.
 
 ---
 
-### 4.2 Tab 1: `[KPI] Giám Sát Suy Luận & KPI`
+### 4.2 Tab 1: `Giám Sát Suy Luận & KPI`
 
 - **Vị trí:** Tab đầu tiên bên trái trên thanh tab ngang.
 - **Nguồn dữ liệu:** Bảng `inference_logs` trong cơ sở dữ liệu `data/inference_logs.db` (hiện có 9,276 bản ghi thực tế: 8,995 Champion, 281 Challenger).
@@ -338,28 +338,28 @@ Sau khi bấm, khối `#prediction-result` trượt mở ra với animation `fad
   1. **Thẻ 1 (Trái cùng):** Tiêu đề `"TỔNG LƯỢT SUY LUẬN"` | Giá trị: `{total_inf:,}` (ví dụ: `9,276`) | Phụ đề: `"Lưu trữ trong SQLite Database"`.
   2. **Thẻ 2 (Giữa trái):** Tiêu đề `"TỶ LỆ DỰ ĐOÁN RỜI BỎ"` | Giá trị: `{churn_rate:.1f}%` (ví dụ: `55.2%`) | Phụ đề: `{churn_cnt:,} / {total_inf:,} khách hàng`.
   3. **Thẻ 3 (Giữa phải):** Tiêu đề `"ĐIỀU HƯỚNG CHAMPION"` | Giá trị: `{champ_pct:.1f}%` (ví dụ: `97.0%`) | Phụ đề: `"Mục tiêu: 80% (XGBoost)"`.
-  4. **Thẻ 4 (Phải cùng):** Tiêu đề `"TRẠNG THÁI PHỤC VỤ"` | Giá trị: `"[ONLINE] HOẠT ĐỘNG"` (màu xanh lục Emerald `#06D6A0`) | Phụ đề: `"FastAPI + Feast Online Store"`.
-- **Bảng nhật ký suy luận thời gian thực (`[LOG] Nhật Ký Suy Luận Thời Gian Thực Gần Nhất`):**
+  4. **Thẻ 4 (Phải cùng):** Tiêu đề `"TRẠNG THÁI PHỤC VỤ"` | Giá trị: `"HOẠT ĐỘNG (ONLINE)"` (màu xanh lục Emerald `#06D6A0`) | Phụ đề: `"FastAPI + Feast Online Store"`.
+- **Bảng nhật ký suy luận thời gian thực (`Nhật Ký Suy Luận Thời Gian Thực Gần Nhất`):**
   - Hiển thị qua `st.dataframe(disp_df, use_container_width=True, height=320)`.
   - Các cột: `id`, `timestamp`, `customer_id`, `churn_prediction`, `churn_probability`, `model_version`.
-  - Cột `churn_prediction` được gắn nhãn trực quan: `"[WARNING] Rời bỏ (1)"` hoặc `"[OK] Giữ chân (0)"`.
+  - Cột `churn_prediction` được gắn nhãn trực quan: `"Rời bỏ (1)"` hoặc `"Giữ chân (0)"`.
   - Cột `churn_probability` được làm tròn 4 chữ số thập phân (`f"{p:.4f}"`).
   - Cho phép người dùng nhấp tiêu đề cột để sắp xếp tăng/giảm, tìm kiếm văn bản trong bảng, kéo thả độ rộng cột.
 - **Trạng thái rỗng (Fallback):** Nếu database chưa có bản ghi, hiển thị banner thông tin:  
   `st.info("Chưa có lượt suy luận nào được ghi nhận. Hãy gửi yêu cầu dự đoán qua REST API.")`.
-- ⚠️ **Lưu ý đối soát:** Tab 1 **KHÔNG** chứa biểu đồ Plotly; thông tin được trình bày qua 4 thẻ KPI Bento và bảng tương tác 320px.
+- **Lưu ý đối soát:** Tab 1 **KHÔNG** chứa biểu đồ Plotly; thông tin được trình bày qua 4 thẻ KPI Bento và bảng tương tác 320px.
 
 ---
 
-### 4.3 Tab 2: `[DRIFT] Giám Sát Data Drift & Cảnh Báo`
+### 4.3 Tab 2: `Giám Sát Data Drift & Cảnh Báo`
 
 - **Vị trí:** Tab thứ 2 từ trái sang.
 - **Nguồn dữ liệu:** Tệp JSON `data/processed/drift_metrics.json` (chứa kiểm định 13 đặc trưng dữ liệu giữa 309,547 mẫu huấn luyện và các mẫu suy luận).
 - **Khung cảnh báo ngưỡng trôi dạt tự động:**
   - Nếu tỷ lệ đặc trưng lệch phân phối `drift_share >= 0.30` (ngưỡng 30%):  
-    Hiện banner đỏ `st.error`: `[ALERT] CẢNH BÁO DATA DRIFT: Phát hiện X/13 đặc trưng bị lệch phân phối (Tỷ lệ: Y% >= ngưỡng 30%). Khuyến nghị kích hoạt Webhook tái huấn luyện tự động!`
+    Hiện banner đỏ `st.error`: `CẢNH BÁO DATA DRIFT: Phát hiện X/13 đặc trưng bị lệch phân phối (Tỷ lệ: Y% >= ngưỡng 30%). Khuyến nghị kích hoạt Webhook tái huấn luyện tự động!`
   - Nếu `drift_share < 0.30`:  
-    Hiện banner xanh lá `st.success`: `[OK] HỆ THỐNG ỔN ĐỊNH: Tỷ lệ đặc trưng biến động Y% nằm trong ngưỡng kiểm soát an toàn (< 30%).`
+    Hiện banner xanh lá `st.success`: `HỆ THỐNG ỔN ĐỊNH: Tỷ lệ đặc trưng biến động Y% nằm trong ngưỡng kiểm soát an toàn (< 30%).`
 - **Biểu đồ thanh ngang Plotly Express (`px.bar`):**
   - Trực quan hóa điểm số Population Stability Index (PSI) cho 13 đặc trưng hành vi.
   - Kiểu: Thanh ngang (`orientation="h"`), trục X: `"PSI Score"`, trục Y: `"Đặc trưng"`.
@@ -370,11 +370,11 @@ Sau khi bấm, khối `#prediction-result` trượt mở ra với animation `fad
   - Tiêu đề con: `Bảng Đối Soát Thống Kê Kolmogorov-Smirnov (KS-Test)`.
   - Các cột: `Đặc trưng`, `PSI Score`, `P-Value (KS)`, `Mức độ`, `Lệch phân phối` (`"Có"` / `"Không"`).
 - **Trạng thái thiếu tệp (Fallback):** Nếu chưa có tệp `drift_metrics.json`, hiển thị banner vàng:  
-  `st.warning("[WARNING] Chưa tìm thấy tệp drift_metrics.json. Vui lòng chạy pipeline drift detection.")`.
+  `st.warning("Chưa tìm thấy tệp drift_metrics.json. Vui lòng chạy pipeline drift detection.")`.
 
 ---
 
-### 4.4 Tab 3: `[A/B] Thử Nghiệm A/B Testing`
+### 4.4 Tab 3: `Thử Nghiệm A/B Testing`
 
 - **Vị trí:** Tab thứ 3 từ trái sang.
 - **Nguồn dữ liệu:** Hàm `analyze_ab_test_performance()` từ `src.api.ab_testing`.
@@ -397,11 +397,11 @@ Sau khi bấm, khối `#prediction-result` trượt mở ra với animation `fad
   | **v1.0.0-challenger** | Random_Forest | **19.93%** | 0.2214 |
 - **Trạng thái chưa đủ mẫu (Fallback):** Nếu mỗi phiên bản chưa tích lũy đủ 5 mẫu suy luận, hiển thị banner:  
   `st.info("Chưa có đủ dữ liệu A/B testing để chạy kiểm định thống kê.")`.
-- ⚠️ **Xác nhận thành phần loại trừ:** Tab 3 **KHÔNG** chứa slider chọn kích thước mẫu (sample size slider) hay slider mức ý nghĩa. Mọi dữ liệu được trích xuất hoàn toàn tự động từ SQLite.
+- **Xác nhận thành phần loại trừ:** Tab 3 **KHÔNG** chứa slider chọn kích thước mẫu (sample size slider) hay slider mức ý nghĩa. Mọi dữ liệu được trích xuất hoàn toàn tự động từ SQLite.
 
 ---
 
-### 4.5 Tab 4: `[DIAG] Chẩn Đoán Mô Hình & Lỗi Dự Đoán`
+### 4.5 Tab 4: `Chẩn Đoán Mô Hình & Phân Tích Lỗi`
 
 - **Vị trí:** Tab thứ 4 ngoài cùng bên phải.
 - **Hàng 1: Đồ thị học tập & Độ hiệu chuẩn (Side-by-side):**
@@ -632,7 +632,7 @@ Quy trình này hướng dẫn chi tiết cách sở hữu tài khoản đám m�
 ### 6.1 Quy trình Wizard 5 bước đăng ký tài khoản Azure for Students
 
 1. **Bước 1 - Truy cập cổng đăng ký chính thức:**
-   - Mở trình duyệt web truy cập: 👉 **`https://azure.microsoft.com/en-us/free/students/`**  
+   - Mở trình duyệt web truy cập: **`https://azure.microsoft.com/en-us/free/students/`**  
      *(hoặc bản tiếng Việt: `https://azure.microsoft.com/vi-vn/free/students/`)*.
    - **Đặc điểm trang web:** Tiêu đề trang `Azure for Students | Microsoft Azure`. Tiêu đề khối Hero: `Azure for Students` với thông điệp: $100 USD credit sử dụng trong 12 tháng, không yêu cầu thẻ tín dụng (`No credit card required`).
    - **Tìm nút bấm kích hoạt (Hero CTA Button):**
@@ -643,7 +643,7 @@ Quy trình này hướng dẫn chi tiết cách sở hữu tài khoản đám m�
    - Bấm vào nút **`Start free`**.
 2. **Bước 2 - Đăng nhập tài khoản Microsoft:**
    - Trang web chuyển hướng sang màn hình `login.microsoftonline.com`.
-   - Nhập tài khoản Microsoft cá nhân hoặc Office 365 trường cấp (ví dụ: `22520695@gm.uit.edu.vn` hoặc `mssv@student.uit.edu.vn`).
+   - Nhập tài khoản Microsoft cá nhân hoặc Office 365 trường cấp (ví dụ: `23520783@gm.uit.edu.vn` hoặc `mssv@student.uit.edu.vn`).
    - Bấm nút **`Next`** màu xanh dương ở góc dưới bên phải khung đăng nhập, nhập mật khẩu và bấm **`Sign in`**.
 3. **Bước 3 - Xác thực danh tính sinh viên (Academic Verification):**
    - Tại mục "Verification method", chọn **`School email address`**.
@@ -654,7 +654,7 @@ Quy trình này hướng dẫn chi tiết cách sở hữu tài khoản đám m�
 4. **Bước 4 - Xác minh thiết bị qua SMS OTP (Tuyệt đối không cần thẻ tín dụng):**
    - Chọn quốc gia `Vietnam (+84)`, điền số điện thoại cá nhân (bỏ số 0 đầu) và bấm **`Send code`**.
    - Nhập mã OTP 6 chữ số nhận được qua tin nhắn SMS và bấm **`Verify code`**.
-   - 🛡️ **Minh chứng an toàn tuyệt đối:** Bước này chỉ nhằm chống spam tài khoản, **hoàn toàn KHÔNG xuất hiện bất kỳ form nhập thẻ Visa/Mastercard nào**.
+   - **Minh chứng an toàn tuyệt đối:** Bước này chỉ nhằm chống spam tài khoản, **hoàn toàn KHÔNG xuất hiện bất kỳ form nhập thẻ Visa/Mastercard nào**.
 5. **Bước 5 - Chấp thuận điều khoản & Hoàn tất:**
    - Điền thông tin Họ tên, quốc gia Vietnam.
    - Tích chọn ô vuông: *"I agree to the subscription agreement, offer details and privacy statement"*.
@@ -675,7 +675,7 @@ Quy trình này hướng dẫn chi tiết cách sở hữu tài khoản đám m�
    - `Spending Limit`: **`Enabled`** kèm biểu tượng ổ khóa bảo vệ màu xanh.
    - Hạn mức số dư ban đầu: **`$100.00 USD Credit`** sử dụng trong 12 tháng. Khi cạn số dư, dịch vụ tự động tạm dừng mà không bao giờ phát sinh nợ cá nhân.
 5. **Nút Azure Cloud Shell trên Portal:**
-   - **Vị trí:** Nằm ở **Góc trên bên phải thanh Header Toolbar của Azure Portal**, ngay bên cạnh biểu tượng Quả chuông thông báo (Notifications `🔔`) và Bánh răng cài đặt (Settings `⚙️`).
+   - **Vị trí:** Nằm ở **Góc trên bên phải thanh Header Toolbar của Azure Portal**, ngay bên cạnh biểu tượng Quả chuông thông báo (Notifications) và Bánh răng cài đặt (Settings).
    - **Biểu tượng:** Icon terminal hình **`>_`**.
    - **Tiện ích vượt trội:** Nhấp vào nút `>_` để mở terminal Bash hoặc PowerShell trực tiếp ngay trong trình duyệt web. Môi trường này đã cài sẵn và tự động xác thực Azure CLI (`az`), giúp sinh viên thực thi toàn bộ lệnh triển khai mà **không cần cài đặt bất kỳ phần mềm nào lên máy tính cá nhân**.
 
@@ -728,7 +728,7 @@ Kịch bản tự động hóa tại `deploy/azure/deploy_azure.bat` (101 dòng)
    - **Bước 6:** Cấp phát Azure Container Registry `churnguardacr` (SKU Basic).
    - **Bước 7:** **Cloud-Native Docker Build (`az acr build`):**
      * Lệnh: `az acr build --registry !ACR_NAME! --image churnguard-mlops:!IMAGE_TAG! --image churnguard-mlops:latest .`
-     * 🚀 **Ưu điểm Cloud-Native vượt trội:** Mã nguồn được nén và đẩy lên Azure Container Registry để đóng gói trực tiếp trên đám mây của Microsoft. **Người dùng HOÀN TOÀN KHÔNG CẦN cài đặt hoặc khởi động Docker Desktop cục bộ!** Điều này giải quyết triệt để sự cố crash Docker Daemon trên Windows.
+     * **Ưu điểm Cloud-Native vượt trội:** Mã nguồn được nén và đẩy lên Azure Container Registry để đóng gói trực tiếp trên đám mây của Microsoft. **Người dùng HOÀN TOÀN KHÔNG CẦN cài đặt hoặc khởi động Docker Desktop cục bộ!** Điều này giải quyết triệt để sự cố crash Docker Daemon trên Windows.
    - **Bước 8:** Tạo Azure Container Apps Managed Environment `env-churnguard-mlops`.
    - **Bước 9:** Cấp phát Container App `churnguard-serving-app` với cấu hình 1.0 vCPU, 2.0 GiB RAM, mở cổng Ingress 8000 ra Internet, cơ chế tự động co giãn Serverless (`min-replicas: 0, max-replicas: 5`).
 4. **Dấu hiệu THÀNH CÔNG:**
@@ -749,7 +749,7 @@ Kịch bản tự động hóa tại `deploy/azure/deploy_azure.bat` (101 dòng)
 
 ### 6.5 Đối chiếu kỹ thuật: Azure Container Apps (Hiện hữu) vs Azure App Service (Cổ điển)
 
-Bảng đối chiếu cung cấp cơ sở lý luận vững chắc giúp nhóm bảo vệ đồ án giải trình khi giảng viên so sánh giữa hai mô hình:
+Bảng đối chiếu cung cấp cơ sở kỹ thuật hỗ trợ đánh giá kiến trúc khi so sánh giữa phương án hiện đại (Container Apps) và truyền thống (App Service):
 
 | Tiêu Chí Kỹ Thuật | Phương Án Hiện Hữu trong Codebase: **Azure Container Apps (ACA)** | Phương Án Cổ Điển: **Azure App Service (Web App for Containers)** |
 | :--- | :--- | :--- |
@@ -760,13 +760,13 @@ Bảng đối chiếu cung cấp cơ sở lý luận vững chắc giúp nhóm b
 | **Cơ chế Co giãn (Scaling)**| **Serverless Scale-to-Zero (`minReplicas: 0, maxReplicas: 5`)** -> Không có truy cập: chi phí compute = $0.00 | Luôn duy trì máy chủ B1 chạy 24/7 (~$13.14/tháng), không thể co về 0 |
 | **Định dạng URL công khai** | `https://<APP_NAME>.<hash>.<REGION>.azurecontainerapps.io` | `https://<WEB_APP_NAME>.azurewebsites.net` |
 | **Lệnh xem nhật ký** | `az containerapp logs show --name churnguard-serving-app --tail 100` | `az webapp log tail --name churnguard-serving-app` |
-| **Đánh giá FinOps cho SV** | **Rất tối ưu ($74.67/tháng tổng thể):** Tận dụng tối đa $100 credit sinh viên, tự ngắt khi nhàn rỗi. | Kém linh hoạt hơn về dung lượng RAM (gói B1 chỉ có 1.75 GB RAM, dễ quá tải khi nạp SHAP TreeExplainer). |
+| **Đánh giá FinOps ($100 Credit)** | **Tối ưu chi phí ($74.67/tháng tổng thể):** Vận hành an toàn trong hạn mức $100 credit khả dụng, tự ngắt khi nhàn rỗi. | Kém linh hoạt hơn về dung lượng RAM (gói B1 chỉ có 1.75 GB RAM, dễ quá tải khi nạp SHAP TreeExplainer). |
 
 ---
 
 ### 6.6 Ma trận chẩn đoán sự cố triển khai Cloud thường gặp (Master Cloud Troubleshooting)
 
-Dưới đây là 6 sự cố triển khai đám mây phổ biến nhất đối với tài khoản Azure for Students và hướng dẫn xử lý từng bước:
+Danh mục 6 sự cố triển khai đám mây phổ biến nhất đối với tài khoản Azure for Students và quy trình khắc phục chuẩn hóa:
 
 #### Sự cố 1: Lỗi chưa đăng ký không gian tên tài nguyên (`Namespace Not Registered`)
 - **Thông báo lỗi đặc trưng:**
@@ -840,17 +840,17 @@ Dưới đây là 6 sự cố triển khai đám mây phổ biến nhất đối
   ```
 - **Nguyên nhân gốc rễ:** Tên Storage Account chia sẻ không gian tên miền toàn cầu của Microsoft (`<name>.blob.core.windows.net`), chỉ cần một người dùng trên thế giới đã đặt tên này thì hệ thống sẽ từ chối.
 - **Cách khắc phục triệt để:**
-  Mở tệp `deploy/azure/deploy_azure.bat`, sửa dòng số 19 gắn thêm mã số sinh viên hoặc chuỗi ngẫu nhiên:
+  Mở tệp `deploy/azure/deploy_azure.bat`, sửa dòng số 19 gắn thêm hậu tố định danh duy nhất (unique suffix) hoặc mã cá nhân:
   ```bat
-  set STORAGE_ACCOUNT=stchurn22520695sea
+  set STORAGE_ACCOUNT=stchurn23520783sea
   ```
-  *(Lưu ý: Tên Storage Account chỉ được chứa từ 3 đến 24 ký tự chữ thường và chữ số, tuyệt đối không chứa dấu gạch nối `-` hay chữ hoa).*
+  *(Ràng buộc kỹ thuật: Tên Storage Account chỉ được chứa từ 3 đến 24 ký tự chữ thường và chữ số, tuyệt đối không chứa dấu gạch nối `-` hay chữ hoa).*
 
 ---
 
 ### 6.7 Lệnh thu hồi tài nguyên sau khi nghiệm thu (FinOps - Bảo toàn ngân sách)
 
-Sau khi kết thúc buổi bảo vệ đồ án hoặc kiểm thử, để đảm bảo không còn dịch vụ nào chạy ngầm làm suy hao số dư $100 credit, thực thi **1 câu lệnh duy nhất**:
+Sau khi hoàn tất quy trình kiểm thử và nghiệm thu hệ thống, để giải phóng tài nguyên và bảo toàn số dư ngân sách $100 credit, thực thi **1 câu lệnh duy nhất**:
 
 ```bash
 cmd /c "az group delete --name rg-churnguard-mlops-sea --yes --no-wait"
@@ -876,6 +876,6 @@ cmd /c "az group delete --name rg-churnguard-mlops-sea --yes --no-wait"
 | **Lỗi Khóa Ghi SQLite WAL** | `sqlite3.OperationalError: database is locked` | Nhiều tiến trình cùng ghi vào SQLite khi chưa bật chế độ WAL | Mã nguồn đã tự động kích hoạt `PRAGMA journal_mode=WAL; busy_timeout=5000;` để tự giải tỏa |
 | **Lỗi Docker Daemon Offline** | `failed to connect to the docker API at npipe://...` | Docker Desktop cục bộ chưa được bật | Kịch bản `deploy_azure.bat` sử dụng `az acr build` trên Cloud nên **hoàn toàn không cần Docker Desktop** |
 | **Lỗi Azure Quota vCPU** | `Quota limit exceeded in region southeastasia` | Hạn ngạch tài khoản sinh viên tại vùng Singapore bị quá tải | Sửa dòng 15 trong `deploy_azure.bat` thành `set LOCATION=eastus` hoặc `eastasia` |
-| **Lỗi Trùng Tên Storage** | `StorageAccountAlreadyTaken: ... is already taken` | Tên Azure Storage Account bị trùng lặp trên phạm vi toàn cầu | Sửa dòng 19 trong `deploy_azure.bat` thành `set STORAGE_ACCOUNT=stchurn22520695sea` |
+| **Lỗi Trùng Tên Storage** | `StorageAccountAlreadyTaken: ... is already taken` | Tên Azure Storage Account bị trùng lặp trên phạm vi toàn cầu | Sửa dòng 19 trong `deploy_azure.bat` thành `set STORAGE_ACCOUNT=stchurn23520783sea` |
 | **Lỗi Chưa Đăng Ký Provider** | `The subscription is not registered to use namespace 'Microsoft.ContainerRegistry'` | Tài khoản Azure for Students mới chưa kích hoạt đủ namespace | Đăng ký namespace: `cmd /c "az provider register --namespace Microsoft.ContainerRegistry"` và `Microsoft.App` |
 | **Lỗi Lệch Cổng Ingress Cloud** | Container báo `Running` nhưng không vào được mạng ngoài | Cổng Ingress trỏ nhầm sang cổng 80 thay vì 8000 | Cập nhật cổng: `cmd /c "az containerapp update --name churnguard-serving-app --resource-group rg-churnguard-mlops-sea --target-port 8000"` |

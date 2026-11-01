@@ -1,5 +1,5 @@
 # Terraform Infrastructure as Code for ChurnGuard MLOps on Azure
-# UIT IS402 Cloud Computing - Student: Nguyen Trong Khoi (22520695)
+# ChurnGuard MLOps Level 2 Enterprise Platform Specification
 
 terraform {
   required_version = ">= 1.5.0"
@@ -37,10 +37,9 @@ resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.location
   tags = {
-    Project     = "UIT-IS402-MLOps"
-    Course      = "Cloud Computing"
-    StudentId   = "22520695"
+    Project     = "ChurnGuard-MLOps"
     Environment = "Production"
+    ManagedBy   = "Terraform"
   }
 }
 

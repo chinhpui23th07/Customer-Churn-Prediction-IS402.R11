@@ -4,7 +4,6 @@ Hội Đồng Thanh Tra Chấm Điểm Liêm Chính Học Thuật (Zero-Leniency
 Nguyên tắc Liêm chính Học thuật:
 - Phân định rõ ràng: Điểm thực tế Local (3.35/10) vs Điểm mục tiêu Cloud (9.90/10).
 - Vạch rõ 13 tiêu chí (17 tiểu mục) bị trừ điểm khi chưa kết nối Azure thực tế: 1.3, 1.4, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 4.1, 4.2, 4.3, 4.4, 5.1, 5.2, 5.3, 5.4.
-Tuân thủ Invariant 01, Invariant 02 (< 400 dòng), Invariant 05, Invariant 13 (Zero-Mockup).
 """
 import os
 import sys

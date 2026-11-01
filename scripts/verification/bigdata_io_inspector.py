@@ -4,7 +4,6 @@ Nhiệm vụ:
 1. Đo lường kích thước dữ liệu hiện hữu và phản ánh trung thực quy mô tập dữ liệu local (~25.5 MB).
 2. Kiểm tra tính sẵn sàng của kịch bản Cloud Big Data (>4GB Kaggle REES46 5.28 GB).
 3. Đảm bảo nguyên tắc Liêm chính Học thuật: Tuyệt đối KHÔNG sinh dữ liệu nhân tạo hay fake 45M dòng.
-Tuân thủ Invariant 01, Invariant 02 (< 400 dòng), Invariant 13 (Zero-Mockup).
 """
 import os
 import sys

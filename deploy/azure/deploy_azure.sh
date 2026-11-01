@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# UIT IS402 - 1-CLICK AZURE CLOUD DEPLOYMENT SCRIPT (BASH/LINUX/CI)
-# De tai 11: MLOps Customer Churn Prediction
-# Sinh vien: Nguyen Trong Khoi - MSSV: 22520695 | GV: ThS. Ha Le Hoai Trung
+# CHURNGUARD MLOPS - 1-CLICK AZURE CLOUD DEPLOYMENT SCRIPT (BASH/LINUX/CI)
+# Production-Grade Automated Cloud Infrastructure Provisioning
 # ==============================================================================
 
 set -euo pipefail
@@ -13,7 +12,7 @@ echo "==========================================================================
 
 RESOURCE_GROUP="rg-churnguard-mlops-sea"
 LOCATION="southeastasia"
-ACR_NAME="acrchurnguard22520695"
+ACR_NAME="acrchurnguard23520783"
 APP_ENV="env-churnguard-mlops"
 APP_NAME="churnguard-serving-app"
 STORAGE_ACCOUNT="stchurnguardsea2026"

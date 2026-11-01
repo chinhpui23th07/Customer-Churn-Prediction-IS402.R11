@@ -3,7 +3,7 @@
 Generate Static SHAP Visualizations for Model Explainability.
 Module tao bieu do SHAP Beeswarm Summary Plot va Waterfall Attribution
 cho Champion Model phuc vu bao cao hoc thuat va giam sat XAI.
-Tuan thu Invariant 01, 02 (<= 400 dong) va chuan do hoa 300 DPI.
+Chuan do hoa 300 DPI phuc vu xuat ban.
 """
 import os
 import sys

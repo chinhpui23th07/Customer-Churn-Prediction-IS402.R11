@@ -3,7 +3,6 @@ Trình tạo Báo Cáo Khóa Luận / Đồ Án chuẩn Đại học Công ngh�
 Điều phối khung viền bìa đôi, logo UIT, bìa phụ, biểu mẫu nhận xét GVHD/GVPB, hội đồng chấm,
 lời cam đoan, lời cảm ơn, tóm tắt song ngữ, mục lục phân cấp, danh mục hình ảnh, bảng biểu,
 6 chương chuyên sâu gắn số liệu thực nghiệm, tài liệu tham khảo IEEE và phụ lục.
-Tuân thủ Invariant 01, Invariant 02 (< 400 dòng) và Invariant 16.
 """
 import os
 import sys

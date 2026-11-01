@@ -1,7 +1,6 @@
 """
 Công cụ Thẩm định Thị giác (Vision Audit) & Đóng gói Bài nộp Sạch (Clean Packaging).
 Môn học: Điện toán đám mây (Cloud Computing) - UIT.
-Tuân thủ Invariant 01, Invariant 02 (< 400 dòng), Invariant 17 và Invariant 18.
 """
 import os
 import sys
@@ -143,7 +142,7 @@ def verify_workspace_cleanliness():
 def create_clean_submission_zip(output_zip_path=None):
     """Đóng gói tệp ZIP nộp bài chuẩn UIT: Chỉ chứa mã nguồn sạch và PDF báo cáo."""
     if output_zip_path is None:
-        student_id = "22520695"
+        student_id = "23520783"
         output_zip_path = os.path.join(BASE_DIR, f"{student_id}_BTL_Cloud_Computing_MLOps.zip")
 
     print(f"[*] Bắt đầu đóng gói bài nộp: {output_zip_path}")

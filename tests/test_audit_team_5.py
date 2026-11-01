@@ -4,7 +4,6 @@ Kiem thu toan ven: Do bao phu thuc the Feast online store xuyen suot 3 tap Train
 xu ly loi chinh xac cho cac ma khach hang am (-999), 0 hoac khong ton tai (HTTP 404/422);
 can chinh vector dac trung va ep kieu float hop le; kiem tra SLA do tre truy xuat
 truc tuyen p95 (< 50ms) va co che chan phong ve khi thieu thuoc tinh (partial attribute fallback).
-Tuan thu Invariant 02 (<= 400 dong) va Invariant 13 (Zero Mockup).
 """
 
 import os

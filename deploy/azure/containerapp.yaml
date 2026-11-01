@@ -1,5 +1,5 @@
 # Azure Container Apps Specification Manifest
-# Project: ChurnGuard MLOps - UIT IS402 Cloud Computing (22520695)
+# Project: ChurnGuard MLOps Level 2 Enterprise Platform
 apiVersion: 2023-05-01
 type: Microsoft.App/containerApps
 location: southeastasia

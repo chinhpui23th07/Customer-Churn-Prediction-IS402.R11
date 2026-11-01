@@ -1,7 +1,6 @@
 """
 Module chẩn đoán mô hình nâng cao (Model Diagnostics & Error Analysis).
 Sinh biểu đồ Learning Curves, Calibration Curves và Phân tích chi tiết False Positives / False Negatives.
-Tuân thủ Invariant 01 (Clean Architecture) và Invariant 02 (< 400 dòng).
 """
 import os
 import sys

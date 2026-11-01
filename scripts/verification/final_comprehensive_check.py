@@ -6,7 +6,6 @@ Nguyên tắc Liêm chính học thuật (Academic Integrity):
 - Tuyệt đối KHÔNG tự phong 10/10 khi chưa kết nối Cloud Azure thật.
 - Phân định rõ ràng: Điểm thực tế Local (3.35/10) vs Điểm mục tiêu Cloud (9.90/10).
 - Nêu rõ 13 tiêu chí (17 tiểu mục) Cloud bị trừ điểm: Rubric 1.3, 1.4, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 4.1, 4.2, 4.3, 4.4, 5.1, 5.2, 5.3, 5.4.
-Tuân thủ Invariant 01, Invariant 02 (< 400 dòng), Invariant 05, Invariant 13 (Zero-Mockup) & Invariant 15.
 """
 import os
 import re
@@ -187,7 +186,7 @@ def check_engineering_gates():
         capture_output=True, text=True, encoding="utf-8", errors="replace"
     )
     line_passed = (res_line.returncode == 0) and ("[PASSED]" in res_line.stdout)
-    print(f"  [{'PASSED' if line_passed else 'FAILED'}] Giới hạn 400 dòng mã (Invariant 02): 0 tệp vi phạm.")
+    print(f"  [{'PASSED' if line_passed else 'FAILED'}] Giới hạn 400 dòng mã (Modular Cap): 0 tệp vi phạm.")
 
     # 2. Pytest suite (trích xuất động số lượng bài test thực tế đã pass)
     res_test = subprocess.run(

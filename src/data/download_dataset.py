@@ -1,6 +1,5 @@
 """
 Module tải và xác thực tập dữ liệu Customer Churn từ nguồn Kaggle chính thống.
-Tuân thủ Invariant 01 (Clean Architecture) và Invariant 02 (< 400 dòng).
 """
 import os
 import sys

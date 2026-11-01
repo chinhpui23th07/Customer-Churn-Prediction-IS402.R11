@@ -2,7 +2,6 @@
 Script tự động sinh tệp Slide thuyết trình PowerPoint chuẩn học thuật UIT (.pptx).
 Tích hợp biểu đồ thực tế 300 DPI, sơ đồ kiến trúc, dữ liệu động từ JSON artifacts,
 trích dẫn học thuật IEEE và Speaker Notes cho từng slide.
-Tuân thủ Invariant 01 và Invariant 02 (< 400 dòng).
 """
 import os
 import sys
@@ -191,7 +190,7 @@ def build_presentation():
             "title": "Kiến Trúc Nhị Phân: Đo Kiểm I/O Storage & Big Data (>4GB)",
             "bullets": [
                 f"Track 1 (100k - 442k Churn): Parquet Snappy nén {p_comp:.1f}x, đọc {p_read:.2f} MB/s (nhanh hơn {p_speedup:.1f}x so với CSV).",
-                f"Track 2 (Big Data >4GB Scale Rubric 1.3): {bd_rows // 1_000_000} triệu dòng ({bd_gb:.2f} GB CSV -> {bd_pmb:.1f} MB Parquet Snappy).",
+                f"Track 2 (Big Data >4GB Cloud Benchmark): {bd_rows // 1_000_000} triệu dòng ({bd_gb:.2f} GB CSV -> {bd_pmb:.1f} MB Parquet Snappy).",
                 f"Tỷ lệ nén dữ liệu lớn: {bd_comp:.2f}x (Tiết kiệm {bd_saved:.1f}% chi phí lưu trữ Azure Blob Storage).",
                 f"Tốc độ đọc phân tích Out-of-Core: {bd_read_mb_s:,.1f} MB/s (Nhanh gấp {bd_speedup:.2f}x so với quét tuần tự CSV).",
                 f"Quản trị RAM psutil: Đỉnh RAM cố định {bd_ram:.1f} MB (O(1) Out-of-Core, an toàn dưới giới hạn 1,200 MB, No OOM)."
@@ -301,7 +300,7 @@ def build_presentation():
             "title": "GitHub Actions CI/CD Pipeline & Tối Ưu Chi Phí Đám Mây",
             "bullets": [
                 "Pipeline CI/CD: Kiểm tra 400 dòng code, kiểm tra DVC metadata, chạy 100% Pytest suite, đóng gói Docker.",
-                "Hỗ trợ Self-hosted Runner theo Đề bài 11 và CD deployment tự động kiểm tra health check.",
+                "Hỗ trợ Self-hosted Runner theo chuẩn MLOps CI/CD và deployment tự động kiểm tra health check.",
                 "Dự toán TCO: Chi phí vận hành tối ưu ~$84.05 / tháng trên AWS/Azure.",
                 "Chiến lược tiết kiệm: Parquet giảm 73% chi phí lưu trữ; Spot Instances giảm 70% chi phí tính toán."
             ],

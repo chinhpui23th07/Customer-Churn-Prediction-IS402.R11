@@ -1,6 +1,6 @@
 """
 Module đo kiểm hiệu năng IO (IOPS, Latency, Throughput) giữa các định dạng lưu trữ.
-Đáp ứng Mục 3.1 & 3.4 của Rubric Đánh giá. Tuân thủ Invariant 02 (< 400 dòng).
+Hỗ trợ đối chuẩn IOPS, Latency và Throughput giữa CSV, Parquet và SQLite.
 """
 import os
 import sys

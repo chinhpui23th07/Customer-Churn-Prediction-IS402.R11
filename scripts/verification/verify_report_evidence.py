@@ -2,7 +2,6 @@
 Script xác minh tự động 100% số liệu, thông tin, cơ sở dữ liệu và tệp minh chứng
 được trình bày trong README.md và Báo cáo Tổng hợp Dự án (BAO_CAO_TONG_HOP_DU_AN_VA_KIEM_TOAN_SWARM.md).
 Mọi thông số trong báo cáo đều có đối chứng tự động bằng assert tại đây.
-Tuân thủ Invariant 02 (<= 400 dòng) và Invariant 05 (Standard ASCII Hyphen '-').
 """
 import json
 import sqlite3

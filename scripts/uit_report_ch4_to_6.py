@@ -1,6 +1,5 @@
 """
 Nội dung Chương 4, 5, 6, Tài liệu tham khảo và Phụ lục chuẩn UIT.
-Tuân thủ Invariant 01, Invariant 02 (< 400 dòng), Invariant 05 và Invariant 16.
 """
 import os
 import json

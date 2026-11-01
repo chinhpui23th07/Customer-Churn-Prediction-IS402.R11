@@ -1,6 +1,5 @@
 """
 Schema định nghĩa dữ liệu đầu vào và đầu ra cho FastAPI Serving Service.
-Tuân thủ Invariant 01 (Clean Architecture) và Invariant 02 (< 400 dòng).
 """
 import math
 from typing import List, Optional, Dict, Any, Literal
