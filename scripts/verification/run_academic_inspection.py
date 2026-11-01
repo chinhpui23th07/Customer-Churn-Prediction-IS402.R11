@@ -80,7 +80,7 @@ Hệ thống mã nguồn trên môi trường local **đã được hoàn thiệ
 
 Tuy nhiên, đối chiếu với **Rubric chấm điểm chính thức của Giảng viên (ThS. Hà Lê Hoài Trung)** cho môn Điện toán đám mây (IS402), hệ thống bị trừ điểm nghiêm ngặt (**-{master_verdict['penalized_points']} điểm**) do **hoàn toàn chưa kết nối hạ tầng Cloud Azure thực tế**:
 
-1. **Giới hạn Kích thước dữ liệu trên máy cục bộ (Mục 1.3):** Dữ liệu thô trên ổ đĩa local chỉ đạt **{size_audit['total_raw_mb']} MB ({size_audit['total_raw_gb']} GB)**, thiếu hụt gấp **{size_audit['deficit_factor']} lần** so với ngưỡng >4GB của đề tài. Kịch bản Big Data Cloud đã được đóng gói sẵn tại `notebooks/rees46_bigdata_cloud_benchmark.ipynb` (tập 5.28 GB, 42.45M dòng) chờ thực thi trên môi trường Cloud.
+1. **Giới hạn Kích thước dữ liệu trên máy cục bộ (Mục 1.3):** Dữ liệu thô trên ổ đĩa local chỉ đạt **{size_audit['total_raw_mb']} MB ({size_audit['total_raw_gb']} GB)**, thiếu hụt gấp **{size_audit['deficit_factor']} lần** so với ngưỡng >4GB của đề tài. Kịch bản Big Data Cloud đã được đặc tả tại `docs/requirements/project_context.md` (tập KKBox Churn 7.52 GB, 32 Parquet files) theo kế hoạch chuyển đổi trên môi trường Cloud.
 2. **Lưu trữ Cloud Storage (Mục 3.2):** Pipeline ETL streaming đã sẵn sàng adapter `sync_to_cloud_storage` nhưng hiện chỉ ghi vào `data/processed/` cục bộ do chưa có Azure Blob Connection String.
 3. **Đo độ trễ Multi-Region (Mục 3.3):** Kịch bản `latency_simulator.py` đã đo đạc RTT mạng TCP tới 5 Azure Region công cộng, nhưng chưa dựng cụm máy ảo tính toán riêng biệt tại từng Region.
 4. **Hạ tầng Feature Store Online (Mục 3.4):** Feast Online Store đang vận hành ở chế độ SQLite local fallback; adapter kết nối Redis SSL cổng 6380 đã hoàn thiện trong `feature_store.py` nhưng chưa có cụm Azure Cache for Redis live.
@@ -126,7 +126,7 @@ Tuy nhiên, đối chiếu với **Rubric chấm điểm chính thức của Gi�
 
 ## 4. KẾ HOẠCH HÀNH ĐỘNG KHẮC PHỤC TRIỆT ĐỂ (ACTION PLAN TO 10.0)
 
-1. **Khắc phục Kích thước dữ liệu (>4GB):** Khởi chạy `notebooks/rees46_bigdata_cloud_benchmark.ipynb` trên Kaggle Cloud GPU/CPU với tập dữ liệu 5.28 GB để thu thập số liệu I/O thực tế phục vụ báo cáo.
+1. **Khắc phục Kích thước dữ liệu (>4GB):** Khởi chạy kịch bản xử lý tập KKBox Churn 7.52 GB trên môi trường Cloud với PySpark/DuckDB để thu thập số liệu I/O thực tế phục vụ báo cáo.
 2. **Khắc phục Storage Cloud:** Cung cấp thông tin tài khoản Azure Storage để DVC và hàm `sync_to_cloud_storage` đẩy dữ liệu lên Azure Blob Storage container.
 3. **Khắc phục Feature Store:** Triển khai Azure Cache for Redis và cấu hình `AZURE_REDIS_CONNECTION_STRING` để Feast Online Store chuyển sang Redis In-Memory.
 4. **Khắc phục Triển khai Cloud:** Chạy `deploy/azure/deploy_azure.bat` với tài khoản Azure sinh viên để khởi tạo Azure Container Apps serving public URL.

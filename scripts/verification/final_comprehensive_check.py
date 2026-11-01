@@ -47,9 +47,9 @@ def check_r1_problem_and_data():
     target_cloud_scores["R1.3_scale_and_speed"] = 0.75
     cloud_penalties["R1.3_scale_and_speed"] = (
         "TRỪ TOÀN BỘ 0.75đ: Dữ liệu thô local chỉ 25.49 MB (440k dòng), chưa đạt >4GB trên local disk. "
-        "Kịch bản >4GB Kaggle REES46 (5.28 GB, 42.45M dòng) đã sẵn sàng trong notebooks/ chờ thực thi trên cloud."
+        "Kịch bản >4GB KKBox Churn (7.52 GB, 32 Parquet files) đang trong lộ trình chuyển đổi và thực thi trên cloud."
     )
-    print("  [!] R1.3 Quy mô dữ liệu: LOCAL 0.00/0.75đ (Trừ 0.75đ - Thiếu cloud execution cho tập 5.28 GB)")
+    print("  [!] R1.3 Quy mô dữ liệu: LOCAL 0.00/0.75đ (Trừ 0.75đ - Thiếu cloud execution cho tập KKBox >4GB)")
 
     # 1.4 Phân loại thành phần Cloud (Max 0.25đ)
     local_scores["R1.4_cloud_models"] = 0.10
@@ -220,7 +220,8 @@ if __name__ == "__main__":
     print(f"  - ĐIỂM MỤC TIÊU CLOUD (Sau khi triển khai Azure)   : {tot_cloud:.2f} / 10.00 điểm")
     print("=" * 82)
 
-    summary_file = os.path.join(BASE_DIR, "final_check_results.json")
+    summary_file = os.path.join(BASE_DIR, "data", "processed", "final_check_results.json")
+    os.makedirs(os.path.dirname(summary_file), exist_ok=True)
     with open(summary_file, "w", encoding="utf-8") as f:
         json.dump({
             "timestamp": datetime.now().isoformat(),

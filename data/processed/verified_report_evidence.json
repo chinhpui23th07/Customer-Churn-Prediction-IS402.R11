@@ -7,11 +7,11 @@
     "evidence_file": "scripts/uit_report_content.py#L25-L32"
   },
   "codebase_line_cap": {
-    "total_source_files": 45,
+    "total_source_files": 55,
     "files_over_400_lines": 0,
     "web_ui_line_counts": {
-      "src/web/app.js": 198,
-      "src/web/charts.js": 158,
+      "src/web/app.js": 197,
+      "src/web/charts.js": 157,
       "src/web/dashboard.py": 183,
       "src/web/index.html": 181,
       "src/web/style.css": 172
@@ -56,7 +56,7 @@
     ]
   },
   "inference_sqlite_wal_db": {
-    "logged_predictions_count": 11123,
+    "logged_predictions_count": 21199,
     "evidence_file": "data/inference_logs.db"
   },
   "io_and_streaming_benchmarks": {

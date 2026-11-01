@@ -2,7 +2,7 @@
 Module Thanh tra Kích thước Dữ liệu & Kiểm định Thực nghiệm Big Data I/O.
 Nhiệm vụ:
 1. Đo lường kích thước dữ liệu hiện hữu và phản ánh trung thực quy mô tập dữ liệu local (~25.5 MB).
-2. Kiểm tra tính sẵn sàng của kịch bản Cloud Big Data (>4GB Kaggle REES46 5.28 GB).
+2. Kiểm tra tính sẵn sàng của đặc tả Cloud Big Data (>4GB KKBox Churn 7.52 GB).
 3. Đảm bảo nguyên tắc Liêm chính Học thuật: Tuyệt đối KHÔNG sinh dữ liệu nhân tạo hay fake 45M dòng.
 """
 import os
@@ -52,16 +52,12 @@ def audit_current_dataset_size() -> dict:
 def verify_cloud_bigdata_readiness() -> dict:
     """
     Kiểm tra tính sẵn sàng của kịch bản Big Data Cloud Benchmark (>4GB)
-    trên tập dữ liệu Kaggle REES46 (5.28 GB) mà KHÔNG sinh dữ liệu giả trên local.
+    trên tập dữ liệu chuẩn KKBox Churn (7.52 GB) mà KHÔNG sinh dữ liệu giả trên local.
     """
-    nb_path = os.path.join(BASE_DIR, "notebooks", "rees46_bigdata_cloud_benchmark.ipynb")
-    script_path = os.path.join(BASE_DIR, "scripts", "kaggle_bigdata_benchmark.py")
-    meta_path = os.path.join(BASE_DIR, "notebooks", "kernel-metadata.json")
+    spec_path = os.path.join(BASE_DIR, "docs", "requirements", "project_context.md")
     local_io_path = os.path.join(PROCESSED_DIR, "io_benchmark_results.json")
 
-    has_nb = os.path.exists(nb_path)
-    has_script = os.path.exists(script_path)
-    has_meta = os.path.exists(meta_path)
+    has_spec = os.path.exists(spec_path)
     has_local_io = os.path.exists(local_io_path)
 
     local_io_summary = {}
@@ -73,19 +69,16 @@ def verify_cloud_bigdata_readiness() -> dict:
         "local_dataset_audit": audit_current_dataset_size(),
         "local_io_benchmark": local_io_summary,
         "cloud_bigdata_specs": {
-            "dataset_name": "REES46 eCommerce Behavior Data",
-            "kaggle_source": "mkechinov/ecommerce-behavior-data-from-multi-category-store",
-            "target_raw_file": "2019-Oct.csv",
-            "target_raw_size_gb": 5.28,
-            "target_records": 42448764,
-            "notebook_ready": has_nb,
-            "script_ready": has_script,
-            "kernel_metadata_ready": has_meta,
-            "execution_mode": "Out-of-Core DuckDB Streaming to Parquet Snappy (Cloud Compute)"
+            "dataset_name": "KKBox Customer Churn Big Data",
+            "huggingface_source": "vaibhavkhurana/subscriber-retention-intelligence",
+            "target_raw_size_gb": 7.52,
+            "target_tables": ["member", "subscription_transaction", "listening_day", "churn_label"],
+            "spec_ready": has_spec,
+            "execution_mode": "Out-of-Core PySpark / DuckDB Streaming to Parquet Snappy (Cloud Compute)"
         },
         "verdict": {
-            "local_status": "Dữ liệu local 25.5 MB (440k dòng) phục vụ huấn luyện ML & API",
-            "cloud_status": "Kịch bản >4GB đã đóng gói hoàn tất, sẵn sàng thực thi trên Kaggle/Azure Cloud (/boost)",
+            "local_status": "Dữ liệu local 25.5 MB (440k dòng) phục vụ scaffold kiểm thử nhanh",
+            "cloud_status": "Đặc tả tập KKBox 7.52 GB đã sẵn sàng trong docs/requirements/project_context.md",
             "mock_data_detected": False
         }
     }

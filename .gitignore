@@ -67,7 +67,8 @@ AGENTS.md
 graphify-out/
 .graphify*
 docs/research/
-docs/requirements/
+docs/requirements/*
+!docs/requirements/*.md
 docs/audit_reports/
 docs/ACADEMIC_INTEGRITY_AUDIT_REPORT.md
 docs/MULTI_AGENT_TRIPLE_BLIND_AUDIT_REPORT.md

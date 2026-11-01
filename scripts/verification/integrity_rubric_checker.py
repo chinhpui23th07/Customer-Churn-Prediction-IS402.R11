@@ -42,9 +42,9 @@ class AcademicIntegrityAuditor:
         self.target_scores["1.3"] = 0.75
         self.penalties["1.3"] = (
             "TRỪ TOÀN BỘ 0.75đ: Dữ liệu thô trên máy local chỉ đạt 25.49 MB (thiếu quy mô >4GB). "
-            "Kịch bản >4GB Kaggle REES46 (5.28 GB, 42.45M dòng) đã sẵn sàng trong notebooks/ chờ thực thi trên cloud."
+            "Kịch bản >4GB KKBox Churn (7.52 GB, 32 Parquet files) đang trong lộ trình chuyển đổi và thực thi trên cloud."
         )
-        self.evidence["1.3"] = "Chuẩn bị sẵn sàng notebooks/rees46_bigdata_cloud_benchmark.ipynb cho tập Kaggle 5.28 GB."
+        self.evidence["1.3"] = "Kịch bản tập KKBox 7.52 GB theo đặc tả docs/requirements/project_context.md."
 
         # 1.4 Phân loại thành phần Cloud (0.25đ)
         self.local_scores["1.4"] = 0.10
