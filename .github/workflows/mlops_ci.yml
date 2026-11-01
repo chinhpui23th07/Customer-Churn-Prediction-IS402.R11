@@ -8,6 +8,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.11"
+  PYTHONPATH: "."
   API_KEY_SECRET: ${{ secrets.API_KEY_SECRET || 'mlops-churn-secret-2026' }}
   TESTCONTAINERS_RYUK_DISABLED: "true"
 
@@ -60,7 +61,7 @@ jobs:
 
       - name: Execute Pytest Suite (100% Passed)
         run: |
-          pytest tests/ -v --junitxml=junit/test-results.xml
+          python -m pytest tests/ -v --junitxml=junit/test-results.xml
 
   docker-build:
     name: Build & Smoke Test Docker Image
