@@ -234,6 +234,21 @@ def test_resilience_pipeline_end_to_end() -> None:
     assert fallback_res["fallback"] is True
 
 
+def test_azurite_adapter_auto_detection() -> None:
+    """Test Azurite storage adapter auto-detection of live vs in-memory fallback."""
+    adapter = AzuriteStorageAdapter()
+    container = "churnguard-integration"
+    blob_name = "test_blob.bin"
+    payload = b"churnguard-azurite-dual-mode-verification"
+
+    assert adapter.upload_blob(container, blob_name, payload) is True
+    assert adapter.exists(container, blob_name) is True
+    assert adapter.download_blob(container, blob_name) == payload
+    assert blob_name in adapter.list_blobs(container)
+    assert adapter.delete_blob(container, blob_name) is True
+    assert adapter.exists(container, blob_name) is False
+
+
 @pytest.mark.skipif(not is_docker_running(), reason="Docker daemon is offline; skipping ephemeral container test")
 def test_testcontainers_live_container() -> None:
     """Integration test against disposable Testcontainers container (when Docker daemon is online)."""

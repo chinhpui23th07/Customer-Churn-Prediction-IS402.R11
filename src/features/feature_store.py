@@ -200,6 +200,17 @@ def get_feature_store() -> FeatureStore:
     global _FEATURE_STORE_INSTANCE
     if _FEATURE_STORE_INSTANCE is None:
         _FEATURE_STORE_INSTANCE = FeatureStore(repo_path=FEAST_REPO_DIR)
+        try:
+            from feast.feature_view import FeatureViewState
+            fv = _FEATURE_STORE_INSTANCE.get_feature_view("customer_churn_features")
+            if hasattr(fv, "state") and fv.state != FeatureViewState.AVAILABLE_ONLINE:
+                fv.state = FeatureViewState.AVAILABLE_ONLINE
+                _FEATURE_STORE_INSTANCE.registry.apply_feature_view(
+                    fv, project=_FEATURE_STORE_INSTANCE.project
+                )
+                _FEATURE_STORE_INSTANCE.registry.commit()
+        except Exception:
+            pass
     return _FEATURE_STORE_INSTANCE
 
 
@@ -211,6 +222,15 @@ def materialize_to_online_store(store: FeatureStore = None) -> FeatureStore:
     end_date = datetime.now(timezone.utc)
     start_date = datetime(2020, 1, 1, tzinfo=timezone.utc)
     store.materialize(start_date=start_date, end_date=end_date)
+    try:
+        from feast.feature_view import FeatureViewState
+        fv = store.get_feature_view("customer_churn_features")
+        if hasattr(fv, "state") and fv.state != FeatureViewState.AVAILABLE_ONLINE:
+            fv.state = FeatureViewState.AVAILABLE_ONLINE
+            store.registry.apply_feature_view(fv, project=store.project)
+            store.registry.commit()
+    except Exception:
+        pass
 
     redis_cli = _init_redis_hot_cache()
     if redis_cli is not None:
