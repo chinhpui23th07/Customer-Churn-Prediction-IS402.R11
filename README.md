@@ -1,5 +1,7 @@
 # ChurnGuard Enterprise MLOps Platform
 
+> **KKBox migration (03/11/2026):** Pipeline Customer Churn trên dữ liệu Hugging Face 7.52 GB nằm ở `src/kkbox/`, `data/kkbox_feast/` và các stage `kkbox_*` trong `dvc.yaml`. Đã chạy pilot trên 6/32 file (885,659,602 byte), huấn luyện smoke và thử API `/v1/predictions` với Feast. **Chưa chạy toàn bộ 32 file trên Azure**; các kết quả/ảnh XGBoost 0.9989 và giao diện bên dưới thuộc pipeline Kaggle cũ. Xem [quyết định KKBox](docs/KKBOX_DECISIONS_2026-11-03.md), [runbook mới](docs/KKBOX_RUNBOOK.md) và [ETL audit pilot](docs/experiments/kkbox_pilot_etl_audit.json) trước khi trích dẫn số liệu.
+
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Feast](https://img.shields.io/badge/Feature%20Store-Feast%20Dual--Store-orange.svg)](https://feast.dev/)

@@ -17,23 +17,23 @@
 
 ## 2. Đặc Tả Bộ Dữ Liệu Thực Nghiệm (Canonical Dataset Specifications)
 - **Tên bộ dữ liệu chuẩn:** KKBox Customer Churn Dataset (HuggingFace `vaibhavkhurana/subscriber-retention-intelligence`).
-- **Quy mô danh định:** 7.52 GB (32 tệp Parquet Snappy).
+- **Quy mô đã kiểm tra từ footer Parquet:** 7,522,254,856 byte (32 tệp Parquet Zstandard, 442,211,685 dòng), revision `a0f48c28e392e9a60d4d6fc62f1bbf3d848277d3`. Manifest: `docs/experiments/kkbox_parquet_manifest.json`.
 - **Cấu trúc 4 bảng quan hệ:**
-  1. `member`: Thông tin nhân khẩu học của thành viên (`msno`, `city`, `bd`, `gender`, `registered_via`, `registration_init_time`).
-  2. `subscription_transaction`: Lịch sử giao dịch gói dịch vụ (`msno`, `payment_method_id`, `payment_plan_days`, `plan_list_price`, `actual_amount_paid`, `is_auto_renew`, `transaction_date`, `membership_expire_date`, `is_cancel`).
-  3. `listening_day`: Nhật ký nghe nhạc theo ngày (`msno`, `date`, `num_25`, `num_50`, `num_75`, `num_985`, `num_100`, `num_unq`, `total_secs`).
-  4. `churn_label`: Nhãn mục tiêu rời bỏ dịch vụ (`msno`, `is_churn`).
-- **Thực thể định danh duy nhất (Entity Key):** `msno` (chuỗi ký tự).
+  1. `member`: Thông tin thành viên (`subscriber_key`, `city_code`, `age_band_start`, `gender`, `registration_method_code`, `registration_month`).
+  2. `subscription_transaction`: Giao dịch (`event_key`, `subscriber_key`, `payment_method_id`, `payment_plan_days`, `plan_list_price`, `actual_amount_paid`, `is_auto_renew`, `transaction_date`, `membership_expire_date`, `is_cancel`, `source_versions`).
+  3. `listening_day`: Nhật ký theo ngày (`subscriber_key`, `activity_date`, `num_25`, `num_50`, `num_75`, `num_985`, `num_100`, `num_unq`, `total_secs`, `total_secs_was_negative`, `source_version`).
+  4. `churn_label`: Nhãn (`subscriber_key`, `label_window`, `is_churn`); `train` ứng với 2017-02, `train_v2` ứng với 2017-03.
+- **Thực thể định danh:** `subscriber_key` là `uint64` trong Parquet, đổi sang chuỗi thập phân trong API và feature output; Spark đọc thành `decimal(20,0)`.
 - **Nhãn mục tiêu (Target Label):** `is_churn` (nhị phân: 0 hoặc 1).
-- **Nguyên tắc nhất quán:** 100% các thành phần trong hệ thống (ETL, Storage, Feature Store Feast, Model Training, FastAPI Serving, Web UI) bắt buộc phải dùng chung thực thể `msno` và nhãn `is_churn`.
+- **Nguyên tắc nhất quán:** pipeline KKBox dùng `subscriber_key` và `is_churn`; khóa một snapshot là (`subscriber_key`, `as_of_date`). Code Kaggle cũ chưa tuân thủ và chỉ còn là legacy cho đến khi chuyển xong.
 
 ---
 
 ## 3. Kiến Trúc Hạ Tầng Đám Mây & FinOps
 - **Nhà cung cấp đám mây:** Microsoft Azure (Khu vực Southeast Asia).
-- **Dịch vụ tích hợp:** Azure Container Apps, Azure Blob Storage, Azure Cache for Redis (Port 6380 SSL).
-- **Lưu trữ cục bộ:** Parquet Snappy Offline Store & SQLite WAL Online Store (`online_store.db`).
-- **Ngân sách FinOps:** TCO $74.67/tháng.
+- **Dịch vụ mục tiêu:** Azure VM/Container Apps và Azure Blob Storage; Redis chỉ triển khai sau khi báo giá/quota phù hợp trần chi. Không coi file IaC hiện có là bằng chứng đã deploy.
+- **Lưu trữ nguồn:** Parquet Zstandard. Pilot processed dùng Parquet; Feast offline đọc Parquet và online dùng SQLite, đã kiểm tra historical và online lookup. Full run có thể chuyển online sang Redis trên VM để tránh dịch vụ Redis trả phí riêng.
+- **Ngân sách FinOps:** trần chi toàn đồ án 50 USD nếu credit xác nhận còn ít nhất 75 USD, giữ 25 USD dự phòng; chưa phải báo giá Azure SKU/region.
 
 ---
 

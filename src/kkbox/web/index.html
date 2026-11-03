@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>KKBox Customer Churn · Historical Replay</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#e8eef9;background:#0b1324}
+    body{margin:0;padding:24px}main{max-width:650px;margin:8vh auto;padding:28px;background:#152039;border:1px solid #344564;border-radius:18px}
+    h1{font-size:1.7rem;margin:0 0 8px}p{color:#b5c3dc;line-height:1.5}label{display:block;margin:18px 0 6px;font-weight:600}
+    input,select,button{box-sizing:border-box;width:100%;padding:13px;border-radius:9px;font:inherit}
+    input,select{background:#0d172b;border:1px solid #4b5d7d;color:#fff}button{margin-top:22px;border:0;background:#58a6ff;color:#06152d;font-weight:700;cursor:pointer}
+    button:disabled{opacity:.6;cursor:wait}output{display:block;margin-top:22px;padding:18px;background:#0d172b;border-radius:10px;min-height:3em;line-height:1.6}
+    small{color:#92a8c8}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Dự đoán Customer Churn · KKBox</h1>
+    <p>Demo phát lại dữ liệu lịch sử năm 2017. Chọn ngày chốt đặc trưng, nhập mã khách hàng có trong dataset và xem xác suất rời bỏ dịch vụ.</p>
+    <form id="prediction-form">
+      <label for="subscriber-key">Subscriber key</label>
+      <input id="subscriber-key" name="subscriber_key" type="text" inputmode="numeric" pattern="[0-9]+" maxlength="20" required autocomplete="off" placeholder="Mã giả danh dạng chuỗi số">
+      <label for="as-of-date">Ngày chốt đặc trưng</label>
+      <select id="as-of-date" name="as_of_date"><option value="2017-02-28">28/02/2017 · dự đoán tháng 03</option><option value="2017-01-31">31/01/2017 · dự đoán tháng 02</option></select>
+      <label for="api-key">API key cho demo</label>
+      <input id="api-key" type="password" required autocomplete="off" placeholder="Nhập khóa được cấp">
+      <small>Khóa chỉ được dùng cho request hiện tại, không lưu trong trình duyệt.</small>
+      <button id="submit-button" type="submit">Dự đoán</button>
+    </form>
+    <output id="result" role="status" aria-live="polite">Chưa có dự đoán.</output>
+  </main>
+  <script>
+    const form = document.getElementById('prediction-form');
+    const result = document.getElementById('result');
+    const button = document.getElementById('submit-button');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault(); button.disabled = true; result.textContent = 'Đang truy vấn...';
+      const subscriber_key = document.getElementById('subscriber-key').value.trim();
+      const as_of_date = document.getElementById('as-of-date').value;
+      const key = document.getElementById('api-key').value;
+      try {
+        const response = await fetch('/v1/predictions', {method:'POST', headers:{'content-type':'application/json','x-api-key':key}, body:JSON.stringify({subscriber_key,as_of_date})});
+        const data = await response.json();
+        if (!response.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'Request không hợp lệ');
+        const percent = (data.churn_probability * 100).toFixed(2);
+        result.textContent = `Dự đoán: ${data.prediction === 1 ? 'Rời bỏ' : 'Tiếp tục'} · Xác suất churn: ${percent}% · Mức rủi ro: ${data.risk_level} · Model: ${data.model_version} · Chế độ: phát lại lịch sử`;
+      } catch (error) { result.textContent = `Lỗi: ${error.message}`; }
+      finally { button.disabled = false; }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+{
+  "mode": "pilot",
+  "model": "logistic_regression",
+  "model_version": "pilot-05ff8789",
+  "mlflow_run_id": "05ff8789b30949ff865805487cb4a925",
+  "feature_version": "kkbox-v1",
+  "source_revision_sha": "a0f48c28e392e9a60d4d6fc62f1bbf3d848277d3",
+  "feature_columns": [
+    "txn_count_30d",
+    "paid_amount_30d",
+    "cancel_count_90d",
+    "days_since_last_txn",
+    "last_auto_renew",
+    "days_until_expiry",
+    "active_days_30d",
+    "listening_secs_30d",
+    "days_since_last_listen",
+    "registration_tenure_days",
+    "has_txn_history",
+    "has_listening_history"
+  ],
+  "classification_threshold": 0.7224531173706055,
+  "risk_medium_threshold": 0.23729771375656128,
+  "risk_high_threshold": 0.7344076275825501,
+  "train_rows": 776,
+  "validation_rows": 224,
+  "test_rows": 967,
+  "candidate_validation": {
+    "logistic_regression": {
+      "roc_auc": 0.743541,
+      "pr_auc": 0.263819,
+      "f1": 0.428571,
+      "confusion_matrix": [
+        [
+          191,
+          18
+        ],
+        [
+          6,
+          9
+        ]
+      ]
+    },
+    "xgboost": {
+      "roc_auc": 0.712919,
+      "pr_auc": 0.223652,
+      "f1": 0.3125,
+      "confusion_matrix": [
+        [
+          197,
+          12
+        ],
+        [
+          10,
+          5
+        ]
+      ]
+    }
+  },
+  "test": {
+    "roc_auc": 0.768043,
+    "pr_auc": 0.285565,
+    "f1": 0.380952,
+    "confusion_matrix": [
+      [
+        797,
+        93
+      ],
+      [
+        37,
+        40
+      ]
+    ]
+  },
+  "warning": "Pilot metrics are a plumbing smoke test on incomplete source history; do not report as final accuracy."
+}
