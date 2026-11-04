@@ -26,3 +26,11 @@ Checkout local đã đồng bộ lên GitHub `master` `591225b`. Bảng dưới 
 - **Chưa hoàn thành:** tải và chạy đủ 32 file trên Azure, DVC remote Azure thực sự, Redis online store, model full/registry alias, batch API, drift, cloud deploy, self-hosted runner và kiểm chứng chi phí thực tế.
 
 Xem các file trong `docs/experiments/` để đối chiếu số liệu; không dùng ROC-AUC 0.9989 của Kaggle cũ hay metric pilot làm kết quả KKBox cuối.
+
+## Cập nhật tại máy ngày 04/11/2026
+
+- Đã xác định test Spark lần trước bị chặn socket loopback Python ↔ JVM trong sandbox (`WinError 10013`). Chạy Windows test với quyền phù hợp đã pass; đây không phải lỗi cutoff. Chưa chạy lại ETL pilot.
+- ETL giờ xác nhận từng đường dẫn, byte, số dòng và schema Parquet theo manifest trước khi chạy; 6 file pilot khớp. Report tải dữ liệu ghi SHA-256 cho file đã có.
+- Đã thêm drift replay tháng 02 → tháng 03 và stage DVC `kkbox_drift_full`. Report pilot chỉ là smoke test trên lịch sử nguồn thiếu, không dùng kết luận cuối.
+- Đã thêm workflow CI riêng cho KKBox, workflow full chỉ kích hoạt thủ công trên runner có label `kkbox`, bộ dependency pin trong `requirements-kkbox.txt`, và kiểm tra cục bộ đường MLflow Registry alias `champion`. Chưa có self-hosted runner hoặc deployment Azure thực tế.
+- Theo yêu cầu chủ dự án, dừng trước mọi thao tác với Azure. Credit/quota/giá chưa kiểm tra trong phiên này.

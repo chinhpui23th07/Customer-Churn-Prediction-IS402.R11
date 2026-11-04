@@ -9,13 +9,13 @@
       "path": "churn_label/window=2017-02/data.parquet",
       "bytes": 7948492,
       "sha256": "5337e9c36840f9dfba6034aea7771178081880944508ab8cec6d2963b5e57ef7",
-      "status": "downloaded"
+      "status": "existing"
     },
     {
       "path": "churn_label/window=2017-03/data.parquet",
       "bytes": 7772330,
       "sha256": "3c1dedfdb821855dea176c090723cf853470d606d071462ad91fd58846259ade",
-      "status": "downloaded"
+      "status": "existing"
     }
   ]
 }

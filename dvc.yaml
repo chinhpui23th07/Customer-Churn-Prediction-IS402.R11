@@ -172,3 +172,14 @@ stages:
     metrics:
       - docs/experiments/kkbox_feast_report.json:
           cache: false
+
+  kkbox_drift_full:
+    cmd: python -m src.kkbox.drift --require-full
+    deps:
+      - data/kkbox_processed/features
+      - docs/experiments/kkbox_etl_audit.json
+      - src/kkbox/contract.py
+      - src/kkbox/drift.py
+    metrics:
+      - docs/experiments/kkbox_drift_report.json:
+          cache: false

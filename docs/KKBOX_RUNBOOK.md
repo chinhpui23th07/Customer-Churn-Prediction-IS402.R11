@@ -18,6 +18,8 @@ python scripts/validate_kkbox_labels.py
 PYTHONPATH=. python -m src.kkbox.run_etl --sample-modulus 1000 --shuffle-partitions 4 --output data/kkbox_processed/pilot_features --audit docs/experiments/kkbox_pilot_etl_audit.json
 PYTHONPATH=. python -m src.kkbox.train --features data/kkbox_processed/pilot_features --etl-audit docs/experiments/kkbox_pilot_etl_audit.json --mode pilot --report docs/experiments/kkbox_pilot_model_report.json
 PYTHONPATH=. python -m src.kkbox.prepare_feast --features data/kkbox_processed/pilot_features --report docs/experiments/kkbox_feast_pilot_report.json
+
+PYTHONPATH=. python -m src.kkbox.drift --features data/kkbox_processed/pilot_features --audit docs/experiments/kkbox_pilot_etl_audit.json --report docs/experiments/kkbox_pilot_drift_report.json
 ```
 
 Pilot model **không** được đăng ký alias `champion`. Để thử API cục bộ, đặt `KKBOX_ALLOW_PILOT=1` và `KKBOX_API_KEY` bằng secret riêng, sau đó chạy `uvicorn src.kkbox.api:app --host 127.0.0.1 --port 8000`. Trang demo ở `/demo`; không ghi API key vào source hoặc screenshot.
@@ -31,10 +33,21 @@ python scripts/download_kkbox.py --scope full
 PYTHONPATH=. python -m src.kkbox.run_etl --sample-modulus 1 --master 'local[4]' --driver-memory 4g --shuffle-partitions 32
 PYTHONPATH=. python -m src.kkbox.train --mode full
 PYTHONPATH=. python -m src.kkbox.prepare_feast
+
+PYTHONPATH=. python -m src.kkbox.drift --require-full
 ```
 
-Lệnh ETL full từ chối chạy nếu thiếu bất kỳ file nào hoặc tổng byte không đúng manifest. Chỉ `--mode full` mới đăng ký model MLflow và gán alias `champion`. Các stage DVC tương ứng là `kkbox_download_full`, `kkbox_etl_full`, `kkbox_train_full`, `kkbox_feast_full`; pipeline Kaggle legacy vẫn còn trong cùng `dvc.yaml`, vì vậy gọi stage KKBox cụ thể khi chạy.
+Lệnh ETL full từ chối chạy nếu thiếu file hoặc đường dẫn/byte/số dòng/schema không khớp manifest. Chỉ `--mode full` mới đăng ký model MLflow và gán alias `champion`. Các stage DVC tương ứng là `kkbox_download_full`, `kkbox_etl_full`, `kkbox_train_full`, `kkbox_feast_full`, `kkbox_drift_full`; pipeline Kaggle legacy vẫn còn trong cùng `dvc.yaml`, vì vậy gọi stage KKBox cụ thể khi chạy.
 
 API full lấy model từ alias MLflow `KKBoxChurn@champion`, cùng ngưỡng dự đoán/rủi ro được gắn vào model version. Sau khi đổi alias để rollback, gọi `POST /v1/model/reload` với `x-api-key` để nạp phiên bản mới. Endpoint này không xuất hiện trong Swagger công khai.
 
 Sau full run cần lưu: DVC lock/remote Azure Blob, SHA/byte của 32 file, số dòng trước/sau ETL, thời gian và cấu hình máy, metrics test tháng 03, phiên bản model, Feast online lookup, URL API/Web trên Azure, latency/đọc ghi, so sánh với local và chi phí thực tế. Không đưa Parquet nguồn hay bản ghi khách hàng vào GitHub.
+
+## Kiểm tra mã tại máy ngày 04/11/2026
+
+- `verify_source` so từng đường dẫn, byte, số dòng và schema footer Parquet với manifest trước khi tạo Spark session; pilot 6 file hiện khớp. `download_kkbox.py` ghi SHA-256 cho cả file mới tải và file đã có.
+- `src/kkbox/drift.py` so sánh 12 feature ở tháng 02 và 03 bằng PSI, KS và tỷ lệ thiếu. Báo cáo pilot ở `docs/experiments/kkbox_pilot_drift_report.json` chỉ kiểm tra đường chạy; không suy ra drift production hay chất lượng model.
+- `.github/workflows/kkbox_ci.yml` chạy test KKBox và kiểm tra DAG DVC trên GitHub Actions khi push nhánh feature hoặc mở PR. Workflow này dùng dữ liệu tổng hợp trong test, không tải dataset.
+- `.github/workflows/kkbox_full_runner.yml` chỉ chạy khi chủ dự án chọn `execute_full=true` bằng tay và có runner Linux mang label `kkbox`; mặc định không chạy. Runner cần ít nhất 30 GiB trống. Workflow dùng `requirements-kkbox.txt`, chạy DVC full và chỉ upload báo cáo tổng hợp cùng `dvc.lock`; chưa có runner thật hoặc bằng chứng chạy full.
+- Test Spark trên Windows cần Java 17 và socket loopback Python ↔ JVM. Sandbox của phiên làm việc chặn socket với `WinError 10013`; chạy test với quyền phù hợp đã pass trong 36,83 giây. Windows Spark vẫn cần Hadoop native để đọc cây Parquet thực; ETL pilot đã chạy trên Ubuntu WSL.
+- Trước mọi thao tác Azure, dừng để chủ dự án quyết định. Credit, quota, giá region và self-hosted runner Azure chưa được xác minh trong ngày 04/11.

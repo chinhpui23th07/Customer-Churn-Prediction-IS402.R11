@@ -12,6 +12,14 @@ from urllib.parse import quote
 import requests
 
 
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def copy_file(session: requests.Session, repo: str, revision: str, entry: dict, root: Path) -> dict:
     path = entry["path"]
     expected_size = entry["bytes"]
@@ -19,7 +27,8 @@ def copy_file(session: requests.Session, repo: str, revision: str, entry: dict, 
     target.parent.mkdir(parents=True, exist_ok=True)
     partial = target.with_name(target.name + ".part")
     if target.exists() and target.stat().st_size == expected_size:
-        return {"path": path, "bytes": expected_size, "status": "existing"}
+        return {"path": path, "bytes": expected_size,
+                "sha256": sha256_file(target), "status": "existing"}
     if target.exists():
         raise RuntimeError(f"Wrong size in existing file: {target}")
     offset = partial.stat().st_size if partial.exists() else 0
@@ -39,11 +48,8 @@ def copy_file(session: requests.Session, repo: str, revision: str, entry: dict, 
     if partial.stat().st_size != expected_size:
         raise RuntimeError(f"Incomplete download: {path}")
     partial.replace(target)
-    digest = hashlib.sha256()
-    with target.open("rb") as source:
-        for chunk in iter(lambda: source.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return {"path": path, "bytes": expected_size, "sha256": digest.hexdigest(), "status": "downloaded"}
+    return {"path": path, "bytes": expected_size,
+            "sha256": sha256_file(target), "status": "downloaded"}
 
 
 def main() -> None:

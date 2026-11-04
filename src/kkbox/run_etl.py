@@ -8,10 +8,32 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pyarrow.parquet as pq
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
 from src.kkbox.features import WINDOWS, build_snapshot
+
+
+def verify_source(input_root: Path, manifest: dict) -> tuple[int, int, bool]:
+    """Check every present Parquet against the pinned manifest before Spark starts."""
+    expected = {entry["path"]: entry for entry in manifest["files"]}
+    present = {path.relative_to(input_root).as_posix(): path
+               for path in input_root.rglob("*.parquet")}
+    unexpected = present.keys() - expected.keys()
+    if unexpected:
+        raise RuntimeError(f"Unexpected source files: {sorted(unexpected)}")
+    for name, path in present.items():
+        entry = expected[name]
+        if path.stat().st_size != entry["bytes"]:
+            raise RuntimeError(f"Source byte mismatch: {name}")
+        if pq.read_metadata(path).num_rows != entry["rows"]:
+            raise RuntimeError(f"Source row-count mismatch: {name}")
+        fields = {field.name: str(field.type) for field in pq.read_schema(path)}
+        if fields != entry["fields"]:
+            raise RuntimeError(f"Source schema mismatch: {name}")
+    input_bytes = sum(path.stat().st_size for path in present.values())
+    return len(present), input_bytes, present.keys() == expected.keys()
 
 
 def main() -> None:
@@ -32,9 +54,9 @@ def main() -> None:
         if not (args.input / family).is_dir():
             parser.error(f"Missing input family: {family}")
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    input_files = list(args.input.rglob("*.parquet"))
-    input_bytes = sum(path.stat().st_size for path in input_files)
-    complete_source = (len(input_files) == manifest["total_published_parquet_files"]
+    input_file_count, input_bytes, complete_source = verify_source(args.input, manifest)
+    complete_source = (complete_source
+                       and input_file_count == manifest["total_published_parquet_files"]
                        and input_bytes == manifest["total_published_parquet_bytes"])
     if args.sample_modulus == 1 and not complete_source:
         parser.error("Full cohort run requires all 32 source files and matching 7.52 GB byte count")
@@ -73,7 +95,7 @@ def main() -> None:
             "status": "pilot" if args.sample_modulus > 1 else "full_cohort",
             "input": str(args.input), "output": str(args.output),
             "source_revision_sha": manifest["revision_sha"],
-            "input_file_count": len(input_files), "input_bytes": input_bytes,
+            "input_file_count": input_file_count, "input_bytes": input_bytes,
             "complete_source": complete_source,
             "output_parquet_bytes": sum(path.stat().st_size for path in args.output.rglob("*.parquet")),
             "sample_modulus": args.sample_modulus,
