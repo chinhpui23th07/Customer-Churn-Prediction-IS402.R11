@@ -1,6 +1,7 @@
 # Bàn giao phần chuẩn bị local trước khi chạy Azure
 
 Ngày kiểm tra: 04/11/2026. Tài liệu này mô tả **mã và kiểm tra local**, không phải bằng chứng full run trên Azure. Xem [kịch bản rubric](RUBRIC_DEMO_PLAN_2026-11-04.md) để biết ảnh/số liệu phải lấy sau mỗi bước cloud.
+Nội dung Word có thể bắt đầu từ [khung báo cáo](KKBOX_REPORT_SCAFFOLD.md); mọi ô `[CẦN ĐO]` phải chờ log/metrics thật.
 
 ## Những phần đã chuẩn bị
 

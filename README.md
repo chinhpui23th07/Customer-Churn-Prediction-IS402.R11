@@ -1,6 +1,6 @@
 # Customer Churn MLOps — KKBox
 
-> **Trạng thái KKBox (04/11/2026):** Dataset nguồn có 32 Parquet/7,52 GB theo manifest; mới chạy pilot 6 file, chưa xử lý full trên Azure. Pipeline hiện nằm ở `src/kkbox/`, `data/kkbox_feast/` và các stage `kkbox_*` trong `dvc.yaml`. Đọc [quyết định dữ liệu](docs/KKBOX_DECISIONS_2026-11-03.md), [runbook](docs/KKBOX_RUNBOOK.md), [kịch bản rubric](docs/RUBRIC_DEMO_PLAN_2026-11-04.md) và [trạng thái chuẩn bị local](docs/LOCAL_PREP_STATUS_2026-11-04.md) trước khi dùng số liệu.
+> **Trạng thái KKBox (04/11/2026):** Dataset nguồn có 32 Parquet/7,52 GB theo manifest; mới chạy pilot 6 file, chưa xử lý full trên Azure. Pipeline hiện nằm ở `src/kkbox/`, `data/kkbox_feast/` và các stage `kkbox_*` trong `dvc.yaml`. Đọc [quyết định dữ liệu](docs/KKBOX_DECISIONS_2026-11-03.md), [runbook](docs/KKBOX_RUNBOOK.md), [kịch bản rubric](docs/RUBRIC_DEMO_PLAN_2026-11-04.md), [khung báo cáo](docs/KKBOX_REPORT_SCAFFOLD.md) và [trạng thái chuẩn bị local](docs/LOCAL_PREP_STATUS_2026-11-04.md) trước khi dùng số liệu.
 
 ## Bắt đầu với KKBox
 

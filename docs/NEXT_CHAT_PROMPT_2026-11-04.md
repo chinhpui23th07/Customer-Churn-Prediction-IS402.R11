@@ -1,6 +1,6 @@
 # Prompt để dán vào chat tiếp theo
 
-> Tiếp tục đồ án MLOps Customer Churn tại `D:\Project_CLoud\Customer-Churn-Prediction-IS402.R11`, nhánh `feat/kkbox-churn-pipeline-pilot`. Trước hết kiểm tra `git status` và đọc `docs/KKBOX_DECISIONS_2026-11-03.md`, `docs/KKBOX_RUNBOOK.md`, `docs/RUBRIC_DEMO_PLAN_2026-11-04.md`, `docs/LOCAL_PREP_STATUS_2026-11-04.md`. Giữ mọi thay đổi trong working tree, không reset và không làm lại pilot nếu không có lý do cụ thể.
+> Tiếp tục đồ án MLOps Customer Churn tại `D:\Project_CLoud\Customer-Churn-Prediction-IS402.R11`, nhánh `feat/kkbox-churn-pipeline-pilot`. Trước hết kiểm tra `git status` và đọc `docs/KKBOX_DECISIONS_2026-11-03.md`, `docs/KKBOX_RUNBOOK.md`, `docs/RUBRIC_DEMO_PLAN_2026-11-04.md`, `docs/KKBOX_REPORT_SCAFFOLD.md`, `docs/LOCAL_PREP_STATUS_2026-11-04.md`. Giữ mọi thay đổi trong working tree, không reset và không làm lại pilot nếu không có lý do cụ thể.
 >
 > Dataset chính thức là Subscriber Retention Intelligence (KKBox), revision `a0f48c28e392e9a60d4d6fc62f1bbf3d848277d3`: 32 Parquet, manifest tổng 7.522.254.856 byte; 4 bảng và nhãn `is_churn` có sẵn. `subscriber_key` là chuỗi số 64 bit trong JSON. Train/validation dùng cutoff 31/01/2017 cho nhãn tháng 02; final test dùng cutoff 28/02/2017 cho nhãn tháng 03. API nhận `subscriber_key`, `as_of_date`; trả xác suất, dự đoán 0/1, risk, model/feature version. Demo là historical replay, không phải dự đoán khách hàng năm 2026.
 >
