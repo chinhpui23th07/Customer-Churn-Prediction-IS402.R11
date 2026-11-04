@@ -41,11 +41,31 @@ def feature_matrix(frame):
 
 def metrics(y, probabilities, threshold: float) -> dict:
     predictions = (probabilities >= threshold).astype(np.int8)
+    matrix = confusion_matrix(y, predictions, labels=[0, 1])
+    true_positive = int(matrix[1, 1])
+    false_positive = int(matrix[0, 1])
+    false_negative = int(matrix[1, 0])
     return {
         "roc_auc": round(float(roc_auc_score(y, probabilities)), 6),
         "pr_auc": round(float(average_precision_score(y, probabilities)), 6),
+        "positive_rate": round(float(np.mean(y)), 6),
+        "precision": round(true_positive / max(true_positive + false_positive, 1), 6),
+        "recall": round(true_positive / max(true_positive + false_negative, 1), 6),
         "f1": round(float(f1_score(y, predictions)), 6),
-        "confusion_matrix": confusion_matrix(y, predictions, labels=[0, 1]).tolist(),
+        "confusion_matrix": matrix.tolist(),
+    }
+
+
+def pr_curve_points(y, probabilities, max_points: int = 201) -> dict:
+    """Downsample only the plotted curve; PR-AUC still uses all predictions."""
+    precision, recall, _ = precision_recall_curve(y, probabilities)
+    indexes = np.unique(np.linspace(0, len(precision) - 1,
+                                   min(max_points, len(precision)), dtype=int))
+    return {
+        "recall": [round(float(recall[index]), 6) for index in indexes],
+        "precision": [round(float(precision[index]), 6) for index in indexes],
+        "display_points": int(len(indexes)),
+        "source_points": int(len(precision)),
     }
 
 
@@ -155,7 +175,9 @@ def main() -> None:
         "risk_medium_threshold": risk_medium, "risk_high_threshold": risk_high,
         "train_rows": len(y_train), "validation_rows": len(y_val), "test_rows": len(y_test),
         "candidate_validation": {name: run["validation"] for name, run in runs.items()},
+        "validation_pr_curve": pr_curve_points(y_val, val_probabilities),
         "test": test_metrics,
+        "test_pr_curve": pr_curve_points(y_test, test_probabilities),
         "warning": "Pilot metrics are a plumbing smoke test on incomplete source history; do not report as final accuracy."
         if args.mode == "pilot" else None,
     }

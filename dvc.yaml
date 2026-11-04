@@ -183,3 +183,13 @@ stages:
     metrics:
       - docs/experiments/kkbox_drift_report.json:
           cache: false
+
+  kkbox_figures_full:
+    cmd: python scripts/kkbox_make_figures.py
+    deps:
+      - scripts/kkbox_make_figures.py
+      - docs/experiments/kkbox_etl_audit.json
+      - docs/experiments/kkbox_model_report.json
+      - docs/experiments/kkbox_drift_report.json
+    outs:
+      - reports/kkbox_figures

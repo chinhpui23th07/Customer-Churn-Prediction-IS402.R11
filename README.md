@@ -1,6 +1,17 @@
-# ChurnGuard Enterprise MLOps Platform
+# Customer Churn MLOps — KKBox
 
-> **KKBox migration (03/11/2026):** Pipeline Customer Churn trên dữ liệu Hugging Face 7.52 GB nằm ở `src/kkbox/`, `data/kkbox_feast/` và các stage `kkbox_*` trong `dvc.yaml`. Đã chạy pilot trên 6/32 file (885,659,602 byte), huấn luyện smoke và thử API `/v1/predictions` với Feast. **Chưa chạy toàn bộ 32 file trên Azure**; các kết quả/ảnh XGBoost 0.9989 và giao diện bên dưới thuộc pipeline Kaggle cũ. Xem [quyết định KKBox](docs/KKBOX_DECISIONS_2026-11-03.md), [runbook mới](docs/KKBOX_RUNBOOK.md) và [ETL audit pilot](docs/experiments/kkbox_pilot_etl_audit.json) trước khi trích dẫn số liệu.
+> **Trạng thái KKBox (04/11/2026):** Dataset nguồn có 32 Parquet/7,52 GB theo manifest; mới chạy pilot 6 file, chưa xử lý full trên Azure. Pipeline hiện nằm ở `src/kkbox/`, `data/kkbox_feast/` và các stage `kkbox_*` trong `dvc.yaml`. Đọc [quyết định dữ liệu](docs/KKBOX_DECISIONS_2026-11-03.md), [runbook](docs/KKBOX_RUNBOOK.md), [kịch bản rubric](docs/RUBRIC_DEMO_PLAN_2026-11-04.md) và [trạng thái chuẩn bị local](docs/LOCAL_PREP_STATUS_2026-11-04.md) trước khi dùng số liệu.
+
+## Bắt đầu với KKBox
+
+- API đúng bài toán: `src.kkbox.api:app`; giao diện mới ở `/demo` ([mã Web](src/kkbox/web/index.html)). Request: `subscriber_key` dạng chuỗi và `as_of_date` là một trong hai cutoff.
+- Test local trên Windows: `powershell -File scripts/run_kkbox_tests.ps1`. Xem [runbook](docs/KKBOX_RUNBOOK.md) để bật model pilot và mở Web local.
+- Khi có report **full** thật, `scripts/kkbox_make_figures.py` tạo hình so model, confusion matrix và drift. Mặc định script từ chối pilot.
+- Số liệu, ảnh và lệnh triển khai trong các phần bên dưới thuộc **pipeline Kaggle cũ**, không phải bằng chứng KKBox. `Dockerfile`, `src/api/main.py`, `src/web/` và `deploy/azure/` cũ không phục vụ API KKBox hiện tại.
+
+---
+
+## Tài liệu ChurnGuard cũ — chỉ để tham khảo, không dùng làm kết quả KKBox
 
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)

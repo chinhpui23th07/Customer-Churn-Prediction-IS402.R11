@@ -37,6 +37,7 @@ mlartifacts/
 data/kkbox_raw/
 data/kkbox_processed/
 data/kkbox_models/
+reports/kkbox_figures/
 .dvc/cache/
 .dvc_storage/
 data/raw/*.csv

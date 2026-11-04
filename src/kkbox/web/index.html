@@ -2,52 +2,83 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>KKBox Customer Churn · Historical Replay</title>
-  <style>
-    :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#e8eef9;background:#0b1324}
-    body{margin:0;padding:24px}main{max-width:650px;margin:8vh auto;padding:28px;background:#152039;border:1px solid #344564;border-radius:18px}
-    h1{font-size:1.7rem;margin:0 0 8px}p{color:#b5c3dc;line-height:1.5}label{display:block;margin:18px 0 6px;font-weight:600}
-    input,select,button{box-sizing:border-box;width:100%;padding:13px;border-radius:9px;font:inherit}
-    input,select{background:#0d172b;border:1px solid #4b5d7d;color:#fff}button{margin-top:22px;border:0;background:#58a6ff;color:#06152d;font-weight:700;cursor:pointer}
-    button:disabled{opacity:.6;cursor:wait}output{display:block;margin-top:22px;padding:18px;background:#0d172b;border-radius:10px;min-height:3em;line-height:1.6}
-    small{color:#92a8c8}
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08101e">
+  <meta name="description" content="Demo dự đoán churn KKBox theo hai mốc dữ liệu lịch sử năm 2017">
+  <title>KKBox Signal Lab — Customer Churn</title>
+  <link rel="icon" href="/demo/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/demo/assets/style.css">
+  <script src="/demo/assets/app.js" defer></script>
 </head>
 <body>
-  <main>
-    <h1>Dự đoán Customer Churn · KKBox</h1>
-    <p>Demo phát lại dữ liệu lịch sử năm 2017. Chọn ngày chốt đặc trưng, nhập mã khách hàng có trong dataset và xem xác suất rời bỏ dịch vụ.</p>
-    <form id="prediction-form">
-      <label for="subscriber-key">Subscriber key</label>
-      <input id="subscriber-key" name="subscriber_key" type="text" inputmode="numeric" pattern="[0-9]+" maxlength="20" required autocomplete="off" placeholder="Mã giả danh dạng chuỗi số">
-      <label for="as-of-date">Ngày chốt đặc trưng</label>
-      <select id="as-of-date" name="as_of_date"><option value="2017-02-28">28/02/2017 · dự đoán tháng 03</option><option value="2017-01-31">31/01/2017 · dự đoán tháng 02</option></select>
-      <label for="api-key">API key cho demo</label>
-      <input id="api-key" type="password" required autocomplete="off" placeholder="Nhập khóa được cấp">
-      <small>Khóa chỉ được dùng cho request hiện tại, không lưu trong trình duyệt.</small>
-      <button id="submit-button" type="submit">Dự đoán</button>
-    </form>
-    <output id="result" role="status" aria-live="polite">Chưa có dự đoán.</output>
-  </main>
-  <script>
-    const form = document.getElementById('prediction-form');
-    const result = document.getElementById('result');
-    const button = document.getElementById('submit-button');
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault(); button.disabled = true; result.textContent = 'Đang truy vấn...';
-      const subscriber_key = document.getElementById('subscriber-key').value.trim();
-      const as_of_date = document.getElementById('as-of-date').value;
-      const key = document.getElementById('api-key').value;
-      try {
-        const response = await fetch('/v1/predictions', {method:'POST', headers:{'content-type':'application/json','x-api-key':key}, body:JSON.stringify({subscriber_key,as_of_date})});
-        const data = await response.json();
-        if (!response.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'Request không hợp lệ');
-        const percent = (data.churn_probability * 100).toFixed(2);
-        result.textContent = `Dự đoán: ${data.prediction === 1 ? 'Rời bỏ' : 'Tiếp tục'} · Xác suất churn: ${percent}% · Mức rủi ro: ${data.risk_level} · Model: ${data.model_version} · Chế độ: phát lại lịch sử`;
-      } catch (error) { result.textContent = `Lỗi: ${error.message}`; }
-      finally { button.disabled = false; }
-    });
-  </script>
+  <div class="page-shell">
+    <header class="site-header" id="top">
+      <a class="brand" href="#top" aria-label="Signal Lab — về đầu trang">
+        <span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span><strong>SIGNAL<span>LAB</span></strong><small>KKBOX / CHURN INTELLIGENCE</small></span>
+      </a>
+      <nav aria-label="Điều hướng chính"><a href="#predict">Dự đoán</a><a href="#pipeline">Luồng dữ liệu</a><a href="#method">Phương pháp</a></nav>
+      <div class="system-status" id="system-status" aria-live="polite"><span class="status-led"></span><span id="system-status-text">Đang kiểm tra API</span></div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div>
+          <p class="eyebrow"><span class="line"></span>MLOPS WORKSPACE <span class="muted">/ 01</span></p>
+          <h1 id="hero-title">Từ hành vi đến<br><em>tín hiệu rời bỏ.</em></h1>
+          <p class="hero-lead">Phát lại dự đoán churn của khách hàng KKBox tại hai mốc năm 2017. Theo dõi đầu vào, xác suất và phiên bản mô hình trong cùng một luồng.</p>
+          <div class="hero-actions"><a class="button-link" href="#predict">Thử dự đoán <span aria-hidden="true">↗</span></a><span class="hero-note">● Historical replay · không phải dự đoán năm 2026</span></div>
+        </div>
+        <div class="signal-card" aria-hidden="true">
+          <div class="signal-top"><span>SIGNAL MAP</span><span>KKBOX / 2017</span></div>
+          <svg viewBox="0 0 420 240" role="presentation">
+            <defs><linearGradient id="signal" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#546afa"/><stop offset=".55" stop-color="#30d5c5"/><stop offset="1" stop-color="#b5f083"/></linearGradient><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#30d5c5" stop-opacity=".26"/><stop offset="1" stop-color="#30d5c5" stop-opacity="0"/></linearGradient></defs>
+            <path class="grid" d="M0 40H420M0 90H420M0 140H420M0 190H420M60 0V240M160 0V240M260 0V240M360 0V240"/>
+            <path fill="url(#fill)" d="M0 182L38 170L72 180L104 148L138 158L173 109L206 125L238 92L271 108L303 62L337 80L369 48L420 61V240H0Z"/>
+            <path class="signal-line" stroke="url(#signal)" d="M0 182L38 170L72 180L104 148L138 158L173 109L206 125L238 92L271 108L303 62L337 80L369 48L420 61"/>
+            <circle cx="303" cy="62" r="6" fill="#b5f083"/><circle cx="303" cy="62" r="14" fill="#b5f083" opacity=".15"/>
+          </svg>
+          <div class="signal-bottom"><span>● BEHAVIOR STREAM</span><span>FEATURES → MODEL</span></div>
+        </div>
+      </section>
+
+      <section class="source-strip" aria-label="Quy mô nguồn theo manifest">
+        <div class="source-intro"><span class="kicker">DATASET / MANIFEST</span><strong>Quy mô nguồn</strong><small>Metadata đã kiểm tra; chưa là bằng chứng xử lý full trên cloud.</small></div>
+        <div class="stat"><strong>32</strong><span>file Parquet</span></div>
+        <div class="stat"><strong>7,52 <small>GB</small></strong><span>dung lượng nguồn</span></div>
+        <div class="stat"><strong>12</strong><span>feature thiết kế</span></div>
+      </section>
+
+      <section class="workspace" id="predict" aria-labelledby="predict-title">
+        <div class="section-title"><div><span class="kicker">01 / INFERENCE CONSOLE</span><h2 id="predict-title">Dự đoán khách hàng rời bỏ</h2><p>Nhập mã giả danh có snapshot tại ngày chốt tương ứng. API trả xác suất từ mô hình đang nạp.</p></div><span class="section-tag">LIVE API REQUEST</span></div>
+        <div class="workspace-grid">
+          <form id="prediction-form" class="panel form-panel" novalidate>
+            <div class="panel-head"><span class="kicker">INPUT / 01</span><span class="dots" aria-hidden="true">● ● ●</span></div>
+            <div class="field"><label for="subscriber-key">Subscriber key <b>*</b></label><p>Khóa khách hàng 64 bit; giữ nguyên dạng chuỗi số.</p><input id="subscriber-key" name="subscriber_key" type="text" inputmode="numeric" pattern="0|[1-9][0-9]*" maxlength="20" required autocomplete="off" spellcheck="false" placeholder="Nhập mã khách hàng hợp lệ"></div>
+            <div class="field"><label for="as-of-date">Ngày chốt đặc trưng <b>*</b></label><p>Chỉ dùng thông tin đã biết đến ngày chốt.</p><select id="as-of-date" name="as_of_date"><option value="2017-02-28">28/02/2017 — nhãn tháng 03</option><option value="2017-01-31">31/01/2017 — nhãn tháng 02</option></select></div>
+            <div class="field"><label for="api-key">Mã truy cập demo <b>*</b></label><p>Nhập mã do nhóm cấp; trang không lưu mã vào localStorage.</p><input id="api-key" name="api_key" type="password" required autocomplete="off" placeholder="Nhập API key"></div>
+            <p id="form-error" class="form-error" role="alert" hidden></p>
+            <button id="submit-button" class="submit-button" type="submit"><span>Chạy dự đoán</span><span aria-hidden="true">↗</span></button>
+            <div class="form-foot"><span>POST /v1/predictions</span><span>JSON · SAME ORIGIN</span></div>
+          </form>
+          <section class="panel result-panel" aria-label="Kết quả dự đoán">
+            <div class="panel-head"><span class="kicker">OUTPUT / 02</span><span class="result-state" id="result-state">ĐANG CHỜ DỮ LIỆU</span></div>
+            <div id="result-empty" class="result-empty"><div class="empty-orbit" aria-hidden="true">◎</div><h3>Kết quả sẽ xuất hiện tại đây</h3><p>Gửi subscriber key và chọn ngày chốt để xem xác suất churn, mức rủi ro và model version.</p><div class="empty-flow">01 INPUT <span>→</span> 02 FEATURES <span>→</span> 03 PREDICTION</div></div>
+            <div id="result-data" class="result-data" hidden>
+              <div class="result-summary"><div class="score-ring" id="score-ring"><div><strong id="score-value">—</strong><span>CHURN PROBABILITY</span></div></div><div class="prediction-copy"><small>MODEL OUTPUT</small><strong id="prediction-label">—</strong><span class="risk-badge" id="risk-badge">—</span></div></div>
+              <div class="result-meter"><div><span>0% · TIẾP TỤC</span><span>100% · RỜI BỎ</span></div><div class="meter-track"><span id="meter-fill"></span></div></div>
+              <dl class="result-details"><div><dt>Ngày chốt</dt><dd id="result-cutoff">—</dd></div><div><dt>Model version</dt><dd id="result-model">—</dd></div><div><dt>Feature version</dt><dd id="result-feature">—</dd></div><div><dt>Chế độ</dt><dd>Phát lại lịch sử</dd></div></dl>
+              <p class="disclaimer">Xác suất của mô hình tại cutoff đã chọn; không phải nhãn churn thật hoặc cam kết khách hàng sẽ rời bỏ.</p>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="pipeline" id="pipeline" aria-labelledby="pipeline-title"><div class="section-title"><div><span class="kicker">02 / DATA FLOW</span><h2 id="pipeline-title">Một đường đi, nhiều lớp kiểm chứng.</h2><p>Mỗi bước có đầu vào và đầu ra riêng để đối chiếu trong báo cáo.</p></div></div><div class="flow-grid"><article><span>01 / SOURCE</span><h3>Parquet nguồn</h3><p>Bốn bảng: thành viên, giao dịch, ngày nghe và nhãn churn có sẵn.</p></article><article><span>02 / TRANSFORM</span><h3>Spark + cutoff</h3><p>Join và tổng hợp snapshot; loại sự kiện sau ngày chốt.</p></article><article><span>03 / MODEL</span><h3>Train + version</h3><p>So model trên validation tháng 02; test cuối tháng 03.</p></article><article><span>04 / SERVE</span><h3>Feast + API</h3><p>Tra feature theo khách hàng/cutoff và trả dự đoán qua JSON.</p></article></div></section>
+
+      <section class="method" id="method" aria-labelledby="method-title"><div><span class="kicker">03 / EXPERIMENT DESIGN</span><h2 id="method-title">Hai mốc thời gian.<br><em>Một nguyên tắc chống rò rỉ.</em></h2><p>Feature chỉ được tạo từ dữ liệu đã biết đến cutoff. Nhãn của kỳ sau dùng để đánh giá, không nằm trong vector đầu vào.</p></div><div class="cutoffs"><div><span>31 JAN 2017</span><strong>Train / validation</strong><small>Dự đoán nhãn tháng 02</small></div><div><span>28 FEB 2017</span><strong>Final test / replay</strong><small>Dự đoán nhãn tháng 03</small></div></div></section>
+    </main>
+    <footer><span>SIGNAL LAB / KKBOX CHURN</span><span>Dữ liệu lịch sử 2017 · Mô hình thử nghiệm học thuật</span><a href="#top">Lên đầu trang ↑</a></footer>
+  </div>
 </body>
 </html>

@@ -7,9 +7,13 @@ on:
       - ".github/workflows/kkbox_ci.yml"
       - "src/kkbox/**"
       - "scripts/download_kkbox.py"
+      - "scripts/kkbox_make_figures.py"
+      - "scripts/kkbox_benchmark_read.py"
+      - "scripts/kkbox_latency_probe.py"
       - "tests/test_kkbox_*.py"
       - "dvc.yaml"
       - "requirements-kkbox.txt"
+      - "requirements-kkbox-azure.txt"
       - "docs/experiments/kkbox_parquet_manifest.json"
   pull_request:
     branches: [master, main]

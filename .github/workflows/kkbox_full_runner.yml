@@ -34,7 +34,7 @@ jobs:
       - name: Check free disk before downloading source data
         run: python -c 'import shutil; free=shutil.disk_usage(".").free; print(f"Free bytes {free:,}"); assert free >= 30*1024**3, "Need at least 30 GiB free"'
       - name: Install pinned KKBox dependencies
-        run: python -m pip install -r requirements-kkbox.txt
+        run: python -m pip install -r requirements-kkbox-azure.txt
       - name: Download, feature ETL, train, register model
         run: dvc repro kkbox_train_full
       - name: Publish cutoff snapshots to Feast
@@ -44,6 +44,8 @@ jobs:
       - name: Verify full-source audit
         run: |
           python -c 'import json; a=json.load(open("docs/experiments/kkbox_etl_audit.json")); assert a["status"]=="full_cohort" and a["complete_source"] and a["input_file_count"]==32'
+      - name: Render report figures from full results
+        run: dvc repro kkbox_figures_full
       - name: Save aggregate evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -55,6 +57,7 @@ jobs:
             docs/experiments/kkbox_model_report.json
             docs/experiments/kkbox_feast_report.json
             docs/experiments/kkbox_drift_report.json
+            reports/kkbox_figures/*.svg
             dvc.lock
           if-no-files-found: warn
           retention-days: 14

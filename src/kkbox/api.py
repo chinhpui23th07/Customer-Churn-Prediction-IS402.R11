@@ -14,6 +14,7 @@ import joblib
 import numpy as np
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
 from src.kkbox.contract import ALLOWED_CUTOFFS, FEATURE_COLUMNS, FEATURE_VERSION
@@ -111,6 +112,8 @@ def feast_features(snapshot_key: str) -> list[float | None] | None:
 
 
 app = FastAPI(title="KKBox Customer Churn API", version="1.0.0")
+WEB_DIR = Path(__file__).resolve().parent / "web"
+app.mount("/demo/assets", StaticFiles(directory=WEB_DIR), name="kkbox-demo-assets")
 
 
 def require_api_key(value: str | None) -> None:
@@ -123,7 +126,7 @@ def require_api_key(value: str | None) -> None:
 
 @app.get("/demo", include_in_schema=False)
 def demo():
-    return FileResponse(Path(__file__).resolve().parent / "web" / "index.html")
+    return FileResponse(WEB_DIR / "index.html")
 
 
 @app.get("/health")

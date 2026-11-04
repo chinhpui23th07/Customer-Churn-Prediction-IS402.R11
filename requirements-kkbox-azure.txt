@@ -1,0 +1,4 @@
+# Install on the approved cloud runner when Azure Blob is selected as DVC remote.
+# Keep the synthetic CI on requirements-kkbox.txt to avoid cloud-only dependencies.
+-r requirements-kkbox.txt
+dvc[azure]==3.67.1
