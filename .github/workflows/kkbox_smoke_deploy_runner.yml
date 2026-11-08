@@ -1,6 +1,10 @@
 name: KKBox Test and Deploy on Ephemeral Runner
 
 on:
+  push:
+    branches: [feat/kkbox-churn-pipeline-pilot]
+    paths:
+      - .github/workflows/kkbox_smoke_deploy_runner.yml
   workflow_dispatch:
     inputs:
       deploy:
@@ -18,7 +22,7 @@ concurrency:
 
 jobs:
   test-and-deploy:
-    if: ${{ github.ref == 'refs/heads/feat/kkbox-churn-pipeline-pilot' && inputs.deploy == true }}
+    if: ${{ github.ref == 'refs/heads/feat/kkbox-churn-pipeline-pilot' && (github.event_name == 'push' || inputs.deploy == true) }}
     runs-on: [self-hosted, linux, x64, kkbox]
     timeout-minutes: 20
     env:
