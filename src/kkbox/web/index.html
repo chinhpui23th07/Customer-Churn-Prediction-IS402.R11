@@ -43,33 +43,54 @@
       </section>
 
       <section class="source-strip" aria-label="Quy mô nguồn theo manifest">
-        <div class="source-intro"><span class="kicker">DATASET / MANIFEST</span><strong>Quy mô nguồn</strong><small>Metadata đã kiểm tra; chưa là bằng chứng xử lý full trên cloud.</small></div>
+        <div class="source-intro"><span class="kicker">DATASET / FULL RUN</span><strong>Quy mô nguồn</strong><small>Đã xử lý đủ 32 file trên Azure VM; kiểm chứng qua ETL audit.</small></div>
         <div class="stat"><strong>32</strong><span>file Parquet</span></div>
         <div class="stat"><strong>7,52 <small>GB</small></strong><span>dung lượng nguồn</span></div>
         <div class="stat"><strong>12</strong><span>feature thiết kế</span></div>
       </section>
 
       <section class="workspace" id="predict" aria-labelledby="predict-title">
-        <div class="section-title"><div><span class="kicker">01 / INFERENCE CONSOLE</span><h2 id="predict-title">Dự đoán khách hàng rời bỏ</h2><p>Nhập mã giả danh có snapshot tại ngày chốt tương ứng. API trả xác suất từ mô hình đang nạp.</p></div><span class="section-tag">LIVE API REQUEST</span></div>
+        <div class="section-title"><div><span class="kicker">01 / INFERENCE CONSOLE</span><h2 id="predict-title">Dự đoán khách hàng rời bỏ</h2><p>Ba cách thử mô hình KKBox: nhập feature, CSV hàng loạt hoặc tra snapshot từ Feast.</p></div><span class="section-tag">LIVE API REQUEST</span></div>
         <div class="workspace-grid">
-          <form id="prediction-form" class="panel form-panel" novalidate>
+          <div class="input-stack panel form-panel">
             <div class="panel-head"><span class="kicker">INPUT / 01</span><span class="dots" aria-hidden="true">● ● ●</span></div>
+            <div class="mode-tabs" role="tablist" aria-label="Chế độ dự đoán">
+              <button type="button" role="tab" aria-selected="false" data-mode="manual">Nhập feature</button>
+              <button type="button" role="tab" aria-selected="false" data-mode="batch">CSV hàng loạt</button>
+              <button type="button" role="tab" aria-selected="true" data-mode="lookup">Tra Feature Store</button>
+            </div>
+            <div class="field"><label for="api-key">Mã truy cập demo <b>*</b></label><p>Nhập mã do nhóm cấp; trang không lưu mã vào localStorage.</p><input id="api-key" name="api_key" type="password" required autocomplete="off" placeholder="Nhập API key"></div>
+            <form id="manual-form" class="mode-form" hidden novalidate>
+              <p class="mode-note">Kịch bản giả định: nhập đúng 12 feature đã dùng lúc train. Để trống nếu dữ liệu thiếu. Đây không phải snapshot của khách hàng thật.</p>
+              <div id="manual-fields" class="manual-fields"></div>
+              <button class="submit-button" type="submit"><span>Dự đoán kịch bản</span><span aria-hidden="true">↗</span></button>
+              <div class="form-foot"><span>POST /v1/predictions/manual</span><span>12 FEATURES</span></div>
+            </form>
+            <form id="batch-form" class="mode-form" hidden novalidate>
+              <p class="mode-note">CSV gồm đúng hai cột <code>subscriber_key,as_of_date</code>, tối đa 100 dòng. Mã khách hàng luôn được giữ dạng chuỗi.</p>
+              <div class="field"><label for="batch-file">Tệp CSV <b>*</b></label><input id="batch-file" type="file" accept=".csv,text/csv" required></div>
+              <button class="submit-button" type="submit"><span>Dự đoán hàng loạt</span><span aria-hidden="true">↗</span></button>
+              <div class="form-foot"><span>POST /v1/predictions/batch</span><span>MAX 100 ROWS</span></div>
+            </form>
+            <form id="prediction-form" class="mode-form" novalidate>
             <div class="field"><label for="subscriber-key">Subscriber key <b>*</b></label><p>Khóa khách hàng 64 bit; giữ nguyên dạng chuỗi số.</p><input id="subscriber-key" name="subscriber_key" type="text" inputmode="numeric" pattern="0|[1-9][0-9]*" maxlength="20" required autocomplete="off" spellcheck="false" placeholder="Nhập mã khách hàng hợp lệ"></div>
             <div class="field"><label for="as-of-date">Ngày chốt đặc trưng <b>*</b></label><p>Chỉ dùng thông tin đã biết đến ngày chốt.</p><select id="as-of-date" name="as_of_date"><option value="2017-02-28">28/02/2017 — nhãn tháng 03</option><option value="2017-01-31">31/01/2017 — nhãn tháng 02</option></select></div>
-            <div class="field"><label for="api-key">Mã truy cập demo <b>*</b></label><p>Nhập mã do nhóm cấp; trang không lưu mã vào localStorage.</p><input id="api-key" name="api_key" type="password" required autocomplete="off" placeholder="Nhập API key"></div>
-            <p id="form-error" class="form-error" role="alert" hidden></p>
             <button id="submit-button" class="submit-button" type="submit"><span>Chạy dự đoán</span><span aria-hidden="true">↗</span></button>
-            <div class="form-foot"><span>POST /v1/predictions</span><span>JSON · SAME ORIGIN</span></div>
-          </form>
+            <div class="form-foot"><span>POST /v1/features + /v1/predictions</span><span>FEAST ONLINE</span></div>
+            </form>
+            <p id="form-error" class="form-error" role="alert" hidden></p>
+          </div>
           <section class="panel result-panel" aria-label="Kết quả dự đoán">
             <div class="panel-head"><span class="kicker">OUTPUT / 02</span><span class="result-state" id="result-state">ĐANG CHỜ DỮ LIỆU</span></div>
             <div id="result-empty" class="result-empty"><div class="empty-orbit" aria-hidden="true">◎</div><h3>Kết quả sẽ xuất hiện tại đây</h3><p>Gửi subscriber key và chọn ngày chốt để xem xác suất churn, mức rủi ro và model version.</p><div class="empty-flow">01 INPUT <span>→</span> 02 FEATURES <span>→</span> 03 PREDICTION</div></div>
             <div id="result-data" class="result-data" hidden>
               <div class="result-summary"><div class="score-ring" id="score-ring"><div><strong id="score-value">—</strong><span>CHURN PROBABILITY</span></div></div><div class="prediction-copy"><small>MODEL OUTPUT</small><strong id="prediction-label">—</strong><span class="risk-badge" id="risk-badge">—</span></div></div>
               <div class="result-meter"><div><span>0% · TIẾP TỤC</span><span>100% · RỜI BỎ</span></div><div class="meter-track"><span id="meter-fill"></span></div></div>
-              <dl class="result-details"><div><dt>Ngày chốt</dt><dd id="result-cutoff">—</dd></div><div><dt>Model version</dt><dd id="result-model">—</dd></div><div><dt>Feature version</dt><dd id="result-feature">—</dd></div><div><dt>Chế độ</dt><dd>Phát lại lịch sử</dd></div></dl>
-              <p class="disclaimer">Xác suất của mô hình tại cutoff đã chọn; không phải nhãn churn thật hoặc cam kết khách hàng sẽ rời bỏ.</p>
+              <dl class="result-details"><div><dt>Ngày chốt</dt><dd id="result-cutoff">—</dd></div><div><dt>Model version</dt><dd id="result-model">—</dd></div><div><dt>Feature version</dt><dd id="result-feature">—</dd></div><div><dt>Chế độ</dt><dd id="result-mode">Phát lại lịch sử</dd></div></dl>
+              <p class="disclaimer" id="result-disclaimer">Xác suất của mô hình tại cutoff đã chọn; không phải nhãn churn thật hoặc cam kết khách hàng sẽ rời bỏ.</p>
             </div>
+            <div id="feature-output" class="feature-output" hidden></div>
+            <div id="batch-output" class="batch-output" hidden></div>
           </section>
         </div>
       </section>

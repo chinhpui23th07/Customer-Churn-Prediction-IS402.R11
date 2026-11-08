@@ -47,6 +47,26 @@ def test_prediction_contract_and_missing_snapshot(tmp_path, monkeypatch):
     assert 0.0 <= body["churn_probability"] <= 1.0
     assert api.reload_champion("local-test-key")["model_version"] == "pilot-test"
 
+    features = api.inspect_features(api.PredictionRequest.model_validate(payload), "local-test-key")
+    assert set(features.features) == set(FEATURE_COLUMNS)
+    assert features.missing_count == 0
+    manual = api.predict_manual(api.ManualPredictionRequest.model_validate({
+        "features": {name: 1.0 for name in FEATURE_COLUMNS},
+    }), "local-test-key")
+    assert manual.prediction_mode == "manual_scenario"
+    assert manual.model_version == "pilot-test"
+    batch = api.predict_batch(api.BatchPredictionRequest.model_validate({
+        "items": [payload, {**payload, "subscriber_key": "1"}],
+    }), "local-test-key")
+    assert (batch.total, batch.succeeded, batch.failed) == (2, 1, 1)
+    assert batch.results[0].result.subscriber_key == key
+    assert batch.results[1].error == "No feature snapshot"
+
+    with pytest.raises(ValidationError):
+        api.ManualPredictionRequest.model_validate({"features": {"age": 30}})
+    with pytest.raises(ValidationError):
+        api.BatchPredictionRequest.model_validate({"items": [payload] * 101})
+
     with pytest.raises(HTTPException) as missing:
         api.predict(api.PredictionRequest.model_validate({**payload, "subscriber_key": "1"}), "local-test-key")
     assert missing.value.status_code == 404

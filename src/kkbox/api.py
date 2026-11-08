@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hmac
 import json
+import math
 import os
 from functools import lru_cache
 from pathlib import Path
@@ -15,7 +16,7 @@ import numpy as np
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from src.kkbox.contract import ALLOWED_CUTOFFS, FEATURE_COLUMNS, FEATURE_VERSION
 
@@ -48,6 +49,56 @@ class PredictionResponse(BaseModel):
     model_version: str
     feature_version: str
     prediction_mode: Literal["historical_replay"] = "historical_replay"
+
+
+class ManualPredictionRequest(BaseModel):
+    features: dict[str, float | None]
+
+    @model_validator(mode="after")
+    def valid_features(self):
+        if set(self.features) != set(FEATURE_COLUMNS):
+            raise ValueError("features must contain exactly the 12 KKBox model columns")
+        if all(value is None for value in self.features.values()):
+            raise ValueError("at least one feature value is required")
+        if any(value is not None and not math.isfinite(value) for value in self.features.values()):
+            raise ValueError("feature values must be finite numbers or null")
+        return self
+
+
+class ManualPredictionResponse(BaseModel):
+    prediction: int
+    churn_probability: float
+    risk_level: Literal["low", "medium", "high"]
+    model_version: str
+    feature_version: str
+    prediction_mode: Literal["manual_scenario"] = "manual_scenario"
+
+
+class FeatureResponse(BaseModel):
+    subscriber_key: str
+    as_of_date: str
+    features: dict[str, float | None]
+    missing_count: int
+    feature_version: str
+
+
+class BatchPredictionRequest(BaseModel):
+    items: list[PredictionRequest] = Field(..., min_length=1, max_length=100)
+
+
+class BatchPredictionItem(BaseModel):
+    row: int
+    subscriber_key: str
+    as_of_date: str
+    result: PredictionResponse | None = None
+    error: str | None = None
+
+
+class BatchPredictionResponse(BaseModel):
+    total: int
+    succeeded: int
+    failed: int
+    results: list[BatchPredictionItem]
 
 
 @lru_cache(maxsize=1)
@@ -167,6 +218,60 @@ def predict(payload: PredictionRequest, x_api_key: str | None = Header(default=N
         churn_probability=round(probability, 6), risk_level=risk_level,
         model_version=str(metadata["model_version"]), feature_version=FEATURE_VERSION,
     )
+
+
+@app.post("/v1/features", response_model=FeatureResponse)
+def inspect_features(payload: PredictionRequest, x_api_key: str | None = Header(default=None)):
+    require_api_key(x_api_key)
+    snapshot_key = f"{payload.subscriber_key}|{payload.as_of_date}"
+    backend = os.getenv("KKBOX_FEATURE_BACKEND", "feast")
+    try:
+        values = parquet_features(snapshot_key) if backend == "parquet" else feast_features(snapshot_key)
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail="Feature store unavailable") from exc
+    if values is None:
+        raise HTTPException(status_code=404, detail="No feature snapshot for this ID and cutoff")
+    return FeatureResponse(subscriber_key=payload.subscriber_key, as_of_date=payload.as_of_date,
+                           features=dict(zip(FEATURE_COLUMNS, values)),
+                           missing_count=sum(value is None for value in values),
+                           feature_version=FEATURE_VERSION)
+
+
+@app.post("/v1/predictions/manual", response_model=ManualPredictionResponse)
+def predict_manual(payload: ManualPredictionRequest, x_api_key: str | None = Header(default=None)):
+    require_api_key(x_api_key)
+    try:
+        model, metadata = load_model()
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail="Model unavailable") from exc
+    vector = np.array([[np.nan if payload.features[name] is None else payload.features[name]
+                        for name in FEATURE_COLUMNS]], dtype=np.float32)
+    probability = float(model.predict_proba(vector)[0, 1])
+    risk_level = ("high" if probability >= metadata["risk_high_threshold"] else
+                  "medium" if probability >= metadata["risk_medium_threshold"] else "low")
+    return ManualPredictionResponse(prediction=int(probability >= metadata["classification_threshold"]),
+                                    churn_probability=round(probability, 6), risk_level=risk_level,
+                                    model_version=str(metadata["model_version"]),
+                                    feature_version=FEATURE_VERSION)
+
+
+@app.post("/v1/predictions/batch", response_model=BatchPredictionResponse)
+def predict_batch(payload: BatchPredictionRequest, x_api_key: str | None = Header(default=None)):
+    require_api_key(x_api_key)
+    results = []
+    for row, item in enumerate(payload.items, start=1):
+        try:
+            result = predict(item, x_api_key)
+            results.append(BatchPredictionItem(row=row, subscriber_key=item.subscriber_key,
+                                               as_of_date=item.as_of_date, result=result))
+        except HTTPException as exc:
+            if exc.status_code != 404:
+                raise
+            results.append(BatchPredictionItem(row=row, subscriber_key=item.subscriber_key,
+                                               as_of_date=item.as_of_date, error="No feature snapshot"))
+    succeeded = sum(item.result is not None for item in results)
+    return BatchPredictionResponse(total=len(results), succeeded=succeeded,
+                                   failed=len(results) - succeeded, results=results)
 
 
 @app.post("/v1/model/reload", include_in_schema=False)

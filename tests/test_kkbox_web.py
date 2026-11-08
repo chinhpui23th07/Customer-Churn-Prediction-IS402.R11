@@ -16,6 +16,14 @@ def test_demo_and_assets_are_served_by_kkbox_app():
     assert 'id="subscriber-key"' in page.text
     assert 'id="as-of-date"' in page.text
     assert 'id="api-key"' in page.text
+    assert 'data-mode="manual"' in page.text
+    assert 'data-mode="batch"' in page.text
+    assert 'data-mode="lookup"' in page.text
+    assert 'id="batch-file"' in page.text
+    assert 'id="manual-fields"' in page.text
     assert 'type="number" id="inp-customer-id"' not in page.text
     assert "/v1/predictions" in script.text
+    assert "/v1/predictions/batch" in script.text
+    assert "/v1/predictions/manual" in script.text
+    assert "/v1/features" in script.text
     assert "localStorage.setItem" not in script.text
