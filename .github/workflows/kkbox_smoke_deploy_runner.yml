@@ -1,0 +1,46 @@
+name: KKBox Test and Deploy on Ephemeral Runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Test and deploy API/Web on the existing Azure VM"
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kkbox-vm-deploy
+  cancel-in-progress: false
+
+jobs:
+  test-and-deploy:
+    if: ${{ github.ref == 'refs/heads/feat/kkbox-churn-pipeline-pilot' && inputs.deploy == true }}
+    runs-on: [self-hosted, linux, x64, kkbox]
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+      MLFLOW_DISABLE_AGENT_HINT: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test KKBox API and three Web modes
+        run: /home/azureuser/churn/.venv/bin/python -m pytest tests/test_kkbox_api.py tests/test_kkbox_web.py -q
+      - name: Deploy API and Web after tests pass
+        run: bash deploy/kkbox/deploy_from_runner.sh
+      - name: Verify public HTTPS endpoint
+        run: |
+          /home/azureuser/churn/.venv/bin/python - <<'PY'
+          import json
+          import urllib.request
+          root = "https://kkboxchurnuit26.eastasia.cloudapp.azure.com"
+          with urllib.request.urlopen(root + "/health", timeout=20) as response:
+              status = json.load(response)
+          assert status["status"] == "ready" and status["mode"] == "full", status
+          with urllib.request.urlopen(root + "/demo", timeout=20) as response:
+              page = response.read().decode("utf-8")
+          assert all(f'data-mode="{mode}"' in page for mode in ("manual", "batch", "lookup"))
+          print("PUBLIC_HTTPS_READY", status)
+          PY
