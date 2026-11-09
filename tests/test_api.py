@@ -229,6 +229,8 @@ def test_metrics_endpoint():
 
 def test_trigger_retrain():
     """Verify retrain webhook endpoint response with genuine background execution."""
+    from src.api.routes_management import JOB_MANAGER
+    JOB_MANAGER.lock.force_release()
     response = client.post("/api/v1/trigger_retrain?force=true&dry_run=true", headers=AUTH_HEADERS)
     assert response.status_code == 200
     data = response.json()
