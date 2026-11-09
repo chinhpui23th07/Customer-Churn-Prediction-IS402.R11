@@ -1,0 +1,46 @@
+name: KKBox Churn Contract CI
+
+on:
+  push:
+    branches: ["feat/**"]
+    paths:
+      - ".github/workflows/kkbox_ci.yml"
+      - "src/kkbox/**"
+      - "scripts/download_kkbox.py"
+      - "scripts/kkbox_make_figures.py"
+      - "scripts/kkbox_benchmark_read.py"
+      - "scripts/kkbox_latency_probe.py"
+      - "tests/test_kkbox_*.py"
+      - "dvc.yaml"
+      - "requirements-kkbox.txt"
+      - "requirements-kkbox-azure.txt"
+      - "docs/experiments/kkbox_parquet_manifest.json"
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+  kkbox-contract:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: "."
+      SPARK_LOCAL_IP: "127.0.0.1"
+      MLFLOW_DISABLE_AGENT_HINT: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Install contract test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-kkbox.txt
+          python -m pip install pytest==9.2.0 httpx==0.28.1
+      - name: Validate KKBox DVC graph
+        run: dvc dag kkbox_drift_full
+      - name: Test KKBox API, source integrity, cutoff, and drift
+        run: python -m pytest tests/test_kkbox_*.py -q

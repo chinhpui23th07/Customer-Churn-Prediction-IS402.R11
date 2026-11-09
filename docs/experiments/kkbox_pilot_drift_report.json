@@ -1,0 +1,148 @@
+{
+  "analysis": "historical_feature_replay",
+  "mode": "pilot",
+  "feature_version": "kkbox-v1",
+  "source_revision_sha": "a0f48c28e392e9a60d4d6fc62f1bbf3d848277d3",
+  "reference_period": "2017-02",
+  "current_period": "2017-03",
+  "reference_rows_sampled": 1000,
+  "current_rows_sampled": 967,
+  "sample_cap_per_period": 100000,
+  "flag_rule": "PSI >= 0.2 or absolute missing-rate delta >= 0.05",
+  "flagged_features": [],
+  "features": {
+    "txn_count_30d": {
+      "reference_non_null": 1000,
+      "current_non_null": 967,
+      "reference_missing_rate": 0.0,
+      "current_missing_rate": 0.0,
+      "missing_rate_delta": 0.0,
+      "psi": 0.131475,
+      "ks_statistic": 0.072189,
+      "ks_p_value": 0.011259020843861775,
+      "drift_flag": false
+    },
+    "paid_amount_30d": {
+      "reference_non_null": 1000,
+      "current_non_null": 967,
+      "reference_missing_rate": 0.0,
+      "current_missing_rate": 0.0,
+      "missing_rate_delta": 0.0,
+      "psi": 0.021529,
+      "ks_statistic": 0.071121,
+      "ks_p_value": 0.01310251173137332,
+      "drift_flag": false
+    },
+    "cancel_count_90d": {
+      "reference_non_null": 1000,
+      "current_non_null": 967,
+      "reference_missing_rate": 0.0,
+      "current_missing_rate": 0.0,
+      "missing_rate_delta": 0.0,
+      "psi": 0.007584,
+      "ks_statistic": 0.002751,
+      "ks_p_value": 1.0,
+      "drift_flag": false
+    },
+    "days_since_last_txn": {
+      "reference_non_null": 962,
+      "current_non_null": 926,
+      "reference_missing_rate": 0.038,
+      "current_missing_rate": 0.042399,
+      "missing_rate_delta": 0.004399,
+      "psi": 0.048664,
+      "ks_statistic": 0.086948,
+      "ks_p_value": 0.001488265363988389,
+      "drift_flag": false
+    },
+    "last_auto_renew": {
+      "reference_non_null": 962,
+      "current_non_null": 926,
+      "reference_missing_rate": 0.038,
+      "current_missing_rate": 0.042399,
+      "missing_rate_delta": 0.004399,
+      "psi": 0.000888,
+      "ks_statistic": 0.008918,
+      "ks_p_value": 0.9999999999993728,
+      "drift_flag": false
+    },
+    "days_until_expiry": {
+      "reference_non_null": 962,
+      "current_non_null": 926,
+      "reference_missing_rate": 0.038,
+      "current_missing_rate": 0.042399,
+      "missing_rate_delta": 0.004399,
+      "psi": 0.008706,
+      "ks_statistic": 0.07277,
+      "ks_p_value": 0.012806016100466368,
+      "drift_flag": false
+    },
+    "active_days_30d": {
+      "reference_non_null": 1000,
+      "current_non_null": 967,
+      "reference_missing_rate": 0.0,
+      "current_missing_rate": 0.0,
+      "missing_rate_delta": 0.0,
+      "psi": 0.013456,
+      "ks_statistic": 0.039994,
+      "ks_p_value": 0.40032274196904327,
+      "drift_flag": false
+    },
+    "listening_secs_30d": {
+      "reference_non_null": 1000,
+      "current_non_null": 967,
+      "reference_missing_rate": 0.0,
+      "current_missing_rate": 0.0,
+      "missing_rate_delta": 0.0,
+      "psi": 0.027616,
+      "ks_statistic": 0.068319,
+      "ks_p_value": 0.019295355676967798,
+      "drift_flag": false
+    },
+    "days_since_last_listen": {
+      "reference_non_null": 792,
+      "current_non_null": 789,
+      "reference_missing_rate": 0.208,
+      "current_missing_rate": 0.184074,
+      "missing_rate_delta": -0.023926,
+      "psi": 0.00837,
+      "ks_statistic": 0.036842,
+      "ks_p_value": 0.6433222083580321,
+      "drift_flag": false
+    },
+    "registration_tenure_days": {
+      "reference_non_null": 883,
+      "current_non_null": 859,
+      "reference_missing_rate": 0.117,
+      "current_missing_rate": 0.111686,
+      "missing_rate_delta": -0.005314,
+      "psi": 0.019473,
+      "ks_statistic": 0.026578,
+      "ks_p_value": 0.9102088476733547,
+      "drift_flag": false
+    },
+    "has_txn_history": {
+      "reference_non_null": 1000,
+      "current_non_null": 967,
+      "reference_missing_rate": 0.0,
+      "current_missing_rate": 0.0,
+      "missing_rate_delta": 0.0,
+      "psi": 0.000502,
+      "ks_statistic": 0.004399,
+      "ks_p_value": 1.0,
+      "drift_flag": false
+    },
+    "has_listening_history": {
+      "reference_non_null": 1000,
+      "current_non_null": 967,
+      "reference_missing_rate": 0.0,
+      "current_missing_rate": 0.0,
+      "missing_rate_delta": 0.0,
+      "psi": 0.003636,
+      "ks_statistic": 0.023926,
+      "ks_p_value": 0.9343871203898333,
+      "drift_flag": false
+    }
+  },
+  "warning": "Pilot source history is incomplete; this report is only a pipeline check."
+}

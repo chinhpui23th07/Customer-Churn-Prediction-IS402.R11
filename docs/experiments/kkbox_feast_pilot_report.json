@@ -1,0 +1,11 @@
+{
+  "source_parquet": "data\\kkbox_feast\\churn_features.parquet",
+  "source_bytes": 42666,
+  "rows": 1967,
+  "unique_snapshot_keys": 1967,
+  "online_write_rows": 1967,
+  "online_write_method": "Feast write_to_online_store in batches",
+  "online_lookup_populated_features": 12,
+  "historical_lookup_rows": 1,
+  "feature_count": 12
+}

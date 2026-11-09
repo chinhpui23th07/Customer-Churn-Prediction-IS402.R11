@@ -1,0 +1,45 @@
+{
+  "dataset": "vaibhavkhurana/subscriber-retention-intelligence",
+  "revision_sha": "a0f48c28e392e9a60d4d6fc62f1bbf3d848277d3",
+  "scope": "pilot",
+  "file_count": 6,
+  "bytes": 885659602,
+  "files": [
+    {
+      "path": "churn_label/window=2017-02/data.parquet",
+      "bytes": 7948492,
+      "sha256": "5337e9c36840f9dfba6034aea7771178081880944508ab8cec6d2963b5e57ef7",
+      "status": "existing"
+    },
+    {
+      "path": "churn_label/window=2017-03/data.parquet",
+      "bytes": 7772330,
+      "sha256": "3c1dedfdb821855dea176c090723cf853470d606d071462ad91fd58846259ade",
+      "status": "existing"
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201701/data.parquet",
+      "bytes": 304662028,
+      "sha256": "08ba4b36aa48504d1e71faa6788747ef306d22661f4b7b1e1ddff9aeb8550dc0",
+      "status": "existing"
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201702/data.parquet",
+      "bytes": 272911990,
+      "sha256": "f056a6e29abf4407dfff3b22a5f26173e0f3c149d46c917189582d58990fbc2e",
+      "status": "existing"
+    },
+    {
+      "path": "member/data.parquet",
+      "bytes": 60491935,
+      "sha256": "7ce4eadd96ff9bd6ef41b193b7bee33e05da3ffc0a9323ffeb4664e65447f920",
+      "status": "existing"
+    },
+    {
+      "path": "subscription_transaction/part=0/data.parquet",
+      "bytes": 231872827,
+      "sha256": "7fb5de9ab4833f4ce2cfc7e924a67648a1353b14d2cc86166be75e32b900f64a",
+      "status": "existing"
+    }
+  ]
+}

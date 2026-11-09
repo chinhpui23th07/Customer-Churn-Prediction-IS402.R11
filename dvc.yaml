@@ -120,3 +120,76 @@ stages:
     metrics:
       - data/processed/drift_metrics.json:
           cache: false
+
+  kkbox_download_full:
+    cmd: python scripts/download_kkbox.py --scope full
+    deps:
+      - scripts/download_kkbox.py
+      - docs/experiments/kkbox_parquet_manifest.json
+    outs:
+      - data/kkbox_raw
+    metrics:
+      - docs/experiments/kkbox_download_report.json:
+          cache: false
+
+  kkbox_etl_full:
+    cmd: python -m src.kkbox.run_etl --sample-modulus 1
+    deps:
+      - data/kkbox_raw
+      - docs/experiments/kkbox_parquet_manifest.json
+      - src/kkbox/contract.py
+      - src/kkbox/features.py
+      - src/kkbox/run_etl.py
+    outs:
+      - data/kkbox_processed/features
+    metrics:
+      - docs/experiments/kkbox_etl_audit.json:
+          cache: false
+
+  kkbox_train_full:
+    cmd: python -m src.kkbox.train --mode full
+    deps:
+      - data/kkbox_processed/features
+      - docs/experiments/kkbox_etl_audit.json
+      - src/kkbox/contract.py
+      - src/kkbox/train.py
+    outs:
+      - data/kkbox_models/champion_model.joblib
+      - data/kkbox_models/model_metadata.json
+    metrics:
+      - docs/experiments/kkbox_model_report.json:
+          cache: false
+
+  kkbox_feast_full:
+    cmd: python -m src.kkbox.prepare_feast
+    deps:
+      - data/kkbox_processed/features
+      - data/kkbox_feast/definitions.py
+      - data/kkbox_feast/feature_store.yaml
+      - src/kkbox/prepare_feast.py
+    outs:
+      - data/kkbox_feast/churn_features.parquet
+    metrics:
+      - docs/experiments/kkbox_feast_report.json:
+          cache: false
+
+  kkbox_drift_full:
+    cmd: python -m src.kkbox.drift --require-full
+    deps:
+      - data/kkbox_processed/features
+      - docs/experiments/kkbox_etl_audit.json
+      - src/kkbox/contract.py
+      - src/kkbox/drift.py
+    metrics:
+      - docs/experiments/kkbox_drift_report.json:
+          cache: false
+
+  kkbox_figures_full:
+    cmd: python scripts/kkbox_make_figures.py
+    deps:
+      - scripts/kkbox_make_figures.py
+      - docs/experiments/kkbox_etl_audit.json
+      - docs/experiments/kkbox_model_report.json
+      - docs/experiments/kkbox_drift_report.json
+    outs:
+      - reports/kkbox_figures

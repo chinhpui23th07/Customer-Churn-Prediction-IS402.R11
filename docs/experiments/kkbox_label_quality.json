@@ -1,0 +1,27 @@
+{
+  "source": "local downloaded official Parquet",
+  "windows": [
+    {
+      "label_window": "2017-02",
+      "source_label_window": "train",
+      "rows": 992931,
+      "unique_subscribers": 992931,
+      "churn_1": 63471,
+      "churn_0": 929460,
+      "churn_rate": 0.063923,
+      "null_keys": 0,
+      "invalid_labels": 0
+    },
+    {
+      "label_window": "2017-03",
+      "source_label_window": "train_v2",
+      "rows": 970960,
+      "unique_subscribers": 970960,
+      "churn_1": 87330,
+      "churn_0": 883630,
+      "churn_rate": 0.089942,
+      "null_keys": 0,
+      "invalid_labels": 0
+    }
+  ]
+}

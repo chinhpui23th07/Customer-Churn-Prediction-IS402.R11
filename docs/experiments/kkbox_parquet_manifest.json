@@ -1,0 +1,763 @@
+{
+  "dataset": "vaibhavkhurana/subscriber-retention-intelligence",
+  "revision_sha": "a0f48c28e392e9a60d4d6fc62f1bbf3d848277d3",
+  "inspected_at_utc": "2026-11-03T14:42:00.119820+00:00",
+  "scope": "all",
+  "total_published_parquet_files": 32,
+  "total_published_parquet_bytes": 7522254856,
+  "inspected_rows": 442211685,
+  "families": {
+    "churn_label": {
+      "rows": 1963891,
+      "bytes": 15720822,
+      "file_count": 2,
+      "schemas": [
+        {
+          "subscriber_key": "uint64",
+          "label_window": "string",
+          "is_churn": "uint8"
+        }
+      ]
+    },
+    "listening_day": {
+      "rows": 410502905,
+      "bytes": 6982487551,
+      "file_count": 27,
+      "schemas": [
+        {
+          "subscriber_key": "uint64",
+          "activity_date": "date32[day]",
+          "num_25": "int32",
+          "num_50": "int32",
+          "num_75": "int32",
+          "num_985": "int32",
+          "num_100": "int32",
+          "num_unq": "int32",
+          "total_secs": "double",
+          "total_secs_was_negative": "bool",
+          "source_version": "string"
+        }
+      ]
+    },
+    "member": {
+      "rows": 6769473,
+      "bytes": 60491935,
+      "file_count": 1,
+      "schemas": [
+        {
+          "subscriber_key": "uint64",
+          "city_code": "int32",
+          "age_band_start": "int32",
+          "gender": "string",
+          "registration_method_code": "int32",
+          "registration_month": "date32[day]"
+        }
+      ]
+    },
+    "subscription_transaction": {
+      "rows": 22975416,
+      "bytes": 463554548,
+      "file_count": 2,
+      "schemas": [
+        {
+          "event_key": "uint64",
+          "subscriber_key": "uint64",
+          "payment_method_id": "int32",
+          "payment_plan_days": "int32",
+          "plan_list_price": "int32",
+          "actual_amount_paid": "int32",
+          "is_auto_renew": "uint8",
+          "transaction_date": "date32[day]",
+          "membership_expire_date": "date32[day]",
+          "is_cancel": "uint8",
+          "source_versions": "string"
+        }
+      ]
+    }
+  },
+  "files": [
+    {
+      "path": "churn_label/window=2017-02/data.parquet",
+      "bytes": 7948492,
+      "rows": 992931,
+      "row_groups": 9,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "label_window": "string",
+        "is_churn": "uint8"
+      }
+    },
+    {
+      "path": "churn_label/window=2017-03/data.parquet",
+      "bytes": 7772330,
+      "rows": 970960,
+      "row_groups": 8,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "label_window": "string",
+        "is_churn": "uint8"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201501/data.parquet",
+      "bytes": 219321493,
+      "rows": 12897706,
+      "row_groups": 104,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201502/data.parquet",
+      "bytes": 194508338,
+      "rows": 11457186,
+      "row_groups": 93,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201503/data.parquet",
+      "bytes": 225119885,
+      "rows": 13233548,
+      "row_groups": 107,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201504/data.parquet",
+      "bytes": 223061048,
+      "rows": 13146949,
+      "row_groups": 107,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201505/data.parquet",
+      "bytes": 227081756,
+      "rows": 13477134,
+      "row_groups": 109,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201506/data.parquet",
+      "bytes": 222629397,
+      "rows": 13111785,
+      "row_groups": 106,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201507/data.parquet",
+      "bytes": 225542443,
+      "rows": 13186484,
+      "row_groups": 107,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201508/data.parquet",
+      "bytes": 229302414,
+      "rows": 13428113,
+      "row_groups": 109,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201509/data.parquet",
+      "bytes": 231595797,
+      "rows": 13559390,
+      "row_groups": 110,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201510/data.parquet",
+      "bytes": 246256348,
+      "rows": 14403123,
+      "row_groups": 117,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201511/data.parquet",
+      "bytes": 244786832,
+      "rows": 14370471,
+      "row_groups": 116,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201512/data.parquet",
+      "bytes": 255700297,
+      "rows": 15043579,
+      "row_groups": 122,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201601/data.parquet",
+      "bytes": 257060468,
+      "rows": 15117586,
+      "row_groups": 123,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201602/data.parquet",
+      "bytes": 236796383,
+      "rows": 13936796,
+      "row_groups": 113,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201603/data.parquet",
+      "bytes": 272140863,
+      "rows": 15998873,
+      "row_groups": 129,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201604/data.parquet",
+      "bytes": 270450342,
+      "rows": 15883383,
+      "row_groups": 129,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201605/data.parquet",
+      "bytes": 281114838,
+      "rows": 16524642,
+      "row_groups": 134,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201606/data.parquet",
+      "bytes": 275601451,
+      "rows": 16181366,
+      "row_groups": 131,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201607/data.parquet",
+      "bytes": 284043570,
+      "rows": 16694873,
+      "row_groups": 135,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201608/data.parquet",
+      "bytes": 286482307,
+      "rows": 16839510,
+      "row_groups": 137,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201609/data.parquet",
+      "bytes": 280232857,
+      "rows": 16473693,
+      "row_groups": 133,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201610/data.parquet",
+      "bytes": 299003652,
+      "rows": 17557264,
+      "row_groups": 142,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201611/data.parquet",
+      "bytes": 297613816,
+      "rows": 17487012,
+      "row_groups": 142,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201612/data.parquet",
+      "bytes": 308062110,
+      "rows": 18108364,
+      "row_groups": 147,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201701/data.parquet",
+      "bytes": 304662028,
+      "rows": 17908094,
+      "row_groups": 145,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v1/activity_month=201702/data.parquet",
+      "bytes": 272911990,
+      "rows": 16079619,
+      "row_groups": 130,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "listening_day/source_version=v2/activity_month=201703/data.parquet",
+      "bytes": 311404828,
+      "rows": 18396362,
+      "row_groups": 150,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "activity_date": "date32[day]",
+        "num_25": "int32",
+        "num_50": "int32",
+        "num_75": "int32",
+        "num_985": "int32",
+        "num_100": "int32",
+        "num_unq": "int32",
+        "total_secs": "double",
+        "total_secs_was_negative": "bool",
+        "source_version": "string"
+      }
+    },
+    {
+      "path": "member/data.parquet",
+      "bytes": 60491935,
+      "rows": 6769473,
+      "row_groups": 55,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "subscriber_key": "uint64",
+        "city_code": "int32",
+        "age_band_start": "int32",
+        "gender": "string",
+        "registration_method_code": "int32",
+        "registration_month": "date32[day]"
+      }
+    },
+    {
+      "path": "subscription_transaction/part=0/data.parquet",
+      "bytes": 231872827,
+      "rows": 11492457,
+      "row_groups": 94,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "event_key": "uint64",
+        "subscriber_key": "uint64",
+        "payment_method_id": "int32",
+        "payment_plan_days": "int32",
+        "plan_list_price": "int32",
+        "actual_amount_paid": "int32",
+        "is_auto_renew": "uint8",
+        "transaction_date": "date32[day]",
+        "membership_expire_date": "date32[day]",
+        "is_cancel": "uint8",
+        "source_versions": "string"
+      }
+    },
+    {
+      "path": "subscription_transaction/part=1/data.parquet",
+      "bytes": 231681721,
+      "rows": 11482959,
+      "row_groups": 94,
+      "compression": [
+        "ZSTD"
+      ],
+      "fields": {
+        "event_key": "uint64",
+        "subscriber_key": "uint64",
+        "payment_method_id": "int32",
+        "payment_plan_days": "int32",
+        "plan_list_price": "int32",
+        "actual_amount_paid": "int32",
+        "is_auto_renew": "uint8",
+        "transaction_date": "date32[day]",
+        "membership_expire_date": "date32[day]",
+        "is_cancel": "uint8",
+        "source_versions": "string"
+      }
+    }
+  ]
+}

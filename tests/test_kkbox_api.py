@@ -1,0 +1,120 @@
+"""Check the new API contract and 64-bit ID preservation with a tiny local artifact."""
+
+import json
+
+import joblib
+import numpy as np
+import pyarrow as pa
+import pyarrow.parquet as pq
+import pytest
+from fastapi import HTTPException
+from pydantic import ValidationError
+from sklearn.linear_model import LogisticRegression
+
+from src.kkbox import api
+from src.kkbox.contract import FEATURE_COLUMNS, FEATURE_VERSION
+
+
+def test_prediction_contract_and_missing_snapshot(tmp_path, monkeypatch):
+    key = "18446744073709551614"
+    sample = np.vstack([np.zeros(len(FEATURE_COLUMNS)), np.ones(len(FEATURE_COLUMNS))]).astype(np.float32)
+    model = LogisticRegression().fit(sample, np.array([0, 1]))
+    model_dir = tmp_path / "models"
+    model_dir.mkdir()
+    joblib.dump(model, model_dir / "pilot_model.joblib")
+    (model_dir / "model_metadata.json").write_text(json.dumps({
+        "mode": "pilot", "model_version": "pilot-test", "feature_columns": FEATURE_COLUMNS,
+        "feature_version": FEATURE_VERSION, "classification_threshold": 0.5,
+        "risk_medium_threshold": 0.3, "risk_high_threshold": 0.7,
+    }), encoding="utf-8")
+    table = pa.table({"snapshot_key": [f"{key}|2017-02-28"],
+                      **{name: [1.0] for name in FEATURE_COLUMNS}})
+    feature_file = tmp_path / "features.parquet"
+    pq.write_table(table, feature_file)
+
+    monkeypatch.setattr(api, "MODEL_DIR", model_dir)
+    monkeypatch.setattr(api, "FEATURE_PATH", str(feature_file))
+    monkeypatch.setenv("KKBOX_ALLOW_PILOT", "1")
+    monkeypatch.setenv("KKBOX_FEATURE_BACKEND", "parquet")
+    monkeypatch.setenv("KKBOX_API_KEY", "local-test-key")
+    api.load_model.cache_clear()
+    payload = {"subscriber_key": key, "as_of_date": "2017-02-28"}
+    body = api.predict(api.PredictionRequest.model_validate(payload), "local-test-key").model_dump()
+    assert body["subscriber_key"] == key
+    assert body["as_of_date"] == "2017-02-28"
+    assert body["model_version"] == "pilot-test"
+    assert body["prediction_mode"] == "historical_replay"
+    assert 0.0 <= body["churn_probability"] <= 1.0
+    assert api.reload_champion("local-test-key")["model_version"] == "pilot-test"
+
+    features = api.inspect_features(api.PredictionRequest.model_validate(payload), "local-test-key")
+    assert set(features.features) == set(FEATURE_COLUMNS)
+    assert features.missing_count == 0
+    manual = api.predict_manual(api.ManualPredictionRequest.model_validate({
+        "features": {name: 1.0 for name in FEATURE_COLUMNS},
+    }), "local-test-key")
+    assert manual.prediction_mode == "manual_scenario"
+    assert manual.model_version == "pilot-test"
+    batch = api.predict_batch(api.BatchPredictionRequest.model_validate({
+        "items": [payload, {**payload, "subscriber_key": "1"}],
+    }), "local-test-key")
+    assert (batch.total, batch.succeeded, batch.failed) == (2, 1, 1)
+    assert batch.results[0].result.subscriber_key == key
+    assert batch.results[1].error == "No feature snapshot"
+
+    with pytest.raises(ValidationError):
+        api.ManualPredictionRequest.model_validate({"features": {"age": 30}})
+    with pytest.raises(ValidationError):
+        api.BatchPredictionRequest.model_validate({"items": [payload] * 101})
+
+    with pytest.raises(HTTPException) as missing:
+        api.predict(api.PredictionRequest.model_validate({**payload, "subscriber_key": "1"}), "local-test-key")
+    assert missing.value.status_code == 404
+    with pytest.raises(HTTPException) as unauthorized:
+        api.predict(api.PredictionRequest.model_validate(payload), None)
+    assert unauthorized.value.status_code == 401
+    with pytest.raises(ValidationError):
+        api.PredictionRequest.model_validate({**payload, "subscriber_key": 123})
+    with pytest.raises(ValidationError):
+        api.PredictionRequest.model_validate({**payload, "as_of_date": "2026-11-03"})
+
+
+def test_full_model_resolves_mlflow_champion_alias(tmp_path, monkeypatch):
+    import mlflow
+    import mlflow.sklearn
+    from mlflow.tracking import MlflowClient
+
+    model_dir = tmp_path / "models"
+    model_dir.mkdir()
+    (model_dir / "model_metadata.json").write_text(json.dumps({
+        "mode": "full", "model_version": "local-placeholder",
+        "feature_columns": FEATURE_COLUMNS, "feature_version": FEATURE_VERSION,
+    }), encoding="utf-8")
+    tracking_uri = f"sqlite:///{(tmp_path / 'mlflow.db').as_posix()}"
+    previous_uri = mlflow.get_tracking_uri()
+    monkeypatch.setenv("MLFLOW_TRACKING_URI", tracking_uri)
+    monkeypatch.setattr(api, "MODEL_DIR", model_dir)
+    try:
+        mlflow.set_tracking_uri(tracking_uri)
+        mlflow.set_experiment("kkbox-registry-test")
+        sample = np.vstack([np.zeros(len(FEATURE_COLUMNS)), np.ones(len(FEATURE_COLUMNS))])
+        model = LogisticRegression().fit(sample, np.array([0, 1]))
+        with mlflow.start_run():
+            model_info = mlflow.sklearn.log_model(model, artifact_path="model")
+        registered = mlflow.register_model(model_info.model_uri, "KKBoxChurn")
+        client = MlflowClient()
+        for key, value in {
+            "feature_version": FEATURE_VERSION,
+            "classification_threshold": "0.5",
+            "risk_medium_threshold": "0.3",
+            "risk_high_threshold": "0.7",
+        }.items():
+            client.set_model_version_tag("KKBoxChurn", registered.version, key, value)
+        client.set_registered_model_alias("KKBoxChurn", "champion", registered.version)
+        api.load_model.cache_clear()
+        loaded, metadata = api.load_model()
+        assert metadata["model_version"] == str(registered.version)
+        assert loaded.predict_proba(sample).shape == (2, 2)
+    finally:
+        api.load_model.cache_clear()
+        mlflow.set_tracking_uri(previous_uri)

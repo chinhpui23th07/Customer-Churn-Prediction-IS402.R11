@@ -1,0 +1,63 @@
+name: KKBox Full Pipeline on Approved Self-hosted Runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      execute_full:
+        description: "Run full 7.52 GB KKBox pipeline after Azure credit and runner approval"
+        type: boolean
+        default: false
+        required: true
+
+concurrency:
+  group: kkbox-full-pipeline
+  cancel-in-progress: false
+
+jobs:
+  full-pipeline:
+    if: ${{ inputs.execute_full == true }}
+    runs-on: [self-hosted, linux, x64, kkbox]
+    timeout-minutes: 360
+    env:
+      PYTHONPATH: "."
+      SPARK_LOCAL_IP: "127.0.0.1"
+      MLFLOW_DISABLE_AGENT_HINT: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Check free disk before downloading source data
+        run: python -c 'import shutil; free=shutil.disk_usage(".").free; print(f"Free bytes {free:,}"); assert free >= 30*1024**3, "Need at least 30 GiB free"'
+      - name: Install pinned KKBox dependencies
+        run: python -m pip install -r requirements-kkbox-azure.txt
+      - name: Download, feature ETL, train, register model
+        run: dvc repro kkbox_train_full
+      - name: Publish cutoff snapshots to Feast
+        run: dvc repro kkbox_feast_full
+      - name: Compare February and March feature distributions
+        run: dvc repro kkbox_drift_full
+      - name: Verify full-source audit
+        run: |
+          python -c 'import json; a=json.load(open("docs/experiments/kkbox_etl_audit.json")); assert a["status"]=="full_cohort" and a["complete_source"] and a["input_file_count"]==32'
+      - name: Render report figures from full results
+        run: dvc repro kkbox_figures_full
+      - name: Save aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kkbox-full-aggregate-evidence
+          path: |
+            docs/experiments/kkbox_download_report.json
+            docs/experiments/kkbox_etl_audit.json
+            docs/experiments/kkbox_model_report.json
+            docs/experiments/kkbox_feast_report.json
+            docs/experiments/kkbox_drift_report.json
+            reports/kkbox_figures/*.svg
+            dvc.lock
+          if-no-files-found: warn
+          retention-days: 14

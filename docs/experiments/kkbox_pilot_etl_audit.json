@@ -1,0 +1,25 @@
+{
+  "status": "pilot",
+  "input": "data/kkbox_raw",
+  "output": "data/kkbox_processed/pilot_features",
+  "source_revision_sha": "a0f48c28e392e9a60d4d6fc62f1bbf3d848277d3",
+  "input_file_count": 6,
+  "input_bytes": 885659602,
+  "complete_source": false,
+  "output_parquet_bytes": 116196,
+  "sample_modulus": 1000,
+  "windows": {
+    "2017-03": {
+      "rows": 967,
+      "churn_1": 77,
+      "unique_snapshots": 967
+    },
+    "2017-02": {
+      "rows": 1000,
+      "churn_1": 60,
+      "unique_snapshots": 1000
+    }
+  },
+  "duration_seconds": 124.616,
+  "completed_at_utc": "2026-11-03T14:23:58.403702+00:00"
+}
