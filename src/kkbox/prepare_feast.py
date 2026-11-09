@@ -8,7 +8,7 @@ from pathlib import Path
 
 import duckdb
 import pandas as pd
-from feast import FeatureStore
+from feast import FeatureStore, FeatureView, FileSource
 
 from src.kkbox.contract import FEATURE_COLUMNS
 
@@ -19,22 +19,24 @@ def main() -> None:
     parser.add_argument("--repo", type=Path, default=Path("data/kkbox_feast"))
     parser.add_argument("--report", type=Path, default=Path("docs/experiments/kkbox_feast_report.json"))
     args = parser.parse_args()
-    from data.kkbox_feast.definitions import feature_view, snapshot, source
+    from data.kkbox_feast.definitions import feature_view as default_fv
+    from data.kkbox_feast.definitions import snapshot
 
     pattern = str(args.features / "**" / "*.parquet")
-    destination = args.repo / "churn_features.parquet"
+    destination = (args.repo / "churn_features.parquet").resolve()
     destination.parent.mkdir(parents=True, exist_ok=True)
     connection = duckdb.connect()
     connection.execute("SET memory_limit='3GB'")
     columns = ", ".join(FEATURE_COLUMNS)
+    dest_sql = destination.as_posix().replace("'", "''")
     connection.execute(
         f"""COPY (
             SELECT snapshot_key,
                    CAST(as_of_date AS TIMESTAMP) + INTERVAL '23 hours 59 minutes 59 seconds' AS event_timestamp,
                    {columns}
             FROM read_parquet(?, hive_partitioning=true)
-        ) TO ? (FORMAT PARQUET, COMPRESSION ZSTD)""",
-        [pattern, str(destination)],
+        ) TO '{dest_sql}' (FORMAT PARQUET, COMPRESSION ZSTD)""",
+        [pattern],
     )
     row_count, unique_keys = connection.execute(
         "SELECT count(*), count(DISTINCT snapshot_key) FROM read_parquet(?)", [str(destination)]
@@ -42,6 +44,20 @@ def main() -> None:
     if row_count != unique_keys:
         raise RuntimeError("Feast source contains duplicate snapshot keys")
 
+    source = FileSource(
+        name="kkbox_feature_source",
+        path=destination.as_posix(),
+        timestamp_field="event_timestamp",
+    )
+    feature_view = FeatureView(
+        name="kkbox_churn_features",
+        entities=[snapshot],
+        ttl=None,
+        online=True,
+        offline=True,
+        source=source,
+        schema=list(default_fv.schema),
+    )
     store = FeatureStore(repo_path=str(args.repo.resolve()))
     store.apply([snapshot, source, feature_view])
     cursor = connection.execute("SELECT * FROM read_parquet(?)", [str(destination)])

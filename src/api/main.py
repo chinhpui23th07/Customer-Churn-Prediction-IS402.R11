@@ -1,9 +1,10 @@
 """FastAPI Model Serving Service cho ChurnGuard MLOps Platform."""
 import os, sys, time, json, math, threading
+for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"): os.environ[k] = "1"
 import joblib, shap, numpy as np, pandas as pd
 from typing import List, Optional, Dict, Any
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Body
+from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Body, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse, FileResponse, HTMLResponse
@@ -12,38 +13,27 @@ from pydantic import ValidationError
 from src.api.schemas import CustomerInput, PredictionResponse, BatchPredictionResponse, HealthResponse, MAX_BATCH_SIZE
 from src.api.utils import (
     init_inference_db, log_inference_prediction, log_batch_inference_predictions,
-    verify_api_key, prepare_feature_vector_from_input, compute_shap_attributions,
-    generate_recommendation, run_model_inference, check_feast_online_status, FEATURE_COLS
+    verify_api_key, prepare_feature_vector_from_input, generate_recommendation,
+    run_model_inference, check_feast_online_status, FEATURE_COLS
 )
+from src.models.explain import _build_shap_explainer, compute_shap_attributions, compute_batch_attributions
 from src.api.ab_testing import route_customer_to_model, CHAMPION_VERSION, CHALLENGER_VERSION
 from src.features.feature_store import query_online_features
 from src.api.routes_management import router as management_router, register_reload_hook
+from src.kkbox.api import router as kkbox_router, WEB_DIR as KKBOX_WEB_DIR
 
 if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8")
 if hasattr(sys.stderr, "reconfigure"): sys.stderr.reconfigure(encoding="utf-8")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 MODELS_DIR, PROCESSED_DIR = os.path.join(BASE_DIR, "data", "models"), os.path.join(BASE_DIR, "data", "processed")
-INFERENCE_DB = os.path.join(BASE_DIR, "data", "inference_logs.db")
-ONLINE_STORE_DB = os.path.join(BASE_DIR, "data", "feast_repo", "data", "online_store.db")
-MLFLOW_DB = os.path.join(BASE_DIR, "data", "mlflow.db")
-WEB_DIR, DOCS_DIR = os.path.join(BASE_DIR, "src", "web"), os.path.join(BASE_DIR, "docs")
+INFERENCE_DB, ONLINE_STORE_DB = os.path.join(BASE_DIR, "data", "inference_logs.db"), os.path.join(BASE_DIR, "data", "feast_repo", "data", "online_store.db")
+MLFLOW_DB, WEB_DIR, DOCS_DIR = os.path.join(BASE_DIR, "data", "mlflow.db"), os.path.join(BASE_DIR, "src", "web"), os.path.join(BASE_DIR, "docs")
 
 START_TIME = time.time()
 MODEL_LOCK = threading.RLock()
 MODEL_ARTIFACT = CHALLENGER_ARTIFACT = SCALER = METADATA = None
 TREE_EXPLAINER = CHALLENGER_TREE_EXPLAINER = None
-
-
-def _build_shap_explainer(clf):
-    """Khởi tạo SHAP TreeExplainer với fallback tự động sang LinearExplainer."""
-    try:
-        return shap.TreeExplainer(clf)
-    except Exception:
-        try:
-            return shap.LinearExplainer(clf, np.zeros((1, len(FEATURE_COLS))))
-        except Exception:
-            return None
 
 
 def load_artifacts():
@@ -53,36 +43,31 @@ def load_artifacts():
         champion_path, challenger_path = os.path.join(MODELS_DIR, "champion_model.joblib"), os.path.join(MODELS_DIR, "random_forest.joblib")
         scaler_path, meta_path = os.path.join(PROCESSED_DIR, "scaler.joblib"), os.path.join(PROCESSED_DIR, "metadata.json")
 
-        if os.path.exists(champion_path):
-            MODEL_ARTIFACT = joblib.load(champion_path)
-
+        if os.path.exists(champion_path): MODEL_ARTIFACT = joblib.load(champion_path)
         if os.getenv("USE_MLFLOW_REGISTRY", "false").lower() == "true":
             try:
                 os.environ["MLFLOW_DISABLE_AGENT_HINT"] = "1"
                 import mlflow.sklearn
-                mlflow_uri = os.getenv("MLFLOW_TRACKING_URI", f"sqlite:///{MLFLOW_DB.replace(chr(92), '/')}")
-                mlflow.set_tracking_uri(mlflow_uri)
-                registry_model = mlflow.sklearn.load_model("models:/CustomerChurnChampion/Production")
-                if registry_model is not None:
-                    MODEL_ARTIFACT = {"name": "CustomerChurnChampion (MLflow Registry)", "model": registry_model, "use_scaled": False}
-            except Exception:
-                pass
-
-        if MODEL_ARTIFACT is not None:
-            TREE_EXPLAINER = _build_shap_explainer(MODEL_ARTIFACT["model"])
-
-        if os.path.exists(challenger_path):
-            CHALLENGER_ARTIFACT = joblib.load(challenger_path)
-            CHALLENGER_TREE_EXPLAINER = _build_shap_explainer(CHALLENGER_ARTIFACT)
-        if os.path.exists(scaler_path):
-            SCALER = joblib.load(scaler_path)
+                mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", f"sqlite:///{MLFLOW_DB.replace(chr(92), '/')}"))
+                for stage in ("models:/CustomerChurnChampion@champion", "models:/CustomerChurnChampion/Production"):
+                    try:
+                        MODEL_ARTIFACT = {"name": "CustomerChurnChampion (MLflow Registry)", "model": mlflow.sklearn.load_model(stage), "use_scaled": False}
+                        break
+                    except Exception: pass
+                for stage in ("models:/CustomerChurnChallenger@challenger", "models:/CustomerChurnChallenger/Staging"):
+                    try:
+                        CHALLENGER_ARTIFACT = mlflow.sklearn.load_model(stage)
+                        break
+                    except Exception: pass
+            except Exception: pass
+        if MODEL_ARTIFACT is not None: TREE_EXPLAINER = _build_shap_explainer(MODEL_ARTIFACT["model"])
+        if CHALLENGER_ARTIFACT is None and os.path.exists(challenger_path): CHALLENGER_ARTIFACT = joblib.load(challenger_path)
+        if CHALLENGER_ARTIFACT is not None: CHALLENGER_TREE_EXPLAINER = _build_shap_explainer(CHALLENGER_ARTIFACT)
+        if os.path.exists(scaler_path): SCALER = joblib.load(scaler_path)
         if os.path.exists(meta_path):
-            with open(meta_path, "r", encoding="utf-8") as f:
-                METADATA = json.load(f)
+            with open(meta_path, "r", encoding="utf-8") as f: METADATA = json.load(f)
         init_inference_db()
         return {"status": "SUCCESS", "champion_model": MODEL_ARTIFACT.get("name") if MODEL_ARTIFACT else "None"}
-
-
 register_reload_hook(load_artifacts)
 
 
@@ -100,10 +85,15 @@ app = FastAPI(
 )
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 app.include_router(management_router)
+app.include_router(kkbox_router)
+if os.path.exists(KKBOX_WEB_DIR):
+    app.mount("/demo/assets", StaticFiles(directory=KKBOX_WEB_DIR), name="kkbox-demo-assets")
 
 
 @app.get("/", tags=["General"])
-def root():
+def root(request: Request):
+    if "text/html" in request.headers.get("accept", ""):
+        return RedirectResponse(url="/demo")
     return RedirectResponse(url="/docs")
 
 
@@ -123,18 +113,9 @@ def serve_drift_report_html():
                 break
             except Exception: pass
 
-    rows_html = "".join(
-        f"<tr><td>{k}</td><td>{float(v.get('psi_score', 0.0)):.4f}</td>"
-        f"<td>{float(v.get('ks_p_value', 1.0)):.4f}</td><td>{'DRIFT' if v.get('drift_detected') else 'STABLE'}</td></tr>"
-        for k, v in drift_data.get("features", {}).items() if isinstance(v, dict)
-    )
-    html_content = (
-        "<!DOCTYPE html><html lang='vi'><head><meta charset='utf-8'><title>ChurnGuard Data Drift Report</title>"
-        "<style>body{font-family:sans-serif;margin:2rem;background:#0f172a;color:#f8fafc}"
-        "table{width:100%;border-collapse:collapse;margin-top:1rem}th,td{border:1px solid #334155;padding:0.6rem}</style></head>"
-        f"<body><h1>Báo cáo Giám sát Data Drift (KS-Test & PSI)</h1><table><thead>"
-        f"<tr><th>Đặc trưng</th><th>PSI</th><th>KS p-value</th><th>Trạng thái</th></tr></thead><tbody>{rows_html}</tbody></table></body></html>"
-    )
+    rows_html = "".join(f"<tr><td>{k}</td><td>{float(v.get('psi_score', 0.0)):.4f}</td><td>{float(v.get('ks_p_value', 1.0)):.4f}</td><td>{'DRIFT' if v.get('drift_detected') else 'STABLE'}</td></tr>" for k, v in drift_data.get("features", {}).items() if isinstance(v, dict))
+    style = "<style>body{font-family:sans-serif;margin:2rem;background:#0f172a;color:#f8fafc}table{width:100%;border-collapse:collapse;margin-top:1rem}th,td{border:1px solid #334155;padding:0.6rem}</style>"
+    html_content = f"<!DOCTYPE html><html lang='vi'><head><meta charset='utf-8'><title>ChurnGuard Data Drift Report</title>{style}</head><body><h1>Báo cáo Giám sát Data Drift (KS-Test & PSI)</h1><table><thead><tr><th>Đặc trưng</th><th>PSI</th><th>KS p-value</th><th>Trạng thái</th></tr></thead><tbody>{rows_html}</tbody></table></body></html>"
     return HTMLResponse(content=html_content, status_code=200)
 
 
@@ -202,12 +183,10 @@ predict_feast_online_get = predict_from_feast_customer_id
 @app.post("/predict/feast/online", response_model=PredictionResponse, tags=["Feature Store & Serving"])
 def predict_feast_online_post(
     payload: Optional[Dict[str, Any]] = Body(default=None),
-    customer_id: Optional[int] = None,
-    api_key: str = Depends(verify_api_key),
+    customer_id: Optional[int] = None, api_key: str = Depends(verify_api_key)
 ):
     cid = customer_id if customer_id is not None else (payload.get("customer_id") if isinstance(payload, dict) else None)
-    if cid is None:
-        raise HTTPException(status_code=422, detail="Vui lòng cung cấp customer_id hợp lệ!")
+    if cid is None: raise HTTPException(status_code=422, detail="Vui lòng cung cấp customer_id hợp lệ!")
     return _execute_feast_online_prediction(int(cid))
 
 
@@ -262,7 +241,12 @@ def predict_ab_test(customer: CustomerInput, api_key: str = Depends(verify_api_k
 
 
 @app.post("/batch_predict", response_model=BatchPredictionResponse, tags=["Inference"])
-def predict_batch(customers: List[CustomerInput], api_key: str = Depends(verify_api_key)):
+def predict_batch(
+    customers: List[CustomerInput],
+    explain: bool = False,
+    explain_threshold: float = 0.70,
+    api_key: str = Depends(verify_api_key)
+):
     if MODEL_ARTIFACT is None: load_artifacts()
     if len(customers) > MAX_BATCH_SIZE:
         raise HTTPException(status_code=422, detail=f"Batch size exceeds maximum limit of {MAX_BATCH_SIZE}")
@@ -275,13 +259,23 @@ def predict_batch(customers: List[CustomerInput], api_key: str = Depends(verify_
     t0 = time.perf_counter()
     raw_vecs = np.array([prepare_feature_vector_from_input(c)[0] for c in customers])
     with MODEL_LOCK:
-        clf, use_scaled = MODEL_ARTIFACT["model"], MODEL_ARTIFACT["use_scaled"]
+        clf, use_scaled, explainer = MODEL_ARTIFACT["model"], MODEL_ARTIFACT["use_scaled"], TREE_EXPLAINER
 
     x_batch = SCALER.transform(raw_vecs) if use_scaled and SCALER is not None else raw_vecs
     x_batch_df = pd.DataFrame(x_batch, columns=FEATURE_COLS)
     x_eval = x_batch_df if hasattr(clf, "feature_names_in_") else x_batch
     preds = clf.predict(x_eval).astype(int)
     probs = clf.predict_proba(x_eval)[:, 1] if hasattr(clf, "predict_proba") else preds.astype(float)
+
+    batch_explanations = compute_batch_attributions(
+        model=clf,
+        explainer=explainer,
+        feature_matrix=x_eval,
+        churn_probabilities=probs,
+        explain=explain,
+        explain_threshold=explain_threshold,
+    )
+
     avg_lat = round(((time.perf_counter() - t0) * 1000.0) / len(customers), 2)
 
     results, log_records = [], []
@@ -296,9 +290,15 @@ def predict_batch(customers: List[CustomerInput], api_key: str = Depends(verify_
         rec = generate_recommendation(p_pr, c.support_calls, c.payment_delay, c.total_spend, c.contract_length, c.tenure)
         cid = c.customer_id if c.customer_id is not None else 999999
         log_records.append((cid, p_cls, p_pr, raw_vecs[i].tolist(), CHAMPION_VERSION))
+
+        xai_factors, xai_summary = None, None
+        if batch_explanations is not None and i < len(batch_explanations):
+            xai_factors, xai_summary = batch_explanations[i]
+
         results.append(PredictionResponse(
             customer_id=c.customer_id, churn_prediction=p_cls, churn_probability=round(p_pr, 4),
-            risk_level=tier, recommended_action=rec, model_version=CHAMPION_VERSION, latency_ms=avg_lat
+            risk_level=tier, recommended_action=rec, feature_attributions=xai_factors,
+            explanation_summary=xai_summary, model_version=CHAMPION_VERSION, latency_ms=avg_lat
         ))
 
     log_batch_inference_predictions(log_records)
@@ -310,7 +310,12 @@ def predict_batch(customers: List[CustomerInput], api_key: str = Depends(verify_
 
 
 @app.post("/upload_csv_predict", tags=["Inference"])
-async def predict_from_csv(file: UploadFile = File(...), api_key: str = Depends(verify_api_key)):
+def predict_from_csv(
+    file: UploadFile = File(...),
+    explain: bool = False,
+    explain_threshold: float = 0.70,
+    api_key: str = Depends(verify_api_key)
+):
     if not (file.filename or "").lower().endswith(".csv"):
         raise HTTPException(status_code=400, detail="Vui lòng chỉ tải lên tệp định dạng CSV!")
     try:
@@ -336,17 +341,17 @@ async def predict_from_csv(file: UploadFile = File(...), api_key: str = Depends(
             raw_cid = r[cid_col] if cid_col and pd.notna(r[cid_col]) else 999999
             cid_int = int(float(raw_cid)) if not isinstance(raw_cid, str) or raw_cid.strip().isdigit() else int(raw_cid)
             inputs.append(CustomerInput(
-                customer_id=cid_int, age=float(r[norm["age"]]),
-                gender=str(r[norm["gender"]]).strip().capitalize(), tenure=float(r[norm["tenure"]]),
-                usage_frequency=float(r[norm["usagefrequency"]]), support_calls=float(r[norm["supportcalls"]]),
-                payment_delay=float(r[norm["paymentdelay"]]), subscription_type=str(r[norm["subscriptiontype"]]).strip().capitalize(),
+                customer_id=cid_int, age=float(r[norm["age"]]), gender=str(r[norm["gender"]]).strip().capitalize(),
+                tenure=float(r[norm["tenure"]]), usage_frequency=float(r[norm["usagefrequency"]]),
+                support_calls=float(r[norm["supportcalls"]]), payment_delay=float(r[norm["paymentdelay"]]),
+                subscription_type=str(r[norm["subscriptiontype"]]).strip().capitalize(),
                 contract_length=str(r[norm["contractlength"]]).strip().capitalize(),
                 total_spend=float(r[norm["totalspend"]]), last_interaction=float(r[norm["lastinteraction"]])
             ))
     except (ValueError, KeyError, TypeError, ValidationError) as exc:
         raise HTTPException(status_code=422, detail=f"Dữ liệu CSV không hợp lệ: {str(exc)}")
 
-    return predict_batch(inputs, api_key=api_key)
+    return predict_batch(inputs, explain=explain, explain_threshold=explain_threshold, api_key=api_key)
 
 if os.path.exists(WEB_DIR):
     app.mount("/ui", StaticFiles(directory=WEB_DIR, html=True), name="ui")

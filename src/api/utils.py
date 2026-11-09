@@ -2,6 +2,9 @@
 Module tiện ích hỗ trợ cho API Serving: Logging, SHAP attributions, Database và Khuyến nghị.
 """
 import os
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
 import json
 import sqlite3
 import numpy as np
@@ -28,9 +31,8 @@ def init_inference_db():
     conn = sqlite3.connect(str(INFERENCE_DB), timeout=10.0)
     try:
         cur = conn.cursor()
-        cur.execute("PRAGMA journal_mode=WAL;")
-        cur.execute("PRAGMA synchronous=NORMAL;")
-        cur.execute("PRAGMA busy_timeout=5000;")
+        for p in ("PRAGMA journal_mode=WAL;", "PRAGMA synchronous=NORMAL;", "PRAGMA busy_timeout=5000;"):
+            cur.execute(p)
         cur.execute("""
             CREATE TABLE IF NOT EXISTS inference_logs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,13 +60,12 @@ def log_inference_prediction(customer_id: int, features: list, pred: int, prob: 
     try:
         conn = sqlite3.connect(str(INFERENCE_DB), timeout=10.0)
         cur = conn.cursor()
-        cur.execute("PRAGMA journal_mode=WAL;")
-        cur.execute("PRAGMA synchronous=NORMAL;")
-        cur.execute("PRAGMA busy_timeout=5000;")
-        cur.execute("""
-            INSERT INTO inference_logs (customer_id, churn_prediction, churn_probability, features_json, model_version)
-            VALUES (?, ?, ?, ?, ?)
-        """, (customer_id, pred, prob, json.dumps(features), model_version))
+        for p in ("PRAGMA journal_mode=WAL;", "PRAGMA synchronous=NORMAL;", "PRAGMA busy_timeout=5000;"):
+            cur.execute(p)
+        cur.execute(
+            "INSERT INTO inference_logs (customer_id, churn_prediction, churn_probability, features_json, model_version) VALUES (?, ?, ?, ?, ?)",
+            (customer_id, pred, prob, json.dumps(features), model_version),
+        )
         conn.commit()
     except Exception as e:
         print(f"[-] Lỗi ghi nhận inference log: {e}")
@@ -81,13 +82,12 @@ def log_batch_inference_predictions(records: list):
     try:
         conn = sqlite3.connect(str(INFERENCE_DB), timeout=10.0)
         cur = conn.cursor()
-        cur.execute("PRAGMA journal_mode=WAL;")
-        cur.execute("PRAGMA synchronous=NORMAL;")
-        cur.execute("PRAGMA busy_timeout=5000;")
-        cur.executemany("""
-            INSERT INTO inference_logs (customer_id, churn_prediction, churn_probability, features_json, model_version)
-            VALUES (?, ?, ?, ?, ?)
-        """, [(r[0], r[1], r[2], json.dumps(r[3]), r[4] if len(r) > 4 else "v2.0.0-champion") for r in records])
+        for p in ("PRAGMA journal_mode=WAL;", "PRAGMA synchronous=NORMAL;", "PRAGMA busy_timeout=5000;"):
+            cur.execute(p)
+        cur.executemany(
+            "INSERT INTO inference_logs (customer_id, churn_prediction, churn_probability, features_json, model_version) VALUES (?, ?, ?, ?, ?)",
+            [(r[0], r[1], r[2], json.dumps(r[3]), r[4] if len(r) > 4 else "v2.0.0-champion") for r in records],
+        )
         conn.commit()
     except Exception as e:
         print(f"[-] Lỗi ghi nhận batch inference logs: {e}")
@@ -105,19 +105,8 @@ def fetch_recent_predictions(limit: int = 100) -> List[Dict[str, Any]]:
         conn = sqlite3.connect(str(INFERENCE_DB), timeout=10.0)
         cur = conn.cursor()
         cur.execute("PRAGMA journal_mode=WAL;")
-        cur.execute(
-            "SELECT id, timestamp, customer_id, churn_prediction, churn_probability, model_version "
-            "FROM inference_logs ORDER BY id DESC LIMIT ?",
-            (int(limit),)
-        )
-        rows = cur.fetchall()
-        return [
-            {
-                "id": r[0], "timestamp": r[1], "customer_id": r[2],
-                "churn_prediction": r[3], "churn_probability": r[4], "model_version": r[5]
-            }
-            for r in rows
-        ]
+        cur.execute("SELECT id, timestamp, customer_id, churn_prediction, churn_probability, model_version FROM inference_logs ORDER BY id DESC LIMIT ?", (int(limit),))
+        return [{"id": r[0], "timestamp": r[1], "customer_id": r[2], "churn_prediction": r[3], "churn_probability": r[4], "model_version": r[5]} for r in cur.fetchall()]
     except Exception:
         return []
     finally:
@@ -133,26 +122,18 @@ def verify_api_key(
     """Kiểm tra API Key bảo mật hoặc cho phép request nội bộ từ giao diện Web cùng origin."""
     if x_api_key and x_api_key == API_KEY_SECRET:
         return x_api_key
-    if x_api_key is None and (
-        (x_requested_with and x_requested_with.lower() == "xmlhttprequest")
-        or (x_session_token and len(x_session_token) >= 8)
-    ):
+    if x_api_key is None and ((x_requested_with and x_requested_with.lower() == "xmlhttprequest") or (x_session_token and len(x_session_token) >= 8)):
         return "internal-web-ui-session"
-    raise HTTPException(
-        status_code=401,
-        detail="Thiếu hoặc sai API Key! Vui lòng cung cấp header 'X-API-Key' hợp lệ."
-    )
+    raise HTTPException(status_code=401, detail="Thiếu hoặc sai API Key! Vui lòng cung cấp header 'X-API-Key' hợp lệ.")
+
 
 
 def prepare_feature_vector_from_input(inp) -> np.ndarray:
     """Chuyển đổi CustomerInput sang vector đặc trưng 13 chiều với chặn chia cho 0 an toàn."""
-    gender_map = {"Female": 0, "Male": 1}
-    sub_map = {"Basic": 0, "Standard": 1, "Premium": 2}
-    con_map = {"Monthly": 0, "Quarterly": 1, "Annual": 2}
-
-    gender_enc = gender_map.get(str(inp.gender).strip().capitalize(), 0)
-    sub_enc = sub_map.get(str(inp.subscription_type).strip().capitalize(), 0)
-    con_enc = con_map.get(str(inp.contract_length).strip().capitalize(), 0)
+    g_map, s_map, c_map = {"Female": 0, "Male": 1}, {"Basic": 0, "Standard": 1, "Premium": 2}, {"Monthly": 0, "Quarterly": 1, "Annual": 2}
+    gender_enc = g_map.get(str(inp.gender).strip().capitalize(), 0)
+    sub_enc = s_map.get(str(inp.subscription_type).strip().capitalize(), 0)
+    con_enc = c_map.get(str(inp.contract_length).strip().capitalize(), 0)
 
     support_calls_per_tenure = inp.support_calls / max(inp.tenure, 1.0)
     spend_per_tenure = inp.total_spend / max(inp.tenure, 1.0)
@@ -246,63 +227,11 @@ def compute_shap_attributions(tree_explainer, x_input, model=None) -> Tuple[Dict
     return factors, summary
 
 
-def generate_recommendation(
-    prob: float,
-    calls: float,
-    delay: float,
-    total_spend: float = 500.0,
-    contract_length: str = "Monthly",
-    tenure: float = 12.0,
-) -> str:
-    """
-    Đề xuất chiến lược can thiệp kinh doanh dựa trên bài toán tối ưu lợi nhuận kỳ vọng e-Profits:
-    e-Profits = p_i * alpha * CLV_i - C_offer (Manzoor et al., 2025).
-    Phân tầng rủi ro chuẩn: High >= 0.70, Medium [0.40, 0.70), Low < 0.40.
-    """
-    contract_norm = str(contract_length).strip().capitalize()
-    is_high_clv = float(total_spend) >= 500.0 or float(tenure) >= 24.0
-    is_low_clv = float(total_spend) < 200.0
-
-    if prob >= 0.70:
-        if is_low_clv:
-            return (
-                "RỦI RO CAO (CLV Thấp - Tối ưu e-Profits): Gửi thông báo tự động In-App/Email "
-                "hỗ trợ kỹ thuật và ưu đãi tự phục vụ chi phí thấp để bảo toàn ROI."
-            )
-        if calls >= 4:
-            return (
-                f"ƯU TIÊN KHẨN CẤP (CLV Cao ${total_spend:.0f}, Hợp đồng {contract_norm}): "
-                "Điều động chuyên viên VIP giải quyết khiếu nại kỹ thuật và tặng 1 tháng dịch vụ."
-            )
-        if delay >= 7:
-            return (
-                f"RỦI RO CAO (CLV Cao ${total_spend:.0f}): Khách hàng trễ hạn thanh toán. "
-                "Đề xuất gói chuyển đổi trả góp hoặc giảm giá 20% nâng cấp hợp đồng Annual."
-            )
-        if contract_norm == "Monthly" and is_high_clv:
-            return (
-                "RỦI RO CAO (VIP Monthly): Đề xuất chiết khấu 20% chuyển đổi sang hợp đồng Annual "
-                "kèm gói chăm sóc khách hàng trọng điểm."
-            )
-        return "RỦI RO CAO: Kích hoạt chương trình chăm sóc VIP và gửi ưu đãi giữ chân cá nhân hóa."
-
-    if prob >= 0.40:
-        if is_low_clv:
-            return (
-                "RỦI RO TRUNG BÌNH (CLV Thấp): Kích hoạt chuỗi Email/In-App hướng dẫn tính năng "
-                "tự động chi phí thấp (Zero-Touch Retention)."
-            )
-        if contract_norm == "Monthly":
-            return (
-                "RỦI RO TRUNG BÌNH: Gửi ưu đãi nâng cấp hợp đồng Quarterly/Annual "
-                "kèm tặng điểm Loyalty gia hạn sớm."
-            )
-        return "RỦI RO TRUNG BÌNH: Gửi email giới thiệu tính năng, tặng điểm Loyalty và ưu đãi gia hạn sớm."
-
-    return (
-        "KHÁCH HÀNG ỔN ĐỊNH (Low Risk): Duy trì chất lượng dịch vụ tiêu chuẩn "
-        "và đề xuất chiến dịch Upsell/Cross-sell gói cao cấp khi phù hợp."
-    )
+from src.economics.retention_optimizer import (
+    compute_optimal_retention_threshold,
+    compute_expected_retention_profit,
+    generate_recommendation,
+)
 
 
 def run_model_inference(
