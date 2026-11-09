@@ -13,7 +13,7 @@ from typing import Literal
 import duckdb
 import joblib
 import numpy as np
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import APIRouter, FastAPI, Header, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator, model_validator
@@ -162,9 +162,8 @@ def feast_features(snapshot_key: str) -> list[float | None] | None:
     return None if all(value is None for value in values) else values
 
 
-app = FastAPI(title="KKBox Customer Churn API", version="1.0.0")
+router = APIRouter(tags=["KKBox Churn Serving"])
 WEB_DIR = Path(__file__).resolve().parent / "web"
-app.mount("/demo/assets", StaticFiles(directory=WEB_DIR), name="kkbox-demo-assets")
 
 
 def require_api_key(value: str | None) -> None:
@@ -175,9 +174,13 @@ def require_api_key(value: str | None) -> None:
         raise HTTPException(status_code=401, detail="Invalid API key")
 
 
-@app.get("/demo", include_in_schema=False)
+@router.get("/demo", include_in_schema=False)
 def demo():
     return FileResponse(WEB_DIR / "index.html")
+
+
+app = FastAPI(title="KKBox Customer Churn API", version="1.0.0")
+app.mount("/demo/assets", StaticFiles(directory=WEB_DIR), name="kkbox-demo-assets")
 
 
 @app.get("/health")
@@ -190,7 +193,7 @@ def health():
         return {"status": "degraded", "reason": "Model unavailable"}
 
 
-@app.post("/v1/predictions", response_model=PredictionResponse)
+@router.post("/v1/predictions", response_model=PredictionResponse)
 def predict(payload: PredictionRequest, x_api_key: str | None = Header(default=None)):
     require_api_key(x_api_key)
     if payload.as_of_date not in ALLOWED_CUTOFFS:
@@ -220,7 +223,7 @@ def predict(payload: PredictionRequest, x_api_key: str | None = Header(default=N
     )
 
 
-@app.post("/v1/features", response_model=FeatureResponse)
+@router.post("/v1/features", response_model=FeatureResponse)
 def inspect_features(payload: PredictionRequest, x_api_key: str | None = Header(default=None)):
     require_api_key(x_api_key)
     snapshot_key = f"{payload.subscriber_key}|{payload.as_of_date}"
@@ -237,7 +240,7 @@ def inspect_features(payload: PredictionRequest, x_api_key: str | None = Header(
                            feature_version=FEATURE_VERSION)
 
 
-@app.post("/v1/predictions/manual", response_model=ManualPredictionResponse)
+@router.post("/v1/predictions/manual", response_model=ManualPredictionResponse)
 def predict_manual(payload: ManualPredictionRequest, x_api_key: str | None = Header(default=None)):
     require_api_key(x_api_key)
     try:
@@ -255,7 +258,7 @@ def predict_manual(payload: ManualPredictionRequest, x_api_key: str | None = Hea
                                     feature_version=FEATURE_VERSION)
 
 
-@app.post("/v1/predictions/batch", response_model=BatchPredictionResponse)
+@router.post("/v1/predictions/batch", response_model=BatchPredictionResponse)
 def predict_batch(payload: BatchPredictionRequest, x_api_key: str | None = Header(default=None)):
     require_api_key(x_api_key)
     results = []
@@ -274,7 +277,7 @@ def predict_batch(payload: BatchPredictionRequest, x_api_key: str | None = Heade
                                    failed=len(results) - succeeded, results=results)
 
 
-@app.post("/v1/model/reload", include_in_schema=False)
+@router.post("/v1/model/reload", include_in_schema=False)
 def reload_champion(x_api_key: str | None = Header(default=None)):
     require_api_key(x_api_key)
     load_model.cache_clear()
@@ -283,3 +286,6 @@ def reload_champion(x_api_key: str | None = Header(default=None)):
     except Exception as exc:
         raise HTTPException(status_code=503, detail="Champion model unavailable") from exc
     return {"status": "ready", "model_version": str(metadata["model_version"])}
+
+
+app.include_router(router)

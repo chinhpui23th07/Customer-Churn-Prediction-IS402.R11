@@ -9,10 +9,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pyarrow.parquet as pq
-from pyspark.sql import SparkSession
-from pyspark.sql import functions as F
 
-from src.kkbox.features import WINDOWS, build_snapshot
+from src.kkbox.contract import WINDOWS
 
 
 def verify_source(input_root: Path, manifest: dict) -> tuple[int, int, bool]:
@@ -60,6 +58,10 @@ def main() -> None:
                        and input_bytes == manifest["total_published_parquet_bytes"])
     if args.sample_modulus == 1 and not complete_source:
         parser.error("Full cohort run requires all 32 source files and matching 7.52 GB byte count")
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql import functions as F
+    from src.kkbox.features import build_snapshot
 
     started = time.perf_counter()
     spark = (SparkSession.builder.master(args.master).appName("kkbox-churn-cutoff-etl")

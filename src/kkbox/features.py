@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-from pyspark.sql import DataFrame, Window
-from pyspark.sql import functions as F
+from typing import TYPE_CHECKING
 
 from src.kkbox.contract import FEATURE_COLUMNS, WINDOWS
+
+if TYPE_CHECKING:
+    from pyspark.sql import DataFrame
 
 
 def build_snapshot(
@@ -21,6 +23,9 @@ def build_snapshot(
         raise ValueError(f"Unknown label period: {label_period}")
     if sample_modulus < 1:
         raise ValueError("sample_modulus must be >= 1")
+    from pyspark.sql import Window
+    from pyspark.sql import functions as F
+
     window = WINDOWS[label_period]
     cutoff = F.to_date(F.lit(window["cutoff"]))
     start_30 = F.date_sub(cutoff, 29)

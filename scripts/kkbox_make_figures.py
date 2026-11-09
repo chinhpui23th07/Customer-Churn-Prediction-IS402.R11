@@ -149,13 +149,14 @@ def figure_pr_curve(report: dict, pilot: bool) -> str:
 
 
 def validate(audit: dict, model: dict, drift: dict, allow_pilot: bool) -> bool:
-    modes = {model.get("mode"), drift.get("mode")}
-    if len(modes) != 1:
+    model_mode = "full" if model.get("mode") == "full_cohort" else model.get("mode")
+    drift_mode = "full" if drift.get("mode") == "full_cohort" else drift.get("mode")
+    if model_mode != drift_mode:
         raise ValueError("Model and drift modes differ")
-    pilot = model.get("mode") == "pilot"
+    pilot = model_mode == "pilot"
     if pilot and not allow_pilot:
         raise ValueError("Pilot reports cannot be rendered as final figures; use --allow-pilot only for layout QA")
-    if not pilot and model.get("mode") != "full":
+    if not pilot and model_mode != "full":
         raise ValueError("Unknown report mode")
     if len({audit.get("source_revision_sha"), model.get("source_revision_sha"),
             drift.get("source_revision_sha")}) != 1:
