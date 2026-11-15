@@ -10,6 +10,9 @@ services:
       - REDIS_HOST=churnguard-redis
       - REDIS_PORT=6379
       - MINIO_ENDPOINT=churnguard-minio:9000
+      - KKBOX_ALLOW_PILOT=1
+      - KKBOX_API_KEY=${KKBOX_API_KEY:-mlops-churn-secret-2026}
+      - API_KEY=${API_KEY:-mlops-churn-secret-2026}
     volumes:
       - ./data:/app/data
     depends_on:
@@ -58,6 +61,7 @@ services:
       - "8501:8501"
     environment:
       - API_URL=http://fastapi-serving:8000
+      - API_KEY=${API_KEY:-mlops-churn-secret-2026}
     command: streamlit run src/web/dashboard.py --server.port 8501 --server.address 0.0.0.0
     depends_on:
       - fastapi-serving

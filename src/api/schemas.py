@@ -69,3 +69,4 @@ class HealthResponse(BaseModel):
     feast_online_store: str
     mlflow_tracking_db: str
     uptime_seconds: float
+    kkbox_status: Optional[str] = None

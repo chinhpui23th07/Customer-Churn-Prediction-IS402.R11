@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 from dataclasses import asdict, dataclass
@@ -115,17 +116,34 @@ class RealSecurityToolIngestor:
         if not txt_path.exists():
             return findings
         try:
-            lines = txt_path.read_text(encoding="utf-8").splitlines()
-            count = len(lines)
-            findings.append(AuditFinding(
-                rule_id="MB_BLOB_ENUM",
-                category="MicroBurst (Pentest)",
-                severity="HIGH",
-                target="Azure Storage DNS (*.blob.core.windows.net)",
-                description=f"Automated DNS permutations executed ({count} tests evaluated).",
-                status="PASS",
-                remediation="Ensure storage containers maintain private access level.",
-            ))
+            lines = [ln.strip() for ln in txt_path.read_text(encoding="utf-8").splitlines() if ln.strip()]
+            resolved_count = sum(1 for ln in lines if ln.startswith("Resolving - "))
+            exposed_lines = [
+                ln for ln in lines
+                if any(tok in ln.lower() for tok in ("public container", "accessible", "http 200", "open blob", "vulnerable", "exposed"))
+                and "not found" not in ln.lower()
+            ]
+            if exposed_lines:
+                for idx, item in enumerate(exposed_lines, start=1):
+                    findings.append(AuditFinding(
+                        rule_id=f"MB_BLOB_EXPOSED_{idx}",
+                        category="MicroBurst (Pentest)",
+                        severity="HIGH",
+                        target="Azure Storage DNS (*.blob.core.windows.net)",
+                        description=f"Exposed Azure Blob artifact detected: {item[:100]}",
+                        status="FAIL",
+                        remediation="Disable public blob access and enforce private network rules.",
+                    ))
+            else:
+                findings.append(AuditFinding(
+                    rule_id="MB_BLOB_ENUM",
+                    category="MicroBurst (Pentest)",
+                    severity="HIGH",
+                    target="Azure Storage DNS (*.blob.core.windows.net)",
+                    description=f"Automated DNS permutations verified ({resolved_count} probes, 0 public blobs exposed).",
+                    status="PASS" if resolved_count > 0 else "FAIL",
+                    remediation="Ensure storage containers maintain private access level.",
+                ))
         except Exception as exc:
             print(f"[MicroBurst Parser] Warning parsing {txt_path}: {exc}")
         return findings
@@ -137,25 +155,27 @@ def run_live_scanners(workspace: Path) -> None:
     reports_dir.mkdir(parents=True, exist_ok=True)
 
     checkov_py = workspace / "tools" / "checkov_env" / "Scripts" / "python.exe"
+    checkov_bin = shutil.which("checkov")
     checkov_cfg = workspace / ".checkov.yml"
+    checkov_cmd = None
     if checkov_py.exists():
+        checkov_cmd = [str(checkov_py), "-m", "checkov.main", "-d", "deploy/azure", "--config-file", str(checkov_cfg), "-o", "json"]
+    elif checkov_bin:
+        checkov_cmd = [checkov_bin, "-d", "deploy/azure", "--config-file", str(checkov_cfg), "-o", "json"]
+
+    if checkov_cmd:
         print("[Live Scanner] Executing authentic Checkov scan...")
-        cmd = [
-            str(checkov_py), "-m", "checkov.main",
-            "-d", "deploy/azure",
-            "--config-file", str(checkov_cfg),
-            "-o", "json",
-        ]
-        res = subprocess.run(cmd, cwd=str(workspace), capture_output=True, text=True)
+        res = subprocess.run(checkov_cmd, cwd=str(workspace), capture_output=True, text=True, encoding="utf-8", errors="replace")
         if res.stdout.strip():
             (reports_dir / "checkov_real_report.json").write_text(res.stdout, encoding="utf-8")
             print("[Live Scanner] Checkov scan refreshed.")
 
-    trivy_bin = workspace / "tools" / "trivy" / "trivy.exe"
-    if trivy_bin.exists():
+    trivy_local = workspace / "tools" / "trivy" / "trivy.exe"
+    trivy_bin = str(trivy_local) if trivy_local.exists() else shutil.which("trivy")
+    if trivy_bin:
         print("[Live Scanner] Executing authentic Trivy scan...")
         cmd = [
-            str(trivy_bin), "fs",
+            trivy_bin, "fs",
             "--scanners", "vuln,secret,misconfig",
             "--include-non-failures",
             "--format", "json",
@@ -163,7 +183,7 @@ def run_live_scanners(workspace: Path) -> None:
             "--skip-dirs", "tools,docs",
             ".",
         ]
-        subprocess.run(cmd, cwd=str(workspace), capture_output=True, text=True)
+        subprocess.run(cmd, cwd=str(workspace), capture_output=True, text=True, encoding="utf-8", errors="replace")
         print("[Live Scanner] Trivy scan refreshed.")
 
 

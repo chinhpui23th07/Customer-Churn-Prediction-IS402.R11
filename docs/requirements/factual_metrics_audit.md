@@ -45,13 +45,18 @@ Báo cáo này được lập bởi Tác tử Kiểm toán Chỉ số Thực ngh
 ### 2.2 Chi Tiết 4 Bảng Quan Hệ Phân Tán
 - **Tệp bằng chứng vật lý:** [`data/processed/kkbox_execution_metrics.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/kkbox_execution_metrics.json#L10-L35)
 
-| Tên Bảng Quan Hệ | Tuyên Bố Số Dòng | Thực Tế Số Dòng | Tuyên Bố Dung Lượng (Bytes) | Thực Tế Dung Lượng (Bytes) | Phân Vùng Parquet | Trạng Thái |
+| Tên Bảng Quan Hệ | Tuyên Bố Số Dòng | Thực Tế Số Dòng (Manifest) | Tuyên Bố Dung Lượng (Bytes) | Thực Tế Dung Lượng (Bytes) | Phân Vùng Parquet | Trạng Thái |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | `member` | 6,769,473 | 6,769,473 | 60,491,935 (~60.5 MB) | 60,491,935 | 1 tệp | KHỚP 100% |
-| `churn_label` | 970,960 | 970,960 | 7,772,330 (~7.8 MB) | 7,772,330 | 1 tệp | KHỚP 100% |
+| `churn_label` | 1,963,891 | 1,963,891 | 15,720,822 (~15.7 MB) | 15,720,822 | 2 tệp | KHỚP 100% |
 | `subscription_transaction` | 22,975,416 | 22,975,416 | 463,554,548 (~463.6 MB) | 463,554,548 | 2 tệp | KHỚP 100% |
-| `listening_day` | 411,494,336 | 411,494,336 | 6,990,430,635 (~6.99 GB) | 6,990,430,635 | 27 tệp | KHỚP 100% |
-| **TỔNG CỘNG** | **442,211,685** | **442,211,685** | **7,522,254,856 (~7.52 GB)** | **7,522,254,856** | **32 tệp** | **KHỚP 100%** |
+| `listening_day` | 410,502,905 | 410,502,905 | 6,982,487,551 (~6.98 GB) | 6,982,487,551 | 27 tệp | KHỚP 100% |
+| **TỔNG CỘNG (MANIFEST 7.52 GB)** | **442,211,685** | **442,211,685** | **7,522,254,856 (~7.52 GB)** | **7,522,254,856** | **32 tệp** | **KHỚP 100%** |
+
+> **Phân tách 3 cấp độ dữ liệu KKBox (Chống nhầm lẫn quy mô):**
+> - **Full Published HF Manifest:** `442,211,685` dòng / `7,522,254,856` bytes (`7.52 GB`) / `32` tệp Parquet ([`docs/experiments/kkbox_parquet_manifest.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/docs/experiments/kkbox_parquet_manifest.json)).
+> - **Local Single-Window Benchmark:** `37,629,251` dòng nguồn quét trong `5.61s` -> `970,960` dòng xuất ra `41.87 MB` ([`data/processed/kkbox_execution_metrics.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/kkbox_execution_metrics.json)).
+> - **Local DVC Pilot Subset (`data/kkbox_raw/`):** `6` tệp Parquet tổng dung lượng **`885,659,602` bytes (`844.63 MB` / `0.825 GB` `< 4.0 GB`)** tạo `1,889` snapshots (`2017-02`: `949`, `2017-03`: `940`) trong `0.93s` ([`docs/experiments/kkbox_pilot_etl_audit.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/docs/experiments/kkbox_pilot_etl_audit.json)).
 
 ### 2.3 Thực Thi Xử Lý DuckDB Ngoài Bộ Nhớ (Out-of-Core Execution)
 - **Tệp bằng chứng vật lý:** [`data/processed/kkbox_execution_metrics.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/kkbox_execution_metrics.json#L36-L57)
@@ -71,7 +76,7 @@ Báo cáo này được lập bởi Tác tử Kiểm toán Chỉ số Thực ngh
 | **Tỷ lệ rời bỏ (Churn Rate)** | 8.99% | 0.0899 (8.994%) | Khớp 100% |
 | **Người dùng có giao dịch** | 950,963 (trung bình 8.37 txn/người) | 950,963 matched, avg 8.37 | Khớp 100% |
 | **Người dùng có nghe nhạc** | 754,551 (trung bình 13.94 ngày/người)| 754,551 matched, avg 13.94 | Khớp 100% |
-| **Chi tiêu trung bình** | $1,151.12 | 1151.12 | Khớp 100% |
+| **Chi tiêu trung bình** | \$1,151.12 | 1151.12 | Khớp 100% |
 | **Tỷ lệ hoàn thành bài hát** | 54.73% | 0.5473 | Khớp 100% |
 | **Giới hạn bộ nhớ an toàn** | `<= 2 GB Buffer Manager` (Radix Spilling) | `SET max_memory = '2GB'`, Radix Spilling | Khớp 100% |
 
@@ -240,29 +245,30 @@ Kiểm toán viên xác nhận và làm rõ kiến trúc dữ liệu của dự 
 ### 7.1 Kiểm Toán Checkov Static Code Analysis
 - **Tệp bằng chứng vật lý:** [`reports/checkov_real_report.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/reports/checkov_real_report.json)
 
-| Hạng Mục Quét Checkov | Số Tài Nguyên Quét | Passed Checks | Failed Checks | Skipped Checks | Tỷ Lệ Đạt |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Terraform (`deploy/azure/main.tf`)** | 8 tài nguyên | 21 checks | 0 checks | 0 checks | **100% PASS** |
-| **ARM Template (`arm_template.json`)** | 9 tài nguyên | 10 checks | 0 checks | 0 checks | **100% PASS** |
-| **TỔNG HỢP CHECKOV TOÀN HẠ TẦNG** | **17 tài nguyên** | **31 checks** | **0 checks** | **0 checks** | **100% PASS** |
+| Hạng Mục Quét Checkov (v3.4.0) | Số Tài Nguyên Đánh Giá | Passed Checks | Failed Checks | Chính Sách Trade-off FinOps | Tỷ Lệ Đạt |
+| :--- | :---: | :---: | :---: | :--- | :---: |
+| **Terraform (`deploy/azure/main.tf`)** | 12 resource counts | 17 checks | 0 checks | `.checkov.yml` (`CKV_AZURE_139`: ACR `Basic` SKU theo trần `\$75/mo`) | **100% PASS** |
+| **ARM Template (`arm_template.json`)** | 12 resource counts | 9 checks | 0 checks | `.checkov.yml` (`CKV_AZURE_139`: ACR `Basic` SKU theo trần `\$75/mo`) | **100% PASS** |
+| **TỔNG HỢP CHECKOV TOÀN HẠ TẦNG** | **24 resource evaluations** | **26 checks** | **0 checks** | **Quét live từ `tools/checkov_env`** | **100% PASS** |
 
-*Giải trình đối soát:* Trong `MASTER_PROJECT_TRUTH.md` Mục 7.5 ghi nhận "10 passed, 0 failed, 0 skipped trên 9 tài nguyên". Đây chính là kết quả của riêng nhánh quét ARM Template. Khi gộp cả Terraform (21 passed), toàn bộ hệ sinh thái IaC đạt **31 passed / 0 failed / 0 skipped**.
+*Giải trình đối soát:* Khi không áp `.checkov.yml`, Checkov gắn cờ `CKV_AZURE_139` cho `acr_sku = Basic` vì Azure giới hạn tắt public network ACR cho gói `Premium` (`~\$50/mo + Private Endpoints`, vượt trần FinOps `\$75/mo`). Sau khi khai báo ngoại lệ minh bạch trong `.checkov.yml` (giữ `admin_enabled = false` + `AcrPull` RBAC qua Managed Identity), cả Terraform (`17/17`) và ARM (`9/9`) đều đạt **26 passed / 0 failed**.
 
 ### 7.2 Kiểm Toán Trivy Container & Unified Security Audit
 - **Tệp bằng chứng vật lý:** [`reports/trivy_real_report.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/reports/trivy_real_report.json) & [`reports/security_audit_report.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/reports/security_audit_report.json)
-- **Công cụ thực thi hợp nhất:** Checkov (9.1k stars), Trivy (38.9k stars), MicroBurst (2.5k stars).
+- **Công cụ thực thi hợp nhất (`scripts/security_audit_suite.py --live`):** Checkov (26 checks), Trivy FS (153 findings), MicroBurst (1 surface probe check / 167 URL permutations).
 
-| Tiêu Chí An Ninh | Chỉ Số Báo Cáo Thực Tế | Ngưỡng An Toàn Doanh Nghiệp | Đánh Giá Kiểm Toán |
+| Tiêu Chí An Ninh | Chỉ Số Báo Cáo Live Thực Tế | Ngưỡng An Toàn Doanh Nghiệp | Đánh Giá Kiểm Toán |
 | :--- | :---: | :---: | :--- |
-| **Tổng số quy tắc kiểm định** | 183 rules | - | Đánh giá an ninh toàn diện |
-| **Số quy tắc PASSED** | 182 rules | - | 99.45% tuân thủ |
+| **Tổng số quy tắc kiểm định** | **180 rules** | - | Checkov (26) + Trivy (153) + MicroBurst (1) |
+| **Số quy tắc PASSED** | **175 rules** | - | **97.22% tuân thủ** |
+| **Số quy tắc FAILED (MEDIUM/LOW)** | **5 rules** | 0 CRITICAL / 0 HIGH | Trivy IaC misconfig (`AZU-0056`, `AZU-0057`, `AZU-0060`, `AZU-0058` x2) |
 | **Lỗ hổng CRITICAL** | **0** | **0** | **ĐẠT (PASSED)** |
 | **Lỗ hổng HIGH** | **0** | **0** | **ĐẠT (PASSED)** |
-| **Lỗ hổng MEDIUM** | 1 (AZU-0060: CMK Storage) | Dung sai cho phép | Đã ghi nhận trong runbook |
-| **Lỗ hổng LOW** | 0 | - | ĐẠT |
-| **Điểm số tuân thủ tổng thể** | **99.45%** | $\ge 90.0\%$ | **VƯỢT NGƯỠNG AN TOÀN** |
-| **Phân quyền người dùng Docker**| Non-root user: `appuser (USER 10001)` | Không chạy `root` | Khớp 100% Dockerfile |
-| **Kiểm thử DNS Storage (MicroBurst)**| 171 bài kiểm định DNS permutations | Private access level | Khớp 100% PASS |
+| **Lỗ hổng MEDIUM** | **3** (`AZU-0056`, `AZU-0057`, `AZU-0060`) | Chấp nhận dưới trần FinOps | Soft delete/logging ARM (`main.tf` đã bật) + CMK Storage |
+| **Lỗ hổng LOW** | **2** (`AZU-0058` x2) | Chấp nhận với `Standard_LRS` | Geo-redundant GRS vượt ngân sách `\$75/mo` |
+| **Điểm số tuân thủ tổng thể** | **97.22%** | $\ge 90.0\%$ | **VƯỢT NGƯỠNG AN TOÀN** |
+| **Phân quyền người dùng Docker**| Non-root user: `appuser (USER 10001)` | Không chạy `root` | Khớp 100% `Dockerfile` |
+| **Kiểm thử DNS Storage (MicroBurst)**| 167 truy vấn URL (171 dòng log), 0 lộ công khai | Private access level | Khớp 100% `PASS` |
 
 ### 7.3 Kiểm Toán Dự Toán Chi Phí Infracost
 - **Tệp bằng chứng vật lý:** [`reports/infracost_breakdown.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/reports/infracost_breakdown.json)
@@ -270,16 +276,16 @@ Kiểm toán viên xác nhận và làm rõ kiến trúc dữ liệu của dự 
 
 | Tài Nguyên Đám Mây | SKU / Cấu Hình Định Mức | Chi Phí Tháng (USD) | Ghi Chú Kỹ Thuật |
 | :--- | :--- | :---: | :--- |
-| `azurerm_container_app.app` | 1.0 vCPU, 2.0 GiB RAM | $46.80 | Tiêu thụ active ~100k requests/tháng |
-| `azurerm_redis_enterprise_cluster.redis` | Balanced B0 Non-HA (TLS Port 10000) | $12.00 | Azure Managed Redis (AMR) Balanced B0 |
-| `azurerm_container_registry.acr` | Basic Tier (10 GB storage) | $5.00 | 1 Registry instance / tháng |
-| `azurerm_storage_account.sa` | Standard_LRS (~100 GB hot + ops) | $2.40 | Locally-redundant hot blob storage |
-| `azurerm_log_analytics_workspace.law`| PerGB2018 (~1.5 GB ingestion)| $4.41 | Lưu giữ log 30 ngày (5 GB đầu miễn phí) |
-| **TỔNG CHI PHÍ INFRACOST ESTIMATE** | **5 tài nguyên Terraform cốt lõi** | **$70.61 / tháng** | **Dư $4.39 dưới trần $75/tháng (Dư $79.39 dưới trần $150)** |
+| `azurerm_container_app.app` | 1.0 vCPU, 2.0 GiB RAM | \$46.80 | Tiêu thụ active ~100k requests/tháng |
+| `azurerm_redis_enterprise_cluster.redis` | Balanced B0 Non-HA | \$12.00 | Azure Managed Redis (AMR) Balanced B0 |
+| `azurerm_container_registry.acr` | Basic Tier (10 GB storage) | \$5.00 | 1 Registry instance / tháng (`var.acr_sku = "Basic"`) |
+| `azurerm_storage_account.sa` | `Standard_LRS` (~100 GB hot + ops) | \$2.40 | Locally-redundant hot blob storage |
+| `azurerm_log_analytics_workspace.law`| PerGB2018 (~1.5 GB ingestion)| \$4.41 | Lưu giữ log 30 ngày (5 GB đầu miễn phí) |
+| **TỔNG CHI PHÍ INFRACOST ESTIMATE** | **5 tài nguyên Terraform cốt lõi** | **\$70.61 / tháng** | **Dư \$4.39 dưới trần \$75/tháng (Dư \$79.39 dưới trần \$150)** |
 
 *Đối soát kiến trúc FinOps:*
-- Dự toán Infracost thực tế hiện hành (`reports/infracost_breakdown.json`) theo `Standard_LRS` ($2.40) và `Azure Managed Redis Balanced B0` ($12.00) đạt chính xác **$70.61/tháng** (nằm dưới trần **$75.00/tháng**).
-- Khi kích hoạt cơ chế phi máy chủ tự co về 0 (Scale-to-Zero kết hợp Valkey 8.0 / 60 giờ active trừ Free Grant `180k vCPU-s`), chi phí thực tế giảm xuống còn **$11.22/tháng** (tiết kiệm **93.7%** so với tải đỉnh 24/7 **$176.96/tháng**).
+- Dự toán Infracost thực tế hiện hành (`reports/infracost_breakdown.json`) theo `Standard_LRS` (\$2.40) và `Azure Managed Redis Balanced B0` (\$12.00) đạt chính xác **\$70.61/tháng** (nằm dưới trần **\$75.00/tháng**).
+- Khi kích hoạt cơ chế phi máy chủ tự co về 0 (Scale-to-Zero kết hợp Valkey 8.0 / 60 giờ active trừ Free Grant `180k vCPU-s`), chi phí thực tế giảm xuống còn **\$11.22/tháng** (tiết kiệm **93.7%** so với tải đỉnh 24/7 **\$176.96/tháng**).
 
 ### 7.4 Kiểm Toán Kiểm Thử Tải Cao K6 (High Concurrency Load Testing)
 - **Tệp bằng chứng vật lý:** [`reports/k6_real_benchmark.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/reports/k6_real_benchmark.json)
@@ -318,104 +324,94 @@ Kiểm toán viên xác nhận và làm rõ kiến trúc dữ liệu của dự 
 
 ---
 
-## 9. Kiểm Toán Điểm Số Liêm Chính Học Thuật Hai Nhánh (Dual-Track Rubric)
+## 9. Kiểm Toán Điểm Số Liêm Chính Học Thuật Hai Nhánh (Dual-Track Rubric R01..R19)
 
-- **Tệp bằng chứng vật lý:** [`data/processed/academic_inspection_verdict.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/academic_inspection_verdict.json)
+- **Tệp bằng chứng vật lý:** [`data/processed/academic_inspection_verdict.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/academic_inspection_verdict.json) & [`data/processed/final_check_results.json`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/data/processed/final_check_results.json)
+- **Chuẩn chấm điểm chính thức:** 19 tiêu chí `R01..R19` (`10.00` điểm) từ [`docs/requirements/Phan_cong_MLOps_KKBox_Azure.xlsx`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/docs/requirements/Phan_cong_MLOps_KKBox_Azure.xlsx).
 
-| Nhánh Đánh Giá | Điểm Số Tuyên Bố | Điểm Số Thực Nghiệm Trên Đĩa | Điểm Bị Khấu Trừ | Cơ Chế Minh Chứng |
-| :--- | :---: | :---: | :---: | :--- |
-| **Nhánh Thực Nghiệm Cục Bộ (Local Real Track)** | **3.35 / 10.00** | **3.35 / 10.00** | -6.65 điểm | Tự nguyện khấu trừ khắt khe ở 13 tiêu chí đám mây khi chạy offline |
-| **Nhánh Đáp Ứng Chuẩn Đám Mây (Target Cloud SLA Track)**| **9.90 / 10.00** | **9.90 / 10.00** | -0.10 điểm | Chứng thực bằng Terraform/ARM IaC, Docker, 211 tests passed, 6 clouds |
-
-#### Bảng Đối Soát Chi Tiết 19 Tiểu Tiêu Chí Của Rubric:
-| Tiêu Chí Rubric | Điểm Nhánh Local Real | Điểm Nhánh Target Cloud | Lý Do Khấu Trừ Thực Nghiệm Trên Đĩa |
+| Nhánh Đánh Giá | Điểm Số Xác Thực Đĩa | Điểm Khấu Trừ | Cơ Chế Minh Chứng |
 | :--- | :---: | :---: | :--- |
-| `1.1` Lớp bài toán ML | 0.25 / 0.25 | 0.25 / 0.25 | Phân loại rõ ràng bài toán Churn định kỳ |
-| `1.2` Cấu trúc dữ liệu | 0.25 / 0.25 | 0.25 / 0.25 | Tabular dataset có cấu trúc, schema chặt chẽ |
-| `1.3` Quy mô & Tốc độ | **0.00 / 0.75 (-0.75)** | 0.75 / 0.75 | Local scaffolding 25.5 MB; kịch bản lớn 7.52 GB KKBox sẵn sàng trên cloud |
-| `1.4` Mô hình đám mây | **0.10 / 0.25 (-0.15)** | 0.25 / 0.25 | Đã phân loại IaaS/PaaS/FaaS, chưa kích hoạt live subscription |
-| `2.1` Định dạng lưu trữ | **0.10 / 0.50 (-0.40)** | 0.50 / 0.50 | Parquet Snappy local, chưa đồng bộ lên live Azure Blob Storage |
-| `2.2` Cơ sở thuật toán | **0.30 / 0.50 (-0.20)** | 0.50 / 0.50 | XGBoost, RF, LightGBM, Optuna 12 trials, SHAP hoàn chỉnh; dữ liệu local bị thiên kiến hợp đồng |
-| `2.3` Dịch vụ đám mây | **0.10 / 0.50 (-0.40)** | 0.50 / 0.50 | Cấu hình Docker, ARM, Terraform, deploy_azure.bat đầy đủ; chưa chạy trên live cloud |
-| `3.1` Tốc độ I/O | **0.10 / 0.50 (-0.40)** | 0.50 / 0.50 | Benchmark I/O trên SSD local, chưa đo thông lượng mạng compute - cloud storage |
-| `3.2` Đường ống ETL | **0.10 / 0.50 (-0.40)** | 0.50 / 0.50 | Pipeline streaming tự động hóa, lưu trữ disk local thay vì Cloud Blob |
-| `3.3` Độ trễ đa vùng | **0.00 / 0.50 (-0.50)** | 0.50 / 0.50 | Đo latency ping từ trạm làm việc, chưa triển khai máy chủ tại từng region |
-| `3.4` Kho đặc trưng | **0.15 / 0.50 (-0.35)** | 0.50 / 0.50 | Feast Offline Parquet, Online SQLite WAL local, chưa có Azure Managed Redis live |
-| `4.1` Huấn luyện mô hình | **0.55 / 0.95 (-0.40)** | 0.95 / 0.95 | 4 mô hình thật, Optuna 12 trials thật, MLflow Registry; AUC cao do hợp đồng tháng |
-| `4.2` API phục vụ | **0.35 / 0.50 (-0.15)** | 0.50 / 0.50 | FastAPI với X-API-Key, SHAP, hot-reload, nhưng chạy trên localhost:8000 |
-| `4.3` Trực quan hóa | **0.45 / 0.95 (-0.50)** | 0.95 / 0.95 | 4 biểu đồ chẩn đoán + dynamic Chart.js; chưa nhúng live Grafana trên cloud |
-| `4.4` Giao diện Bento Grid | **0.15 / 0.50 (-0.35)** | 0.50 / 0.50 | Giao diện Bento Grid đẹp, gọi API localhost, chưa có Public Cloud URL |
-| `5.1` Slide báo cáo | **0.15 / 0.50 (-0.35)** | 0.50 / 0.50 | Slide 13 slides chuyên nghiệp, đạt chuẩn nhưng cần duyệt tại buổi bảo vệ |
-| `5.2` Báo cáo Word | **0.15 / 0.50 (-0.35)** | 0.50 / 0.50 | Báo cáo Word chuẩn UIT, TNR 13pt, 1.5 line spacing, IEEE citations |
-| `5.3` Thuyết trình demo | **0.00 / 0.50 (-0.50)** | 0.50 / 0.50 | Kịch bản demo E2E 4 Tiers sẵn sàng, chưa diễn ra buổi bảo vệ thực tế |
-| `5.4` FinOps & Quotas | **0.10 / 0.50 (-0.40)** | 0.50 / 0.50 | TCO $70.61/mo, bảng Cloud Quotas, IAM RBAC, chưa gắn live Azure billing |
-| **TỔNG ĐIỂM** | **3.35 / 10.00** | **9.90 / 10.00** | **Khấu trừ tổng cộng -6.65 điểm nhằm minh chứng tính trung thực** |
+| **Nhánh Thực Nghiệm Cục Bộ (Local Verified Track)** | **4.75 / 10.00** | **-5.25 điểm** | Xác thực động trên tệp KKBox thực tế; trừ điểm trung thực phần thiếu live Azure Cloud, `> 4 GiB` full run và buổi bảo vệ |
+| **Nhánh Sẵn Sàng Cloud (Cloud Target Track)** | **10.00 / 10.00** | 0.00 điểm | Đầy đủ mã nguồn, Terraform/ARM IaC, Checkov/Trivy `0 Crit/0 High`, FinOps `\$70.61/mo`, 217 tests passed, DOCX & PPTX |
+
+#### Bảng Đối Soát Chi Tiết 19 Tiêu Chí Chính Thức (`R01..R19`):
+| Mã | Tiêu Chí Rubric | Điểm Local | Điểm Cloud Target | Bằng Chứng Đĩa & Lý Do Khấu Trừ Thực Tế |
+| :---: | :--- | :---: | :---: | :--- |
+| `R01` | Loại bài toán lưu trữ/thu thập/trực quan/xử lý | 0.25 / 0.25 | 0.25 / 0.25 | Đặc tả KKBox Churn + DVC pipeline + FastAPI Serving + Web UI |
+| `R02` | Loại dữ liệu Dataset/Database/Web | 0.25 / 0.25 | 0.25 / 0.25 | KKBox Parquet manifest 4 bảng (`442,211,685` dòng, 32 tệp) |
+| `R03` | Dung lượng `> 4 GB`; so sánh local vs Cloud | **0.00 / 0.75** | 0.75 / 0.75 | Local raw `844.63 MB` (`0.825 GB < 4 GiB`), chưa chạy cùng job trên Azure Cloud |
+| `R04` | Phân loại Cloud theo IaaS/PaaS/FaaS/SaaS | **0.15 / 0.25** | 0.25 / 0.25 | Đầy đủ trong `configs/cloud_architecture_and_cost.md` & `main.tf`; chưa provision live |
+| `R05` | Cơ sở lý thuyết định dạng lưu trữ | **0.35 / 0.50** | 0.50 / 0.50 | Parquet nhanh gấp 14.41x CSV + Feast `feature_store.yaml`; chưa sync Azure Blob |
+| `R06` | Cơ sở lý thuyết thuật toán, luồng xử lý | **0.40 / 0.50** | 0.50 / 0.50 | DuckDB ETL + LogisticRegression/XGBoost + time split + SHAP; chưa chạy Cloud phân tán |
+| `R07` | Giới thiệu chi tiết dịch vụ Cloud đã dùng | **0.15 / 0.50** | 0.50 / 0.50 | Terraform/ARM/ACA/CLI + Checkov/Trivy 97.22% (`0 Crit/0 High`); chưa có cụm Azure live |
+| `R08` | Tốc độ đọc/ghi | **0.15 / 0.50** | 0.50 / 0.50 | Local SSD Parquet `111.77 MB/s` vs CSV `28.68 MB/s`; chưa đo mạng Azure Blob & Spark |
+| `R09` | Thiết lập ETL tự động | **0.20 / 0.50** | 0.50 / 0.50 | `dvc.yaml` + `dvc.lock` (schema 2.0) + GitHub workflow + pilot `0.93s`; chưa trigger Cloud Blob |
+| `R10` | Độ trễ giữa các region | **0.00 / 0.50** | 0.50 / 0.50 | Chỉ đo RTT probe từ host tới 5 endpoint; chưa triển khai HTTP server tại 2 Azure region |
+| `R11` | Tối ưu lưu trữ/tốc độ đọc ghi | **0.25 / 0.50** | 0.50 / 0.50 | Hive partition pruning (`window=2017-02/03`) + Parquet + Feast local (`1,889` keys); thiếu AMR Redis live |
+| `R12` | Huấn luyện mô hình trên tập dữ liệu | **0.60 / 1.00** | 1.00 / 1.00 | 2 candidates (`logistic_regression`, `xgboost`), MLflow SQLite, test AUC `0.753016` trên pilot (`1,889` dòng) |
+| `R13` | API cho phép sử dụng mô hình | **0.40 / 0.50** | 0.50 / 0.50 | FastAPI `/v1/predictions`, `/manual`, `/batch`, `/predict`, Swagger, `X-API-Key`, SHAP, k6; chưa public ACA HTTPS |
+| `R14` | Trực quan kết quả mô hình/tham số | **0.65 / 1.00** | 1.00 / 1.00 | 4 SVG KKBox (PR curve, CM, Comparison, Drift) + `kkbox_pilot_drift_report.json`; thiếu Cloud Grafana |
+| `R15` | Trang Web gọi API Cloud & parse kết quả | **0.20 / 0.50** | 0.50 / 0.50 | KKBox Web UI (`/ui`, `< 200` dòng) gọi FastAPI & parse JSON; trỏ local chưa trỏ Public Cloud URL |
+| `R16` | PowerPoint đúng format | **0.30 / 0.50** | 0.50 / 0.50 | `Slide_Thuyet_Trinh_MLOps_Customer_Churn.pptx` (16 slides KKBox, 0 Telco); chờ số liệu Azure live |
+| `R17` | Word đúng format | **0.30 / 0.50** | 0.50 / 0.50 | `Bao_Cao_Bai_Tap_Lon_MLOps_Customer_Churn.docx` (251 đoạn, 17 bảng, 16 KKBox, 0 Telco); chờ số liệu Azure live |
+| `R18` | Thuyết trình/demo | **0.00 / 0.50** | 0.50 / 0.50 | Kịch bản demo sẵn sàng tại `docs/RUBRIC_DEMO_PLAN_2026-11-04.md`; chưa bảo vệ & quay video |
+| `R19` | Quản lý dự án trên Cloud/cộng tác nhóm | **0.15 / 0.50** | 0.50 / 0.50 | Git/CI workflows + FinOps `\$70.61/mo` (`< \$75.00/mo`) + Checkov/Trivy; chưa gắn billing Azure live |
+| **TỔNG ĐIỂM** | **19 tiêu chí chính thức** | **4.75 / 10.00** | **10.00 / 10.00** | **Khấu trừ `-5.25` điểm trung thực phần thiếu live Cloud & `> 4 GiB` full run** |
 
 ---
 
 ## 10. Kiểm Toán Giới Hạn Dòng Mã Nguồn & Tiêu Chuẩn Kỹ Thuật
 
-- **Bộ kiểm tra Invariant 02:** `scripts/check_file_lines.py`
+- **Bộ kiểm tra Invariant 02:** `.agents/skills/modular-code-decomposer/scripts/check_file_lines.py`
 
-| Thư Mục Mã Nguồn | Số Lượng Tệp | Tệp Vượt Quá 400 Dòng | Tỷ Lệ Tuân Thủ | Trạng Thái Kiểm Toán |
+| Thư Mục Mã Nguồn | Số Lượng Tệp | Tệp Vượt Ngưỡng | Tỷ Lệ Tuân Thủ | Trạng Thái Kiểm Toán |
 | :--- | :---: | :---: | :---: | :---: |
-| `src/` (toàn bộ 9 gói con) | 41 tệp | 0 tệp | **100% <= 400 lines** | **ĐẠT (PASSED)** |
-| `tests/` (toàn bộ 28 tệp test)| 28 tệp | 0 tệp | **100% <= 400 lines** | **ĐẠT (PASSED)** |
-| `scripts/` (toàn bộ 36 scripts)| 36 tệp | 0 tệp | **100% <= 400 lines** | **ĐẠT (PASSED)** |
-| `src/web/` (Giao diện Google Stitch)| 5 tệp | 0 tệp | **100% < 200 lines** | **ĐẠT (PASSED)** |
-| - `src/web/app.js` | 197 dòng | 0 tệp | < 200 lines | ĐẠT |
-| - `src/web/dashboard.py` | 183 dòng | 0 tệp | < 200 lines | ĐẠT |
-| - `src/web/index.html` | 181 dòng | 0 tệp | < 200 lines | ĐẠT |
-| - `src/web/style.css` | 172 dòng | 0 tệp | < 200 lines | ĐẠT |
-| - `src/web/charts.js` | 157 dòng | 0 tệp | < 200 lines | ĐẠT |
+| `src/` (toàn bộ mã nguồn ứng dụng) | 43 tệp | 0 tệp (`max 384`) | **100% <= 400 lines** | **ĐẠT (PASSED)** |
+| `tests/` (toàn bộ bộ kiểm thử) | 28 tệp | 0 tệp (`max 398`) | **100% <= 400 lines** | **ĐẠT (PASSED)** |
+| `scripts/` (toàn bộ scripts) | 36 tệp | 0 tệp (`max 390`) | **100% <= 400 lines** | **ĐẠT (PASSED)** |
+| `src/kkbox/web/` (KKBox Demo UI) | 4 tệp | 0 tệp (`max 190`) | **100% < 200 lines** | **ĐẠT (PASSED)** |
+| `src/web/` (Enterprise Dashboard UI) | 5 tệp | 0 tệp (`max 194`) | **100% < 200 lines** | **ĐẠT (PASSED)** |
+| `DESIGN.md` | 1 tệp | 0 tệp (`70` dòng) | **< 100 lines** | **ĐẠT (PASSED)** |
 
-- **Kết quả bộ kiểm thử tự động Pytest:**
-  - Tổng số bài kiểm thử: **212 bài**
-  - Số bài kiểm thử PASSED: **211 bài (100% bài kiểm thử thực thi)**
-  - Số bài kiểm thử SKIPPED: **1 bài** (`tests/test_resilience_integration.py::test_testcontainers_live_container` được bỏ qua do môi trường Windows không bật Docker daemon cục bộ)
+- **Kết quả bộ kiểm thử tự động Pytest (`python -m pytest tests/ -v -rs`):**
+  - Tổng số bài kiểm thử thu thập: **218 bài**
+  - Số bài kiểm thử PASSED: **217 bài**
+  - Số bài kiểm thử SKIPPED: **1 bài** (`tests/test_resilience_integration.py::test_testcontainers_live_container` - Docker daemon offline trên host Windows)
   - Số bài kiểm thử FAILED: **0 bài**
-- **Tiêu chuẩn ký tự gạch nối ASCII Hyphen (Invariant 05):** 100% sử dụng ký tự gạch nối chuẩn bàn phím `-` (`0x2D`), không tồn tại ký tự em-dash hay en-dash AI.
-- **Đồng bộ đồ thị tri thức mã nguồn AST Graphify (Invariant 12):** Đồng bộ hoàn chỉnh tại thư mục `graphify-out/`.
+- **Tiêu chuẩn ký tự gạch nối ASCII Hyphen (Invariant 05):** Sử dụng chuẩn gạch nối `-` (`0x2D`).
+- **Đồng bộ đồ thị tri thức mã nguồn AST Graphify (Invariant 12):** Đồng bộ tại thư mục `graphify-out/`.
 
 ---
 
-## 11. Bảng Tổng Hợp Chỉ Số Nhất Quán Cho Đội Ngũ Tác Giả (`@writer`)
+## 11. Bảng Tổng Hợp Chỉ Số Nhất Quán Cho Đội Ngũ Tác Giả
 
-Để phục vụ công tác soạn thảo báo cáo học thuật chính thức và tránh hoàn toàn các phát biểu thiếu bằng chứng, đội ngũ tác giả cần tuân thủ bảng số liệu thống nhất dưới đây:
+Để phục vụ công tác soạn thảo báo cáo học thuật chính thức và tránh các phát biểu thiếu bằng chứng, bảng số liệu thống nhất sau phản ánh đúng trạng thái hiện tại trên đĩa:
 
 | Chỉ Số Cốt Lõi | Giá Trị Chuẩn Duy Nhất | Tệp Tạo Tác Nguồn (Source Artifact) |
 | :--- | :--- | :--- |
-| **Quy mô tập dữ liệu danh định KKBox** | **7.52 GB**, 32 tệp Parquet, **442,211,685 dòng** | `data/processed/kkbox_execution_metrics.json` |
+| **Quy mô tập dữ liệu danh định KKBox** | **7.52 GB**, 32 tệp Parquet, **442,211,685 dòng** | `docs/experiments/kkbox_parquet_manifest.json` |
+| **Dung lượng dữ liệu thô local (`data/kkbox_raw/`)** | **885,659,602 bytes (`844.63 MB` / `0.825 GB`, 6 tệp)** | `data/processed/bigdata_io_audit.json` |
 | **Số dòng quét bằng DuckDB Out-of-Core**| **37,629,251 dòng** trong **5.61 giây** (6.71M dòng/s) | `data/processed/kkbox_execution_metrics.json` |
-| **Số hồ sơ thực thể khách hàng xuất ra**| **970,960 hồ sơ** trong **41.87 MB Parquet** (173k hồ sơ/s) | `data/processed/kkbox_execution_metrics.json` |
-| **Mô hình Champion sản xuất KKBox** | **LightGBM** (`KKBox_LGBM_Champion`) trên 970k mẫu | `data/models/kkbox_evaluation_results.json` |
-| - KKBox Champion ROC-AUC | **0.8764** (5-Fold CV: 0.8775 ± 0.0014) | `data/models/kkbox_evaluation_results.json` |
-| - KKBox Champion Accuracy | **0.9331** (93.31%) | `data/models/kkbox_evaluation_results.json` |
-| - KKBox Champion Brier Score | **0.05312** (hiệu chuẩn xác suất tin cậy cao) | `data/models/kkbox_evaluation_results.json` |
-| - KKBox Tỷ lệ rời bỏ thực tế | **8.994%** (87,330 churned / 883,630 retained) | `data/models/kkbox_evaluation_results.json` |
-| **Mô hình Champion đối chuẩn 4 thuật toán**| **XGBoost** trên tập kiểm thử độc lập 66,332 mẫu | `data/models/evaluation_results.json` |
-| - 4-Model Champion ROC-AUC | **0.9990** (5-Fold CV: 0.9989 ± 0.0005) | `data/models/evaluation_results.json` |
-| - 4-Model Champion Accuracy | **0.9987** (99.87%) | `data/models/evaluation_results.json` |
-| - 4-Model Champion Brier Score | **0.001407** (~0.0014) | `data/models/evaluation_results.json` |
-| **Chi phí đám mây TCO cơ sở Azure (Infracost)** | **$70.61 / tháng** (ngân sách trần < $75.00/tháng) | `reports/infracost_breakdown.json` & `configs/cloud_architecture_and_cost.md` |
-| **Chi phí đám mây TCO Scale-to-Zero Pilot** | **$11.22 / tháng** (tiết kiệm 93.7% so với Peak $176.96/mo) | `configs/cloud_architecture_and_cost.md` |
-| **Kịch bản dự phòng OCI VM Flex / GCP Run** | **OCI $91.54 / tháng** | **GCP Cloud Run $35.56 / tháng** | `configs/cloud_architecture_and_cost.md` |
-| **Kiểm toán an ninh DevSecOps** | Checkov 28/28 pass (TF 18, ARM 10); Security 97.25% (177/182, 0 Crit/High) | `reports/checkov_real_report.json` & `reports/security_audit_report.json` |
+| **Số hồ sơ xuất ra (Single-Window Benchmark)** | **970,960 hồ sơ** trong **41.87 MB Parquet** (173k hồ sơ/s) | `data/processed/kkbox_execution_metrics.json` |
+| **Huấn luyện Pilot KKBox (`1,889` snapshots)** | 2 candidates (`logistic_regression`, `xgboost`), Test AUC **0.753016** | `docs/experiments/kkbox_pilot_model_report.json` |
+| **Mô hình Champion benchmark 4 thuật toán (Legacy)** | **XGBoost** trên 66,332 mẫu (ROC-AUC 0.9989, Accuracy 0.9987) | `data/processed/model_evaluation_report.json` |
+| **Chi phí đám mây TCO cơ sở Azure (Infracost)** | **\$70.61 / tháng** (ngân sách trần `< \$75.00/tháng`, dư `\$4.39`) | `reports/infracost_breakdown.json` & `configs/cloud_architecture_and_cost.md` |
+| **Chi phí đám mây TCO Scale-to-Zero Pilot** | **\$11.22 / tháng** (tiết kiệm 93.7% so với Peak `\$176.96/mo`) | `configs/cloud_architecture_and_cost.md` |
+| **Kịch bản dự phòng OCI VM Flex / GCP Run** | **OCI \$91.54 / tháng** / **GCP Cloud Run \$35.56 / tháng** | `configs/cloud_architecture_and_cost.md` |
+| **Kiểm toán an ninh DevSecOps (Live)** | Checkov 26/26 pass (TF 17, ARM 9); Security **97.22%** (175/180, 0 Crit/High) | `reports/checkov_real_report.json` & `reports/security_audit_report.json` |
 | **Kiểm thử tải đồng thời cao K6** | 1,680 iterations, 3,360 reqs, 100% pass, avg 41.76ms, p95 114.99ms | `reports/k6_real_benchmark.json` |
-| **Độ trễ mạng Azure tối ưu nhất** | Đông Nam Á (Singapore): Min **26.19 ms**, Avg **49.17 ms** | `data/processed/region_latency_results.json` |
-| **Điểm số Rubric Liêm chính Học thuật** | Nhánh Local Real: **3.35/10.00**; Nhánh Target Cloud: **9.90/10.00** | `data/processed/academic_inspection_verdict.json` |
-| **Bộ kiểm thử tự động toàn diện** | **211 Passed / 1 Skipped / 0 Failed** (100% success) | `tests/` Pytest Suite |
-| **Quy tắc dòng mã nguồn (Line Cap)** | 100% tệp src, tests, scripts <= 400 dòng; web UI < 200 dòng | `scripts/check_file_lines.py` |
+| **Độ trễ mạng Azure tối ưu nhất (RTT host probe)** | Đông Nam Á (Singapore): Min **26.19 ms**, Avg **49.17 ms** | `data/processed/region_latency_results.json` |
+| **Điểm số Rubric R01..R19 Liêm chính Học thuật** | Nhánh Local Verified: **4.75/10.00**; Nhánh Cloud Target: **10.00/10.00** | `data/processed/final_check_results.json` |
+| **Bộ kiểm thử tự động toàn diện** | **217 Passed / 1 Skipped / 0 Failed** (`test_testcontainers_live_container`) | `tests/` Pytest Suite |
+| **Quy tắc dòng mã nguồn (Line Cap)** | `src/` 43, `tests/` 28, `scripts/` 36 <= 400 dòng; UI < 200 dòng | `check_file_lines.py` |
 
 ---
 
 ## 12. Xác Nhận Ký Duyệt Kiểm Toán (Auditor Sign-Off)
 
 Kiểm toán viên xác nhận:
-1. Mọi số liệu trong [`docs/MASTER_PROJECT_TRUTH.md`](file:///c:/Users/Nguyen%20Trong%20Khoi/Downloads/CLOUD/docs/MASTER_PROJECT_TRUTH.md) đều có tệp tạo tác vật lý chứng thực 100% trên đĩa.
-2. Hai tập thực nghiệm (KKBox Big Data 970k hồ sơ và Comparative 4-Model Benchmark 66k hồ sơ) được phân định rạch ròi, minh bạch và bổ trợ cho nhau.
-3. Không có bất kỳ dữ liệu giả mạo (mock data) hay số liệu mâu thuẫn nào tồn tại trong hệ thống.
-4. Tài liệu này đã sẵn sàng bàn giao cho Tác giả (`@writer`) để hoàn tất công tác biên tập tài liệu và xuất bản báo cáo học thuật.
+1. Số liệu phân bổ 4 bảng KKBox (`442,211,685` dòng / `7,522,254,856` bytes / `32` tệp), kết quả an ninh live (`97.22%`, `0` Crit/`0` High), FinOps (`\$70.61/mo`), Pytest (`217 passed / 1 skipped`), và điểm Rubric (`4.75/10.00` Local vs `10.00/10.00` Cloud Target) khớp 100% với tệp tạo tác trên đĩa.
+2. Phân tách minh bạch 3 cấp độ dữ liệu KKBox (Full Manifest `7.52 GB`, Single-Window Benchmark `37.6M -> 970,960` dòng, Local DVC Pilot `844.63 MB / 1,889` snapshots) và mô hình pilot vs benchmark legacy.
+3. Toàn bộ kiểm thử tự động thực thi trực tiếp sau các bản vá đạt 217 passed, 1 skipped (Docker daemon offline), 0 failed.
 
-**Ký duyệt:** Empirical Metrics & Facts Auditor (`@auditor`)  
-**Ngày hoàn tất:** 11/11/2026
+**Cập nhật đối soát sau khắc phục (BUG-10 Reconciled):** 2026-11-16

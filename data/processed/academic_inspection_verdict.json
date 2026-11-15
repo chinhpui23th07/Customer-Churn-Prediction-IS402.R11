@@ -1,59 +1,48 @@
 {
-  "timestamp": "2026-11-01 22:16:00 UTC",
-  "real_academic_score": 3.35,
+  "timestamp": "2026-11-15 17:28:08 UTC",
+  "real_academic_score": 4.75,
+  "target_cloud_score": 10.0,
   "max_score": 10.0,
-  "penalized_points": 6.65,
+  "penalized_points": 5.25,
   "data_size_audit": {
-    "total_raw_bytes": 26731747,
-    "total_raw_mb": 25.49,
-    "total_raw_gb": 0.025,
+    "total_raw_bytes": 885659602,
+    "total_raw_mb": 844.63,
+    "total_raw_gb": 0.825,
     "target_rubric_gb": 4.0,
     "is_compliant_4gb": false,
-    "deficit_factor": 160.7,
+    "deficit_factor": 4.8,
     "files": {
-      "customer_churn_dataset-testing-master.csv": {
-        "size_bytes": 3282220,
-        "size_mb": 3.13
+      "kkbox_raw/churn_label/window=2017-02/data.parquet": {
+        "size_bytes": 7948492,
+        "size_mb": 7.58
       },
-      "customer_churn_dataset-training-master.csv": {
-        "size_bytes": 23448754,
-        "size_mb": 22.36
+      "kkbox_raw/churn_label/window=2017-03/data.parquet": {
+        "size_bytes": 7772330,
+        "size_mb": 7.41
       },
-      "data_sources.json": {
-        "size_bytes": 773,
-        "size_mb": 0.0
+      "kkbox_raw/listening_day/source_version=v1/activity_month=201701/data.parquet": {
+        "size_bytes": 304662028,
+        "size_mb": 290.55
+      },
+      "kkbox_raw/listening_day/source_version=v1/activity_month=201702/data.parquet": {
+        "size_bytes": 272911990,
+        "size_mb": 260.27
+      },
+      "kkbox_raw/member/data.parquet": {
+        "size_bytes": 60491935,
+        "size_mb": 57.69
+      },
+      "kkbox_raw/subscription_transaction/part=0/data.parquet": {
+        "size_bytes": 231872827,
+        "size_mb": 221.13
       }
     }
   },
   "stub_detector_audit": {
-    "total_findings": 4,
-    "critical_violations": 4,
+    "total_findings": 1,
+    "critical_violations": 1,
     "warnings": 0,
     "findings": [
-      {
-        "severity": "CRITICAL",
-        "category": "SAI ĐẶC TẢ ĐỀ BÀI",
-        "file": ".github/workflows/mlops_ci.yml",
-        "line": 18,
-        "issue": "Đề bài yêu cầu 'Self-hosted Runner trong Github Actions' nhưng workflow đang dùng 'ubuntu-latest'",
-        "evidence": "runs-on: ubuntu-latest"
-      },
-      {
-        "severity": "CRITICAL",
-        "category": "SAI ĐẶC TẢ ĐỀ BÀI",
-        "file": ".github/workflows/mlops_ci.yml",
-        "line": 74,
-        "issue": "Đề bài yêu cầu 'Self-hosted Runner trong Github Actions' nhưng workflow đang dùng 'ubuntu-latest'",
-        "evidence": "runs-on: ubuntu-latest"
-      },
-      {
-        "severity": "CRITICAL",
-        "category": "SAI ĐẶC TẢ ĐỀ BÀI",
-        "file": ".github/workflows/mlops_ci.yml",
-        "line": 89,
-        "issue": "Đề bài yêu cầu 'Self-hosted Runner trong Github Actions' nhưng workflow đang dùng 'ubuntu-latest'",
-        "evidence": "runs-on: ubuntu-latest"
-      },
       {
         "severity": "CRITICAL",
         "category": "HẠ CẤP KIẾN TRÚC (ARCHITECTURAL DOWNGRADE)",
@@ -65,32 +54,33 @@
     ]
   },
   "rubric_breakdown": {
-    "timestamp": "2026-11-02T05:16:00.933948",
-    "total_score": 3.35,
-    "local_real_score": 3.35,
-    "target_cloud_score": 9.9,
-    "total_penalized_points": 6.65,
+    "timestamp": "2026-11-15T17:28:08.861976+00:00",
+    "audit_standard": "Official KKBox Cloud MLOps Rubric R01..R19 (Phan_cong_MLOps_KKBox_Azure.xlsx)",
+    "total_score": 4.75,
+    "local_real_score": 4.75,
+    "target_cloud_score": 10.0,
+    "total_penalized_points": 5.25,
     "max_score": 10.0,
     "scores_by_criterion": {
       "1.1": 0.25,
       "1.2": 0.25,
       "1.3": 0.0,
-      "1.4": 0.1,
-      "2.1": 0.1,
-      "2.2": 0.3,
-      "2.3": 0.1,
-      "3.1": 0.1,
-      "3.2": 0.1,
+      "1.4": 0.15,
+      "2.1": 0.35,
+      "2.2": 0.4,
+      "2.3": 0.15,
+      "3.1": 0.15,
+      "3.2": 0.2,
       "3.3": 0.0,
-      "3.4": 0.15,
-      "4.1": 0.55,
-      "4.2": 0.35,
-      "4.3": 0.45,
-      "4.4": 0.15,
-      "5.1": 0.15,
-      "5.2": 0.15,
+      "3.4": 0.25,
+      "4.1": 0.6,
+      "4.2": 0.4,
+      "4.3": 0.65,
+      "4.4": 0.2,
+      "5.1": 0.3,
+      "5.2": 0.3,
       "5.3": 0.0,
-      "5.4": 0.1
+      "5.4": 0.15
     },
     "target_scores_by_criterion": {
       "1.1": 0.25,
@@ -104,9 +94,9 @@
       "3.2": 0.5,
       "3.3": 0.5,
       "3.4": 0.5,
-      "4.1": 0.95,
+      "4.1": 1.0,
       "4.2": 0.5,
-      "4.3": 0.95,
+      "4.3": 1.0,
       "4.4": 0.5,
       "5.1": 0.5,
       "5.2": 0.5,
@@ -114,44 +104,274 @@
       "5.4": 0.5
     },
     "penalties": {
-      "1.3": "TRỪ TOÀN BỘ 0.75đ: Dữ liệu thô trên máy local chỉ đạt 25.49 MB (thiếu quy mô >4GB). Kịch bản >4GB KKBox Churn (7.52 GB, 32 Parquet files) đang trong lộ trình chuyển đổi và thực thi trên cloud.",
-      "1.4": "Trừ 0.15đ: Đã phân loại IaaS/PaaS/FaaS chi tiết trong configs/, nhưng chưa provision live Azure resources.",
-      "2.1": "Trừ 0.40đ: Đã có Parquet Snappy local, chưa đồng bộ lên Azure Blob Storage.",
-      "2.2": "Trừ 0.20đ: Cơ sở lý thuyết XGBoost, Random Forest, Optuna 12 trials, SHAP hoàn chỉnh; dữ liệu local bị thiên kiến hợp đồng tháng.",
-      "2.3": "TRỪ 0.40đ: Đã cấu hình Dockerfile, docker-compose, ARM template, Terraform và deploy_azure.bat, nhưng hiện tại chỉ chạy local container/process, chưa có cụm Azure sống.",
-      "3.1": "Trừ 0.40đ: Đo I/O trên SSD local, chưa đo thông lượng mạng giữa compute node và Cloud Storage.",
-      "3.2": "Trừ 0.40đ: Luồng ETL streaming O(1) tự động, nhưng lưu disk local thay vì Cloud Blob.",
-      "3.3": "TRỪ TOÀN BỘ 0.50đ: Chưa dựng compute server ở các Azure Region; chỉ mới đo latency ping từ host.",
-      "3.4": "Trừ 0.35đ: Feast Online Store dùng SQLite local fallback, chưa có cụm Azure Cache for Redis live.",
-      "4.1": "Trừ 0.40đ: 4 mô hình thật, Optuna 12 trials thật, MLflow Registry; AUC cao do hợp đồng tháng.",
-      "4.2": "Trừ 0.15đ: FastAPI Serving với X-API-Key auth, SHAP explainability, hot-reload, nhưng chạy trên localhost:8000.",
-      "4.3": "Trừ 0.50đ: 4 biểu đồ chẩn đoán + Chart.js dynamic ROC; chưa nhúng live Grafana dashboard lên cloud.",
-      "4.4": "Trừ 0.35đ: Web Bento Grid giao diện đẹp, gọi API qua localhost:8000 với X-API-Key, chưa có Public Cloud URL.",
-      "5.1": "Trừ 0.35đ: Slide 13 slides chuyên nghiệp, đạt chuẩn nhưng cần duyệt chính thức tại buổi báo cáo bảo vệ.",
-      "5.2": "Trừ 0.35đ: Báo cáo Word 6 chương chuẩn UIT, TNR 13pt, 1.5 line spacing, IEEE citations.",
-      "5.3": "TRỪ TOÀN BỘ 0.50đ: Kịch bản demo E2E 4 Tiers sẵn sàng trên local, nhưng chưa diễn ra buổi thuyết trình bảo vệ trực tiếp.",
-      "5.4": "TRỪ 0.40đ: Đã tính toán TCO $74.67/month, bảng Cloud Quotas, IAM RBAC, nhưng chưa gắn với live Azure Subscription."
+      "1.3": "Tru 0.75d: Du lieu thô local dat 844.63 MB (0.825 GB < 4 GiB) va chua chay cung job tren Azure Cloud.",
+      "1.4": "Tru 0.10d: Da phan loai chi tiet IaaS/PaaS/SaaS trong IaC/docs nhung chua provision live Azure.",
+      "2.1": "Tru 0.15d: Da chung minh Parquet vs CSV va cau truc Feast offline/online nhung chua dong bo Azure Blob live.",
+      "2.2": "Tru 0.10d: Hoan chinh thuat toan & SHAP nhung chua chay phan tan quy mo lon tren Cloud.",
+      "2.3": "Tru 0.35d: IaC & DevSecOps dat chuan (0 CRITICAL/0 HIGH) nhung chua co cum Azure live.",
+      "3.1": "Tru 0.35d: Chi do I/O SSD local, chua do thong luong doc/ghi qua mang Azure Blob & Spark.",
+      "3.2": "Tru 0.30d: ETL tu dong chay DVC/DuckDB va ghi disk local, chua kich hoat ghi live Azure Blob.",
+      "3.3": "Tru 0.50d: Chua trien khai HTTP server tai 2 Azure region de do p50/p95 thuc te.",
+      "3.4": "Tru 0.25d: Da toi uu Hive partition + Parquet + Feast local SQLite; chua benchmark Azure Blob/AMR Redis live.",
+      "4.1": "Tru 0.40d: Huan luyen MLflow + time split that nhung tren du lieu pilot (1,889 dong), chua train full 7.52 GB Cloud.",
+      "4.2": "Tru 0.10d: API & Swagger hoat dong day du qua FastAPI TestClient/localhost, chua public HTTPS URL tren Azure ACA.",
+      "4.3": "Tru 0.35d: Truc quan hoa & drift metrics tren pilot run, chua ket noi telemetry Grafana/Cloud live.",
+      "4.4": "Tru 0.30d: Trang Web goi API local/container va parse ket qua, chua tro vao Public Cloud API URL.",
+      "5.1": "Tru 0.20d: Slide dung format nhung can cap nhat anh chup/so lieu Azure Cloud live sau deploy.",
+      "5.2": "Tru 0.20d: Bao cao Word dung format UIT nhung can bo sung bang chung chay live tren Azure.",
+      "5.3": "Tru 0.50d: Chua dien ra buoi thuyet trinh bao ve truc tiep va quay video demo du phong.",
+      "5.4": "Tru 0.35d: Co Git workflows va FinOps TCO IaC nhung chua gan live Azure Cost/Quotas subscription."
     },
     "evidence": {
-      "1.1": "Phân loại rõ ràng bài toán dự đoán Churn, xử lý dữ liệu và lưu trữ DVC/Feast.",
-      "1.2": "Dữ liệu có cấu trúc dạng bảng (Tabular Dataset 13 đặc trưng).",
-      "1.3": "Kịch bản tập KKBox 7.52 GB theo đặc tả docs/requirements/project_context.md.",
-      "1.4": "Tài liệu kiến trúc configs/cloud_architecture_and_cost.md phân loại đầy đủ IaaS/PaaS/FaaS.",
-      "2.1": "Thực nghiệm Parquet Snappy nén 3.7x và đọc nhanh gấp 14.4x so với CSV trên máy local.",
-      "2.2": "Cơ sở lý thuyết thuật toán XGBoost, Random Forest, Optuna 12 trials, SHAP giải thích hoàn chỉnh.",
-      "2.3": "Kịch bản triển khai Azure Container Apps, Redis, Storage đóng gói đầy đủ tại deploy/azure/.",
-      "3.1": "Benchmark I/O local: Parquet đọc 0.02s (111.8 MB/s), CSV đọc 0.31s (28.7 MB/s).",
-      "3.2": "Luồng ETL tự động hóa sạch sẽ, khử trùng 62,189 ID, lưu định dạng Parquet.",
-      "3.3": "Đo độ trễ RTT mạng tới Singapore (49.2ms), East Asia (38.3ms), West US (220.5ms).",
-      "3.4": "Feast Feature Store đa tầng: Offline Parquet, Online SQLite fallback + Redis client adapter.",
-      "4.1": "Huấn luyện 4 mô hình thực tế, Optuna 12 trials, 5-Fold Stratified CV, MLflow Model Registry.",
-      "4.2": "FastAPI Serving với X-API-Key auth, SHAP explainability, hot-reload /api/v1/reload_model, batch predict.",
-      "4.3": "Biểu đồ Confusion Matrix, ROC curves, Feature importance, Optuna study chart và Chart.js dynamic.",
-      "4.4": "Web UI Bento Grid mounted tại /ui, gọi API /predict và /upload_csv_predict kèm X-API-Key.",
-      "5.1": "Slide PPTX chuyên nghiệp 13 slides, cập nhật số liệu thực nghiệm Dual-Track và GVHD ThS. Hà Lê Hoài Trung.",
-      "5.2": "Báo cáo Word chuẩn UIT 6 chương, TNR 13pt, 1.5 line spacing, IEEE citations đầy đủ.",
-      "5.3": "Kịch bản demo E2E 4 Tiers, kiểm thử tự động 100% Passed, sẵn sàng thuyết trình.",
-      "5.4": "TCO $74.67/month, bảng Cloud Quotas, ma trận IAM RBAC, và Serving Hot-Reload Retraining pipeline."
-    }
+      "1.1": "Dac ta KKBox Churn + pipeline DVC (dvc.yaml) + Serving API + Web UI.",
+      "1.2": "KKBox manifest: 4 bang (member, churn_label, subscription_transaction, listening_day), 442,211,685 dong.",
+      "1.3": "Local KKBox raw: 844.63 MB (0.825 GB, 6 tep); Manifest 7.52 GB / 32 tep; Local scan 37,629,251 dong trong 5.61s.",
+      "1.4": "Bang phan loai Azure ACA/ACR/Blob/AMR Redis/GitHub Actions tai configs/cloud_architecture_and_cost.md & deploy/azure/main.tf.",
+      "2.1": "Parquet doc nhanh gap 14.41x CSV (io_benchmark_results.json) + Feast feature_store.yaml (kkbox-v1).",
+      "2.2": "DuckDB/PyArrow ETL + LogisticRegression/XGBoost + temporal split + SHAP Tree/Linear Explainer.",
+      "2.3": "Terraform/ARM/ACA/CLI + Checkov/Trivy compliance 97.22% (0 CRITICAL/0 HIGH).",
+      "3.1": "SSD local: Parquet 111.77 MB/s vs CSV 28.68 MB/s; KKBox scan 6,707,531 rows/s.",
+      "3.2": "DVC DAG + dvc.lock (schema 2.0) + GitHub workflow + kkbox_pilot_etl_audit.json (0.93s).",
+      "3.3": "Co 5 Azure endpoints trong region_latency_results.json nhung la RTT probe tu host, chua phai server 2 region.",
+      "3.4": "Hive partition pruning (window=2017-02/03) + Parquet Snappy + Feast online store (1889 keys, SqliteOnlineStoreConfig).",
+      "4.1": "2 candidates (logistic_regression, xgboost), MLflow sqlite run 8a167095a8e241e496f6ca846944d14b, time split test AUC=0.753016.",
+      "4.2": "FastAPI /v1/predictions, /v1/predictions/manual, /v1/predictions/batch, /predict, /docs Swagger, X-API-Key, SHAP + k6 benchmark.",
+      "4.3": "4 SVG KKBox (PR curve, Confusion matrix, Model comparison, Drift PSI/Wasserstein) + kkbox_pilot_drift_report.json.",
+      "4.4": "KKBox Web UI (/ui, Bento Grid <200 dong, manual/batch + in-memory X-API-Key) parse JSON tu API.",
+      "5.1": "docs/Slide_Thuyet_Trinh_MLOps_Customer_Churn.pptx (16 slides KKBox, 0 Telco).",
+      "5.2": "docs/Bao_Cao_Bai_Tap_Lon_MLOps_Customer_Churn.docx (251 doan, 17 bang, KKBox, 0 Telco).",
+      "5.3": "Kich ban demo E2E co san tai docs/RUBRIC_DEMO_PLAN_2026-11-04.md; buoi bao ve truc tiep va video du phong chua dien ra.",
+      "5.4": "Git/CI workflows + FinOps 70.61 USD/mo (< 75.0 USD/mo) + Checkov/Trivy audit."
+    },
+    "official_rubric_r01_r19": [
+      {
+        "id": "R01",
+        "legacy_key": "1.1",
+        "group": "Gioi thieu",
+        "name": "Loai bai toan thuoc nhom luu tru, thu thap, truc quan, xu ly",
+        "max_points": 0.25,
+        "local_score": 0.25,
+        "cloud_readiness_score": 0.25,
+        "status": "VERIFIED_FULL",
+        "evidence": "Dac ta KKBox Churn + pipeline DVC (dvc.yaml) + Serving API + Web UI.",
+        "deduction_reason": "Dat 100% tren moi truong hien tai."
+      },
+      {
+        "id": "R02",
+        "legacy_key": "1.2",
+        "group": "Gioi thieu",
+        "name": "Loai du lieu: Dataset/Database/Web",
+        "max_points": 0.25,
+        "local_score": 0.25,
+        "cloud_readiness_score": 0.25,
+        "status": "VERIFIED_FULL",
+        "evidence": "KKBox manifest: 4 bang (member, churn_label, subscription_transaction, listening_day), 442,211,685 dong.",
+        "deduction_reason": "Dat 100% tren moi truong hien tai."
+      },
+      {
+        "id": "R03",
+        "legacy_key": "1.3",
+        "group": "Gioi thieu",
+        "name": "Dung luong >4 GB; so sanh xu ly local va Cloud",
+        "max_points": 0.75,
+        "local_score": 0.0,
+        "cloud_readiness_score": 0.75,
+        "status": "CLOUD_OR_LIVE_MISSING",
+        "evidence": "Local KKBox raw: 844.63 MB (0.825 GB, 6 tep); Manifest 7.52 GB / 32 tep; Local scan 37,629,251 dong trong 5.61s.",
+        "deduction_reason": "Tru 0.75d: Du lieu thô local dat 844.63 MB (0.825 GB < 4 GiB) va chua chay cung job tren Azure Cloud."
+      },
+      {
+        "id": "R04",
+        "legacy_key": "1.4",
+        "group": "Gioi thieu",
+        "name": "Phan loai thanh phan Cloud theo IaaS/PaaS/FaaS/SaaS",
+        "max_points": 0.25,
+        "local_score": 0.15,
+        "cloud_readiness_score": 0.25,
+        "status": "LOCAL_PARTIAL",
+        "evidence": "Bang phan loai Azure ACA/ACR/Blob/AMR Redis/GitHub Actions tai configs/cloud_architecture_and_cost.md & deploy/azure/main.tf.",
+        "deduction_reason": "Tru 0.10d: Da phan loai chi tiet IaaS/PaaS/SaaS trong IaC/docs nhung chua provision live Azure."
+      },
+      {
+        "id": "R05",
+        "legacy_key": "2.1",
+        "group": "Ly thuyet",
+        "name": "Co so ly thuyet dinh dang luu tru",
+        "max_points": 0.5,
+        "local_score": 0.35,
+        "cloud_readiness_score": 0.5,
+        "status": "LOCAL_PARTIAL",
+        "evidence": "Parquet doc nhanh gap 14.41x CSV (io_benchmark_results.json) + Feast feature_store.yaml (kkbox-v1).",
+        "deduction_reason": "Tru 0.15d: Da chung minh Parquet vs CSV va cau truc Feast offline/online nhung chua dong bo Azure Blob live."
+      },
+      {
+        "id": "R06",
+        "legacy_key": "2.2",
+        "group": "Ly thuyet",
+        "name": "Co so ly thuyet thuat toan, luong xu ly",
+        "max_points": 0.5,
+        "local_score": 0.4,
+        "cloud_readiness_score": 0.5,
+        "status": "LOCAL_PARTIAL",
+        "evidence": "DuckDB/PyArrow ETL + LogisticRegression/XGBoost + temporal split + SHAP Tree/Linear Explainer.",
+        "deduction_reason": "Tru 0.10d: Hoan chinh thuat toan & SHAP nhung chua chay phan tan quy mo lon tren Cloud."
+      },
+      {
+        "id": "R07",
+        "legacy_key": "2.3",
+        "group": "Ly thuyet",
+        "name": "Gioi thieu chi tiet dich vu Cloud da dung",
+        "max_points": 0.5,
+        "local_score": 0.15,
+        "cloud_readiness_score": 0.5,
+        "status": "LOCAL_PARTIAL",
+        "evidence": "Terraform/ARM/ACA/CLI + Checkov/Trivy compliance 97.22% (0 CRITICAL/0 HIGH).",
+        "deduction_reason": "Tru 0.35d: IaC & DevSecOps dat chuan (0 CRITICAL/0 HIGH) nhung chua co cum Azure live."
+      },
+      {
+        "id": "R08",
+        "legacy_key": "3.1",
+        "group": "Mo hinh du lieu",
+        "name": "Toc do doc/ghi",
+        "max_points": 0.5,
+        "local_score": 0.15,
+        "cloud_readiness_score": 0.5,
+        "status": "LOCAL_PARTIAL",
+        "evidence": "SSD local: Parquet 111.77 MB/s vs CSV 28.68 MB/s; KKBox scan 6,707,531 rows/s.",
+        "deduction_reason": "Tru 0.35d: Chi do I/O SSD local, chua do thong luong doc/ghi qua mang Azure Blob & Spark."
+      },
+      {
+        "id": "R09",
+        "legacy_key": "3.2",
+        "group": "Mo hinh du lieu",
+        "name": "Thiet lap ETL tu dong",
+        "max_points": 0.5,
+        "local_score": 0.2,
+        "cloud_readiness_score": 0.5,
+        "status": "LOCAL_PARTIAL",
+        "evidence": "DVC DAG + dvc.lock (schema 2.0) + GitHub workflow + kkbox_pilot_etl_audit.json (0.93s).",
+        "deduction_reason": "Tru 0.30d: ETL tu dong chay DVC/DuckDB va ghi disk local, chua kich hoat ghi live Azure Blob."
+      },
+      {
+        "id": "R10",
+        "legacy_key": "3.3",
+        "group": "Mo hinh du lieu",
+        "name": "Do tre giua cac region",
+        "max_points": 0.5,
+        "local_score": 0.0,
+        "cloud_readiness_score": 0.5,
+        "status": "CLOUD_OR_LIVE_MISSING",
+        "evidence": "Co 5 Azure endpoints trong region_latency_results.json nhung la RTT probe tu host, chua phai server 2 region.",
+        "deduction_reason": "Tru 0.50d: Chua trien khai HTTP server tai 2 Azure region de do p50/p95 thuc te."
+      },
+      {
+        "id": "R11",
+        "legacy_key": "3.4",
+        "group": "Mo hinh du lieu",
+        "name": "Toi uu luu tru/toc do doc ghi",
+        "max_points": 0.5,
+        "local_score": 0.25,
+        "cloud_readiness_score": 0.5,
+        "status": "LOCAL_PARTIAL",
+        "evidence": "Hive partition pruning (window=2017-02/03) + Parquet Snappy + Feast online store (1889 keys, SqliteOnlineStoreConfig).",
+        "deduction_reason": "Tru 0.25d: Da toi uu Hive partition + Parquet + Feast local SQLite; chua benchmark Azure Blob/AMR Redis live."
+      },
+      {
+        "id": "R12",
+        "legacy_key": "4.1",
+        "group": "Phan tich du lieu",
+        "name": "Huan luyen mo hinh tren tap du lieu",
+        "max_points": 1.0,
+        "local_score": 0.6,
+        "cloud_readiness_score": 1.0,
+        "status": "LOCAL_PARTIAL",
+        "evidence": "2 candidates (logistic_regression, xgboost), MLflow sqlite run 8a167095a8e241e496f6ca846944d14b, time split test AUC=0.753016.",
+        "deduction_reason": "Tru 0.40d: Huan luyen MLflow + time split that nhung tren du lieu pilot (1,889 dong), chua train full 7.52 GB Cloud."
+      },
+      {
+        "id": "R13",
+        "legacy_key": "4.2",
+        "group": "Phan tich du lieu",
+        "name": "API cho phep su dung mo hinh",
+        "max_points": 0.5,
+        "local_score": 0.4,
+        "cloud_readiness_score": 0.5,
+        "status": "LOCAL_PARTIAL",
+        "evidence": "FastAPI /v1/predictions, /v1/predictions/manual, /v1/predictions/batch, /predict, /docs Swagger, X-API-Key, SHAP + k6 benchmark.",
+        "deduction_reason": "Tru 0.10d: API & Swagger hoat dong day du qua FastAPI TestClient/localhost, chua public HTTPS URL tren Azure ACA."
+      },
+      {
+        "id": "R14",
+        "legacy_key": "4.3",
+        "group": "Phan tich du lieu",
+        "name": "Truc quan ket qua mo hinh/tham so",
+        "max_points": 1.0,
+        "local_score": 0.65,
+        "cloud_readiness_score": 1.0,
+        "status": "LOCAL_PARTIAL",
+        "evidence": "4 SVG KKBox (PR curve, Confusion matrix, Model comparison, Drift PSI/Wasserstein) + kkbox_pilot_drift_report.json.",
+        "deduction_reason": "Tru 0.35d: Truc quan hoa & drift metrics tren pilot run, chua ket noi telemetry Grafana/Cloud live."
+      },
+      {
+        "id": "R15",
+        "legacy_key": "4.4",
+        "group": "Phan tich du lieu",
+        "name": "Trang Web goi API Cloud va parse ket qua",
+        "max_points": 0.5,
+        "local_score": 0.2,
+        "cloud_readiness_score": 0.5,
+        "status": "LOCAL_PARTIAL",
+        "evidence": "KKBox Web UI (/ui, Bento Grid <200 dong, manual/batch + in-memory X-API-Key) parse JSON tu API.",
+        "deduction_reason": "Tru 0.30d: Trang Web goi API local/container va parse ket qua, chua tro vao Public Cloud API URL."
+      },
+      {
+        "id": "R16",
+        "legacy_key": "5.1",
+        "group": "Bao cao du an",
+        "name": "PowerPoint dung format",
+        "max_points": 0.5,
+        "local_score": 0.3,
+        "cloud_readiness_score": 0.5,
+        "status": "LOCAL_PARTIAL",
+        "evidence": "docs/Slide_Thuyet_Trinh_MLOps_Customer_Churn.pptx (16 slides KKBox, 0 Telco).",
+        "deduction_reason": "Tru 0.20d: Slide dung format nhung can cap nhat anh chup/so lieu Azure Cloud live sau deploy."
+      },
+      {
+        "id": "R17",
+        "legacy_key": "5.2",
+        "group": "Bao cao du an",
+        "name": "Word dung format",
+        "max_points": 0.5,
+        "local_score": 0.3,
+        "cloud_readiness_score": 0.5,
+        "status": "LOCAL_PARTIAL",
+        "evidence": "docs/Bao_Cao_Bai_Tap_Lon_MLOps_Customer_Churn.docx (251 doan, 17 bang, KKBox, 0 Telco).",
+        "deduction_reason": "Tru 0.20d: Bao cao Word dung format UIT nhung can bo sung bang chung chay live tren Azure."
+      },
+      {
+        "id": "R18",
+        "legacy_key": "5.3",
+        "group": "Bao cao du an",
+        "name": "Thuyet trinh/demo",
+        "max_points": 0.5,
+        "local_score": 0.0,
+        "cloud_readiness_score": 0.5,
+        "status": "CLOUD_OR_LIVE_MISSING",
+        "evidence": "Kich ban demo E2E co san tai docs/RUBRIC_DEMO_PLAN_2026-11-04.md; buoi bao ve truc tiep va video du phong chua dien ra.",
+        "deduction_reason": "Tru 0.50d: Chua dien ra buoi thuyet trinh bao ve truc tiep va quay video demo du phong."
+      },
+      {
+        "id": "R19",
+        "legacy_key": "5.4",
+        "group": "Bao cao du an",
+        "name": "Quan ly du an tren Cloud/cong tac nhom",
+        "max_points": 0.5,
+        "local_score": 0.15,
+        "cloud_readiness_score": 0.5,
+        "status": "LOCAL_PARTIAL",
+        "evidence": "Git/CI workflows + FinOps 70.61 USD/mo (< 75.0 USD/mo) + Checkov/Trivy audit.",
+        "deduction_reason": "Tru 0.35d: Co Git workflows va FinOps TCO IaC nhung chua gan live Azure Cost/Quotas subscription."
+      }
+    ]
   }
 }

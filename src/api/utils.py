@@ -13,6 +13,10 @@ import pandas as pd
 import shap
 from typing import Optional, Tuple, Dict, List, Any
 from fastapi import HTTPException, Header
+from src.api.database import ensure_inference_schema
+from src.resilience.retry_policy import RetryPolicy
+
+_DB_RETRY = RetryPolicy(name="db_write_retry", max_attempts=3, initial_backoff=0.05, backoff_factor=2.0)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 INFERENCE_DB = os.path.join(BASE_DIR, "data", "inference_logs.db")
@@ -42,59 +46,71 @@ def init_inference_db():
                 churn_prediction INTEGER,
                 churn_probability REAL,
                 features_json TEXT,
-                model_version TEXT DEFAULT 'v2.0.0-champion'
+                model_version TEXT DEFAULT 'v2.0.0-champion',
+                latency_ms REAL DEFAULT 0.0
             )
         """)
         conn.commit()
-        try:
-            cur.execute("ALTER TABLE inference_logs ADD COLUMN model_version TEXT DEFAULT 'v2.0.0-champion'")
-            conn.commit()
-        except Exception:
-            pass
+        ensure_inference_schema(conn)
     finally:
         conn.close()
 
 
-def log_inference_prediction(customer_id: int, features: list, pred: int, prob: float, model_version: str = "v2.0.0-champion"):
-    """Ghi nhận dự đoán vào SQLite inference database với WAL mode và đảm bảo đóng kết nối."""
-    conn = None
+def log_inference_prediction(
+    customer_id: int,
+    features: list,
+    pred: int,
+    prob: float,
+    model_version: str = "v2.0.0-champion",
+    latency_ms: float = 0.0,
+):
+    """Ghi nhận dự đoán vào SQLite inference database với WAL mode và RetryPolicy."""
+    def _write():
+        conn = None
+        try:
+            conn = sqlite3.connect(str(INFERENCE_DB), timeout=10.0)
+            cur = conn.cursor()
+            for p in ("PRAGMA journal_mode=WAL;", "PRAGMA synchronous=NORMAL;", "PRAGMA busy_timeout=5000;"):
+                cur.execute(p)
+            ensure_inference_schema(conn)
+            cur.execute(
+                "INSERT INTO inference_logs (customer_id, churn_prediction, churn_probability, features_json, model_version, latency_ms) VALUES (?, ?, ?, ?, ?, ?)",
+                (customer_id, pred, prob, json.dumps(features), model_version, float(latency_ms)),
+            )
+            conn.commit()
+        finally:
+            if conn is not None:
+                conn.close()
     try:
-        conn = sqlite3.connect(str(INFERENCE_DB), timeout=10.0)
-        cur = conn.cursor()
-        for p in ("PRAGMA journal_mode=WAL;", "PRAGMA synchronous=NORMAL;", "PRAGMA busy_timeout=5000;"):
-            cur.execute(p)
-        cur.execute(
-            "INSERT INTO inference_logs (customer_id, churn_prediction, churn_probability, features_json, model_version) VALUES (?, ?, ?, ?, ?)",
-            (customer_id, pred, prob, json.dumps(features), model_version),
-        )
-        conn.commit()
+        _DB_RETRY.execute(_write)
     except Exception as e:
         print(f"[-] Lỗi ghi nhận inference log: {e}")
-    finally:
-        if conn is not None:
-            conn.close()
 
 
 def log_batch_inference_predictions(records: list):
-    """Ghi nhận hàng loạt dự đoán vào SQLite trong một transaction duy nhất với WAL mode."""
+    """Ghi nhận hàng loạt dự đoán vào SQLite trong một transaction duy nhất với WAL mode và RetryPolicy."""
     if not records:
         return
-    conn = None
+    def _write_batch():
+        conn = None
+        try:
+            conn = sqlite3.connect(str(INFERENCE_DB), timeout=10.0)
+            cur = conn.cursor()
+            for p in ("PRAGMA journal_mode=WAL;", "PRAGMA synchronous=NORMAL;", "PRAGMA busy_timeout=5000;"):
+                cur.execute(p)
+            ensure_inference_schema(conn)
+            cur.executemany(
+                "INSERT INTO inference_logs (customer_id, churn_prediction, churn_probability, features_json, model_version, latency_ms) VALUES (?, ?, ?, ?, ?, ?)",
+                [(r[0], r[1], r[2], json.dumps(r[3]), r[4] if len(r) > 4 else "v2.0.0-champion", float(r[5]) if len(r) > 5 else 0.0) for r in records],
+            )
+            conn.commit()
+        finally:
+            if conn is not None:
+                conn.close()
     try:
-        conn = sqlite3.connect(str(INFERENCE_DB), timeout=10.0)
-        cur = conn.cursor()
-        for p in ("PRAGMA journal_mode=WAL;", "PRAGMA synchronous=NORMAL;", "PRAGMA busy_timeout=5000;"):
-            cur.execute(p)
-        cur.executemany(
-            "INSERT INTO inference_logs (customer_id, churn_prediction, churn_probability, features_json, model_version) VALUES (?, ?, ?, ?, ?)",
-            [(r[0], r[1], r[2], json.dumps(r[3]), r[4] if len(r) > 4 else "v2.0.0-champion") for r in records],
-        )
-        conn.commit()
+        _DB_RETRY.execute(_write_batch)
     except Exception as e:
         print(f"[-] Lỗi ghi nhận batch inference logs: {e}")
-    finally:
-        if conn is not None:
-            conn.close()
 
 
 def fetch_recent_predictions(limit: int = 100) -> List[Dict[str, Any]]:
@@ -118,8 +134,15 @@ def fetch_recent_predictions(limit: int = 100) -> List[Dict[str, Any]]:
 def verify_api_key(
     x_api_key: Optional[str] = Header(None),
 ):
-    """Verify API Key strictly using constant-time comparison (no unauthenticated header bypass)."""
-    configured_secret = os.getenv("API_KEY") or API_KEY_SECRET
+    """Verify API Key strictly using constant-time comparison and production fail-closed guard."""
+    env_key = os.getenv("API_KEY", "").strip()
+    app_env = os.getenv("APP_ENV", "development").strip().lower()
+    if env_key:
+        configured_secret = env_key
+    elif app_env == "production":
+        configured_secret = ""
+    else:
+        configured_secret = API_KEY_SECRET
     if not configured_secret:
         raise HTTPException(
             status_code=503,
@@ -154,87 +177,29 @@ def extract_raw_feature_vector(inp) -> np.ndarray:
     return prepare_feature_vector_from_input(inp)
 
 
-def compute_shap_attributions(tree_explainer, x_input, model=None) -> Tuple[Dict[str, float], str]:
-    """
-    Tính toán đóng góp đặc trưng theo SHAP Local Accuracy (Lundberg & Lee, NeurIPS 2017):
-    f(x) = phi_0 + sum_{i=1}^M phi_i.
-    Bảo toàn dấu âm (yếu tố giảm rủi ro rời bỏ) và hỗ trợ Linear SHAP fallback.
-    """
-    if isinstance(tree_explainer, (np.ndarray, pd.DataFrame)) and not isinstance(
-        x_input, (np.ndarray, pd.DataFrame)
-    ):
-        tree_explainer, x_input = x_input, tree_explainer
-
-    x_arr = x_input.to_numpy(dtype=float) if isinstance(x_input, pd.DataFrame) else np.asarray(x_input, dtype=float)
-    if x_arr.ndim == 1:
-        x_arr = x_arr.reshape(1, -1)
-
-    factors: Dict[str, float] = {}
-    base_value = 0.0
-    vals = None
-
-    if tree_explainer is not None:
-        try:
-            exp_val = getattr(tree_explainer, "expected_value", 0.0)
-            if isinstance(exp_val, (list, tuple, np.ndarray)):
-                exp_arr = np.asarray(exp_val, dtype=float).flatten()
-                base_value = float(exp_arr[1]) if len(exp_arr) > 1 else (float(exp_arr[0]) if len(exp_arr) == 1 else 0.0)
-            elif exp_val is not None:
-                base_value = float(exp_val)
-        except Exception:
-            base_value = 0.0
-
-        try:
-            shap_vals = tree_explainer.shap_values(x_arr)
-            if isinstance(shap_vals, list):
-                raw_v = np.asarray(shap_vals[1] if len(shap_vals) > 1 else shap_vals[0], dtype=float)
-            else:
-                raw_v = np.asarray(shap_vals, dtype=float)
-
-            if raw_v.ndim == 3:
-                vals = raw_v[0, :, 1] if raw_v.shape[2] > 1 else raw_v[0, :, 0]
-            elif raw_v.ndim == 2:
-                vals = raw_v[0]
-            else:
-                vals = raw_v.flatten()
-        except Exception:
-            vals = None
-
-    if vals is None:
-        # Linear SHAP fallback (Corollary 1, Lundberg & Lee 2017): phi_i = w_i * (x_i - E[x_i])
-        if model is not None and hasattr(model, "coef_"):
-            coef = np.asarray(model.coef_, dtype=float).flatten()
-            vals = coef[: len(FEATURE_COLS)] * x_arr[0, : len(FEATURE_COLS)]
-            if hasattr(model, "intercept_"):
-                ic = np.asarray(model.intercept_, dtype=float).flatten()
-                base_value = float(ic[0]) if len(ic) > 0 else 0.0
-        else:
-            default_weights = np.array([
-                0.04, -0.02, -0.08, -0.05, 0.25, 0.20, -0.04,
-                -0.12, -0.10, 0.08, 0.18, -0.06, 0.14
-            ])
-            w = default_weights[: x_arr.shape[1]]
-            vals = x_arr[0] * w
-
-    for col_name, val in zip(FEATURE_COLS, vals):
-        factors[col_name] = round(float(val), 4)
-
-    sorted_factors = sorted(factors.items(), key=lambda item: abs(item[1]), reverse=True)
-    top_items = [(f_name, f_val) for f_name, f_val in sorted_factors if abs(f_val) > 1e-6][:5]
-
-    explanations = [f"{f_name} (SHAP: {f_val:+.3f})" for f_name, f_val in top_items]
-    if not explanations:
-        explanations.append("Dữ liệu các chỉ số nằm trong ngưỡng phân bố an toàn.")
-
-    summary = f"Đặc trưng thúc đẩy rời bỏ chính (base_value={base_value:+.3f}): " + " | ".join(explanations)
-    return factors, summary
+from src.models.explain import compute_shap_attributions  # noqa: F401,E402
 
 
 from src.economics.retention_optimizer import (
     compute_optimal_retention_threshold,
     compute_expected_retention_profit,
     generate_recommendation,
+    segment_customers_by_uplift,
 )
+
+
+def evaluate_retention_decision(prob: float, total_spend: float, cate_uplift: Optional[float] = None) -> Dict[str, Any]:
+    """Compute e-Profits expected retention profit, optimal threshold, and CATE uplift quadrant."""
+    clv = max(float(total_spend), 0.0)
+    opt_thresh = compute_optimal_retention_threshold(residual_clv=clv)
+    exp_profit = compute_expected_retention_profit(prob=prob, residual_clv=clv)
+    uplift_est = float(cate_uplift) if cate_uplift is not None else round(0.25 * float(prob), 4)
+    quadrant = segment_customers_by_uplift(uplift=uplift_est, baseline_churn=prob)
+    return {
+        "optimal_threshold": round(opt_thresh, 4),
+        "expected_profit": round(exp_profit, 2),
+        "uplift_quadrant": quadrant,
+    }
 
 
 def run_model_inference(
@@ -250,6 +215,7 @@ def run_model_inference(
     prob = float(clf.predict_proba(x_eval)[0][1]) if hasattr(clf, "predict_proba") else float(pred_class)
     risk_tier = "High Risk" if prob >= 0.70 else ("Medium Risk" if prob >= 0.40 else "Low Risk")
     if customer is not None:
+        decision = evaluate_retention_decision(prob=prob, total_spend=float(getattr(customer, "total_spend", 500.0)))
         _ = generate_recommendation(
             prob=prob,
             calls=float(getattr(customer, "support_calls", 0.0)),
@@ -257,6 +223,7 @@ def run_model_inference(
             total_spend=float(getattr(customer, "total_spend", 500.0)),
             contract_length=str(getattr(customer, "contract_length", "Monthly")),
             tenure=float(getattr(customer, "tenure", 12.0)),
+            quadrant=decision["uplift_quadrant"] if prob < 0.70 else None,
         )
     return x_input, pred_class, prob, risk_tier
 

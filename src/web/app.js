@@ -7,12 +7,13 @@ const API_BASE = (window.location.protocol.startsWith("http") && window.location
 window.API_BASE = API_BASE;
 let currentBatchPredictions = [];
 
-function getApiKey() { return window.__CHURN_API_KEY__ || sessionStorage.getItem("X_API_KEY") || ""; }
+function getApiKey() { return document.getElementById("ui-api-key")?.value?.trim() || window.__CHURN_API_KEY__ || ""; }
 function getAuthHeaders(extra = {}) {
-  const headers = { ...extra };
-  const key = getApiKey(); if (key) headers["X-API-Key"] = key;
+  const headers = { ...extra }, key = getApiKey();
+  if (key) headers["X-API-Key"] = key;
   return headers;
 }
+document.getElementById("ui-api-key")?.addEventListener("change", () => { loadModelsSummary(); loadDriftStatus(); });
 function escapeHtml(val) {
   return String(val ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
@@ -158,12 +159,10 @@ async function loadModelsSummary() {
     if (!res.ok) return;
     const data = await res.json(), tbody = document.getElementById("models-tbody");
     if (tbody) {
-      tbody.innerHTML = "";
-      for (const [name, info] of Object.entries(data.models || {})) {
-        const tr = document.createElement("tr"), t = info.test, isChamp = (name === data.champion_model) ? " <strong style='color:#F59E0B;'>(Champion)</strong>" : "";
-        tr.innerHTML = `<td style="font-weight:600;color:#F8FAFC;">${escapeHtml(name.replace("_", " "))}${isChamp}</td><td>${escapeHtml(Number(t.accuracy).toFixed(4))}</td><td>${escapeHtml(Number(t.precision).toFixed(4))}</td><td>${escapeHtml(Number(t.recall).toFixed(4))}</td><td>${escapeHtml(Number(t.f1_score).toFixed(4))}</td><td style="font-weight:700;color:#10B981;">${escapeHtml(Number(t.roc_auc).toFixed(4))}</td>`;
-        tbody.appendChild(tr);
-      }
+      tbody.innerHTML = Object.entries(data.models || {}).map(([name, info]) => {
+        const t = info.test, isChamp = name === data.champion_model ? " <strong style='color:#F59E0B;'>(Champion)</strong>" : "";
+        return `<tr><td style="font-weight:600;color:#F8FAFC;">${escapeHtml(name.replace("_", " "))}${isChamp}</td><td>${escapeHtml(Number(t.accuracy).toFixed(4))}</td><td>${escapeHtml(Number(t.precision).toFixed(4))}</td><td>${escapeHtml(Number(t.recall).toFixed(4))}</td><td>${escapeHtml(Number(t.f1_score).toFixed(4))}</td><td style="font-weight:700;color:#10B981;">${escapeHtml(Number(t.roc_auc).toFixed(4))}</td></tr>`;
+      }).join("");
     }
     const champ = data.champion_model || "XGBoost", ct = data.models?.[champ]?.test;
     if (ct) {
@@ -180,12 +179,10 @@ async function loadDriftStatus() {
     if (!res.ok) return;
     const data = await res.json(), tbody = document.getElementById("drift-tbody") || document.getElementById("drift-table");
     if (tbody) {
-      tbody.innerHTML = "";
-      for (const [feat, info] of Object.entries(data.features || {})) {
-        const tr = document.createElement("tr"), bCol = info.drift_level === "Stable" ? "#10B981" : (info.drift_level === "Moderate" ? "#F59E0B" : "#EF4444");
-        tr.innerHTML = `<td style="font-weight:600;color:#F8FAFC;">${escapeHtml(feat)}</td><td>${escapeHtml(info.ks_statistic)}</td><td>${escapeHtml(info.p_value)}</td><td>${escapeHtml(info.psi_score)}</td><td><span style="color:${bCol};font-weight:600;">${escapeHtml(info.drift_level)}</span></td>`;
-        tbody.appendChild(tr);
-      }
+      tbody.innerHTML = Object.entries(data.features || {}).map(([feat, info]) => {
+        const bCol = info.drift_level === "Stable" ? "#10B981" : (info.drift_level === "Moderate" ? "#F59E0B" : "#EF4444");
+        return `<tr><td style="font-weight:600;color:#F8FAFC;">${escapeHtml(feat)}</td><td>${escapeHtml(info.ks_statistic)}</td><td>${escapeHtml(info.p_value)}</td><td>${escapeHtml(info.psi_score)}</td><td><span style="color:${bCol};font-weight:600;">${escapeHtml(info.drift_level)}</span></td></tr>`;
+      }).join("");
     }
     const dEl = document.getElementById("kpi-drift-status");
     if (dEl) {

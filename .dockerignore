@@ -21,7 +21,9 @@ graphify-out/
 
 # Data files (handled via mounts or pipeline)
 data/raw/
+data/kkbox_raw/
 data/kkbox_sample_raw/
+data/kkbox_processed/.duckdb_kkbox_tmp/
 data/retrain_jobs/
 data/processed/*.parquet
 data/processed/*.csv
@@ -32,4 +34,6 @@ data/processed/*.csv
 # Whitelist Feast Registry and Online Store DB for Docker serving
 !data/feast_repo/data/*.db
 !data/kkbox_feast/*.db
+!data/kkbox_feast/data/*.db
+!data/kkbox_models/*.db
 

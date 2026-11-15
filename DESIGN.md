@@ -53,17 +53,13 @@
 
 ## 4. Bento Grid Layout Structure
 
-Dashboard áp dụng bố cục **Bento Grid 12 cột** linh hoạt:
-1. **Hero KPI Row (12 Cột):** 4 thẻ chỉ số nhanh (Model Accuracy/ROC-AUC, Feast Feature Count, Total Predictions, Drift Status).
-2. **Interactive Core (Hai Cột Chính):**
-   - **Cột Trái (5 Cột): Single Customer Realtime Prediction Form**
-     - Form nhập liệu thông minh (Tuổi, Giới tính, Thời hạn hợp đồng, Số cuộc gọi hỗ trợ, Số tiền chi tiêu, Độ trễ thanh toán).
-     - Đồng hồ đo rủi ro trực quan (Risk Gauge) với màu sắc chuyển động tương ứng.
-     - Hộp đề xuất giải pháp giữ chân khách hàng (Actionable Retention Strategy).
-   - **Cột Phải (7 Cột): Batch Processing & Model Analytics**
-     - **Tab 1: Batch Prediction:** Drag-and-drop file CSV, phân tích hàng nghìn khách hàng, thống kê tỷ lệ rời bỏ và cho phép tải báo cáo CSV đã gắn nhãn rủi ro.
-     - **Tab 2: Model Benchmark:** So sánh 4 thuật toán (Logistic Regression, Random Forest, XGBoost, LightGBM) với biểu đồ trực quan.
-     - **Tab 3: Evidently Drift Monitor:** Trực quan phân phối đặc trưng (Feature Distribution Drift) và phát hiện lệch dữ liệu.
+Dashboard áp dụng bố cục **Bento Grid 12 cột** cho cả Dual-Track UI (`/kkbox-ui` và `/ui`):
+1. **Track Chinh - KKBox Subscription UI (`/kkbox-ui`):**
+   - **Hero & Telemetry:** Trạng thái `/v1/health`, cutoff snapshots (`2017-01-31`, `2017-02-28`), in-memory `x-api-key` input (zero `localStorage`/`sessionStorage` token writes).
+   - **Workspace 3 Mode Tabs:** (a) Historical Feast/Parquet Lookup (`/v1/features` + `/v1/predictions`), (b) Manual 12-Feature Scenario (`/v1/predictions/manual`), (c) Batch CSV Upload (`/v1/predictions/batch`, max 100 rows / 256 KiB).
+2. **Track Đối Chứng 4 Mô Hình (`/ui`):**
+   - **Hero KPI Row (12 Cột):** ROC-AUC, 13-feature Feast count, tổng dự đoán A/B, Evidently Drift status, cùng input `#ui-api-key` in-memory (`X-API-Key`).
+   - **Interactive Core (5/7 Cột):** Realtime prediction (`/predict`), Batch CSV (`/upload_csv_predict`), Model Benchmark (`Logistic Regression`, `Random Forest`, `XGBoost`, `LightGBM`), và Drift Monitor (`/drift/status`).
 
 ---
 

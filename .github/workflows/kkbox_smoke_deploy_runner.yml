@@ -2,16 +2,21 @@ name: KKBox Test and Deploy on Ephemeral Runner
 
 on:
   push:
-    branches: [feat/kkbox-churn-pipeline-pilot]
+    branches: [ main, feat/kkbox-churn-pipeline-pilot, feat/kkbox-mlops-deploy-ready ]
     paths:
       - .github/workflows/kkbox_smoke_deploy_runner.yml
   workflow_dispatch:
     inputs:
       deploy:
-        description: "Test and deploy API/Web on the existing Azure VM"
+        description: "Test and deploy API/Web on the target Azure VM"
         type: boolean
         required: true
         default: false
+      target_url:
+        description: "Public HTTPS root URL to verify after deploy"
+        type: string
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -22,12 +27,13 @@ concurrency:
 
 jobs:
   test-and-deploy:
-    if: ${{ github.ref == 'refs/heads/feat/kkbox-churn-pipeline-pilot' && (github.event_name == 'push' || inputs.deploy == true) }}
+    if: ${{ github.event_name == 'push' || inputs.deploy == true }}
     runs-on: [self-hosted, linux, x64, kkbox]
     timeout-minutes: 20
     env:
       PYTHONPATH: ${{ github.workspace }}
       MLFLOW_DISABLE_AGENT_HINT: "1"
+      TARGET_PUBLIC_URL: ${{ inputs.target_url || vars.KKBOX_PUBLIC_URL }}
     steps:
       - uses: actions/checkout@v4
       - name: Test KKBox API and three Web modes
@@ -35,14 +41,16 @@ jobs:
       - name: Deploy API and Web after tests pass
         run: bash deploy/kkbox/deploy_from_runner.sh
       - name: Verify public HTTPS endpoint
+        if: ${{ env.TARGET_PUBLIC_URL != '' }}
         run: |
           /home/azureuser/churn/.venv/bin/python - <<'PY'
           import json
+          import os
           import urllib.request
-          root = "https://kkboxchurnuit26.eastasia.cloudapp.azure.com"
+          root = os.environ["TARGET_PUBLIC_URL"].rstrip("/")
           with urllib.request.urlopen(root + "/health", timeout=20) as response:
               status = json.load(response)
-          assert status["status"] == "ready" and status["mode"] == "full", status
+          assert status["status"] == "ready" and status["mode"] in ("pilot", "full"), status
           with urllib.request.urlopen(root + "/demo", timeout=20) as response:
               page = response.read().decode("utf-8")
           assert all(f'data-mode="{mode}"' in page for mode in ("manual", "batch", "lookup"))

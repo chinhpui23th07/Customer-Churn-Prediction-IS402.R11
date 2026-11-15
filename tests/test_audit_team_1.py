@@ -340,3 +340,21 @@ def test_dvc_pipeline_dag_programmatic_integrity():
     assert nx.number_of_nodes(dag) >= 6, f"Expected at least 6 nodes in DAG, got {nx.number_of_nodes(dag)}"
     assert nx.number_of_edges(dag) >= 4, f"Expected dependency edges in DAG, got {nx.number_of_edges(dag)}"
 
+    dvc_lock_path = PROJECT_ROOT / "dvc.lock"
+    assert dvc_lock_path.exists(), "dvc.lock missing - DVC stages are not locked to real artifact hashes"
+    dvc_lock_data = yaml.safe_load(dvc_lock_path.read_text(encoding="utf-8"))
+    assert str(dvc_lock_data.get("schema")) == "2.0", f"Expected dvc.lock schema '2.0', got {dvc_lock_data.get('schema')}"
+    lock_stages = dvc_lock_data.get("stages", {})
+    assert set(stages.keys()).issubset(set(lock_stages.keys())), (
+        f"dvc.lock missing stages: {set(stages.keys()) - set(lock_stages.keys())}"
+    )
+
+    import shutil
+    import subprocess
+    import sys
+
+    dvc_bin = shutil.which("dvc")
+    dvc_cmd = [dvc_bin, "status"] if dvc_bin else [sys.executable, "-m", "dvc", "status"]
+    dvc_proc = subprocess.run(dvc_cmd, cwd=str(PROJECT_ROOT), capture_output=True, text=True, check=False)
+    assert dvc_proc.returncode == 0, f"dvc status failed (exit {dvc_proc.returncode}): {dvc_proc.stdout}\n{dvc_proc.stderr}"
+

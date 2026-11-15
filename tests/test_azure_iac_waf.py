@@ -33,14 +33,29 @@ def tf_content() -> str:
     return TF_PATH.read_text(encoding="utf-8")
 
 
+def _resources_by_type(arm_data: dict, rtype: str) -> list[dict]:
+    return [r for r in arm_data.get("resources", []) if r.get("type") == rtype]
+
+
+def test_waf_arm_no_duplicate_resources_and_managed_identity_rbac(arm_data: dict) -> None:
+    """Prevent duplicate ARM resources (like duplicate blobServices) and verify AcrPull RBAC."""
+    raw_resources = arm_data.get("resources", [])
+    keys = [(r.get("type"), r.get("name")) for r in raw_resources]
+    assert len(keys) == len(set(keys)), f"Duplicate (type, name) ARM resources detected: {keys}"
+
+    identities = _resources_by_type(arm_data, "Microsoft.ManagedIdentity/userAssignedIdentities")
+    assert len(identities) == 1, "Expected User-Assigned Managed Identity for Container App pull/storage RBAC"
+
+    acr_roles = _resources_by_type(arm_data, "Microsoft.ContainerRegistry/registries/providers/roleAssignments")
+    assert len(acr_roles) == 1, "Expected AcrPull role assignment before Container App creation"
+    assert "7f951dda-4ed3-4680-a7ca-43fe172d538d" in json.dumps(arm_data), "Missing built-in AcrPull role definition GUID"
+
+
 def test_waf_arm_security_pillar_enforcement(arm_data: dict) -> None:
     """Verify ARM template enforces WAF Security standards across all resources."""
-    resources = {r.get("type"): r for r in arm_data.get("resources", [])}
-
-    # 1. Storage Account Security
-    sa = resources.get("Microsoft.Storage/storageAccounts")
-    assert sa is not None, "Missing storageAccounts resource"
-    sa_props = sa.get("properties", {})
+    sa_list = _resources_by_type(arm_data, "Microsoft.Storage/storageAccounts")
+    assert len(sa_list) == 1, "Missing or duplicate storageAccounts resource"
+    sa_props = sa_list[0].get("properties", {})
     assert sa_props.get("supportsHttpsTrafficOnly") is True
     assert sa_props.get("minimumTlsVersion") == "TLS1_2"
     assert sa_props.get("publicNetworkAccess") == "Disabled"
@@ -48,17 +63,18 @@ def test_waf_arm_security_pillar_enforcement(arm_data: dict) -> None:
     assert sa_props.get("networkAcls", {}).get("defaultAction") == "Deny"
     assert sa_props.get("encryption", {}).get("requireInfrastructureEncryption") is True
 
-    # 2. Container Registry Security
-    acr = resources.get("Microsoft.ContainerRegistry/registries")
-    assert acr is not None, "Missing ACR resource"
-    acr_props = acr.get("properties", {})
+    acr_list = _resources_by_type(arm_data, "Microsoft.ContainerRegistry/registries")
+    assert len(acr_list) == 1, "Missing or duplicate ACR resource"
+    acr_props = acr_list[0].get("properties", {})
     assert acr_props.get("adminUserEnabled") is False
-    assert acr_props.get("publicNetworkAccess") == "Disabled"
+    expected_cond = "[if(equals(parameters('acrSku'), 'Premium'), 'Disabled', 'Enabled')]"
+    assert acr_props.get("publicNetworkAccess") in ("Disabled", expected_cond)
+    if acr_props.get("publicNetworkAccess") == expected_cond:
+        assert "acrSku" in arm_data.get("parameters", {})
 
-    # 3. Redis Security (either legacy Redis or Azure Managed Redis Enterprise)
-    redis = resources.get("Microsoft.Cache/Redis") or resources.get("Microsoft.Cache/redisEnterprise")
-    assert redis is not None, "Missing Redis resource"
-    redis_props = redis.get("properties", {})
+    redis_list = _resources_by_type(arm_data, "Microsoft.Cache/redisEnterprise") or _resources_by_type(arm_data, "Microsoft.Cache/Redis")
+    assert len(redis_list) == 1, "Missing or duplicate Redis resource"
+    redis_props = redis_list[0].get("properties", {})
     assert redis_props.get("minimumTlsVersion") in ("1.2", "TLS1_2")
 
 
@@ -68,10 +84,12 @@ def test_waf_terraform_security_pillar_enforcement(tf_content: str) -> None:
     assert 'min_tls_version                   = "TLS1_2"' in tf_content
     assert "public_network_access_enabled     = false" in tf_content
     assert "shared_access_key_enabled         = false" in tf_content
+    assert "allow_nested_items_to_be_public   = false" in tf_content
     assert "infrastructure_encryption_enabled = true" in tf_content
 
     # Container Registry
     assert "admin_enabled                 = false" in tf_content
+    assert 'public_network_access_enabled = var.acr_sku == "Premium" ? false : true' in tf_content or "public_network_access_enabled = false" in tf_content
 
     # Redis TLS & Encryption
     assert 'minimum_tls_version = "1.2"' in tf_content or 'minimum_tls_version           = "1.2"' in tf_content
@@ -80,18 +98,16 @@ def test_waf_terraform_security_pillar_enforcement(tf_content: str) -> None:
 
 def test_waf_reliability_pillar_enforcement(arm_data: dict, tf_content: str) -> None:
     """Verify memory eviction and recovery policies to ensure zero unhandled cache exhaustion."""
-    # ARM Template: Check eviction policy in Redis or Redis Enterprise default database
-    resources = {r.get("type"): r for r in arm_data.get("resources", [])}
-    redis_ent = resources.get("Microsoft.Cache/redisEnterprise")
-    redis_legacy = resources.get("Microsoft.Cache/Redis")
+    redis_ent = _resources_by_type(arm_data, "Microsoft.Cache/redisEnterprise")
+    redis_legacy = _resources_by_type(arm_data, "Microsoft.Cache/Redis")
 
     if redis_ent:
-        databases = [res for res in redis_ent.get("resources", []) if res.get("type") == "databases"]
+        databases = [res for res in redis_ent[0].get("resources", []) if res.get("type") == "databases"]
         assert len(databases) > 0
         db_props = databases[0].get("properties", {})
         assert db_props.get("evictionPolicy") == "VolatileLRU"
     elif redis_legacy:
-        assert redis_legacy.get("properties", {}).get("redisConfiguration", {}).get("maxmemory-policy") == "volatile-lru"
+        assert redis_legacy[0].get("properties", {}).get("redisConfiguration", {}).get("maxmemory-policy") == "volatile-lru"
 
     # Terraform: Eviction policy
     assert "VolatileLRU" in tf_content or "volatile-lru" in tf_content
@@ -102,10 +118,9 @@ def test_waf_reliability_pillar_enforcement(arm_data: dict, tf_content: str) -> 
 
 def test_waf_cost_optimization_finops_enforcement(arm_data: dict, tf_content: str) -> None:
     """Verify FinOps right-sizing (Standard_LRS) to prevent cloud budget overruns."""
-    resources = {r.get("type"): r for r in arm_data.get("resources", [])}
-    sa = resources.get("Microsoft.Storage/storageAccounts")
-    assert sa is not None
-    sku_name = sa.get("sku", {}).get("name")
+    sa_list = _resources_by_type(arm_data, "Microsoft.Storage/storageAccounts")
+    assert len(sa_list) == 1
+    sku_name = sa_list[0].get("sku", {}).get("name")
     assert sku_name in ("Standard_LRS", "Standard_GRS"), f"Unexpected storage SKU: {sku_name}"
 
     # Terraform: account_replication_type

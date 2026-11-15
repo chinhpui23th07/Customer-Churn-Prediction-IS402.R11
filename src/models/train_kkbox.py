@@ -60,14 +60,12 @@ def load_kkbox_dataset(
     sample_size: Optional[int] = None,
     test_size: float = 0.2,
     random_state: int = 42,
+    split_mode: str = "temporal",
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series, List[str], Dict[str, Any]]:
     """
     Nap tap du lieu KKBox thuc te tu tep Parquet, xu ly ep kieu DuckDB decimal128 sang float64.
-    Luu y: Day la pipeline benchmark 15 dac trung tren lat cat don (2017-03);
-    pipeline temporal chuan 2 moc (2017-01-31 -> 2017-02-28) nam tai src/kkbox/train.py.
-
-    Returns:
-        X_train, X_test, y_train, y_test, feature_names, metadata
+    Uu tien Out-of-Time split khi tap du lieu co tu 2 cua so thoi gian tro len; ghi ro chien luoc
+    split_strategy vao metadata de dam bao minh bach hoc thuat.
     """
     path = parquet_path or DEFAULT_DATA_PATH
     if not os.path.exists(path):
@@ -89,12 +87,25 @@ def load_kkbox_dataset(
     if missing_cols:
         raise ValueError(f"Thieu cac cot dac trung bat buoc: {missing_cols}")
 
-    X = df[KKBOX_BEHAVIORAL_FEATURES].copy()
-    y = df[TARGET_COL].astype(int).copy()
+    time_col = "as_of_date" if "as_of_date" in df.columns else ("label_period" if "label_period" in df.columns else None)
+    distinct_windows = sorted(df[time_col].astype(str).unique().tolist()) if time_col else []
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state, stratify=y
-    )
+    if split_mode == "temporal" and len(distinct_windows) >= 2:
+        holdout_window = distinct_windows[-1]
+        train_mask = df[time_col].astype(str) != holdout_window
+        test_mask = df[time_col].astype(str) == holdout_window
+        X_train = df.loc[train_mask, KKBOX_BEHAVIORAL_FEATURES].copy()
+        X_test = df.loc[test_mask, KKBOX_BEHAVIORAL_FEATURES].copy()
+        y_train = df.loc[train_mask, TARGET_COL].astype(int).copy()
+        y_test = df.loc[test_mask, TARGET_COL].astype(int).copy()
+        split_strategy = f"temporal_out_of_time ({distinct_windows[0]} -> {holdout_window})"
+    else:
+        X = df[KKBOX_BEHAVIORAL_FEATURES].copy()
+        y = df[TARGET_COL].astype(int).copy()
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=test_size, random_state=random_state, stratify=y
+        )
+        split_strategy = "stratified_single_window_comparative_benchmark"
 
     metadata = {
         "source_path": path,
@@ -104,6 +115,7 @@ def load_kkbox_dataset(
         "test_rows": len(X_test),
         "overall_churn_rate": churn_rate,
         "feature_count": len(KKBOX_BEHAVIORAL_FEATURES),
+        "split_strategy": split_strategy,
     }
 
     return X_train, X_test, y_train, y_test, KKBOX_BEHAVIORAL_FEATURES, metadata
@@ -201,6 +213,7 @@ def train_kkbox_champion(
     random_state: int = 42,
     save_path: Optional[str] = None,
     metrics_path: Optional[str] = None,
+    split_mode: str = "temporal",
 ) -> Dict[str, Any]:
     """
     Huan luyen mo hinh Champion KKBox, danh gia 5-Fold CV va luu model bundle.
@@ -210,6 +223,7 @@ def train_kkbox_champion(
         parquet_path=parquet_path,
         sample_size=sample_size,
         random_state=random_state,
+        split_mode=split_mode,
     )
 
     clf = create_model_estimator(model_type=model_type, random_state=random_state)
@@ -292,6 +306,7 @@ def parse_cli_args() -> argparse.Namespace:
     parser.add_argument("--model-type", type=str, default="lgbm", choices=["lgbm", "hgb"], help="Loai mo hinh")
     parser.add_argument("--sample-size", type=int, default=None, help="So luong mau toi da (ho tro CI/CD test nhanh)")
     parser.add_argument("--cv-folds", type=int, default=5, help="So fold K-Fold CV")
+    parser.add_argument("--split-mode", type=str, default="temporal", choices=["temporal", "stratified"], help="Chien luoc chia train/test")
     parser.add_argument("--dry-run", action="store_true", help="Kiem tra phu thuoc va du lieu ma khong chay huan luyen")
     return parser.parse_args()
 
@@ -325,6 +340,7 @@ def main() -> None:
         cv_folds=args.cv_folds,
         save_path=args.save_path,
         metrics_path=args.metrics_path,
+        split_mode=args.split_mode,
     )
 
     p_dist = bundle["probability_distribution"]

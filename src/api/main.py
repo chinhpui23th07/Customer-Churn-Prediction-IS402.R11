@@ -126,13 +126,20 @@ def serve_drift_report_html():
 def health_check():
     """Kiểm tra trạng thái sức khỏe toàn bộ các thành phần MLOps."""
     if MODEL_ARTIFACT is None: load_artifacts()
+    kkbox_state = "unavailable"
+    try:
+        from src.kkbox.api import health as kkbox_health
+        kkbox_state = str(kkbox_health().get("status", "degraded"))
+    except Exception:
+        kkbox_state = "degraded"
     return HealthResponse(
         status="HEALTHY" if MODEL_ARTIFACT is not None else "DEGRADED",
         champion_model=MODEL_ARTIFACT["name"] if MODEL_ARTIFACT else "Not Loaded",
         model_version=CHAMPION_VERSION,
         feast_online_store=check_feast_online_status(ONLINE_STORE_DB),
         mlflow_tracking_db="CONNECTED (MLflow Tracking & Registry)" if os.path.exists(MLFLOW_DB) else "NOT_FOUND",
-        uptime_seconds=round(time.time() - START_TIME, 2)
+        uptime_seconds=round(time.time() - START_TIME, 2),
+        kkbox_status=kkbox_state,
     )
 
 
@@ -170,7 +177,7 @@ def _execute_feast_online_prediction(customer_id: int) -> PredictionResponse:
     con_str = "Annual" if con_code == 2 else ("Quarterly" if con_code == 1 else "Monthly")
     rec = generate_recommendation(prob, feature_values[4], feature_values[5], feature_values[8], con_str, feature_values[2])
     xai_factors, xai_summary = compute_shap_attributions(explainer, x_input, model=clf)
-    log_inference_prediction(customer_id, feature_values, pred_class, prob, model_version=CHAMPION_VERSION)
+    log_inference_prediction(customer_id, feature_values, pred_class, prob, model_version=CHAMPION_VERSION, latency_ms=latency)
 
     return PredictionResponse(
         customer_id=customer_id, churn_prediction=pred_class, churn_probability=round(prob, 4),
@@ -208,7 +215,7 @@ def predict_single(customer: CustomerInput, api_key: str = Depends(verify_api_ke
     rec = generate_recommendation(prob, customer.support_calls, customer.payment_delay, customer.total_spend, customer.contract_length, customer.tenure)
     xai_factors, xai_summary = compute_shap_attributions(explainer, x_input, model=clf)
     cid = customer.customer_id if customer.customer_id is not None else 999999
-    log_inference_prediction(cid, raw_vec[0].tolist(), pred_class, prob, model_version=CHAMPION_VERSION)
+    log_inference_prediction(cid, raw_vec[0].tolist(), pred_class, prob, model_version=CHAMPION_VERSION, latency_ms=latency)
 
     return PredictionResponse(
         customer_id=customer.customer_id, churn_prediction=pred_class, churn_probability=round(prob, 4),
@@ -237,7 +244,7 @@ def predict_ab_test(customer: CustomerInput, api_key: str = Depends(verify_api_k
     latency = (time.perf_counter() - t0) * 1000.0
     rec = generate_recommendation(prob, customer.support_calls, customer.payment_delay, customer.total_spend, customer.contract_length, customer.tenure)
     xai_factors, xai_summary = compute_shap_attributions(active_explainer, x_input, model=clf)
-    log_inference_prediction(cid, raw_vec[0].tolist(), pred_class, prob, model_version=model_ver)
+    log_inference_prediction(cid, raw_vec[0].tolist(), pred_class, prob, model_version=model_ver, latency_ms=latency)
 
     return PredictionResponse(
         customer_id=customer.customer_id, churn_prediction=pred_class, churn_probability=round(prob, 4),
@@ -281,7 +288,7 @@ def predict_batch(customers: List[CustomerInput], explain: bool = False, explain
         risk_dist[tier] += 1
         rec = generate_recommendation(p_pr, c.support_calls, c.payment_delay, c.total_spend, c.contract_length, c.tenure)
         cid = c.customer_id if c.customer_id is not None else 999999
-        log_records.append((cid, p_cls, p_pr, raw_vecs[i].tolist(), CHAMPION_VERSION))
+        log_records.append((cid, p_cls, p_pr, raw_vecs[i].tolist(), CHAMPION_VERSION, avg_lat))
 
         xai_factors, xai_summary = None, None
         if batch_explanations is not None and i < len(batch_explanations):

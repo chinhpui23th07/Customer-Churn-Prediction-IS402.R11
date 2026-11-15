@@ -8,9 +8,10 @@ from pathlib import Path
 
 import duckdb
 import pandas as pd
-from feast import FeatureStore, FeatureView, FileSource
+from feast import FeatureView, FileSource
 
 from src.kkbox.contract import FEATURE_COLUMNS
+from src.kkbox.feast_config import build_feature_store
 
 
 def main() -> None:
@@ -18,7 +19,14 @@ def main() -> None:
     parser.add_argument("--features", type=Path, default=Path("data/kkbox_processed/features"))
     parser.add_argument("--repo", type=Path, default=Path("data/kkbox_feast"))
     parser.add_argument("--report", type=Path, default=Path("docs/experiments/kkbox_feast_report.json"))
+    parser.add_argument("--allow-pilot", action="store_true")
     args = parser.parse_args()
+    default_features = Path("data/kkbox_processed/features")
+    pilot_features = Path("data/kkbox_processed/pilot_features")
+    if args.allow_pilot and args.features == default_features:
+        has_full = default_features.exists() and any(default_features.rglob("*.parquet"))
+        if not has_full and pilot_features.exists():
+            args.features = pilot_features
     from data.kkbox_feast.definitions import feature_view as default_fv
     from data.kkbox_feast.definitions import snapshot
 
@@ -58,7 +66,7 @@ def main() -> None:
         source=source,
         schema=list(default_fv.schema),
     )
-    store = FeatureStore(repo_path=str(args.repo.resolve()))
+    store = build_feature_store(args.repo)
     store.apply([snapshot, source, feature_view])
     cursor = connection.execute("SELECT * FROM read_parquet(?)", [str(destination)])
     written = 0
@@ -97,6 +105,7 @@ def main() -> None:
         "unique_snapshot_keys": unique_keys,
         "online_write_rows": written,
         "online_write_method": "Feast write_to_online_store in batches",
+        "online_store_type": type(store.config.online_store).__name__,
         "online_lookup_populated_features": populated,
         "historical_lookup_rows": len(historical),
         "feature_count": len(FEATURE_COLUMNS),

@@ -1,14 +1,14 @@
 """
-Master Orchestrator: Hệ Thống Thanh Tra, Test, Check & Kiểm Định Liêm Chính Học Thuật.
-Tập hợp toàn bộ kết quả thanh tra:
-- Stub Detector (Mã giả & Tác vụ rỗng)
-- Big Data I/O Inspector (Dung lượng dữ liệu & Ngưỡng >4GB)
-- Integrity Rubric Auditor (Chấm điểm nghiêm khắc 15 tiêu chí)
-Xuất báo cáo ACADEMIC_INTEGRITY_AUDIT_REPORT.md và JSON verdict.
+Master Orchestrator: Academic Integrity & Dual-Track Rubric Inspection.
+Aggregates:
+- StubAndIntegrityDetector (anti-mockup & architectural gap audit)
+- BigData I/O Inspector (local raw size vs >= 4 GiB requirement)
+- AcademicIntegrityAuditor (19 official R01..R19 criteria from Excel rubric)
+Outputs docs/ACADEMIC_INTEGRITY_AUDIT_REPORT.md and academic_inspection_verdict.json.
 """
+import json
 import os
 import sys
-import json
 import time
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -17,130 +17,111 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(os.path.join(BASE_DIR, "scripts", "verification"))
+SCRIPT_VERIF_DIR = os.path.dirname(os.path.abspath(__file__))
+if SCRIPT_VERIF_DIR not in sys.path:
+    sys.path.insert(0, SCRIPT_VERIF_DIR)
 
-from stub_detector import StubAndIntegrityDetector
 from bigdata_io_inspector import audit_current_dataset_size
 from integrity_rubric_checker import AcademicIntegrityAuditor
+from stub_detector import StubAndIntegrityDetector
 
 OUTPUT_MD = os.path.join(BASE_DIR, "docs", "ACADEMIC_INTEGRITY_AUDIT_REPORT.md")
 OUTPUT_JSON = os.path.join(BASE_DIR, "data", "processed", "academic_inspection_verdict.json")
 
 
-def run_full_inspection():
+def _format_r01_r19_table(rows: list[dict]) -> str:
+    header = (
+        "| Ma | Nhom | Tieu chi danh gia | Max | Local | Cloud | Ly do tru diem & Bang chung |\n"
+        "| :---: | :--- | :--- | :---: | :---: | :---: | :--- |"
+    )
+    lines = [header]
+    for r in rows:
+        reason = r.get("deduction_reason", "").replace("$", "\\$").replace("|", "/")
+        ev = r.get("evidence", "").replace("$", "\\$").replace("|", "/")
+        detail = f"{ev} - {reason}" if reason else ev
+        lines.append(
+            f"| **{r['id']}** | {r['group']} | {r['name']} | {r['max_points']:.2f} | "
+            f"**{r['local_score']:.2f}** | {r['cloud_readiness_score']:.2f} | {detail} |"
+        )
+    return "\n".join(lines)
+
+
+def run_full_inspection() -> dict:
     print("=" * 80)
-    print("BẮT ĐẦU QUY TRÌNH THANH TRA TOÀN DIỆN LIÊM CHÍNH KỸ THUẬT & HỌC THUẬT")
+    print("DUAL-TRACK ACADEMIC INTEGRITY INSPECTION (KKBOX MLOPS)")
     print("=" * 80)
 
-    # 1. Chạy Stub Detector
-    print("[1/3] Đang thanh tra mã giả, tác vụ rỗng và kiến trúc hạ cấp...")
-    stub_detector = StubAndIntegrityDetector()
-    stub_report = stub_detector.run_all_audits()
-    print(f"      -> Phát hiện {stub_report['critical_violations']} vi phạm nguy cấp, {stub_report['warnings']} cảnh báo.")
+    print("[1/3] Running Stub & Architectural Gap Detector...")
+    stub_report = StubAndIntegrityDetector().run_all_audits()
+    print(f"      -> {stub_report['critical_violations']} CRITICAL, {stub_report['warnings']} WARNING")
 
-    # 2. Chạy Big Data Size Audit
-    print("[2/3] Đang thanh tra kích thước dữ liệu đối chiếu ngưỡng >4GB của Rubric 1.3...")
+    print("[2/3] Auditing raw dataset volume against >= 4 GiB Cloud scale...")
     size_audit = audit_current_dataset_size()
-    print(f"      -> Tổng dữ liệu thô: {size_audit['total_raw_mb']} MB ({size_audit['total_raw_gb']} GB).")
-    print(f"      -> Trạng thái ngưỡng >4GB: {'ĐẠT CHUẨN' if size_audit['is_compliant_4gb'] else 'VI PHẠM NGHIÊM TRỌNG'}")
+    print(f"      -> Local raw: {size_audit['total_raw_mb']} MB ({size_audit['total_raw_gb']} GB)")
+    print(f"      -> >=4 GiB compliant locally: {size_audit['is_compliant_4gb']}")
 
-    # 3. Chạy Rubric Auditor
-    print("[3/3] Đang chấm điểm độc lập 15 tiêu chí theo đúng Rubric môn học...")
-    rubric_auditor = AcademicIntegrityAuditor()
-    rubric_verdict = rubric_auditor.evaluate_all()
-    print(f"      -> ĐIỂM SỐ THỰC TẾ NGHIÊM KHẮC: {rubric_verdict['total_score']} / 10.0")
+    print("[3/3] Scoring 19 official rubric criteria (R01..R19)...")
+    rubric_verdict = AcademicIntegrityAuditor().evaluate_all()
+    print(f"      -> Local Verified: {rubric_verdict['local_real_score']:.2f} / 10.00")
+    print(f"      -> Cloud Target  : {rubric_verdict['target_cloud_score']:.2f} / 10.00")
 
-    # 4. Đóng gói kết quả JSON
     master_verdict = {
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
-        "real_academic_score": rubric_verdict["total_score"],
+        "real_academic_score": rubric_verdict["local_real_score"],
+        "target_cloud_score": rubric_verdict["target_cloud_score"],
         "max_score": 10.0,
-        "penalized_points": round(10.0 - rubric_verdict["total_score"], 2),
+        "penalized_points": rubric_verdict["total_penalized_points"],
         "data_size_audit": size_audit,
         "stub_detector_audit": stub_report,
-        "rubric_breakdown": rubric_verdict
+        "rubric_breakdown": rubric_verdict,
     }
 
     os.makedirs(os.path.dirname(OUTPUT_JSON), exist_ok=True)
     with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
         json.dump(master_verdict, f, indent=2, ensure_ascii=False)
 
-    # 5. Xuất báo cáo Markdown chi tiết
-    md_content = f"""# BÁO CÁO THANH TRA ĐỘC LẬP VÀ KIỂM ĐỊNH LIÊM CHÍNH HỌC THUẬT
+    table_md = _format_r01_r19_table(rubric_verdict["official_rubric_r01_r19"])
+    md_content = f"""# BAO CAO THANH TRA DOC LAP VA KIEM DINH LIEM CHINH HOC THUAT (KKBOX MLOPS)
 
-> **Thời điểm thanh tra:** {master_verdict['timestamp']}  
-> **Cơ quan thẩm định:** Ban Thanh tra & Đảm bảo Chất lượng Hệ thống ChurnGuard Enterprise MLOps  
-> **Kết luận điểm số thực tế:** **{rubric_verdict['total_score']} / 10.0** (Bị trừ thẳng tay **{master_verdict['penalized_points']} điểm**)
-
----
-
-## 1. TỔNG QUAN KẾT LUẬN THANH TRA
-
-Hệ thống mã nguồn trên môi trường local **đã được hoàn thiện đầy đủ khung logic kỹ thuật** (KKBox Big Data DuckDB + 4 thuật toán đối chuẩn, Optuna Bayesian tuning, SHAP explainability, FastAPI serving, Feast dual-store SQLite/AMR/Valkey, Drift Normalized Wasserstein + Midpoint PSI, Web Bento Grid). 
-
-Tuy nhiên, đối chiếu với **Rubric thẩm định kỹ thuật của Cán bộ hướng dẫn (ThS. Hà Lê Hoài Trung)** cho hạ tầng Điện toán Đám mây, hệ thống bị trừ điểm nghiêm ngặt (**-{master_verdict['penalized_points']} điểm**) do **hoàn toàn chưa kết nối hạ tầng Cloud Azure thực tế**:
-
-1. **Giới hạn Kích thước dữ liệu trên máy cục bộ (Mục 1.3):** Dữ liệu thô trên ổ đĩa local chỉ đạt **{size_audit['total_raw_mb']} MB ({size_audit['total_raw_gb']} GB)**, thiếu hụt gấp **{size_audit['deficit_factor']} lần** so với ngưỡng >4GB của đề tài. Kịch bản Big Data Cloud đã được đặc tả tại `docs/requirements/project_context.md` (tập KKBox Churn 7.52 GB, 32 Parquet files) theo kế hoạch chuyển đổi trên môi trường Cloud.
-2. **Lưu trữ Cloud Storage (Mục 3.2):** Pipeline ETL streaming đã sẵn sàng adapter `sync_to_cloud_storage` nhưng hiện chỉ ghi vào `data/processed/` cục bộ do chưa có Azure Blob Connection String.
-3. **Đo độ trễ Multi-Region (Mục 3.3):** Kịch bản `latency_simulator.py` đã đo đạc RTT mạng TCP tới 5 Azure Region công cộng, nhưng chưa dựng cụm máy ảo tính toán riêng biệt tại từng Region.
-4. **Hạ tầng Feature Store Online (Mục 3.4):** Feast Online Store đang vận hành ở chế độ SQLite local fallback; adapter kết nối Redis SSL cổng 6380 đã hoàn thiện trong `feature_store.py` nhưng chưa có cụm Azure Cache for Redis live.
-5. **Thiên kiến dữ liệu huấn luyện (Mục 4.1):** Dữ liệu Kaggle tổng hợp có quy luật tất định (hợp đồng Monthly churn 99.84%), dẫn đến ROC-AUC đạt mức cao tuyệt đối (>0.999).
-6. **Môi trường Quản trị Cloud & Quotas (Mục 5.4):** Các kịch bản IaC (ARM, Terraform, Container Apps, `deploy_azure.bat`) và bảng tính TCO $90.75/tháng đã hoàn tất, nhưng chưa gắn với live Azure Subscription.
+> **Thoi diem thanh tra:** {master_verdict['timestamp']}  
+> **Chuan cham diem:** {rubric_verdict['audit_standard']}  
+> **Diem thuc te Local:** **{rubric_verdict['local_real_score']:.2f} / 10.00** (Tru **{rubric_verdict['total_penalized_points']:.2f} diem** do thieu live Azure Cloud, du lieu >= 4 GiB va buoi bao ve truc tiep)  
+> **Diem muc tieu Cloud (Sau deploy):** **{rubric_verdict['target_cloud_score']:.2f} / 10.00**
 
 ---
 
-## 2. BẢNG ĐIỂM CHI TIẾT 15 TIÊU CHÍ THEO RUBRIC CHÍNH THỨC
+## 1. TONG QUAN KET LUAN THANH TRA
 
-| STT | Tiêu chí Rubric | Điểm Max | Điểm Thực | Lý do trừ điểm & Bằng chứng thực nghiệm |
-| :---: | :--- | :---: | :---: | :--- |
-| **1.1** | Phân loại bài toán | 0.25đ | **{rubric_verdict['scores_by_criterion']['1.1']}đ** | Đạt: Phân loại đúng bài toán xử lý, dự đoán. |
-| **1.2** | Loại dữ liệu | 0.25đ | **{rubric_verdict['scores_by_criterion']['1.2']}đ** | Đạt: Dữ liệu dạng bảng (Tabular Dataset 13 đặc trưng). |
-| **1.3** | Kích thước & So sánh tốc độ xử lý | 0.75đ | **{rubric_verdict['scores_by_criterion']['1.3']}đ** | **{rubric_verdict['penalties'].get('1.3', '')}** |
-| **1.4** | Phân loại thành phần Cloud | 0.25đ | **{rubric_verdict['scores_by_criterion']['1.4']}đ** | {rubric_verdict['penalties'].get('1.4', '')} |
-| **2.1** | Cơ sở định dạng lưu trữ | 0.50đ | **{rubric_verdict['scores_by_criterion']['2.1']}đ** | {rubric_verdict['penalties'].get('2.1', '')} |
-| **2.2** | Cơ sở thuật toán xử lý | 0.50đ | **{rubric_verdict['scores_by_criterion']['2.2']}đ** | {rubric_verdict['penalties'].get('2.2', '')} |
-| **2.3** | Chi tiết các dịch vụ Cloud | 0.50đ | **{rubric_verdict['scores_by_criterion']['2.3']}đ** | {rubric_verdict['penalties'].get('2.3', '')} |
-| **3.1** | Tốc độ cho phép đọc ghi | 0.50đ | **{rubric_verdict['scores_by_criterion']['3.1']}đ** | {rubric_verdict['penalties'].get('3.1', '')} |
-| **3.2** | Thiết lập luồng tự động ETL | 0.50đ | **{rubric_verdict['scores_by_criterion']['3.2']}đ** | **{rubric_verdict['penalties'].get('3.2', '')}** |
-| **3.3** | Đo độ trễ đặt server ở region khác | 0.50đ | **{rubric_verdict['scores_by_criterion']['3.3']}đ** | **{rubric_verdict['penalties'].get('3.3', '')}** |
-| **3.4** | Giải pháp tối ưu hóa đọc ghi | 0.50đ | **{rubric_verdict['scores_by_criterion']['3.4']}đ** | **{rubric_verdict['penalties'].get('3.4', '')}** |
-| **4.1** | Huấn luyện model trên dữ liệu | 1.00đ | **{rubric_verdict['scores_by_criterion']['4.1']}đ** | {rubric_verdict['penalties'].get('4.1', '')} |
-| **4.2** | Cung cấp cơ chế API cho model | 0.50đ | **{rubric_verdict['scores_by_criterion']['4.2']}đ** | {rubric_verdict['penalties'].get('4.2', '')} |
-| **4.3** | Trực quan hóa kết quả model | 1.00đ | **{rubric_verdict['scores_by_criterion']['4.3']}đ** | **{rubric_verdict['penalties'].get('4.3', '')}** |
-| **4.4** | Viết trang web sử dụng API model | 0.50đ | **{rubric_verdict['scores_by_criterion']['4.4']}đ** | {rubric_verdict['penalties'].get('4.4', '')} |
-| **5.1** | Slide PowerPoint báo cáo | 0.50đ | **{rubric_verdict['scores_by_criterion']['5.1']}đ** | {rubric_verdict['penalties'].get('5.1', '')} |
-| **5.2** | Báo cáo Word KLTN | 0.50đ | **{rubric_verdict['scores_by_criterion']['5.2']}đ** | {rubric_verdict['penalties'].get('5.2', '')} |
-| **5.3** | Thuyết trình & Demo | 0.50đ | **{rubric_verdict['scores_by_criterion']['5.3']}đ** | Chưa diễn ra buổi bảo vệ trực tiếp trước Hội đồng. |
-| **5.4** | Quản lý dự án trên Cloud & Quotas | 0.50đ | **{rubric_verdict['scores_by_criterion']['5.4']}đ** | **{rubric_verdict['penalties'].get('5.4', '')}** |
-| **TỔNG**| **ĐIỂM TOÀN HỆ THỐNG** | **10.0đ** | **{rubric_verdict['total_score']} / 10.0đ** | **BỊ TRỪ {master_verdict['penalized_points']} ĐIỂM DO THIẾU CLOUD THẬT** |
+He thong KKBox Customer Churn MLOps tren local da hoan thien ma nguon, ETL DuckDB (`src/data/kkbox_etl.py`), 12 dac trung `kkbox-v1`, huan luyen pilot (`LogisticRegression` va `XGBoost`, MLflow SQLite), Feast (`data/kkbox_feast/`), FastAPI Serving (`src/kkbox/api.py`, `src/api/main.py`), Drift Normalized Wasserstein + PSI (`src/monitoring/drift_detector.py`), Azure IaC (`deploy/azure/`) va FinOps `\\$70.61/mo` (< nguong `\\$75.00/mo`).
+
+Cac khoang trong thuc thi can hoan tat de dat tron ven muc tieu Cloud:
+
+1. **Quy mo du lieu local (`R03`):** Tong du lieu tho local (`data/kkbox_raw/` + `data/raw/`) la **{size_audit['total_raw_mb']} MB ({size_audit['total_raw_gb']} GB)**, chua dat nguong >= 4 GiB va chua chay cung job tren Azure Cloud so voi manifest KKBox 7.52 GB (`442,211,685` dong, 32 tep Parquet).
+2. **Ha tang Azure Cloud (`R07`, `R09`, `R10`, `R11`, `R15`, `R19`):** IaC Terraform/ARM/ACA va FinOps (`\\$70.61/mo`) da san sang (Checkov/Trivy 0 CRITICAL / 0 HIGH), nhung chua provision live subscription, Blob Storage, Azure Managed Redis (`Balanced_B0`) hoac server HTTP tai 2 Azure region.
+3. **Thuyet trinh & demo truc tiep (`R18`):** Kich ban demo da co san, nhung buoi bao ve truc tiep va video du phong chua duoc thuc hien.
 
 ---
 
-## 3. DANH MỤC BẰNG CHỨNG VI PHẠM KỸ THUẬT (STUBS & ARCHITECTURAL GAPS)
+## 2. BANG DIEM CHI TIET 19 TIEU CHI CHINH THUC (R01..R19)
+
+{table_md}
+| **TONG** | - | **DIEM TOAN HE THONG** | **10.00** | **{rubric_verdict['local_real_score']:.2f}** | **{rubric_verdict['target_cloud_score']:.2f}** | **TRU {rubric_verdict['total_penalized_points']:.2f} DIEM KHI CHUA DEPLOY AZURE LIVE** |
+
+---
+
+## 3. PHAT HIEN STUB / ARCHITECTURAL GAPS
 
 ```json
 {json.dumps(stub_report['findings'], indent=2, ensure_ascii=False)}
 ```
-
----
-
-## 4. KẾ HOẠCH HÀNH ĐỘNG KHẮC PHỤC TRIỆT ĐỂ (ACTION PLAN TO 10.0)
-
-1. **Khắc phục Kích thước dữ liệu (>4GB):** Khởi chạy kịch bản xử lý tập KKBox Churn 7.52 GB trên môi trường Cloud với PySpark/DuckDB để thu thập số liệu I/O thực tế phục vụ báo cáo.
-2. **Khắc phục Storage Cloud:** Cung cấp thông tin tài khoản Azure Storage để DVC và hàm `sync_to_cloud_storage` đẩy dữ liệu lên Azure Blob Storage container.
-3. **Khắc phục Feature Store:** Triển khai Azure Cache for Redis và cấu hình `AZURE_REDIS_CONNECTION_STRING` để Feast Online Store chuyển sang Redis In-Memory.
-4. **Khắc phục Triển khai Cloud:** Chạy `deploy/azure/deploy_azure.bat` với tài khoản Azure sinh viên để khởi tạo Azure Container Apps serving public URL.
-5. **Khắc phục Buổi bảo vệ:** Thực hiện thuyết trình slide và demo toàn bộ kịch bản 4 Tiers trước Giảng viên hướng dẫn để thu trọn điểm số mục 5.3.
 """
 
     os.makedirs(os.path.dirname(OUTPUT_MD), exist_ok=True)
     with open(OUTPUT_MD, "w", encoding="utf-8") as f:
         f.write(md_content)
 
-    print(f"\n[+] ĐÃ XUẤT BÁO CÁO THANH TRA TOÀN DIỆN VÀO:")
-    print(f"    - Markdown Report: {OUTPUT_MD}")
-    print(f"    - JSON Verdict:   {OUTPUT_JSON}")
-    print("=" * 80)
+    print(f"[+] Exported Markdown Report: {OUTPUT_MD}")
+    print(f"[+] Exported JSON Verdict   : {OUTPUT_JSON}")
     return master_verdict
 
 

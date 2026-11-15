@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""FinOps Shift-Left Cost Analysis Scanner (Infracost-inspired).
+"""FinOps Shift-Left Terraform Cost Estimator (Azure Retail Pricing / Infracost Schema).
 
-Scans Terraform HCL manifests (deploy/azure/main.tf) to calculate cloud costs,
-evaluate budget limits ($150 enterprise / $100 starter tier / $75 FinOps baseline), and output
-actionable cost breakdown reports in JSON and tabular formats.
+Scans Terraform HCL manifests (deploy/azure/main.tf) including variable defaults
+to calculate monthly Azure cloud costs, evaluate budget limits ($150 enterprise /
+$100 starter tier / $75 student FinOps baseline), and output JSON/tabular reports.
 """
 
 from __future__ import annotations
@@ -102,6 +102,41 @@ def parse_terraform_resources(tf_content: str) -> List[Dict[str, str]]:
     return resources
 
 
+def parse_terraform_variables(tf_content: str) -> Dict[str, str]:
+    """Extract variable default string values so var.<name> references resolve accurately."""
+    defaults: Dict[str, str] = {}
+    var_pat = re.compile(r'variable\s+"([^"]+)"\s*\{')
+    pos = 0
+    while True:
+        match = var_pat.search(tf_content, pos)
+        if not match:
+            break
+        vname, start, depth = match.group(1), match.end(), 1
+        i = start
+        while i < len(tf_content) and depth > 0:
+            if tf_content[i] == "{":
+                depth += 1
+            elif tf_content[i] == "}":
+                depth -= 1
+            i += 1
+        body = tf_content[start:i - 1]
+        def_m = re.search(r'default\s*=\s*"([^"]+)"', body)
+        if def_m:
+            defaults[vname] = def_m.group(1)
+        pos = i
+    return defaults
+
+
+def _resolve_tf_attr(body: str, attr: str, var_defaults: Dict[str, str], fallback: str) -> str:
+    lit_m = re.search(rf'{attr}\s*=\s*"([^"]+)"', body)
+    if lit_m:
+        return lit_m.group(1)
+    var_m = re.search(rf'{attr}\s*=\s*var\.([A-Za-z0-9_]+)', body)
+    if var_m and var_m.group(1) in var_defaults:
+        return var_defaults[var_m.group(1)]
+    return fallback
+
+
 def scan_manifest(
     tf_path: Path,
     budget_limit: float = 150.0,
@@ -112,6 +147,7 @@ def scan_manifest(
         raise FileNotFoundError(f"Terraform manifest not found: {tf_path}")
 
     content = tf_path.read_text(encoding="utf-8")
+    var_defaults = parse_terraform_variables(content)
     raw_resources = parse_terraform_resources(content)
     cost_items: List[CostItem] = []
 
@@ -121,8 +157,7 @@ def scan_manifest(
         body = r["body"]
 
         if rtype == "azurerm_container_registry":
-            sku_m = re.search(r'sku\s*=\s*"([^"]+)"', body)
-            sku = sku_m.group(1) if sku_m else "Basic"
+            sku = _resolve_tf_attr(body, "sku", var_defaults, "Basic")
             cost, unit, notes = PRICE_CATALOG["azurerm_container_registry"].get(sku, (5.00, "1 instance", "ACR"))
             cost_items.append(CostItem(rtype, rname, sku, cost, unit, notes))
 

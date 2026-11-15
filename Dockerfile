@@ -20,6 +20,8 @@ COPY data/models/ /app/data/models/
 COPY data/processed/ /app/data/processed/
 COPY data/feast_repo/ /app/data/feast_repo/
 COPY data/kkbox_feast/ /app/data/kkbox_feast/
+COPY data/kkbox_models/ /app/data/kkbox_models/
+COPY data/kkbox_processed/pilot_features/ /app/data/kkbox_processed/pilot_features/
 COPY assets/ /app/assets/
 COPY contracts/ /app/contracts/
 COPY DESIGN.md /app/

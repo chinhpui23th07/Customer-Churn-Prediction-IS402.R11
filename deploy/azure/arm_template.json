@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "metadata": {
     "title": "ChurnGuard MLOps Infrastructure on Azure",
-    "description": "ARM Template for deploying Azure Container Apps, Azure Blob Storage, Azure Container Registry, and Azure Cache for Redis for ChurnGuard MLOps Platform."
+    "description": "ARM Template for deploying Azure Container Apps, Azure Blob Storage, Azure Container Registry, and Azure Managed Redis (AMR Balanced B0) for ChurnGuard MLOps Platform."
   },
   "parameters": {
     "environmentName": {
@@ -20,6 +20,12 @@
       "type": "string",
       "defaultValue": "churnguardacr",
       "metadata": { "description": "Name of the Azure Container Registry" }
+    },
+    "acrSku": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": ["Basic", "Standard", "Premium"],
+      "metadata": { "description": "Azure Container Registry SKU (Basic for student FinOps budget; Premium enables Disabled publicNetworkAccess)" }
     },
     "redisName": {
       "type": "string",
@@ -39,24 +45,51 @@
     "apiKeyToken": {
       "type": "securestring",
       "metadata": { "description": "Serving API X-API-Key token supplied at deployment time" }
+    },
+    "kkboxAuthToken": {
+      "type": "securestring",
+      "metadata": { "description": "KKBox v1 Serving API x-api-key token supplied at deployment time" }
     }
   },
   "variables": {
     "blobContainerName": "churnguard-datasets",
+    "userIdentityName": "id-churnguard-mlops-sea",
+    "acrPullRoleId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]",
+    "storageBlobContributorRoleId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
     "containerImage": "[format('{0}.azurecr.io/churnguard-mlops:latest', parameters('acrName'))]"
   },
   "resources": [
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2023-01-31",
+      "name": "[variables('userIdentityName')]",
+      "location": "[parameters('location')]"
+    },
     {
       "type": "Microsoft.ContainerRegistry/registries",
       "apiVersion": "2023-07-01",
       "name": "[parameters('acrName')]",
       "location": "[parameters('location')]",
       "sku": {
-        "name": "Basic"
+        "name": "[parameters('acrSku')]"
       },
       "properties": {
         "adminUserEnabled": false,
-        "publicNetworkAccess": "Disabled"
+        "publicNetworkAccess": "[if(equals(parameters('acrSku'), 'Premium'), 'Disabled', 'Enabled')]"
+      }
+    },
+    {
+      "type": "Microsoft.ContainerRegistry/registries/providers/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "[format('{0}/Microsoft.Authorization/{1}', parameters('acrName'), guid(resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName')), variables('userIdentityName'), 'AcrPull'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName'))]",
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName'))]"
+      ],
+      "properties": {
+        "roleDefinitionId": "[variables('acrPullRoleId')]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName')), '2023-01-31').principalId]",
+        "principalType": "ServicePrincipal"
       }
     },
     {
@@ -73,6 +106,7 @@
         "supportsHttpsTrafficOnly": true,
         "minimumTlsVersion": "TLS1_2",
         "allowBlobPublicAccess": false,
+        "allowSharedKeyAccess": false,
         "publicNetworkAccess": "Disabled",
         "networkAcls": {
           "bypass": "AzureServices",
@@ -87,36 +121,7 @@
           "keySource": "Microsoft.Storage",
           "requireInfrastructureEncryption": true
         }
-      },
-      "resources": [
-        {
-          "type": "blobServices",
-          "apiVersion": "2023-01-01",
-          "name": "default",
-          "properties": {
-            "deleteRetentionPolicy": {
-              "enabled": true,
-              "days": 7
-            }
-          }
-        },
-        {
-          "type": "queueServices",
-          "apiVersion": "2023-01-01",
-          "name": "default",
-          "properties": {
-            "logging": {
-              "delete": true,
-              "read": true,
-              "write": true,
-              "retentionPolicy": {
-                "enabled": true,
-                "days": 7
-              }
-            }
-          }
-        }
-      ]
+      }
     },
     {
       "type": "Microsoft.Storage/storageAccounts/blobServices",
@@ -133,6 +138,25 @@
       }
     },
     {
+      "type": "Microsoft.Storage/storageAccounts/queueServices",
+      "apiVersion": "2023-01-01",
+      "name": "[format('{0}/default', parameters('storageAccountName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ],
+      "properties": {
+        "logging": {
+          "delete": true,
+          "read": true,
+          "write": true,
+          "retentionPolicy": {
+            "enabled": true,
+            "days": 7
+          }
+        }
+      }
+    },
+    {
       "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
       "apiVersion": "2023-01-01",
       "name": "[format('{0}/default/{1}', parameters('storageAccountName'), variables('blobContainerName'))]",
@@ -142,6 +166,20 @@
       ],
       "properties": {
         "publicAccess": "None"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/providers/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "[format('{0}/Microsoft.Authorization/{1}', parameters('storageAccountName'), guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), variables('userIdentityName'), 'StorageBlobDataContributor'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName'))]"
+      ],
+      "properties": {
+        "roleDefinitionId": "[variables('storageBlobContributorRoleId')]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName')), '2023-01-31').principalId]",
+        "principalType": "ServicePrincipal"
       }
     },
     {
@@ -188,12 +226,16 @@
       "name": "[parameters('appName')]",
       "location": "[parameters('location')]",
       "identity": {
-        "type": "SystemAssigned"
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName'))]": {}
+        }
       },
       "dependsOn": [
         "[resourceId('Microsoft.App/managedEnvironments', parameters('environmentName'))]",
         "[resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName'))]",
-        "[resourceId('Microsoft.Cache/redisEnterprise', parameters('redisName'))]"
+        "[resourceId('Microsoft.Cache/redisEnterprise', parameters('redisName'))]",
+        "[resourceId('Microsoft.ContainerRegistry/registries/providers/roleAssignments', parameters('acrName'), 'Microsoft.Authorization', guid(resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName')), variables('userIdentityName'), 'AcrPull'))]"
       ],
       "properties": {
         "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('environmentName'))]",
@@ -202,12 +244,20 @@
             {
               "name": "api-key-token",
               "value": "[parameters('apiKeyToken')]"
+            },
+            {
+              "name": "kkbox-auth-token",
+              "value": "[parameters('kkboxAuthToken')]"
+            },
+            {
+              "name": "redis-access-key",
+              "value": "[listKeys(resourceId('Microsoft.Cache/redisEnterprise/databases', parameters('redisName'), 'default'), '2024-09-01-preview').primaryKey]"
             }
           ],
           "registries": [
             {
               "server": "[format('{0}.azurecr.io', parameters('acrName'))]",
-              "identity": "system"
+              "identity": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName'))]"
             }
           ],
           "ingress": {
@@ -234,6 +284,14 @@
                   "secretRef": "api-key-token"
                 },
                 {
+                  "name": "KKBOX_API_KEY",
+                  "secretRef": "kkbox-auth-token"
+                },
+                {
+                  "name": "MLFLOW_TRACKING_URI",
+                  "value": "sqlite:////app/data/kkbox_models/mlflow.db"
+                },
+                {
                   "name": "REDIS_HOST",
                   "value": "[reference(resourceId('Microsoft.Cache/redisEnterprise', parameters('redisName'))).hostName]"
                 },
@@ -246,8 +304,16 @@
                   "value": "true"
                 },
                 {
+                  "name": "AZURE_REDIS_PASSWORD",
+                  "secretRef": "redis-access-key"
+                },
+                {
                   "name": "AZURE_STORAGE_CONTAINER",
                   "value": "[variables('blobContainerName')]"
+                },
+                {
+                  "name": "AZURE_STORAGE_ACCOUNT_URL",
+                  "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))).primaryEndpoints.blob]"
                 }
               ]
             }

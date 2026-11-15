@@ -97,12 +97,14 @@ def test_azurite_adapter_secret_hygiene() -> None:
 
 
 def test_terraform_iac_hardening() -> None:
-    """Verify Terraform manifests enforce secure network rules and disabled public admin."""
+    """Verify Terraform manifests enforce secure network rules, AzureAD auth, and disabled public admin."""
     tf_path = WORKSPACE_ROOT / "deploy" / "azure" / "main.tf"
     assert tf_path.exists(), "main.tf must exist"
     content = tf_path.read_text(encoding="utf-8")
     assert "admin_enabled                 = false" in content
-    assert "public_network_access_enabled = false" in content
+    assert 'public_network_access_enabled = var.acr_sku == "Premium" ? false : true' in content or "public_network_access_enabled = false" in content
+    assert "public_network_access_enabled     = false" in content
+    assert "allow_nested_items_to_be_public   = false" in content
     assert 'default_action = "Deny"' in content
     assert "shared_access_key_enabled         = false" in content
     assert "infrastructure_encryption_enabled = true" in content
@@ -110,23 +112,36 @@ def test_terraform_iac_hardening() -> None:
 
 
 def test_arm_template_iac_hardening() -> None:
-    """Verify ARM template synchronizes identical enterprise security baselines."""
+    """Verify ARM template synchronizes enterprise security baselines with zero duplicate resources."""
     arm_path = WORKSPACE_ROOT / "deploy" / "azure" / "arm_template.json"
     assert arm_path.exists(), "arm_template.json must exist"
     data = json.loads(arm_path.read_text(encoding="utf-8"))
-    resources = {r.get("type"): r for r in data.get("resources", [])}
+    raw = data.get("resources", [])
+    keys = [(r.get("type"), r.get("name")) for r in raw]
+    assert len(keys) == len(set(keys)), f"Duplicate resources in arm_template.json: {keys}"
 
-    acr = resources.get("Microsoft.ContainerRegistry/registries", {})
+    acr = next(r for r in raw if r.get("type") == "Microsoft.ContainerRegistry/registries")
     acr_props = acr.get("properties", {})
     assert acr_props.get("adminUserEnabled") is False
-    assert acr_props.get("publicNetworkAccess") == "Disabled"
+    expected_cond = "[if(equals(parameters('acrSku'), 'Premium'), 'Disabled', 'Enabled')]"
+    assert acr_props.get("publicNetworkAccess") in ("Disabled", expected_cond)
 
-    sa = resources.get("Microsoft.Storage/storageAccounts", {})
+    sa = next(r for r in raw if r.get("type") == "Microsoft.Storage/storageAccounts")
     sa_props = sa.get("properties", {})
     assert sa_props.get("publicNetworkAccess") == "Disabled"
     assert sa_props.get("allowBlobPublicAccess") is False
     assert sa_props.get("networkAcls", {}).get("defaultAction") == "Deny"
     assert sa_props.get("encryption", {}).get("requireInfrastructureEncryption") is True
+
+
+def test_microburst_parser_flags_exposed_blobs(tmp_path: Path) -> None:
+    """Verify MicroBurst parser detects exposed blobs as FAIL instead of blind PASS."""
+    from scripts.security_audit_suite import RealSecurityToolIngestor
+
+    exposed_file = tmp_path / "microburst_exposed.txt"
+    exposed_file.write_text("Resolving - test.blob.core.windows.net\nPublic container accessible: test\n", encoding="utf-8")
+    findings = RealSecurityToolIngestor.parse_microburst_report(exposed_file)
+    assert findings and any(f.status == "FAIL" for f in findings)
 
 
 def test_checkov_policy_baseline_configuration() -> None:

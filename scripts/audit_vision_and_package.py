@@ -145,11 +145,11 @@ def create_clean_submission_zip(output_zip_path=None):
         output_zip_path = os.path.join(BASE_DIR, "ChurnGuard_MLOps_Enterprise_Release.zip")
 
     print(f"[*] Bắt đầu đóng gói bài nộp: {output_zip_path}")
-    allowed_dirs = ['src', 'configs', 'scripts', 'tests', 'assets', '.github', 'deploy', 'notebooks']
-    allowed_files = ['README.md', 'DESIGN.md', 'AGENTS.md', 'requirements.txt', 'Dockerfile', 'docker-compose.yml', 'dvc.yaml']
+    allowed_dirs = ['src', 'configs', 'scripts', 'tests', 'assets', '.github', 'deploy', 'notebooks', 'reports', 'docs/requirements', 'docs/experiments']
+    allowed_files = ['README.md', 'DESIGN.md', 'AGENTS.md', 'requirements.txt', 'Dockerfile', 'docker-compose.yml', 'dvc.yaml', 'dvc.lock', '.checkov.yml', 'docs/MASTER_PROJECT_TRUTH.md']
 
-    # Danh sách loại trừ nghiêm ngặt
-    exclude_extensions = ('.docx', '.pyc', '.tmp', '.log', '.zip', '.bak', '.tar', '.gz')
+    # Danh sách loại trừ nghiêm ngặt (không đóng gói nhị phân/dữ liệu thô nặng)
+    exclude_extensions = ('.docx', '.pyc', '.tmp', '.log', '.zip', '.bak', '.tar', '.gz', '.parquet', '.exe')
     exclude_dirs = {'__pycache__', '.pytest_cache', '.vscode', '.idea', 'scratch', 'mlruns', '.dvc_storage', 'graphify-out'}
 
     packed_count = 0

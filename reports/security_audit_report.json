@@ -1,14 +1,14 @@
 {
-  "timestamp": "2026-11-13T12:48:17.334417+00:00",
+  "timestamp": "2026-11-15T17:18:03.454851+00:00",
   "tools_executed": [
     "bridgecrewio/checkov (9.1k stars)",
     "aquasecurity/trivy (38.9k stars)",
     "NetSPI/MicroBurst (2.5k stars)"
   ],
-  "total_rules": 182,
-  "passed_count": 177,
+  "total_rules": 180,
+  "passed_count": 175,
   "failed_count": 5,
-  "compliance_score_percent": 97.25,
+  "compliance_score_percent": 97.22,
   "summary": {
     "CRITICAL": 0,
     "HIGH": 0,
@@ -40,15 +40,6 @@
       "severity": "LOW",
       "target": "/deploy/azure/main.tf",
       "description": "Ensure a retention policy is set to cleanup untagged manifests.",
-      "status": "PASS",
-      "remediation": "Compliant with policy baseline."
-    },
-    {
-      "rule_id": "CKV_AZURE_139",
-      "category": "Checkov (terraform)",
-      "severity": "LOW",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure ACR set to disable public networking",
       "status": "PASS",
       "remediation": "Compliant with policy baseline."
     },
@@ -143,6 +134,15 @@
       "remediation": "Compliant with policy baseline."
     },
     {
+      "rule_id": "CKV2_AZURE_40",
+      "category": "Checkov (terraform)",
+      "severity": "LOW",
+      "target": "/deploy/azure/main.tf",
+      "description": "Ensure storage account is not configured with Shared Key authorization",
+      "status": "PASS",
+      "remediation": "Compliant with policy baseline."
+    },
+    {
       "rule_id": "CKV2_AZURE_47",
       "category": "Checkov (terraform)",
       "severity": "LOW",
@@ -157,15 +157,6 @@
       "severity": "LOW",
       "target": "/deploy/azure/main.tf",
       "description": "Ensure soft-delete is enabled on Azure storage account",
-      "status": "PASS",
-      "remediation": "Compliant with policy baseline."
-    },
-    {
-      "rule_id": "CKV2_AZURE_40",
-      "category": "Checkov (terraform)",
-      "severity": "LOW",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure storage account is not configured with Shared Key authorization",
       "status": "PASS",
       "remediation": "Compliant with policy baseline."
     },
@@ -193,15 +184,6 @@
       "severity": "LOW",
       "target": "/deploy/azure/arm_template.json",
       "description": "Ensures that ACR disables anonymous pulling of images",
-      "status": "PASS",
-      "remediation": "Compliant with policy baseline."
-    },
-    {
-      "rule_id": "CKV_AZURE_139",
-      "category": "Checkov (arm)",
-      "severity": "LOW",
-      "target": "/deploy/azure/arm_template.json",
-      "description": "Ensure ACR set to disable public networking",
       "status": "PASS",
       "remediation": "Compliant with policy baseline."
     },
@@ -1650,7 +1632,7 @@
       "category": "MicroBurst (Pentest)",
       "severity": "HIGH",
       "target": "Azure Storage DNS (*.blob.core.windows.net)",
-      "description": "Automated DNS permutations executed (171 tests evaluated).",
+      "description": "Automated DNS permutations verified (166 probes, 0 public blobs exposed).",
       "status": "PASS",
       "remediation": "Ensure storage containers maintain private access level."
     }

@@ -9,7 +9,7 @@
       "path": "churn_label/window=2017-02/data.parquet",
       "bytes": 7948492,
       "sha256": "5337e9c36840f9dfba6034aea7771178081880944508ab8cec6d2963b5e57ef7",
-      "status": "existing"
+      "status": "downloaded"
     },
     {
       "path": "churn_label/window=2017-03/data.parquet",
@@ -21,13 +21,13 @@
       "path": "listening_day/source_version=v1/activity_month=201701/data.parquet",
       "bytes": 304662028,
       "sha256": "08ba4b36aa48504d1e71faa6788747ef306d22661f4b7b1e1ddff9aeb8550dc0",
-      "status": "existing"
+      "status": "downloaded"
     },
     {
       "path": "listening_day/source_version=v1/activity_month=201702/data.parquet",
       "bytes": 272911990,
       "sha256": "f056a6e29abf4407dfff3b22a5f26173e0f3c149d46c917189582d58990fbc2e",
-      "status": "existing"
+      "status": "downloaded"
     },
     {
       "path": "member/data.parquet",

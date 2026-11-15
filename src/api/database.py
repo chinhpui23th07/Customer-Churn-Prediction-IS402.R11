@@ -24,6 +24,16 @@ def get_db_connection(db_path: Union[str, Path] = INFERENCE_DB, timeout: float =
     return conn
 
 
+def ensure_inference_schema(conn: sqlite3.Connection) -> None:
+    """Ensure inference_logs has model_version and latency_ms columns."""
+    cols = {row[1] for row in conn.execute("PRAGMA table_info(inference_logs)").fetchall()}
+    if "model_version" not in cols:
+        conn.execute("ALTER TABLE inference_logs ADD COLUMN model_version TEXT DEFAULT 'v2.0.0-champion'")
+    if "latency_ms" not in cols:
+        conn.execute("ALTER TABLE inference_logs ADD COLUMN latency_ms REAL DEFAULT 0.0")
+    conn.commit()
+
+
 @contextmanager
 def sqlite_connection(db_path: Union[str, Path] = INFERENCE_DB, timeout: float = 10.0) -> Iterator[sqlite3.Connection]:
     """

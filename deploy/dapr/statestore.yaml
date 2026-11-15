@@ -23,7 +23,5 @@ spec:
     value: "86400"
   - name: actorStateStore
     value: "false"
-auth:
-  secretStore: azurekeyvault
 scopes:
 - churnguard-serving-app

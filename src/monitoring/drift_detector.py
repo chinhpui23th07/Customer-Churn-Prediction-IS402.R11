@@ -123,6 +123,18 @@ def run_drift_analysis(current_df: pd.DataFrame = None, p_val_threshold: float =
     Áp dụng hiệu chỉnh đa giả thuyết Bonferroni (alpha / M) theo Rabanser et al. (2019).
     """
     import sqlite3
+    if not os.path.exists(REF_PARQUET):
+        pilot_rep = os.path.join(BASE_DIR, "docs", "experiments", "kkbox_pilot_drift_report.json")
+        if os.path.exists(pilot_rep):
+            with open(pilot_rep, "r", encoding="utf-8") as f:
+                rep = json.load(f)
+            feats = rep.get("features", {})
+            flagged = rep.get("flagged_features", [])
+            share = len(flagged) / max(len(feats), 1)
+            rep["drift_share"] = round(share, 4)
+            rep["dataset_drift_detected"] = bool(share >= 0.30)
+            return rep
+        raise FileNotFoundError(f"Reference feature parquet missing: {REF_PARQUET}")
     ref_df = pd.read_parquet(REF_PARQUET)
 
     # Đọc dữ liệu từ SQLite inference logs nếu có
@@ -141,7 +153,10 @@ def run_drift_analysis(current_df: pd.DataFrame = None, p_val_threshold: float =
 
     # Nếu chưa có đủ log suy luận thực tế, lấy mẫu từ tập Test đại diện cho Production stream
     if current_df is None:
-        test_df = pd.read_parquet(os.path.join(BASE_DIR, "data", "processed", "test_features.parquet"))
+        test_pq = os.path.join(BASE_DIR, "data", "processed", "test_features.parquet")
+        if not os.path.exists(test_pq):
+            raise FileNotFoundError(f"Current production test parquet missing: {test_pq}")
+        test_df = pd.read_parquet(test_pq)
         current_df = test_df.sample(n=min(len(test_df), 10000), random_state=42)[FEATURE_COLS].copy()
 
     if simulate_drift:

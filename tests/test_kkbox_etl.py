@@ -196,3 +196,60 @@ def test_kkbox_etl_missing_tables_fallback(tmp_path):
     assert df["trans_count"].tolist() == [0, 0]
     assert df["listen_days_count"].tolist() == [0, 0]
     assert df["is_churn"].tolist() == [0, 1]
+
+
+def test_kkbox_etl_enforces_temporal_cutoff(tmp_path):
+    """Dam bao giao dich va nghe nhac sau ngay cutoff khong bi ro ri vao dac trung."""
+    raw_dir = tmp_path / "cutoff_raw"
+    (raw_dir / "member").mkdir(parents=True)
+    (raw_dir / "subscription_transaction").mkdir(parents=True)
+    (raw_dir / "listening_day").mkdir(parents=True)
+    (raw_dir / "churn_label").mkdir(parents=True)
+
+    pd.DataFrame({
+        "subscriber_key": [101],
+        "city_code": [1],
+        "age_band_start": [25],
+        "gender": ["male"],
+        "registration_method_code": [7],
+    }).to_parquet(raw_dir / "member" / "data.parquet", index=False)
+
+    pd.DataFrame({
+        "subscriber_key": [101, 101],
+        "label_window": ["train", "train_v2"],
+        "is_churn": [0, 1],
+    }).to_parquet(raw_dir / "churn_label" / "data.parquet", index=False)
+
+    pd.DataFrame({
+        "subscriber_key": [101, 101],
+        "payment_plan_days": [30, 30],
+        "plan_list_price": [149.0, 999.0],
+        "actual_amount_paid": [149.0, 999.0],
+        "is_auto_renew": [1, 0],
+        "transaction_date": [pd.Timestamp("2017-02-20").date(), pd.Timestamp("2017-03-15").date()],
+        "is_cancel": [0, 1],
+    }).to_parquet(raw_dir / "subscription_transaction" / "data.parquet", index=False)
+
+    pd.DataFrame({
+        "subscriber_key": [101, 101],
+        "activity_date": [pd.Timestamp("2017-02-28").date(), pd.Timestamp("2017-03-05").date()],
+        "num_25": [1, 10],
+        "num_50": [0, 10],
+        "num_75": [0, 10],
+        "num_985": [0, 10],
+        "num_100": [9, 60],
+        "num_unq": [8, 80],
+        "total_secs": [1200.0, 99999.0],
+    }).to_parquet(raw_dir / "listening_day" / "data.parquet", index=False)
+
+    pipe = KKBoxETLPipeline(str(raw_dir), str(tmp_path / "proc"))
+    out_file = str(tmp_path / "proc" / "cutoff.parquet")
+    stats = pipe.run_etl(output_file=out_file, label_period="2017-03", label_window="train_v2", cutoff_date="2017-02-28")
+    assert stats["row_count"] == 1
+    assert stats["cutoff_date"] == "2017-02-28"
+    df = pq.read_table(out_file).to_pandas()
+    assert df["is_churn"].tolist() == [1]
+    assert df["trans_count"].tolist() == [1]
+    assert float(df["total_actual_paid"].iloc[0]) == pytest.approx(149.0)
+    assert df["listen_days_count"].tolist() == [1]
+    assert float(df["total_listen_secs"].iloc[0]) == pytest.approx(1200.0)

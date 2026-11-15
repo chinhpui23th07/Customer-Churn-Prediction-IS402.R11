@@ -44,7 +44,7 @@ def test_tier1_root_redirect_to_docs():
 
 def test_tier1_feast_online_feature_lookup():
     """Verify Feast online feature retrieval endpoint by customer ID."""
-    response = client.get("/features/156624")
+    response = client.get("/features/156624", headers=AUTH_HEADERS)
     assert response.status_code == 200
     data = response.json()
     assert data["customer_id"] == 156624
@@ -252,7 +252,7 @@ def test_tier3_single_vs_batch_prediction_consistency():
 
 def test_tier3_ab_analytics_traffic_distribution_consistency():
     """Verify A/B testing analytics endpoint preserves traffic accounting consistency."""
-    response = client.get("/ab_test/analytics")
+    response = client.get("/ab_test/analytics", headers=AUTH_HEADERS)
     assert response.status_code == 200
     data = response.json()
     if data.get("status") == "ACTIVE" and "traffic_observed" in data:

@@ -17,6 +17,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from src.kkbox.contract import ALLOWED_CUTOFFS, FEATURE_COLUMNS, FEATURE_VERSION
+from src.kkbox.feast_config import build_feature_store
 from src.kkbox.schemas import (
     BatchPredictionItem,
     BatchPredictionRequest,
@@ -82,12 +83,20 @@ def load_model():
 
 
 def parquet_features(snapshot_key: str) -> list[float | None] | None:
+    pattern = FEATURE_PATH
+    if (
+        os.getenv("KKBOX_ALLOW_PILOT") == "1"
+        and pattern == "data/kkbox_processed/features/**/*.parquet"
+        and not Path("data/kkbox_processed/features").exists()
+        and Path("data/kkbox_processed/pilot_features").exists()
+    ):
+        pattern = "data/kkbox_processed/pilot_features/**/*.parquet"
     connection = duckdb.connect()
     try:
         columns = ", ".join(FEATURE_COLUMNS)
         rows = connection.execute(
             f"SELECT {columns} FROM read_parquet(?, hive_partitioning=true) WHERE snapshot_key = ? LIMIT 2",
-            [FEATURE_PATH, snapshot_key],
+            [pattern, snapshot_key],
         ).fetchall()
         if len(rows) > 1:
             raise RuntimeError("Duplicate snapshot key in processed feature output")
@@ -98,8 +107,7 @@ def parquet_features(snapshot_key: str) -> list[float | None] | None:
 
 @lru_cache(maxsize=1)
 def feast_store():
-    from feast import FeatureStore
-    return FeatureStore(repo_path=FEAST_REPO)
+    return build_feature_store(FEAST_REPO)
 
 
 def feast_features(snapshot_key: str) -> list[float | None] | None:

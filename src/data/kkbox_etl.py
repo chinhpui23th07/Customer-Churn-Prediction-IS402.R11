@@ -115,18 +115,40 @@ class KKBoxETLPipeline:
         con.execute("SET max_temp_directory_size = '10GB'")
         return con
 
-    def _inspect_columns(self, con: duckdb.DuckDBPyConnection, path_pattern: str) -> set:
+    def _inspect_columns(self, con: duckdb.DuckDBPyConnection, path_pattern: str) -> Dict[str, str]:
         try:
             res = con.execute(f"DESCRIBE SELECT * FROM read_parquet('{path_pattern}') LIMIT 0").fetchall()
-            return {r[0].lower() for r in res}
+            return {r[0].lower(): str(r[1]).upper() for r in res}
         except Exception as e:
             if "No files found" not in str(e) and "does not exist" not in str(e):
                 print(f"[!] Warning inspect {path_pattern}: {e}")
-            return set()
+            return {}
 
-    def run_etl(self, output_file: Optional[str] = None, sample_limit: Optional[int] = None) -> Dict[str, Any]:
-        """Thực thi luồng ETL out-of-core tổng hợp đặc trưng và xuất file Parquet Snappy."""
+    @staticmethod
+    def _cutoff_predicate(col_name: str, col_type: str, cutoff_date: str) -> str:
+        cutoff_int = int(cutoff_date.replace("-", ""))
+        if any(tok in col_type for tok in ("INT", "BIGINT", "SMALLINT", "TINYINT", "DECIMAL", "NUMERIC")):
+            return f"CAST({col_name} AS BIGINT) <= {cutoff_int}"
+        return f"CAST({col_name} AS DATE) <= DATE '{cutoff_date}'"
+
+    def run_etl(
+        self,
+        output_file: Optional[str] = None,
+        sample_limit: Optional[int] = None,
+        label_period: str = "2017-03",
+        label_window: Optional[str] = None,
+        cutoff_date: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Thuc thi luong ETL out-of-core cutoff-safe tong hop dac trung va xuat Parquet Snappy."""
         start_time = time.time()
+        window_map = {
+            "2017-02": ("train", "2017-01-31"),
+            "2017-03": ("train_v2", "2017-02-28"),
+        }
+        default_win, default_cutoff = window_map.get(label_period, ("train_v2", "2017-02-28"))
+        resolved_window = label_window or default_win
+        resolved_cutoff = cutoff_date or default_cutoff
+
         if output_file is None:
             output_file = os.path.join(self.processed_dir, "kkbox_churn_features.parquet")
 
@@ -141,7 +163,6 @@ class KKBoxETLPipeline:
         ld_cols = self._inspect_columns(con, ld_path)
         ch_cols = self._inspect_columns(con, ch_path)
 
-        # Chế độ ánh xạ linh hoạt giữa Hugging Face và Kaggle/Synthetic
         key_col = "subscriber_key" if "subscriber_key" in m_cols else ("msno" if "msno" in m_cols else "subscriber_key")
         c_expr = "COALESCE(city_code, 1)" if "city_code" in m_cols else ("COALESCE(city, 1)" if "city" in m_cols else "1")
         b_col = "age_band_start" if "age_band_start" in m_cols else ("bd" if "bd" in m_cols else None)
@@ -149,52 +170,44 @@ class KKBoxETLPipeline:
         g_expr = "CASE WHEN LOWER(COALESCE(gender, '')) = 'female' THEN 0 WHEN LOWER(COALESCE(gender, '')) = 'male' THEN 1 ELSE -1 END" if "gender" in m_cols else "-1"
         r_expr = "COALESCE(registration_method_code, 7)" if "registration_method_code" in m_cols else ("COALESCE(registered_via, 7)" if "registered_via" in m_cols else "7")
 
-        m_cte = f"""
-        SELECT
-            CAST({key_col} AS VARCHAR) AS msno,
-            {c_expr} AS city,
-            {b_expr} AS bd,
-            {g_expr} AS gender_encoded,
-            {r_expr} AS registered_via
-        FROM read_parquet('{m_path}')
-        """
-
-        if "subscriber_key" in ch_cols:
-            ch_cte = f"SELECT CAST(subscriber_key AS VARCHAR) AS msno, is_churn FROM read_parquet('{ch_path}')"
-        else:
-            ch_cte = f"SELECT CAST(msno AS VARCHAR) AS msno, is_churn FROM read_parquet('{ch_path}')"
-
+        m_cte = (
+            f"SELECT CAST({key_col} AS VARCHAR) AS msno, {c_expr} AS city, {b_expr} AS bd, "
+            f"{g_expr} AS gender_encoded, {r_expr} AS registered_via FROM read_parquet('{m_path}')"
+        )
+        ch_key = "subscriber_key" if "subscriber_key" in ch_cols else "msno"
+        ch_where = f" WHERE label_window = '{resolved_window}'" if "label_window" in ch_cols else ""
+        ch_cte = f"SELECT CAST({ch_key} AS VARCHAR) AS msno, is_churn FROM read_parquet('{ch_path}'){ch_where}"
         if tx_cols:
             tx_k = "subscriber_key" if "subscriber_key" in tx_cols else "msno"
-            tx_cte = f"""
-            SELECT
-                CAST({tx_k} AS VARCHAR) AS msno,
-                COUNT(*) AS trans_count,
-                AVG(payment_plan_days) AS avg_plan_days,
-                SUM(actual_amount_paid) AS total_actual_paid,
-                AVG(CAST(is_auto_renew AS DOUBLE)) AS auto_renew_ratio,
-                AVG(CAST(is_cancel AS DOUBLE)) AS cancel_ratio,
-                (SUM(plan_list_price) - SUM(actual_amount_paid)) / NULLIF(SUM(plan_list_price), 0.0) AS discount_ratio
-            FROM read_parquet('{tx_path}')
-            GROUP BY {tx_k}
-            """
+            tx_where = (
+                f" WHERE {self._cutoff_predicate('transaction_date', tx_cols['transaction_date'], resolved_cutoff)}"
+                if "transaction_date" in tx_cols else ""
+            )
+            tx_cte = (
+                f"SELECT CAST({tx_k} AS VARCHAR) AS msno, COUNT(*) AS trans_count, "
+                f"AVG(payment_plan_days) AS avg_plan_days, SUM(actual_amount_paid) AS total_actual_paid, "
+                f"AVG(CAST(is_auto_renew AS DOUBLE)) AS auto_renew_ratio, "
+                f"AVG(CAST(is_cancel AS DOUBLE)) AS cancel_ratio, "
+                f"(SUM(plan_list_price) - SUM(actual_amount_paid)) / NULLIF(SUM(plan_list_price), 0.0) "
+                f"AS discount_ratio FROM read_parquet('{tx_path}'){tx_where} GROUP BY {tx_k}"
+            )
         else:
             tx_cte = "SELECT CAST('' AS VARCHAR) AS msno, 0::BIGINT AS trans_count, 30.0::DOUBLE AS avg_plan_days, 0.0::DOUBLE AS total_actual_paid, 0.0::DOUBLE AS auto_renew_ratio, 0.0::DOUBLE AS cancel_ratio, 0.0::DOUBLE AS discount_ratio WHERE 1=0"
-
         if ld_cols:
             ld_k = "subscriber_key" if "subscriber_key" in ld_cols else "msno"
             d_col = "activity_date" if "activity_date" in ld_cols else "date"
-            ld_cte = f"""
-            SELECT
-                CAST({ld_k} AS VARCHAR) AS msno,
-                COUNT(DISTINCT {d_col}) AS listen_days_count,
-                SUM(total_secs) AS total_listen_secs,
-                SUM(num_25 + num_50 + num_75 + num_985 + num_100) AS total_songs_played,
-                SUM(num_100) / NULLIF(SUM(num_25 + num_50 + num_75 + num_985 + num_100), 0.0) AS completion_ratio,
-                SUM(num_unq) / NULLIF(SUM(num_25 + num_50 + num_75 + num_985 + num_100), 0.0) AS unique_song_ratio
-            FROM read_parquet('{ld_path}')
-            GROUP BY {ld_k}
-            """
+            ld_where = (
+                f" WHERE {self._cutoff_predicate(d_col, ld_cols[d_col], resolved_cutoff)}"
+                if d_col in ld_cols else ""
+            )
+            ld_cte = (
+                f"SELECT CAST({ld_k} AS VARCHAR) AS msno, COUNT(DISTINCT {d_col}) AS listen_days_count, "
+                f"SUM(total_secs) AS total_listen_secs, "
+                f"SUM(num_25 + num_50 + num_75 + num_985 + num_100) AS total_songs_played, "
+                f"SUM(num_100) / NULLIF(SUM(num_25 + num_50 + num_75 + num_985 + num_100), 0.0) AS completion_ratio, "
+                f"SUM(num_unq) / NULLIF(SUM(num_25 + num_50 + num_75 + num_985 + num_100), 0.0) AS unique_song_ratio "
+                f"FROM read_parquet('{ld_path}'){ld_where} GROUP BY {ld_k}"
+            )
         else:
             ld_cte = "SELECT CAST('' AS VARCHAR) AS msno, 0::BIGINT AS listen_days_count, 0.0::DOUBLE AS total_listen_secs, 0.0::DOUBLE AS total_songs_played, 0.0::DOUBLE AS completion_ratio, 0.0::DOUBLE AS unique_song_ratio WHERE 1=0"
 
@@ -202,33 +215,19 @@ class KKBoxETLPipeline:
 
         query = f"""
         CREATE OR REPLACE TABLE aggregated_features AS
-        WITH members_cleaned AS ({m_cte}),
-        tx_summary AS ({tx_cte}),
-        listen_summary AS ({ld_cte}),
-        churn_labels AS ({ch_cte})
+        WITH members_cleaned AS ({m_cte}), tx_summary AS ({tx_cte}),
+        listen_summary AS ({ld_cte}), churn_labels AS ({ch_cte})
         SELECT
-            c.msno,
-            m.city,
-            m.bd,
-            m.gender_encoded,
-            m.registered_via,
-            COALESCE(t.trans_count, 0) AS trans_count,
-            COALESCE(t.avg_plan_days, 30.0) AS avg_plan_days,
-            COALESCE(t.total_actual_paid, 0.0) AS total_actual_paid,
-            COALESCE(t.auto_renew_ratio, 0.0) AS auto_renew_ratio,
-            COALESCE(t.cancel_ratio, 0.0) AS cancel_ratio,
-            COALESCE(t.discount_ratio, 0.0) AS discount_ratio,
-            COALESCE(l.listen_days_count, 0) AS listen_days_count,
-            COALESCE(l.total_listen_secs, 0.0) AS total_listen_secs,
-            COALESCE(l.total_songs_played, 0) AS total_songs_played,
-            COALESCE(l.completion_ratio, 0.0) AS completion_ratio,
+            c.msno, m.city, m.bd, m.gender_encoded, m.registered_via,
+            COALESCE(t.trans_count, 0) AS trans_count, COALESCE(t.avg_plan_days, 30.0) AS avg_plan_days,
+            COALESCE(t.total_actual_paid, 0.0) AS total_actual_paid, COALESCE(t.auto_renew_ratio, 0.0) AS auto_renew_ratio,
+            COALESCE(t.cancel_ratio, 0.0) AS cancel_ratio, COALESCE(t.discount_ratio, 0.0) AS discount_ratio,
+            COALESCE(l.listen_days_count, 0) AS listen_days_count, COALESCE(l.total_listen_secs, 0.0) AS total_listen_secs,
+            COALESCE(l.total_songs_played, 0) AS total_songs_played, COALESCE(l.completion_ratio, 0.0) AS completion_ratio,
             COALESCE(l.unique_song_ratio, 0.0) AS unique_song_ratio,
-            c.is_churn
-        FROM churn_labels c
-        LEFT JOIN members_cleaned m ON c.msno = m.msno
-        LEFT JOIN tx_summary t ON c.msno = t.msno
-        LEFT JOIN listen_summary l ON c.msno = l.msno
-        {limit_clause};
+            '{label_period}' AS label_period, DATE '{resolved_cutoff}' AS as_of_date, c.is_churn
+        FROM churn_labels c LEFT JOIN members_cleaned m ON c.msno = m.msno
+        LEFT JOIN tx_summary t ON c.msno = t.msno LEFT JOIN listen_summary l ON c.msno = l.msno {limit_clause};
         """
         try:
             con.execute(query)
@@ -255,6 +254,9 @@ class KKBoxETLPipeline:
             "source_rows_scanned": actual_source_rows,
             "churn_count": int(churn_count) if churn_count else 0,
             "churn_rate": round(float(churn_count / max(row_count, 1)), 4),
+            "label_period": label_period,
+            "label_window": resolved_window,
+            "cutoff_date": resolved_cutoff,
             "file_size_mb": round(file_size_mb, 2),
             "elapsed_seconds": round(elapsed, 2),
             "throughput_rows_sec": target_entity_throughput,

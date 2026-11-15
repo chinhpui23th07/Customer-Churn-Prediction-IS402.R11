@@ -87,9 +87,13 @@ class AzuriteStorageAdapter:
         self._lock = threading.RLock()
 
         target_conn = connection_string if connection_string is not None else DEFAULT_AZURITE_CONN
+        account_url = os.getenv("AZURE_STORAGE_ACCOUNT_URL", "").strip()
+        verify_tls = os.getenv("AZURE_STORAGE_VERIFY_TLS", "true").strip().lower() not in ("0", "false", "no")
         if not force_fallback:
             is_endpoint_alive = False
-            if "127.0.0.1:10000" in target_conn or "localhost:10000" in target_conn or "UseDevelopmentStorage=true" in target_conn:
+            if account_url and connection_string is None and not os.getenv("AZURE_STORAGE_CONNECTION_STRING"):
+                is_endpoint_alive = True
+            elif "127.0.0.1:10000" in target_conn or "localhost:10000" in target_conn or "UseDevelopmentStorage=true" in target_conn:
                 import socket
                 try:
                     with socket.create_connection(("127.0.0.1", 10000), timeout=0.1):
@@ -102,9 +106,17 @@ class AzuriteStorageAdapter:
             if is_endpoint_alive:
                 try:
                     from azure.storage.blob import BlobServiceClient
-                    client = BlobServiceClient.from_connection_string(
-                        target_conn, connection_verify=False
-                    )
+                    if account_url and connection_string is None and not os.getenv("AZURE_STORAGE_CONNECTION_STRING"):
+                        from azure.identity import DefaultAzureCredential
+                        client = BlobServiceClient(
+                            account_url=account_url,
+                            credential=DefaultAzureCredential(),
+                            connection_verify=verify_tls,
+                        )
+                    else:
+                        client = BlobServiceClient.from_connection_string(
+                            target_conn, connection_verify=verify_tls
+                        )
                     client.get_account_information(connection_timeout=1, read_timeout=1)
                     self._live_client = client
                     self._is_using_fallback = False

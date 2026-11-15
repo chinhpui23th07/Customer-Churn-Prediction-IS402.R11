@@ -23,6 +23,8 @@ properties:
     secrets:
       - name: api-key-secret
         value: "${API_KEY_SECRET}"
+      - name: kkbox-auth-token
+        value: "${KKBOX_API_KEY}"
       - name: redis-conn-str
         value: "${AZURE_REDIS_CONNECTION_STRING}"
       - name: redis-password
@@ -39,10 +41,14 @@ properties:
             value: "production"
           - name: API_KEY
             secretRef: api-key-secret
+          - name: KKBOX_API_KEY
+            secretRef: kkbox-auth-token
           - name: MLFLOW_TRACKING_URI
-            value: "sqlite:////app/data/mlflow.db"
+            value: "sqlite:////app/data/kkbox_models/mlflow.db"
           - name: AZURE_STORAGE_CONTAINER
             value: "churnguard-datasets"
+          - name: AZURE_STORAGE_ACCOUNT_URL
+            value: "${AZURE_STORAGE_ACCOUNT_URL}"
           - name: REDIS_HOST
             value: "${AZURE_REDIS_HOST}"
           - name: REDIS_PORT

@@ -7,6 +7,7 @@ framework:
   - arm
 
 skip-check:
+  - CKV_AZURE_139  # ACR Public Network Access Disabled: Azure restricts public_network_access_enabled = false to ACR Premium SKU (~$50/mo + Private Endpoints), exceeding the $75/mo FinOps budget; Basic SKU uses admin_enabled = false and User-Assigned Managed Identity AcrPull RBAC.
   - CKV_AZURE_165  # ACR Geo-replication: Multi-region ACR replication exceeds the $75/mo FinOps ceiling; workload targets Southeast Asia (Singapore) single region.
   - CKV_AZURE_233  # ACR Zone Redundancy: Requires ACR Premium SKU which exceeds the $75/mo FinOps ceiling; Basic SKU evaluated for baseline.
   - CKV_AZURE_163  # ACR Vulnerability Scanning: Requires Microsoft Defender for Containers; Trivy FS/Container scanning runs in CI instead.

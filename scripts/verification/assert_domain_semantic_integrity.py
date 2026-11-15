@@ -23,6 +23,12 @@ FORBIDDEN_DATASET_PATTERNS = [
     r"rees46",
     r"2019-Oct\.csv",
     r"ecommerce-behavior-data",
+    r"WA_Fn-UseC_-Telco",
+]
+PRIMARY_KKBOX_FORBIDDEN = [
+    r"customer_churn_dataset",
+    r"Support Calls",
+    r"Payment Delay",
 ]
 
 
@@ -65,6 +71,14 @@ def audit_source_code_domain_purity() -> list:
                     violations.append(
                         f"Vi phạm Invariant 20 tại {rel_path}:{line_no} - Tìm thấy token dataset trái domain '{m.group()}'"
                     )
+            rel_posix = p.relative_to(BASE_DIR).as_posix()
+            if rel_posix.startswith("src/kkbox/") or rel_posix == "src/data/kkbox_etl.py":
+                for pattern in PRIMARY_KKBOX_FORBIDDEN:
+                    for m in re.finditer(pattern, code):
+                        line_no = code[:m.start()].count("\n") + 1
+                        violations.append(
+                            f"Vi phạm cô lập Primary Track tại {rel_posix}:{line_no} - Token Comparative '{m.group()}'"
+                        )
     return violations
 
 

@@ -20,6 +20,20 @@ FEATURE_COLS = [
 ]
 
 
+def _load_shap_background(cols: List[str], max_rows: int = 128) -> np.ndarray:
+    """Load real training reference background rows for SHAP without synthetic weights."""
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    train_pq = os.path.join(base_dir, "data", "processed", "train_features.parquet")
+    if os.path.exists(train_pq):
+        try:
+            df = pd.read_parquet(train_pq, columns=cols)
+            if len(df) > 0:
+                return df.head(max_rows).to_numpy(dtype=float)
+        except Exception:
+            pass
+    return np.zeros((1, len(cols)), dtype=float)
+
+
 def _build_shap_explainer(clf: Any, feature_names: Optional[List[str]] = None) -> Any:
     """
     Khởi tạo SHAP TreeExplainer với fallback tự động sang LinearExplainer
@@ -30,7 +44,8 @@ def _build_shap_explainer(clf: Any, feature_names: Optional[List[str]] = None) -
         return shap.TreeExplainer(clf)
     except Exception:
         try:
-            return shap.LinearExplainer(clf, np.zeros((1, len(cols))))
+            bg = _load_shap_background(cols)
+            return shap.LinearExplainer(clf, bg)
         except Exception:
             return None
 
@@ -88,20 +103,23 @@ def compute_shap_attributions(
             vals = None
 
     if vals is None:
-        # Linear SHAP fallback (Corollary 1, Lundberg & Lee 2017): phi_i = w_i * (x_i - E[x_i])
+        bg = _load_shap_background(cols)
+        # Linear SHAP (Corollary 1, Lundberg & Lee 2017): phi_i = w_i * (x_i - E[x_i])
         if model is not None and hasattr(model, "coef_"):
             coef = np.asarray(model.coef_, dtype=float).flatten()
-            vals = coef[: len(cols)] * x_arr[0, : len(cols)]
+            bg_mean = np.mean(bg, axis=0) if len(bg) > 0 else np.zeros(len(cols))
+            vals = coef[: len(cols)] * (x_arr[0, : len(cols)] - bg_mean[: len(cols)])
             if hasattr(model, "intercept_"):
                 ic = np.asarray(model.intercept_, dtype=float).flatten()
                 base_value = float(ic[0]) if len(ic) > 0 else 0.0
+        elif model is not None and hasattr(model, "predict_proba"):
+            expl = shap.Explainer(lambda z: model.predict_proba(z)[:, 1], bg[:32])
+            sv = expl(x_arr[:, : len(cols)])
+            vals = np.asarray(sv.values[0], dtype=float).flatten()
+            bv = np.asarray(sv.base_values, dtype=float).flatten()
+            base_value = float(bv[0]) if len(bv) > 0 else 0.0
         else:
-            default_weights = np.array([
-                0.04, -0.02, -0.08, -0.05, 0.25, 0.20, -0.04,
-                -0.12, -0.10, 0.08, 0.18, -0.06, 0.14
-            ])
-            w = default_weights[: x_arr.shape[1]]
-            vals = x_arr[0] * w
+            raise RuntimeError("Model does not support real SHAP or linear coefficient attributions")
 
     for col_name, val in zip(cols, vals):
         factors[col_name] = round(float(val), 4)

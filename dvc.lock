@@ -13,7 +13,6 @@ stages:
       size: 4438
     outs:
     - path: data/kkbox_raw
-    metrics:
     - path: docs/experiments/kkbox_download_report.json
       hash: md5
       md5: e897cbf8cb5bdcf205d3b4dfbb65f4a7

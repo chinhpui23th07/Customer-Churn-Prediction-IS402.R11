@@ -1,10 +1,11 @@
 {
-  "source_parquet": "data\\kkbox_feast\\churn_features.parquet",
-  "source_bytes": 42666,
-  "rows": 1967,
-  "unique_snapshot_keys": 1967,
-  "online_write_rows": 1967,
+  "source_parquet": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\data\\kkbox_feast\\churn_features.parquet",
+  "source_bytes": 39218,
+  "rows": 1889,
+  "unique_snapshot_keys": 1889,
+  "online_write_rows": 1889,
   "online_write_method": "Feast write_to_online_store in batches",
+  "online_store_type": "SqliteOnlineStoreConfig",
   "online_lookup_populated_features": 12,
   "historical_lookup_rows": 1,
   "feature_count": 12

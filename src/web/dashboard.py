@@ -60,7 +60,7 @@ def load_json_file(file_path: str) -> dict:
 st.sidebar.title("ChurnGuard MLOps")
 st.sidebar.caption("Enterprise Observability & Model Serving Platform")
 st.sidebar.markdown("---")
-st.sidebar.markdown("- **Pipeline:** DVC (6-stage KKBox) + MLflow 3.16\n- **Feature Store:** Feast 0.66\n- **Champion Model:** KKBox_LGBM_Champion (ROC-AUC: 0.8764)\n- **A/B Split:** 80% Champ / 20% Chall")
+st.sidebar.markdown("- **Pipeline:** DVC (KKBox Dual-Track) + MLflow 3.16\n- **Feature Store:** Feast 0.66\n- **Primary Track:** KKBox Pilot (12 features)\n- **Comparative Track:** 4-Model Benchmark (XGBoost)\n- **A/B Split:** 80% Champ / 20% Chall")
 st.sidebar.markdown("---")
 if st.sidebar.button("Làm mới ngay (Refresh)"):
     st.rerun()
@@ -86,7 +86,7 @@ with tab_kpi:
     c1, c2, c3, c4 = st.columns(4)
     c1.markdown(f'<div class="metric-card"><div class="metric-title">Tổng Lượt Suy Luận</div><div class="metric-val">{total_inf:,}</div><div class="metric-sub">Lưu trữ trong SQLite Database</div></div>', unsafe_allow_html=True)
     c2.markdown(f'<div class="metric-card"><div class="metric-title">Tỷ Lệ Dự Đoán Rời Bỏ</div><div class="metric-val">{churn_rate:.1f}%</div><div class="metric-sub">{churn_cnt:,} / {total_inf:,} khách hàng</div></div>', unsafe_allow_html=True)
-    c3.markdown(f'<div class="metric-card"><div class="metric-title">Điều Hướng Champion</div><div class="metric-val">{champ_pct:.1f}%</div><div class="metric-sub">Mục tiêu: 80% (XGBoost)</div></div>', unsafe_allow_html=True)
+    c3.markdown(f'<div class="metric-card"><div class="metric-title">Điều Hướng Champion</div><div class="metric-val">{champ_pct:.1f}%</div><div class="metric-sub">Mục tiêu: 80% (Comparative Champion)</div></div>', unsafe_allow_html=True)
     c4.markdown('<div class="metric-card"><div class="metric-title">Trạng Thái Phục Vụ</div><div class="metric-val" style="color: #06D6A0;">HOẠT ĐỘNG (ONLINE)</div><div class="metric-sub">FastAPI + Feast Online Store</div></div>', unsafe_allow_html=True)
 
     st.subheader("Nhật Ký Suy Luận Thời Gian Thực Gần Nhất")
@@ -152,11 +152,11 @@ with tab_diag:
     with c_img1:
         img_lc = os.path.join(IMAGES_DIR, "learning_curves.png")
         if os.path.exists(img_lc):
-            st.image(img_lc, caption="Learning Curves: Hội tụ điểm ROC-AUC trên 5-Fold Stratified CV", use_column_width=True)
+            st.image(img_lc, caption="Learning Curves: Hội tụ điểm ROC-AUC trên 5-Fold Stratified CV", use_container_width=True)
     with c_img2:
         img_calib = os.path.join(IMAGES_DIR, "calibration_curve.png")
         if os.path.exists(img_calib):
-            st.image(img_calib, caption="Calibration Curve: Xác suất dự đoán bám sát xác suất thực tế", use_column_width=True)
+            st.image(img_calib, caption="Calibration Curve: Xác suất dự đoán bám sát xác suất thực tế", use_container_width=True)
 
     st.markdown("---")
     st.subheader("Phân Tích Lỗi Sai (Error Analysis: False Positives & False Negatives)")
@@ -164,7 +164,7 @@ with tab_diag:
     with c_img3:
         img_err = os.path.join(IMAGES_DIR, "error_analysis.png")
         if os.path.exists(img_err):
-            st.image(img_err, caption="Phân bố xác suất và hành vi nhóm lỗi dự đoán FP và FN", use_column_width=True)
+            st.image(img_err, caption="Phân bố xác suất và hành vi nhóm lỗi dự đoán FP và FN", use_container_width=True)
     with c_img4:
         err_rep = load_json_file(os.path.join(PROCESSED_DIR, "error_analysis_report.json"))
         if err_rep:

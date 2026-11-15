@@ -12,18 +12,37 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Response
 
 from src.api.ab_testing import analyze_ab_test_performance
 from src.api.utils import verify_api_key
-from src.features.feature_store import query_online_features
-from src.models.retraining_job import RetrainingJobManager
+from src.features.feature_store import get_redis_client, query_online_features
+from src.models.retraining_job import DistributedRetrainLock, RetrainingJobManager
 from src.monitoring.drift_detector import run_drift_analysis
+from src.resilience.azurite_adapter import AzuriteStorageAdapter
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(verify_api_key)])
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 MODELS_DIR = os.path.join(BASE_DIR, "data", "models")
 PROCESSED_DIR = os.path.join(BASE_DIR, "data", "processed")
 INFERENCE_DB = os.path.join(BASE_DIR, "data", "inference_logs.db")
 ONLINE_STORE_DB = os.path.join(BASE_DIR, "data", "feast_repo", "data", "online_store.db")
 APP_START_TIME = time.time()
-JOB_MANAGER = RetrainingJobManager()
+
+
+def _create_job_manager() -> RetrainingJobManager:
+    redis_client = None
+    try:
+        redis_client = get_redis_client()
+    except Exception:
+        redis_client = None
+    storage_adapter = None
+    try:
+        if os.getenv("AZURE_STORAGE_CONNECTION_STRING") or os.getenv("AZURE_STORAGE_ACCOUNT_URL"):
+            storage_adapter = AzuriteStorageAdapter()
+    except Exception:
+        storage_adapter = None
+    lock = DistributedRetrainLock(redis_client=redis_client)
+    return RetrainingJobManager(lock=lock, storage_adapter=storage_adapter)
+
+
+JOB_MANAGER = _create_job_manager()
 RELOAD_HOOK = None
 
 
@@ -204,10 +223,19 @@ def get_system_metrics():
         except Exception:
             pass
 
+    storage_backend = "in_memory_fallback"
+    try:
+        if JOB_MANAGER.storage_adapter is not None and not JOB_MANAGER.storage_adapter.is_using_fallback:
+            storage_backend = "azure_blob_live"
+    except Exception:
+        pass
+
     return {
         "service": "ChurnGuard-MLOps", "uptime_seconds": round(time.time() - APP_START_TIME, 2),
         "total_inference_requests": total_inferences, "champion_model": champion_name,
         "feast_online_status": os.path.exists(ONLINE_STORE_DB),
+        "lock_backend": "redis" if JOB_MANAGER.lock.redis_client is not None else "file_lock",
+        "storage_backend": storage_backend,
     }
 
 

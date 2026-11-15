@@ -162,7 +162,7 @@ def test_ab_testing_routing_and_analytics():
     data_ab = res_ab.json()
     assert data_ab["model_version"] in ["v2.0.0-champion", "v1.0.0-challenger"]
 
-    res_analytics = client.get("/ab_test/analytics")
+    res_analytics = client.get("/ab_test/analytics", headers=AUTH_HEADERS)
     assert res_analytics.status_code == 200
     data_analytics = res_analytics.json()
     assert "traffic_split_config" in data_analytics
@@ -186,7 +186,7 @@ def test_upload_csv_predict():
 
 def test_models_summary():
     """Verify MLflow experiment tracking summary across all 4 benchmark models."""
-    response = client.get("/models/summary")
+    response = client.get("/models/summary", headers=AUTH_HEADERS)
     assert response.status_code == 200
     data = response.json()
     assert "champion_model" in data
@@ -198,7 +198,7 @@ def test_models_summary():
 
 def test_models_tuning():
     """Verify Optuna hyperparameter tuning history endpoint."""
-    response = client.get("/models/tuning")
+    response = client.get("/models/tuning", headers=AUTH_HEADERS)
     assert response.status_code == 200
     data = response.json()
     assert "framework" in data
@@ -208,7 +208,7 @@ def test_models_tuning():
 
 def test_drift_status():
     """Verify Kolmogorov-Smirnov and Population Stability Index (PSI) drift monitoring."""
-    response = client.get("/drift/status")
+    response = client.get("/drift/status", headers=AUTH_HEADERS)
     assert response.status_code == 200
     data = response.json()
     assert "dataset_drift_detected" in data
@@ -219,7 +219,7 @@ def test_drift_status():
 
 def test_metrics_endpoint():
     """Verify observability metrics endpoint."""
-    response = client.get("/metrics")
+    response = client.get("/metrics", headers=AUTH_HEADERS)
     assert response.status_code == 200
     data = response.json()
     assert data["service"] == "ChurnGuard-MLOps"
@@ -265,4 +265,19 @@ def test_reload_model_endpoint():
     assert response.status_code == 200
     data = response.json()
     assert data["status"] in ["RELOADED", "NOOP"]
+
+
+def test_management_endpoints_require_api_key():
+    """Verify all management and analytics routes reject unauthenticated requests."""
+    for path in ("/models/summary", "/models/tuning", "/ab_test/analytics", "/features/156624", "/drift/status", "/metrics"):
+        resp = client.get(path)
+        assert resp.status_code == 401, f"{path} leaked without API key: {resp.status_code}"
+
+
+def test_production_mode_fails_closed_without_api_key(monkeypatch):
+    """Verify production mode refuses authentication instead of using dev fallback key."""
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.delenv("API_KEY", raising=False)
+    resp = client.get("/metrics", headers=AUTH_HEADERS)
+    assert resp.status_code == 503
 

@@ -6,13 +6,14 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.80.0"
+      version = ">= 3.85.0"
     }
   }
 }
 
 provider "azurerm" {
   features {}
+  storage_use_azuread = true
 }
 
 variable "location" {
@@ -31,6 +32,22 @@ variable "acr_name" {
   type        = string
   default     = "churnguardacr"
   description = "Azure Container Registry name"
+}
+
+variable "acr_sku" {
+  type        = string
+  default     = "Basic"
+  description = "Azure Container Registry SKU (Basic for <= $75 student FinOps; Premium for Private Link & retention)"
+  validation {
+    condition     = contains(["Basic", "Standard", "Premium"], var.acr_sku)
+    error_message = "acr_sku must be Basic, Standard, or Premium."
+  }
+}
+
+variable "allowed_deployer_ips" {
+  type        = list(string)
+  default     = []
+  description = "Optional deployer CIDR/IP allowlist for data-plane storage container creation outside VNet"
 }
 
 variable "api_key" {
@@ -53,13 +70,16 @@ resource "azurerm_container_registry" "acr" {
   name                          = var.acr_name
   resource_group_name           = azurerm_resource_group.rg.name
   location                      = azurerm_resource_group.rg.location
-  sku                           = "Basic"
+  sku                           = var.acr_sku
   admin_enabled                 = false
-  public_network_access_enabled = false
+  public_network_access_enabled = var.acr_sku == "Premium" ? false : true
 
-  retention_policy {
-    days    = 7
-    enabled = true
+  dynamic "retention_policy" {
+    for_each = var.acr_sku == "Premium" ? [1] : []
+    content {
+      days    = 7
+      enabled = true
+    }
   }
 }
 
@@ -78,6 +98,7 @@ resource "azurerm_storage_account" "sa" {
   network_rules {
     default_action = "Deny"
     bypass         = ["AzureServices"]
+    ip_rules       = var.allowed_deployer_ips
   }
 
   blob_properties {
@@ -101,7 +122,7 @@ resource "azurerm_storage_account" "sa" {
 
 resource "azurerm_storage_container" "sc" {
   name                  = "churnguard-datasets"
-  storage_account_name  = azurerm_storage_account.sa.name
+  storage_account_id    = azurerm_storage_account.sa.id
   container_access_type = "private"
 }
 
@@ -210,8 +231,12 @@ resource "azurerm_container_app" "app" {
         secret_name = "api-key-token"
       }
       env {
+        name        = "KKBOX_API_KEY"
+        secret_name = "api-key-token"
+      }
+      env {
         name  = "MLFLOW_TRACKING_URI"
-        value = "sqlite:////app/data/mlflow.db"
+        value = "sqlite:////app/data/kkbox_models/mlflow.db"
       }
       env {
         name  = "REDIS_HOST"
@@ -233,10 +258,29 @@ resource "azurerm_container_app" "app" {
         name  = "AZURE_STORAGE_CONTAINER"
         value = azurerm_storage_container.sc.name
       }
+      env {
+        name  = "AZURE_STORAGE_ACCOUNT_URL"
+        value = azurerm_storage_account.sa.primary_blob_endpoint
+      }
+
+      liveness_probe {
+        transport = "HTTP"
+        port      = 8000
+        path      = "/health"
+      }
+
+      readiness_probe {
+        transport = "HTTP"
+        port      = 8000
+        path      = "/v1/health"
+      }
     }
   }
 
-  depends_on = [azurerm_role_assignment.acr_pull]
+  depends_on = [
+    azurerm_role_assignment.acr_pull,
+    azurerm_role_assignment.storage_blob_contributor
+  ]
 }
 
 output "container_app_fqdn" {

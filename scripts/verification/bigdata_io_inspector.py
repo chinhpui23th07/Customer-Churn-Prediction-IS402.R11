@@ -16,6 +16,7 @@ if hasattr(sys.stderr, "reconfigure"):
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RAW_DIR = os.path.join(BASE_DIR, "data", "raw")
+RAW_DIRS = [RAW_DIR, os.path.join(BASE_DIR, "data", "kkbox_raw")]
 PROCESSED_DIR = os.path.join(BASE_DIR, "data", "processed")
 BENCHMARK_OUTPUT = os.path.join(PROCESSED_DIR, "bigdata_io_audit.json")
 
@@ -24,16 +25,21 @@ def audit_current_dataset_size() -> dict:
     """Đo lường chính xác dung lượng tất cả các tệp dữ liệu thô hiện hữu trên máy local."""
     raw_files = {}
     total_raw_bytes = 0
-    if os.path.exists(RAW_DIR):
-        for f in os.listdir(RAW_DIR):
-            fp = os.path.join(RAW_DIR, f)
-            if os.path.isfile(fp):
-                sz = os.path.getsize(fp)
-                raw_files[f] = {
-                    "size_bytes": sz,
-                    "size_mb": round(sz / (1024 * 1024), 2)
-                }
-                total_raw_bytes += sz
+    data_root = os.path.join(BASE_DIR, "data")
+    for raw_dir in RAW_DIRS:
+        if not os.path.exists(raw_dir):
+            continue
+        for root, _, files in os.walk(raw_dir):
+            for f in sorted(files):
+                fp = os.path.join(root, f)
+                if os.path.isfile(fp):
+                    sz = os.path.getsize(fp)
+                    rel_key = os.path.relpath(fp, data_root).replace("\\", "/")
+                    raw_files[rel_key] = {
+                        "size_bytes": sz,
+                        "size_mb": round(sz / (1024 * 1024), 2),
+                    }
+                    total_raw_bytes += sz
 
     total_raw_mb = round(total_raw_bytes / (1024 * 1024), 2)
     is_compliant_4gb = total_raw_bytes >= (4 * 1024 * 1024 * 1024)

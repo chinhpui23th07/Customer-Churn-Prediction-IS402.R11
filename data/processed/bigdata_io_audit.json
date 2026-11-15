@@ -1,23 +1,35 @@
 {
   "local_dataset_audit": {
-    "total_raw_bytes": 26731747,
-    "total_raw_mb": 25.49,
-    "total_raw_gb": 0.025,
+    "total_raw_bytes": 885659602,
+    "total_raw_mb": 844.63,
+    "total_raw_gb": 0.825,
     "target_rubric_gb": 4.0,
     "is_compliant_4gb": false,
-    "deficit_factor": 160.7,
+    "deficit_factor": 4.8,
     "files": {
-      "customer_churn_dataset-testing-master.csv": {
-        "size_bytes": 3282220,
-        "size_mb": 3.13
+      "kkbox_raw/churn_label/window=2017-02/data.parquet": {
+        "size_bytes": 7948492,
+        "size_mb": 7.58
       },
-      "customer_churn_dataset-training-master.csv": {
-        "size_bytes": 23448754,
-        "size_mb": 22.36
+      "kkbox_raw/churn_label/window=2017-03/data.parquet": {
+        "size_bytes": 7772330,
+        "size_mb": 7.41
       },
-      "data_sources.json": {
-        "size_bytes": 773,
-        "size_mb": 0.0
+      "kkbox_raw/listening_day/source_version=v1/activity_month=201701/data.parquet": {
+        "size_bytes": 304662028,
+        "size_mb": 290.55
+      },
+      "kkbox_raw/listening_day/source_version=v1/activity_month=201702/data.parquet": {
+        "size_bytes": 272911990,
+        "size_mb": 260.27
+      },
+      "kkbox_raw/member/data.parquet": {
+        "size_bytes": 60491935,
+        "size_mb": 57.69
+      },
+      "kkbox_raw/subscription_transaction/part=0/data.parquet": {
+        "size_bytes": 231872827,
+        "size_mb": 221.13
       }
     }
   },
