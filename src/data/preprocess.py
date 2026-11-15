@@ -146,6 +146,10 @@ def _standardize_and_deduplicate_raw(df_train_raw: pd.DataFrame, df_test_raw: pd
 def run_pipeline():
     """Thực thi pipeline tiền xử lý với kiểm soát chặt chẽ rò rỉ dữ liệu và chống Data Snooping."""
     os.makedirs(PROCESSED_DIR, exist_ok=True)
+    if not os.path.exists(RAW_TRAIN_FILE):
+        print("[INFO] Kaggle raw CSVs have been purged per Purification Declaration.")
+        print("[INFO] KKBox Parquet pipeline is active: use 'python src/kkbox/run_etl.py'.")
+        return {"status": "SKIPPED_KKBOX_ACTIVE", "message": "Kaggle CSVs purged, KKBox pipeline active"}
     print("[*] Nạp dữ liệu thô từ 2 tệp nguồn...")
     df_train_raw = pd.read_csv(RAW_TRAIN_FILE)
     df_test_raw = pd.read_csv(RAW_TEST_FILE) if os.path.exists(RAW_TEST_FILE) else pd.DataFrame()

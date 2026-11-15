@@ -8,7 +8,7 @@ spec:
   version: v1
   metadata:
   - name: redisHost
-    value: "redis-churnguard-sea.redis.cache.windows.net:6380"
+    value: "redis-churnguard-sea.southeastasia.redisenterprise.cache.azure.net:10000"
   - name: enableTLS
     value: "true"
   - name: maxRetries

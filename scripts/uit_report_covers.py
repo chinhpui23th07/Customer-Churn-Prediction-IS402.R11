@@ -110,7 +110,7 @@ def add_outer_cover_page(doc, assets_dir):
     p_spacer = doc.add_paragraph()
     p_spacer.paragraph_format.space_before = Pt(14)
 
-    # Khối thông tin Giảng viên hướng dẫn & Sinh viên thực hiện
+    # Khối thông tin Giảng viên hướng dẫn & Nhóm nghiên cứu
     p_info = doc.add_paragraph()
     p_info.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_info.paragraph_format.line_spacing = 1.3
@@ -122,10 +122,10 @@ def add_outer_cover_page(doc, assets_dir):
         (f"{UIT_FRONT_MATTER['instructor_name']}\n", True),
         ("CÁN BỘ PHẢN BIỆN: ", True),
         (f"{UIT_FRONT_MATTER['reviewer_name']}\n", False),
-        ("SINH VIÊN THỰC HIỆN: ", True),
-        (f"{UIT_FRONT_MATTER['student_name']} - MSSV: {UIT_FRONT_MATTER['student_id']}\n", True),
-        ("LỚP: ", True),
-        (f"{UIT_FRONT_MATTER['class_name']} - KHÓA HỌC: {UIT_FRONT_MATTER['cohort']}", False)
+        (f"{UIT_FRONT_MATTER['student_header']} ", True),
+        (f"{UIT_FRONT_MATTER['student_name']}\n", True),
+        ("CHUYÊN NGÀNH: ", True),
+        (f"{UIT_FRONT_MATTER['class_name']} - {UIT_FRONT_MATTER['cohort']}", False)
     ]
     for txt, bld in runs:
         r = p_info.add_run(txt)
@@ -147,7 +147,7 @@ def add_outer_cover_page(doc, assets_dir):
 
 
 def add_inner_cover_page(doc, assets_dir):
-    """Tạo Trang Bìa Phụ (Inner Cover) chuẩn UIT: Có Logo UIT và Bảng thông tin GVHD/CBPB/Sinh viên."""
+    """Tạo Trang Bìa Phụ (Inner Cover) chuẩn UIT: Có Logo UIT và Bảng thông tin GVHD/CBPB/Nhóm nghiên cứu."""
     _add_cover_header(doc)
     _add_cover_logo(doc, assets_dir)
     _add_cover_title_block(doc)
@@ -163,8 +163,8 @@ def add_inner_cover_page(doc, assets_dir):
     info_rows = [
         (UIT_FRONT_MATTER["instructor_title"], UIT_FRONT_MATTER["instructor_name"], True),
         (UIT_FRONT_MATTER["reviewer_title"], UIT_FRONT_MATTER["reviewer_name"], False),
-        (UIT_FRONT_MATTER["student_header"], f"{UIT_FRONT_MATTER['student_name']} - MSSV: {UIT_FRONT_MATTER['student_id']}", True),
-        ("LỚP - KHÓA HỌC:", f"{UIT_FRONT_MATTER['class_name']} - {UIT_FRONT_MATTER['cohort']}", False)
+        (UIT_FRONT_MATTER["student_header"], f"{UIT_FRONT_MATTER['student_name']}", True),
+        ("CHUYÊN NGÀNH - PHIÊN BẢN:", f"{UIT_FRONT_MATTER['class_name']} - {UIT_FRONT_MATTER['cohort']}", False)
     ]
     for i, (label, val, val_bold) in enumerate(info_rows):
         format_table_cell(t_info.rows[i].cells[0], label, bold=True, font_size=11)

@@ -106,6 +106,11 @@ def trigger_retraining(
 
     if drift_res.get("dataset_drift_detected", False) or drift_share >= 0.30 or force:
         if decoupled:
+            if JOB_MANAGER.lock.is_locked():
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Tiến trình tái huấn luyện đang chạy trên cụm distributed worker (lock active).",
+                )
             ticket, reason = JOB_MANAGER.start_job(dry_run=dry_run, force=force)
             if ticket is None:
                 raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Tiến trình tái huấn luyện đang chạy trên cụm distributed worker (lock active).")

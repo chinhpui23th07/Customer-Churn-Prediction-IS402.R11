@@ -99,6 +99,6 @@ if __name__ == "__main__":
     print(f"Yêu cầu Rubric 1.3: >= {loc['target_rubric_gb']} GB")
     print(f"Trạng thái tuân thủ local: {'ĐẠT CHUẨN' if loc['is_compliant_4gb'] else 'CHƯA ĐẠT (Chạy 100% Local, bị trừ điểm Rubric 1.3)'}")
     print(f"Tập dữ liệu Cloud mục tiêu: {res['cloud_bigdata_specs']['dataset_name']} ({res['cloud_bigdata_specs']['target_raw_size_gb']} GB)")
-    print(f"Trạng thái Notebook Cloud: {'SẴN SÀNG' if res['cloud_bigdata_specs']['notebook_ready'] else 'CHƯA SẴN SÀNG'}")
+    print(f"Trạng thái Đặc tả Cloud: {'SẴN SÀNG' if res['cloud_bigdata_specs']['spec_ready'] else 'CHƯA SẴN SÀNG'}")
     print(f"Phát hiện Fake Data / Mock Data: {res['verdict']['mock_data_detected']}")
     print(f"[+] Kết quả lưu tại: {BENCHMARK_OUTPUT}")

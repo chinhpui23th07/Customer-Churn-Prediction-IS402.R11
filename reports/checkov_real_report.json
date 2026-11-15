@@ -399,7 +399,7 @@
                         ],
                         [
                             65,
-                            "  account_replication_type          = \"GRS\"\n"
+                            "  account_replication_type          = \"LRS\"\n"
                         ],
                         [
                             66,
@@ -479,15 +479,15 @@
                         ],
                         [
                             85,
-                            "      delete                = true\n"
+                            "      delete = true\n"
                         ],
                         [
                             86,
-                            "      read                  = true\n"
+                            "      read   = true\n"
                         ],
                         [
                             87,
-                            "      write                 = true\n"
+                            "      write  = true\n"
                         ],
                         [
                             88,
@@ -578,7 +578,7 @@
                         ],
                         [
                             65,
-                            "  account_replication_type          = \"GRS\"\n"
+                            "  account_replication_type          = \"LRS\"\n"
                         ],
                         [
                             66,
@@ -658,15 +658,15 @@
                         ],
                         [
                             85,
-                            "      delete                = true\n"
+                            "      delete = true\n"
                         ],
                         [
                             86,
-                            "      read                  = true\n"
+                            "      read   = true\n"
                         ],
                         [
                             87,
-                            "      write                 = true\n"
+                            "      write  = true\n"
                         ],
                         [
                             88,
@@ -757,7 +757,7 @@
                         ],
                         [
                             65,
-                            "  account_replication_type          = \"GRS\"\n"
+                            "  account_replication_type          = \"LRS\"\n"
                         ],
                         [
                             66,
@@ -837,15 +837,15 @@
                         ],
                         [
                             85,
-                            "      delete                = true\n"
+                            "      delete = true\n"
                         ],
                         [
                             86,
-                            "      read                  = true\n"
+                            "      read   = true\n"
                         ],
                         [
                             87,
-                            "      write                 = true\n"
+                            "      write  = true\n"
                         ],
                         [
                             88,
@@ -938,7 +938,7 @@
                         ],
                         [
                             65,
-                            "  account_replication_type          = \"GRS\"\n"
+                            "  account_replication_type          = \"LRS\"\n"
                         ],
                         [
                             66,
@@ -1018,15 +1018,15 @@
                         ],
                         [
                             85,
-                            "      delete                = true\n"
+                            "      delete = true\n"
                         ],
                         [
                             86,
-                            "      read                  = true\n"
+                            "      read   = true\n"
                         ],
                         [
                             87,
-                            "      write                 = true\n"
+                            "      write  = true\n"
                         ],
                         [
                             88,
@@ -1117,7 +1117,7 @@
                         ],
                         [
                             65,
-                            "  account_replication_type          = \"GRS\"\n"
+                            "  account_replication_type          = \"LRS\"\n"
                         ],
                         [
                             66,
@@ -1197,15 +1197,15 @@
                         ],
                         [
                             85,
-                            "      delete                = true\n"
+                            "      delete = true\n"
                         ],
                         [
                             86,
-                            "      read                  = true\n"
+                            "      read   = true\n"
                         ],
                         [
                             87,
-                            "      write                 = true\n"
+                            "      write  = true\n"
                         ],
                         [
                             88,
@@ -1296,7 +1296,7 @@
                         ],
                         [
                             65,
-                            "  account_replication_type          = \"GRS\"\n"
+                            "  account_replication_type          = \"LRS\"\n"
                         ],
                         [
                             66,
@@ -1376,15 +1376,15 @@
                         ],
                         [
                             85,
-                            "      delete                = true\n"
+                            "      delete = true\n"
                         ],
                         [
                             86,
-                            "      read                  = true\n"
+                            "      read   = true\n"
                         ],
                         [
                             87,
-                            "      write                 = true\n"
+                            "      write  = true\n"
                         ],
                         [
                             88,
@@ -1475,7 +1475,7 @@
                         ],
                         [
                             65,
-                            "  account_replication_type          = \"GRS\"\n"
+                            "  account_replication_type          = \"LRS\"\n"
                         ],
                         [
                             66,
@@ -1555,15 +1555,15 @@
                         ],
                         [
                             85,
-                            "      delete                = true\n"
+                            "      delete = true\n"
                         ],
                         [
                             86,
-                            "      read                  = true\n"
+                            "      read   = true\n"
                         ],
                         [
                             87,
-                            "      write                 = true\n"
+                            "      write  = true\n"
                         ],
                         [
                             88,
@@ -1654,7 +1654,7 @@
                         ],
                         [
                             65,
-                            "  account_replication_type          = \"GRS\"\n"
+                            "  account_replication_type          = \"LRS\"\n"
                         ],
                         [
                             66,
@@ -1734,15 +1734,15 @@
                         ],
                         [
                             85,
-                            "      delete                = true\n"
+                            "      delete = true\n"
                         ],
                         [
                             86,
-                            "      read                  = true\n"
+                            "      read   = true\n"
                         ],
                         [
                             87,
-                            "      write                 = true\n"
+                            "      write  = true\n"
                         ],
                         [
                             88,
@@ -1833,7 +1833,7 @@
                         ],
                         [
                             65,
-                            "  account_replication_type          = \"GRS\"\n"
+                            "  account_replication_type          = \"LRS\"\n"
                         ],
                         [
                             66,
@@ -1913,15 +1913,15 @@
                         ],
                         [
                             85,
-                            "      delete                = true\n"
+                            "      delete = true\n"
                         ],
                         [
                             86,
-                            "      read                  = true\n"
+                            "      read   = true\n"
                         ],
                         [
                             87,
-                            "      write                 = true\n"
+                            "      write  = true\n"
                         ],
                         [
                             88,
@@ -2039,843 +2039,6 @@
                     "definition_context_file_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf"
                 },
                 {
-                    "check_id": "CKV_AZURE_91",
-                    "bc_check_id": "BC_AZR_NETWORKING_24",
-                    "check_name": "Ensure that only SSL are enabled for Cache for Redis",
-                    "check_result": {
-                        "result": "PASSED",
-                        "evaluated_keys": [
-                            "enable_non_ssl_port"
-                        ]
-                    },
-                    "code_block": [
-                        [
-                            102,
-                            "resource \"azurerm_redis_cache\" \"redis\" {\n"
-                        ],
-                        [
-                            103,
-                            "  name                          = \"redis-churnguard-sea\"\n"
-                        ],
-                        [
-                            104,
-                            "  location                      = azurerm_resource_group.rg.location\n"
-                        ],
-                        [
-                            105,
-                            "  resource_group_name           = azurerm_resource_group.rg.name\n"
-                        ],
-                        [
-                            106,
-                            "  capacity                      = 0\n"
-                        ],
-                        [
-                            107,
-                            "  family                        = \"C\"\n"
-                        ],
-                        [
-                            108,
-                            "  sku_name                      = \"Basic\"\n"
-                        ],
-                        [
-                            109,
-                            "  enable_non_ssl_port           = false\n"
-                        ],
-                        [
-                            110,
-                            "  minimum_tls_version           = \"1.2\"\n"
-                        ],
-                        [
-                            111,
-                            "  public_network_access_enabled = false\n"
-                        ],
-                        [
-                            112,
-                            "\n"
-                        ],
-                        [
-                            113,
-                            "  redis_configuration {\n"
-                        ],
-                        [
-                            114,
-                            "    maxmemory_policy = \"volatile-lru\"\n"
-                        ],
-                        [
-                            115,
-                            "  }\n"
-                        ],
-                        [
-                            116,
-                            "}\n"
-                        ]
-                    ],
-                    "file_path": "\\main.tf",
-                    "file_abs_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf",
-                    "repo_file_path": "/deploy/azure/main.tf",
-                    "file_line_range": [
-                        102,
-                        116
-                    ],
-                    "resource": "azurerm_redis_cache.redis",
-                    "evaluations": null,
-                    "check_class": "checkov.terraform.checks.resource.azure.RedisCacheEnableNonSSLPort",
-                    "fixed_definition": null,
-                    "entity_tags": null,
-                    "caller_file_path": null,
-                    "caller_file_line_range": null,
-                    "resource_address": null,
-                    "severity": null,
-                    "bc_category": null,
-                    "benchmarks": null,
-                    "description": null,
-                    "short_description": null,
-                    "vulnerability_details": null,
-                    "connected_node": null,
-                    "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-only-ssl-are-enabled-for-cache-for-redis",
-                    "details": [],
-                    "check_len": null,
-                    "definition_context_file_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf"
-                },
-                {
-                    "check_id": "CKV_AZURE_148",
-                    "bc_check_id": "BC_AZR_NETWORKING_59",
-                    "check_name": "Ensure Redis Cache is using the latest version of TLS encryption",
-                    "check_result": {
-                        "result": "PASSED",
-                        "evaluated_keys": [
-                            "minimum_tls_version"
-                        ]
-                    },
-                    "code_block": [
-                        [
-                            102,
-                            "resource \"azurerm_redis_cache\" \"redis\" {\n"
-                        ],
-                        [
-                            103,
-                            "  name                          = \"redis-churnguard-sea\"\n"
-                        ],
-                        [
-                            104,
-                            "  location                      = azurerm_resource_group.rg.location\n"
-                        ],
-                        [
-                            105,
-                            "  resource_group_name           = azurerm_resource_group.rg.name\n"
-                        ],
-                        [
-                            106,
-                            "  capacity                      = 0\n"
-                        ],
-                        [
-                            107,
-                            "  family                        = \"C\"\n"
-                        ],
-                        [
-                            108,
-                            "  sku_name                      = \"Basic\"\n"
-                        ],
-                        [
-                            109,
-                            "  enable_non_ssl_port           = false\n"
-                        ],
-                        [
-                            110,
-                            "  minimum_tls_version           = \"1.2\"\n"
-                        ],
-                        [
-                            111,
-                            "  public_network_access_enabled = false\n"
-                        ],
-                        [
-                            112,
-                            "\n"
-                        ],
-                        [
-                            113,
-                            "  redis_configuration {\n"
-                        ],
-                        [
-                            114,
-                            "    maxmemory_policy = \"volatile-lru\"\n"
-                        ],
-                        [
-                            115,
-                            "  }\n"
-                        ],
-                        [
-                            116,
-                            "}\n"
-                        ]
-                    ],
-                    "file_path": "\\main.tf",
-                    "file_abs_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf",
-                    "repo_file_path": "/deploy/azure/main.tf",
-                    "file_line_range": [
-                        102,
-                        116
-                    ],
-                    "resource": "azurerm_redis_cache.redis",
-                    "evaluations": null,
-                    "check_class": "checkov.terraform.checks.resource.azure.RedisCacheMinTLSVersion",
-                    "fixed_definition": null,
-                    "entity_tags": null,
-                    "caller_file_path": null,
-                    "caller_file_line_range": null,
-                    "resource_address": null,
-                    "severity": null,
-                    "bc_category": null,
-                    "benchmarks": null,
-                    "description": null,
-                    "short_description": null,
-                    "vulnerability_details": null,
-                    "connected_node": null,
-                    "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-azure-aks-cluster-nodes-do-not-have-public-ip-addresses",
-                    "details": [],
-                    "check_len": null,
-                    "definition_context_file_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf"
-                },
-                {
-                    "check_id": "CKV_AZURE_89",
-                    "bc_check_id": "BC_AZR_NETWORKING_23",
-                    "check_name": "Ensure that Azure Cache for Redis disables public network access",
-                    "check_result": {
-                        "result": "PASSED",
-                        "evaluated_keys": [
-                            "public_network_access_enabled"
-                        ]
-                    },
-                    "code_block": [
-                        [
-                            102,
-                            "resource \"azurerm_redis_cache\" \"redis\" {\n"
-                        ],
-                        [
-                            103,
-                            "  name                          = \"redis-churnguard-sea\"\n"
-                        ],
-                        [
-                            104,
-                            "  location                      = azurerm_resource_group.rg.location\n"
-                        ],
-                        [
-                            105,
-                            "  resource_group_name           = azurerm_resource_group.rg.name\n"
-                        ],
-                        [
-                            106,
-                            "  capacity                      = 0\n"
-                        ],
-                        [
-                            107,
-                            "  family                        = \"C\"\n"
-                        ],
-                        [
-                            108,
-                            "  sku_name                      = \"Basic\"\n"
-                        ],
-                        [
-                            109,
-                            "  enable_non_ssl_port           = false\n"
-                        ],
-                        [
-                            110,
-                            "  minimum_tls_version           = \"1.2\"\n"
-                        ],
-                        [
-                            111,
-                            "  public_network_access_enabled = false\n"
-                        ],
-                        [
-                            112,
-                            "\n"
-                        ],
-                        [
-                            113,
-                            "  redis_configuration {\n"
-                        ],
-                        [
-                            114,
-                            "    maxmemory_policy = \"volatile-lru\"\n"
-                        ],
-                        [
-                            115,
-                            "  }\n"
-                        ],
-                        [
-                            116,
-                            "}\n"
-                        ]
-                    ],
-                    "file_path": "\\main.tf",
-                    "file_abs_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf",
-                    "repo_file_path": "/deploy/azure/main.tf",
-                    "file_line_range": [
-                        102,
-                        116
-                    ],
-                    "resource": "azurerm_redis_cache.redis",
-                    "evaluations": null,
-                    "check_class": "checkov.terraform.checks.resource.azure.RedisCachePublicNetworkAccessEnabled",
-                    "fixed_definition": null,
-                    "entity_tags": null,
-                    "caller_file_path": null,
-                    "caller_file_line_range": null,
-                    "resource_address": null,
-                    "severity": null,
-                    "bc_category": null,
-                    "benchmarks": null,
-                    "description": null,
-                    "short_description": null,
-                    "vulnerability_details": null,
-                    "connected_node": null,
-                    "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-azure-cache-for-redis-disables-public-network-access",
-                    "details": [],
-                    "check_len": null,
-                    "definition_context_file_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf"
-                },
-                {
-                    "check_id": "CKV2_AZURE_40",
-                    "bc_check_id": "BC_AZR_IAM_20",
-                    "check_name": "Ensure storage account is not configured with Shared Key authorization",
-                    "check_result": {
-                        "result": "PASSED",
-                        "entity": {
-                            "azurerm_storage_account": {
-                                "sa": {
-                                    "__end_line__": 94,
-                                    "__start_line__": 60,
-                                    "account_replication_type": [
-                                        "GRS"
-                                    ],
-                                    "account_tier": [
-                                        "Standard"
-                                    ],
-                                    "allow_nested_items_to_be_public": [
-                                        false
-                                    ],
-                                    "blob_properties": [
-                                        {
-                                            "delete_retention_policy": [
-                                                {
-                                                    "days": [
-                                                        7
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "infrastructure_encryption_enabled": [
-                                        true
-                                    ],
-                                    "location": [
-                                        "southeastasia"
-                                    ],
-                                    "min_tls_version": [
-                                        "TLS1_2"
-                                    ],
-                                    "name": [
-                                        "stchurnguardsea2026"
-                                    ],
-                                    "network_rules": [
-                                        {
-                                            "bypass": [
-                                                [
-                                                    "AzureServices"
-                                                ]
-                                            ],
-                                            "default_action": [
-                                                "Deny"
-                                            ]
-                                        }
-                                    ],
-                                    "public_network_access_enabled": [
-                                        false
-                                    ],
-                                    "queue_properties": [
-                                        {
-                                            "logging": [
-                                                {
-                                                    "delete": [
-                                                        true
-                                                    ],
-                                                    "read": [
-                                                        true
-                                                    ],
-                                                    "retention_policy": [
-                                                        {
-                                                            "days": [
-                                                                7
-                                                            ],
-                                                            "enabled": [
-                                                                true
-                                                            ]
-                                                        }
-                                                    ],
-                                                    "write": [
-                                                        true
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "resource_group_name": [
-                                        "rg-churnguard-mlops-sea"
-                                    ],
-                                    "shared_access_key_enabled": [
-                                        false
-                                    ],
-                                    "__address__": "azurerm_storage_account.sa",
-                                    "__provider_address__": "azurerm.default"
-                                }
-                            }
-                        },
-                        "evaluated_keys": [
-                            "shared_access_key_enabled"
-                        ]
-                    },
-                    "code_block": [
-                        [
-                            60,
-                            "resource \"azurerm_storage_account\" \"sa\" {\n"
-                        ],
-                        [
-                            61,
-                            "  name                              = \"stchurnguardsea2026\"\n"
-                        ],
-                        [
-                            62,
-                            "  resource_group_name               = azurerm_resource_group.rg.name\n"
-                        ],
-                        [
-                            63,
-                            "  location                          = azurerm_resource_group.rg.location\n"
-                        ],
-                        [
-                            64,
-                            "  account_tier                      = \"Standard\"\n"
-                        ],
-                        [
-                            65,
-                            "  account_replication_type          = \"GRS\"\n"
-                        ],
-                        [
-                            66,
-                            "  min_tls_version                   = \"TLS1_2\"\n"
-                        ],
-                        [
-                            67,
-                            "  public_network_access_enabled     = false\n"
-                        ],
-                        [
-                            68,
-                            "  shared_access_key_enabled         = false\n"
-                        ],
-                        [
-                            69,
-                            "  allow_nested_items_to_be_public   = false\n"
-                        ],
-                        [
-                            70,
-                            "  infrastructure_encryption_enabled = true\n"
-                        ],
-                        [
-                            71,
-                            "\n"
-                        ],
-                        [
-                            72,
-                            "  network_rules {\n"
-                        ],
-                        [
-                            73,
-                            "    default_action = \"Deny\"\n"
-                        ],
-                        [
-                            74,
-                            "    bypass         = [\"AzureServices\"]\n"
-                        ],
-                        [
-                            75,
-                            "  }\n"
-                        ],
-                        [
-                            76,
-                            "\n"
-                        ],
-                        [
-                            77,
-                            "  blob_properties {\n"
-                        ],
-                        [
-                            78,
-                            "    delete_retention_policy {\n"
-                        ],
-                        [
-                            79,
-                            "      days = 7\n"
-                        ],
-                        [
-                            80,
-                            "    }\n"
-                        ],
-                        [
-                            81,
-                            "  }\n"
-                        ],
-                        [
-                            82,
-                            "\n"
-                        ],
-                        [
-                            83,
-                            "  queue_properties {\n"
-                        ],
-                        [
-                            84,
-                            "    logging {\n"
-                        ],
-                        [
-                            85,
-                            "      delete                = true\n"
-                        ],
-                        [
-                            86,
-                            "      read                  = true\n"
-                        ],
-                        [
-                            87,
-                            "      write                 = true\n"
-                        ],
-                        [
-                            88,
-                            "      retention_policy {\n"
-                        ],
-                        [
-                            89,
-                            "        enabled = true\n"
-                        ],
-                        [
-                            90,
-                            "        days    = 7\n"
-                        ],
-                        [
-                            91,
-                            "      }\n"
-                        ],
-                        [
-                            92,
-                            "    }\n"
-                        ],
-                        [
-                            93,
-                            "  }\n"
-                        ],
-                        [
-                            94,
-                            "}\n"
-                        ]
-                    ],
-                    "file_path": "\\main.tf",
-                    "file_abs_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf",
-                    "repo_file_path": "/deploy/azure/main.tf",
-                    "file_line_range": [
-                        60,
-                        94
-                    ],
-                    "resource": "azurerm_storage_account.sa",
-                    "evaluations": null,
-                    "check_class": "checkov.common.graph.checks_infra.base_check",
-                    "fixed_definition": null,
-                    "entity_tags": null,
-                    "caller_file_path": null,
-                    "caller_file_line_range": null,
-                    "resource_address": null,
-                    "severity": null,
-                    "bc_category": null,
-                    "benchmarks": null,
-                    "description": null,
-                    "short_description": null,
-                    "vulnerability_details": null,
-                    "connected_node": null,
-                    "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-40",
-                    "details": [],
-                    "check_len": null,
-                    "definition_context_file_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf"
-                },
-                {
-                    "check_id": "CKV2_AZURE_38",
-                    "bc_check_id": "BC_AZR_GENERAL_128",
-                    "check_name": "Ensure soft-delete is enabled on Azure storage account",
-                    "check_result": {
-                        "result": "PASSED",
-                        "entity": {
-                            "azurerm_storage_account": {
-                                "sa": {
-                                    "__end_line__": 94,
-                                    "__start_line__": 60,
-                                    "account_replication_type": [
-                                        "GRS"
-                                    ],
-                                    "account_tier": [
-                                        "Standard"
-                                    ],
-                                    "allow_nested_items_to_be_public": [
-                                        false
-                                    ],
-                                    "blob_properties": [
-                                        {
-                                            "delete_retention_policy": [
-                                                {
-                                                    "days": [
-                                                        7
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "infrastructure_encryption_enabled": [
-                                        true
-                                    ],
-                                    "location": [
-                                        "southeastasia"
-                                    ],
-                                    "min_tls_version": [
-                                        "TLS1_2"
-                                    ],
-                                    "name": [
-                                        "stchurnguardsea2026"
-                                    ],
-                                    "network_rules": [
-                                        {
-                                            "bypass": [
-                                                [
-                                                    "AzureServices"
-                                                ]
-                                            ],
-                                            "default_action": [
-                                                "Deny"
-                                            ]
-                                        }
-                                    ],
-                                    "public_network_access_enabled": [
-                                        false
-                                    ],
-                                    "queue_properties": [
-                                        {
-                                            "logging": [
-                                                {
-                                                    "delete": [
-                                                        true
-                                                    ],
-                                                    "read": [
-                                                        true
-                                                    ],
-                                                    "retention_policy": [
-                                                        {
-                                                            "days": [
-                                                                7
-                                                            ],
-                                                            "enabled": [
-                                                                true
-                                                            ]
-                                                        }
-                                                    ],
-                                                    "write": [
-                                                        true
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "resource_group_name": [
-                                        "rg-churnguard-mlops-sea"
-                                    ],
-                                    "shared_access_key_enabled": [
-                                        false
-                                    ],
-                                    "__address__": "azurerm_storage_account.sa",
-                                    "__provider_address__": "azurerm.default"
-                                }
-                            }
-                        },
-                        "evaluated_keys": [
-                            "blob_properties/delete_retention_policy",
-                            "account_kind",
-                            "blob_properties/delete_retention_policy/days"
-                        ]
-                    },
-                    "code_block": [
-                        [
-                            60,
-                            "resource \"azurerm_storage_account\" \"sa\" {\n"
-                        ],
-                        [
-                            61,
-                            "  name                              = \"stchurnguardsea2026\"\n"
-                        ],
-                        [
-                            62,
-                            "  resource_group_name               = azurerm_resource_group.rg.name\n"
-                        ],
-                        [
-                            63,
-                            "  location                          = azurerm_resource_group.rg.location\n"
-                        ],
-                        [
-                            64,
-                            "  account_tier                      = \"Standard\"\n"
-                        ],
-                        [
-                            65,
-                            "  account_replication_type          = \"GRS\"\n"
-                        ],
-                        [
-                            66,
-                            "  min_tls_version                   = \"TLS1_2\"\n"
-                        ],
-                        [
-                            67,
-                            "  public_network_access_enabled     = false\n"
-                        ],
-                        [
-                            68,
-                            "  shared_access_key_enabled         = false\n"
-                        ],
-                        [
-                            69,
-                            "  allow_nested_items_to_be_public   = false\n"
-                        ],
-                        [
-                            70,
-                            "  infrastructure_encryption_enabled = true\n"
-                        ],
-                        [
-                            71,
-                            "\n"
-                        ],
-                        [
-                            72,
-                            "  network_rules {\n"
-                        ],
-                        [
-                            73,
-                            "    default_action = \"Deny\"\n"
-                        ],
-                        [
-                            74,
-                            "    bypass         = [\"AzureServices\"]\n"
-                        ],
-                        [
-                            75,
-                            "  }\n"
-                        ],
-                        [
-                            76,
-                            "\n"
-                        ],
-                        [
-                            77,
-                            "  blob_properties {\n"
-                        ],
-                        [
-                            78,
-                            "    delete_retention_policy {\n"
-                        ],
-                        [
-                            79,
-                            "      days = 7\n"
-                        ],
-                        [
-                            80,
-                            "    }\n"
-                        ],
-                        [
-                            81,
-                            "  }\n"
-                        ],
-                        [
-                            82,
-                            "\n"
-                        ],
-                        [
-                            83,
-                            "  queue_properties {\n"
-                        ],
-                        [
-                            84,
-                            "    logging {\n"
-                        ],
-                        [
-                            85,
-                            "      delete                = true\n"
-                        ],
-                        [
-                            86,
-                            "      read                  = true\n"
-                        ],
-                        [
-                            87,
-                            "      write                 = true\n"
-                        ],
-                        [
-                            88,
-                            "      retention_policy {\n"
-                        ],
-                        [
-                            89,
-                            "        enabled = true\n"
-                        ],
-                        [
-                            90,
-                            "        days    = 7\n"
-                        ],
-                        [
-                            91,
-                            "      }\n"
-                        ],
-                        [
-                            92,
-                            "    }\n"
-                        ],
-                        [
-                            93,
-                            "  }\n"
-                        ],
-                        [
-                            94,
-                            "}\n"
-                        ]
-                    ],
-                    "file_path": "\\main.tf",
-                    "file_abs_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf",
-                    "repo_file_path": "/deploy/azure/main.tf",
-                    "file_line_range": [
-                        60,
-                        94
-                    ],
-                    "resource": "azurerm_storage_account.sa",
-                    "evaluations": null,
-                    "check_class": "checkov.common.graph.checks_infra.base_check",
-                    "fixed_definition": null,
-                    "entity_tags": null,
-                    "caller_file_path": null,
-                    "caller_file_line_range": null,
-                    "resource_address": null,
-                    "severity": null,
-                    "bc_category": null,
-                    "benchmarks": null,
-                    "description": null,
-                    "short_description": null,
-                    "vulnerability_details": null,
-                    "connected_node": null,
-                    "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-38",
-                    "details": [],
-                    "check_len": null,
-                    "definition_context_file_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf"
-                },
-                {
                     "check_id": "CKV2_AZURE_47",
                     "bc_check_id": "BC_AZR_IAM_22",
                     "check_name": "Ensure storage account is configured without blob anonymous access",
@@ -2887,7 +2050,7 @@
                                     "__end_line__": 94,
                                     "__start_line__": 60,
                                     "account_replication_type": [
-                                        "GRS"
+                                        "LRS"
                                     ],
                                     "account_tier": [
                                         "Standard"
@@ -2998,7 +2161,7 @@
                         ],
                         [
                             65,
-                            "  account_replication_type          = \"GRS\"\n"
+                            "  account_replication_type          = \"LRS\"\n"
                         ],
                         [
                             66,
@@ -3078,15 +2241,15 @@
                         ],
                         [
                             85,
-                            "      delete                = true\n"
+                            "      delete = true\n"
                         ],
                         [
                             86,
-                            "      read                  = true\n"
+                            "      read   = true\n"
                         ],
                         [
                             87,
-                            "      write                 = true\n"
+                            "      write  = true\n"
                         ],
                         [
                             88,
@@ -3145,6 +2308,546 @@
                     "definition_context_file_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf"
                 },
                 {
+                    "check_id": "CKV2_AZURE_38",
+                    "bc_check_id": "BC_AZR_GENERAL_128",
+                    "check_name": "Ensure soft-delete is enabled on Azure storage account",
+                    "check_result": {
+                        "result": "PASSED",
+                        "entity": {
+                            "azurerm_storage_account": {
+                                "sa": {
+                                    "__end_line__": 94,
+                                    "__start_line__": 60,
+                                    "account_replication_type": [
+                                        "LRS"
+                                    ],
+                                    "account_tier": [
+                                        "Standard"
+                                    ],
+                                    "allow_nested_items_to_be_public": [
+                                        false
+                                    ],
+                                    "blob_properties": [
+                                        {
+                                            "delete_retention_policy": [
+                                                {
+                                                    "days": [
+                                                        7
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "infrastructure_encryption_enabled": [
+                                        true
+                                    ],
+                                    "location": [
+                                        "southeastasia"
+                                    ],
+                                    "min_tls_version": [
+                                        "TLS1_2"
+                                    ],
+                                    "name": [
+                                        "stchurnguardsea2026"
+                                    ],
+                                    "network_rules": [
+                                        {
+                                            "bypass": [
+                                                [
+                                                    "AzureServices"
+                                                ]
+                                            ],
+                                            "default_action": [
+                                                "Deny"
+                                            ]
+                                        }
+                                    ],
+                                    "public_network_access_enabled": [
+                                        false
+                                    ],
+                                    "queue_properties": [
+                                        {
+                                            "logging": [
+                                                {
+                                                    "delete": [
+                                                        true
+                                                    ],
+                                                    "read": [
+                                                        true
+                                                    ],
+                                                    "retention_policy": [
+                                                        {
+                                                            "days": [
+                                                                7
+                                                            ],
+                                                            "enabled": [
+                                                                true
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "write": [
+                                                        true
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "resource_group_name": [
+                                        "rg-churnguard-mlops-sea"
+                                    ],
+                                    "shared_access_key_enabled": [
+                                        false
+                                    ],
+                                    "__address__": "azurerm_storage_account.sa",
+                                    "__provider_address__": "azurerm.default"
+                                }
+                            }
+                        },
+                        "evaluated_keys": [
+                            "blob_properties/delete_retention_policy/days",
+                            "account_kind",
+                            "blob_properties/delete_retention_policy"
+                        ]
+                    },
+                    "code_block": [
+                        [
+                            60,
+                            "resource \"azurerm_storage_account\" \"sa\" {\n"
+                        ],
+                        [
+                            61,
+                            "  name                              = \"stchurnguardsea2026\"\n"
+                        ],
+                        [
+                            62,
+                            "  resource_group_name               = azurerm_resource_group.rg.name\n"
+                        ],
+                        [
+                            63,
+                            "  location                          = azurerm_resource_group.rg.location\n"
+                        ],
+                        [
+                            64,
+                            "  account_tier                      = \"Standard\"\n"
+                        ],
+                        [
+                            65,
+                            "  account_replication_type          = \"LRS\"\n"
+                        ],
+                        [
+                            66,
+                            "  min_tls_version                   = \"TLS1_2\"\n"
+                        ],
+                        [
+                            67,
+                            "  public_network_access_enabled     = false\n"
+                        ],
+                        [
+                            68,
+                            "  shared_access_key_enabled         = false\n"
+                        ],
+                        [
+                            69,
+                            "  allow_nested_items_to_be_public   = false\n"
+                        ],
+                        [
+                            70,
+                            "  infrastructure_encryption_enabled = true\n"
+                        ],
+                        [
+                            71,
+                            "\n"
+                        ],
+                        [
+                            72,
+                            "  network_rules {\n"
+                        ],
+                        [
+                            73,
+                            "    default_action = \"Deny\"\n"
+                        ],
+                        [
+                            74,
+                            "    bypass         = [\"AzureServices\"]\n"
+                        ],
+                        [
+                            75,
+                            "  }\n"
+                        ],
+                        [
+                            76,
+                            "\n"
+                        ],
+                        [
+                            77,
+                            "  blob_properties {\n"
+                        ],
+                        [
+                            78,
+                            "    delete_retention_policy {\n"
+                        ],
+                        [
+                            79,
+                            "      days = 7\n"
+                        ],
+                        [
+                            80,
+                            "    }\n"
+                        ],
+                        [
+                            81,
+                            "  }\n"
+                        ],
+                        [
+                            82,
+                            "\n"
+                        ],
+                        [
+                            83,
+                            "  queue_properties {\n"
+                        ],
+                        [
+                            84,
+                            "    logging {\n"
+                        ],
+                        [
+                            85,
+                            "      delete = true\n"
+                        ],
+                        [
+                            86,
+                            "      read   = true\n"
+                        ],
+                        [
+                            87,
+                            "      write  = true\n"
+                        ],
+                        [
+                            88,
+                            "      retention_policy {\n"
+                        ],
+                        [
+                            89,
+                            "        enabled = true\n"
+                        ],
+                        [
+                            90,
+                            "        days    = 7\n"
+                        ],
+                        [
+                            91,
+                            "      }\n"
+                        ],
+                        [
+                            92,
+                            "    }\n"
+                        ],
+                        [
+                            93,
+                            "  }\n"
+                        ],
+                        [
+                            94,
+                            "}\n"
+                        ]
+                    ],
+                    "file_path": "\\main.tf",
+                    "file_abs_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf",
+                    "repo_file_path": "/deploy/azure/main.tf",
+                    "file_line_range": [
+                        60,
+                        94
+                    ],
+                    "resource": "azurerm_storage_account.sa",
+                    "evaluations": null,
+                    "check_class": "checkov.common.graph.checks_infra.base_check",
+                    "fixed_definition": null,
+                    "entity_tags": null,
+                    "caller_file_path": null,
+                    "caller_file_line_range": null,
+                    "resource_address": null,
+                    "severity": null,
+                    "bc_category": null,
+                    "benchmarks": null,
+                    "description": null,
+                    "short_description": null,
+                    "vulnerability_details": null,
+                    "connected_node": null,
+                    "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-38",
+                    "details": [],
+                    "check_len": null,
+                    "definition_context_file_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf"
+                },
+                {
+                    "check_id": "CKV2_AZURE_40",
+                    "bc_check_id": "BC_AZR_IAM_20",
+                    "check_name": "Ensure storage account is not configured with Shared Key authorization",
+                    "check_result": {
+                        "result": "PASSED",
+                        "entity": {
+                            "azurerm_storage_account": {
+                                "sa": {
+                                    "__end_line__": 94,
+                                    "__start_line__": 60,
+                                    "account_replication_type": [
+                                        "LRS"
+                                    ],
+                                    "account_tier": [
+                                        "Standard"
+                                    ],
+                                    "allow_nested_items_to_be_public": [
+                                        false
+                                    ],
+                                    "blob_properties": [
+                                        {
+                                            "delete_retention_policy": [
+                                                {
+                                                    "days": [
+                                                        7
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "infrastructure_encryption_enabled": [
+                                        true
+                                    ],
+                                    "location": [
+                                        "southeastasia"
+                                    ],
+                                    "min_tls_version": [
+                                        "TLS1_2"
+                                    ],
+                                    "name": [
+                                        "stchurnguardsea2026"
+                                    ],
+                                    "network_rules": [
+                                        {
+                                            "bypass": [
+                                                [
+                                                    "AzureServices"
+                                                ]
+                                            ],
+                                            "default_action": [
+                                                "Deny"
+                                            ]
+                                        }
+                                    ],
+                                    "public_network_access_enabled": [
+                                        false
+                                    ],
+                                    "queue_properties": [
+                                        {
+                                            "logging": [
+                                                {
+                                                    "delete": [
+                                                        true
+                                                    ],
+                                                    "read": [
+                                                        true
+                                                    ],
+                                                    "retention_policy": [
+                                                        {
+                                                            "days": [
+                                                                7
+                                                            ],
+                                                            "enabled": [
+                                                                true
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "write": [
+                                                        true
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "resource_group_name": [
+                                        "rg-churnguard-mlops-sea"
+                                    ],
+                                    "shared_access_key_enabled": [
+                                        false
+                                    ],
+                                    "__address__": "azurerm_storage_account.sa",
+                                    "__provider_address__": "azurerm.default"
+                                }
+                            }
+                        },
+                        "evaluated_keys": [
+                            "shared_access_key_enabled"
+                        ]
+                    },
+                    "code_block": [
+                        [
+                            60,
+                            "resource \"azurerm_storage_account\" \"sa\" {\n"
+                        ],
+                        [
+                            61,
+                            "  name                              = \"stchurnguardsea2026\"\n"
+                        ],
+                        [
+                            62,
+                            "  resource_group_name               = azurerm_resource_group.rg.name\n"
+                        ],
+                        [
+                            63,
+                            "  location                          = azurerm_resource_group.rg.location\n"
+                        ],
+                        [
+                            64,
+                            "  account_tier                      = \"Standard\"\n"
+                        ],
+                        [
+                            65,
+                            "  account_replication_type          = \"LRS\"\n"
+                        ],
+                        [
+                            66,
+                            "  min_tls_version                   = \"TLS1_2\"\n"
+                        ],
+                        [
+                            67,
+                            "  public_network_access_enabled     = false\n"
+                        ],
+                        [
+                            68,
+                            "  shared_access_key_enabled         = false\n"
+                        ],
+                        [
+                            69,
+                            "  allow_nested_items_to_be_public   = false\n"
+                        ],
+                        [
+                            70,
+                            "  infrastructure_encryption_enabled = true\n"
+                        ],
+                        [
+                            71,
+                            "\n"
+                        ],
+                        [
+                            72,
+                            "  network_rules {\n"
+                        ],
+                        [
+                            73,
+                            "    default_action = \"Deny\"\n"
+                        ],
+                        [
+                            74,
+                            "    bypass         = [\"AzureServices\"]\n"
+                        ],
+                        [
+                            75,
+                            "  }\n"
+                        ],
+                        [
+                            76,
+                            "\n"
+                        ],
+                        [
+                            77,
+                            "  blob_properties {\n"
+                        ],
+                        [
+                            78,
+                            "    delete_retention_policy {\n"
+                        ],
+                        [
+                            79,
+                            "      days = 7\n"
+                        ],
+                        [
+                            80,
+                            "    }\n"
+                        ],
+                        [
+                            81,
+                            "  }\n"
+                        ],
+                        [
+                            82,
+                            "\n"
+                        ],
+                        [
+                            83,
+                            "  queue_properties {\n"
+                        ],
+                        [
+                            84,
+                            "    logging {\n"
+                        ],
+                        [
+                            85,
+                            "      delete = true\n"
+                        ],
+                        [
+                            86,
+                            "      read   = true\n"
+                        ],
+                        [
+                            87,
+                            "      write  = true\n"
+                        ],
+                        [
+                            88,
+                            "      retention_policy {\n"
+                        ],
+                        [
+                            89,
+                            "        enabled = true\n"
+                        ],
+                        [
+                            90,
+                            "        days    = 7\n"
+                        ],
+                        [
+                            91,
+                            "      }\n"
+                        ],
+                        [
+                            92,
+                            "    }\n"
+                        ],
+                        [
+                            93,
+                            "  }\n"
+                        ],
+                        [
+                            94,
+                            "}\n"
+                        ]
+                    ],
+                    "file_path": "\\main.tf",
+                    "file_abs_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf",
+                    "repo_file_path": "/deploy/azure/main.tf",
+                    "file_line_range": [
+                        60,
+                        94
+                    ],
+                    "resource": "azurerm_storage_account.sa",
+                    "evaluations": null,
+                    "check_class": "checkov.common.graph.checks_infra.base_check",
+                    "fixed_definition": null,
+                    "entity_tags": null,
+                    "caller_file_path": null,
+                    "caller_file_line_range": null,
+                    "resource_address": null,
+                    "severity": null,
+                    "bc_category": null,
+                    "benchmarks": null,
+                    "description": null,
+                    "short_description": null,
+                    "vulnerability_details": null,
+                    "connected_node": null,
+                    "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-40",
+                    "details": [],
+                    "check_len": null,
+                    "definition_context_file_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\main.tf"
+                },
+                {
                     "check_id": "CKV2_AZURE_8",
                     "bc_check_id": "BC_AZR_LOGGING_12",
                     "check_name": "Ensure the storage container storing the activity logs is not publicly accessible",
@@ -3170,9 +2873,9 @@
                             }
                         },
                         "evaluated_keys": [
-                            "container_access_type",
                             "enabled",
-                            "resource_type"
+                            "resource_type",
+                            "container_access_type"
                         ]
                     },
                     "code_block": [
@@ -3230,11 +2933,11 @@
             "parsing_errors": []
         },
         "summary": {
-            "passed": 21,
+            "passed": 18,
             "failed": 0,
             "skipped": 0,
             "parsing_errors": 0,
-            "resource_count": 8,
+            "resource_count": 12,
             "checkov_version": "3.4.0"
         },
         "url": "Add an api key '--bc-api-key <api-key>' to see more detailed insights via https://bridgecrew.cloud"
@@ -3553,7 +3256,7 @@
                         ],
                         [
                             64,
-                            "        \"name\": \"Standard_GRS\"\n"
+                            "        \"name\": \"Standard_LRS\"\n"
                         ],
                         [
                             65,
@@ -3637,226 +3340,130 @@
                         ],
                         [
                             85,
-                            "        },\n"
+                            "        }\n"
                         ],
                         [
                             86,
-                            "        \"sku\": {\n"
-                        ],
-                        [
-                            87,
-                            "          \"name\": \"GRS\"\n"
-                        ],
-                        [
-                            88,
-                            "        },\n"
-                        ],
-                        [
-                            89,
-                            "        \"blobServices\": {\n"
-                        ],
-                        [
-                            90,
-                            "          \"properties\": {\n"
-                        ],
-                        [
-                            91,
-                            "            \"deleteRetentionPolicy\": {\n"
-                        ],
-                        [
-                            92,
-                            "              \"enabled\": true,\n"
-                        ],
-                        [
-                            93,
-                            "              \"days\": 7\n"
-                        ],
-                        [
-                            94,
-                            "            }\n"
-                        ],
-                        [
-                            95,
-                            "          }\n"
-                        ],
-                        [
-                            96,
-                            "        },\n"
-                        ],
-                        [
-                            97,
-                            "        \"queueServices\": {\n"
-                        ],
-                        [
-                            98,
-                            "          \"properties\": {\n"
-                        ],
-                        [
-                            99,
-                            "            \"logging\": {\n"
-                        ],
-                        [
-                            100,
-                            "              \"delete\": true,\n"
-                        ],
-                        [
-                            101,
-                            "              \"read\": true,\n"
-                        ],
-                        [
-                            102,
-                            "              \"write\": true,\n"
-                        ],
-                        [
-                            103,
-                            "              \"retentionPolicy\": {\n"
-                        ],
-                        [
-                            104,
-                            "                \"enabled\": true,\n"
-                        ],
-                        [
-                            105,
-                            "                \"days\": 7\n"
-                        ],
-                        [
-                            106,
-                            "              }\n"
-                        ],
-                        [
-                            107,
-                            "            }\n"
-                        ],
-                        [
-                            108,
-                            "          }\n"
-                        ],
-                        [
-                            109,
-                            "        }\n"
-                        ],
-                        [
-                            110,
                             "      },\n"
                         ],
                         [
-                            111,
+                            87,
                             "      \"resources\": [\n"
                         ],
                         [
-                            112,
+                            88,
                             "        {\n"
                         ],
                         [
-                            113,
+                            89,
                             "          \"type\": \"blobServices\",\n"
                         ],
                         [
-                            114,
+                            90,
                             "          \"apiVersion\": \"2023-01-01\",\n"
                         ],
                         [
-                            115,
+                            91,
                             "          \"name\": \"default\",\n"
                         ],
                         [
-                            116,
+                            92,
                             "          \"properties\": {\n"
                         ],
                         [
-                            117,
+                            93,
                             "            \"deleteRetentionPolicy\": {\n"
                         ],
                         [
-                            118,
+                            94,
                             "              \"enabled\": true,\n"
                         ],
                         [
-                            119,
+                            95,
                             "              \"days\": 7\n"
                         ],
                         [
-                            120,
+                            96,
                             "            }\n"
                         ],
                         [
-                            121,
+                            97,
                             "          }\n"
                         ],
                         [
-                            122,
+                            98,
                             "        },\n"
                         ],
                         [
-                            123,
+                            99,
                             "        {\n"
                         ],
                         [
-                            124,
+                            100,
                             "          \"type\": \"queueServices\",\n"
                         ],
                         [
-                            125,
+                            101,
                             "          \"apiVersion\": \"2023-01-01\",\n"
                         ],
                         [
-                            126,
+                            102,
                             "          \"name\": \"default\",\n"
                         ],
                         [
-                            127,
+                            103,
                             "          \"properties\": {\n"
                         ],
                         [
-                            128,
+                            104,
                             "            \"logging\": {\n"
                         ],
                         [
-                            129,
+                            105,
                             "              \"delete\": true,\n"
                         ],
                         [
-                            130,
+                            106,
                             "              \"read\": true,\n"
                         ],
                         [
-                            131,
+                            107,
                             "              \"write\": true,\n"
                         ],
                         [
-                            132,
+                            108,
                             "              \"retentionPolicy\": {\n"
                         ],
                         [
-                            133,
+                            109,
                             "                \"enabled\": true,\n"
                         ],
                         [
-                            134,
+                            110,
                             "                \"days\": 7\n"
                         ],
                         [
-                            135,
+                            111,
                             "              }\n"
                         ],
                         [
-                            136,
+                            112,
                             "            }\n"
                         ],
                         [
-                            137,
+                            113,
                             "          }\n"
                         ],
                         [
-                            138,
+                            114,
                             "        }\n"
                         ],
                         [
-                            139,
+                            115,
                             "      ]\n"
                         ],
                         [
-                            140,
+                            116,
                             "    },\n"
                         ]
                     ],
@@ -3865,7 +3472,7 @@
                     "repo_file_path": "/deploy/azure/arm_template.json",
                     "file_line_range": [
                         58,
-                        140
+                        116
                     ],
                     "resource": "Microsoft.Storage/storageAccounts.stchurnguardsea2026",
                     "evaluations": {},
@@ -3926,7 +3533,7 @@
                         ],
                         [
                             64,
-                            "        \"name\": \"Standard_GRS\"\n"
+                            "        \"name\": \"Standard_LRS\"\n"
                         ],
                         [
                             65,
@@ -4010,226 +3617,130 @@
                         ],
                         [
                             85,
-                            "        },\n"
+                            "        }\n"
                         ],
                         [
                             86,
-                            "        \"sku\": {\n"
-                        ],
-                        [
-                            87,
-                            "          \"name\": \"GRS\"\n"
-                        ],
-                        [
-                            88,
-                            "        },\n"
-                        ],
-                        [
-                            89,
-                            "        \"blobServices\": {\n"
-                        ],
-                        [
-                            90,
-                            "          \"properties\": {\n"
-                        ],
-                        [
-                            91,
-                            "            \"deleteRetentionPolicy\": {\n"
-                        ],
-                        [
-                            92,
-                            "              \"enabled\": true,\n"
-                        ],
-                        [
-                            93,
-                            "              \"days\": 7\n"
-                        ],
-                        [
-                            94,
-                            "            }\n"
-                        ],
-                        [
-                            95,
-                            "          }\n"
-                        ],
-                        [
-                            96,
-                            "        },\n"
-                        ],
-                        [
-                            97,
-                            "        \"queueServices\": {\n"
-                        ],
-                        [
-                            98,
-                            "          \"properties\": {\n"
-                        ],
-                        [
-                            99,
-                            "            \"logging\": {\n"
-                        ],
-                        [
-                            100,
-                            "              \"delete\": true,\n"
-                        ],
-                        [
-                            101,
-                            "              \"read\": true,\n"
-                        ],
-                        [
-                            102,
-                            "              \"write\": true,\n"
-                        ],
-                        [
-                            103,
-                            "              \"retentionPolicy\": {\n"
-                        ],
-                        [
-                            104,
-                            "                \"enabled\": true,\n"
-                        ],
-                        [
-                            105,
-                            "                \"days\": 7\n"
-                        ],
-                        [
-                            106,
-                            "              }\n"
-                        ],
-                        [
-                            107,
-                            "            }\n"
-                        ],
-                        [
-                            108,
-                            "          }\n"
-                        ],
-                        [
-                            109,
-                            "        }\n"
-                        ],
-                        [
-                            110,
                             "      },\n"
                         ],
                         [
-                            111,
+                            87,
                             "      \"resources\": [\n"
                         ],
                         [
-                            112,
+                            88,
                             "        {\n"
                         ],
                         [
-                            113,
+                            89,
                             "          \"type\": \"blobServices\",\n"
                         ],
                         [
-                            114,
+                            90,
                             "          \"apiVersion\": \"2023-01-01\",\n"
                         ],
                         [
-                            115,
+                            91,
                             "          \"name\": \"default\",\n"
                         ],
                         [
-                            116,
+                            92,
                             "          \"properties\": {\n"
                         ],
                         [
-                            117,
+                            93,
                             "            \"deleteRetentionPolicy\": {\n"
                         ],
                         [
-                            118,
+                            94,
                             "              \"enabled\": true,\n"
                         ],
                         [
-                            119,
+                            95,
                             "              \"days\": 7\n"
                         ],
                         [
-                            120,
+                            96,
                             "            }\n"
                         ],
                         [
-                            121,
+                            97,
                             "          }\n"
                         ],
                         [
-                            122,
+                            98,
                             "        },\n"
                         ],
                         [
-                            123,
+                            99,
                             "        {\n"
                         ],
                         [
-                            124,
+                            100,
                             "          \"type\": \"queueServices\",\n"
                         ],
                         [
-                            125,
+                            101,
                             "          \"apiVersion\": \"2023-01-01\",\n"
                         ],
                         [
-                            126,
+                            102,
                             "          \"name\": \"default\",\n"
                         ],
                         [
-                            127,
+                            103,
                             "          \"properties\": {\n"
                         ],
                         [
-                            128,
+                            104,
                             "            \"logging\": {\n"
                         ],
                         [
-                            129,
+                            105,
                             "              \"delete\": true,\n"
                         ],
                         [
-                            130,
+                            106,
                             "              \"read\": true,\n"
                         ],
                         [
-                            131,
+                            107,
                             "              \"write\": true,\n"
                         ],
                         [
-                            132,
+                            108,
                             "              \"retentionPolicy\": {\n"
                         ],
                         [
-                            133,
+                            109,
                             "                \"enabled\": true,\n"
                         ],
                         [
-                            134,
+                            110,
                             "                \"days\": 7\n"
                         ],
                         [
-                            135,
+                            111,
                             "              }\n"
                         ],
                         [
-                            136,
+                            112,
                             "            }\n"
                         ],
                         [
-                            137,
+                            113,
                             "          }\n"
                         ],
                         [
-                            138,
+                            114,
                             "        }\n"
                         ],
                         [
-                            139,
+                            115,
                             "      ]\n"
                         ],
                         [
-                            140,
+                            116,
                             "    },\n"
                         ]
                     ],
@@ -4238,7 +3749,7 @@
                     "repo_file_path": "/deploy/azure/arm_template.json",
                     "file_line_range": [
                         58,
-                        140
+                        116
                     ],
                     "resource": "Microsoft.Storage/storageAccounts.stchurnguardsea2026",
                     "evaluations": {},
@@ -4297,7 +3808,7 @@
                         ],
                         [
                             64,
-                            "        \"name\": \"Standard_GRS\"\n"
+                            "        \"name\": \"Standard_LRS\"\n"
                         ],
                         [
                             65,
@@ -4381,226 +3892,130 @@
                         ],
                         [
                             85,
-                            "        },\n"
+                            "        }\n"
                         ],
                         [
                             86,
-                            "        \"sku\": {\n"
-                        ],
-                        [
-                            87,
-                            "          \"name\": \"GRS\"\n"
-                        ],
-                        [
-                            88,
-                            "        },\n"
-                        ],
-                        [
-                            89,
-                            "        \"blobServices\": {\n"
-                        ],
-                        [
-                            90,
-                            "          \"properties\": {\n"
-                        ],
-                        [
-                            91,
-                            "            \"deleteRetentionPolicy\": {\n"
-                        ],
-                        [
-                            92,
-                            "              \"enabled\": true,\n"
-                        ],
-                        [
-                            93,
-                            "              \"days\": 7\n"
-                        ],
-                        [
-                            94,
-                            "            }\n"
-                        ],
-                        [
-                            95,
-                            "          }\n"
-                        ],
-                        [
-                            96,
-                            "        },\n"
-                        ],
-                        [
-                            97,
-                            "        \"queueServices\": {\n"
-                        ],
-                        [
-                            98,
-                            "          \"properties\": {\n"
-                        ],
-                        [
-                            99,
-                            "            \"logging\": {\n"
-                        ],
-                        [
-                            100,
-                            "              \"delete\": true,\n"
-                        ],
-                        [
-                            101,
-                            "              \"read\": true,\n"
-                        ],
-                        [
-                            102,
-                            "              \"write\": true,\n"
-                        ],
-                        [
-                            103,
-                            "              \"retentionPolicy\": {\n"
-                        ],
-                        [
-                            104,
-                            "                \"enabled\": true,\n"
-                        ],
-                        [
-                            105,
-                            "                \"days\": 7\n"
-                        ],
-                        [
-                            106,
-                            "              }\n"
-                        ],
-                        [
-                            107,
-                            "            }\n"
-                        ],
-                        [
-                            108,
-                            "          }\n"
-                        ],
-                        [
-                            109,
-                            "        }\n"
-                        ],
-                        [
-                            110,
                             "      },\n"
                         ],
                         [
-                            111,
+                            87,
                             "      \"resources\": [\n"
                         ],
                         [
-                            112,
+                            88,
                             "        {\n"
                         ],
                         [
-                            113,
+                            89,
                             "          \"type\": \"blobServices\",\n"
                         ],
                         [
-                            114,
+                            90,
                             "          \"apiVersion\": \"2023-01-01\",\n"
                         ],
                         [
-                            115,
+                            91,
                             "          \"name\": \"default\",\n"
                         ],
                         [
-                            116,
+                            92,
                             "          \"properties\": {\n"
                         ],
                         [
-                            117,
+                            93,
                             "            \"deleteRetentionPolicy\": {\n"
                         ],
                         [
-                            118,
+                            94,
                             "              \"enabled\": true,\n"
                         ],
                         [
-                            119,
+                            95,
                             "              \"days\": 7\n"
                         ],
                         [
-                            120,
+                            96,
                             "            }\n"
                         ],
                         [
-                            121,
+                            97,
                             "          }\n"
                         ],
                         [
-                            122,
+                            98,
                             "        },\n"
                         ],
                         [
-                            123,
+                            99,
                             "        {\n"
                         ],
                         [
-                            124,
+                            100,
                             "          \"type\": \"queueServices\",\n"
                         ],
                         [
-                            125,
+                            101,
                             "          \"apiVersion\": \"2023-01-01\",\n"
                         ],
                         [
-                            126,
+                            102,
                             "          \"name\": \"default\",\n"
                         ],
                         [
-                            127,
+                            103,
                             "          \"properties\": {\n"
                         ],
                         [
-                            128,
+                            104,
                             "            \"logging\": {\n"
                         ],
                         [
-                            129,
+                            105,
                             "              \"delete\": true,\n"
                         ],
                         [
-                            130,
+                            106,
                             "              \"read\": true,\n"
                         ],
                         [
-                            131,
+                            107,
                             "              \"write\": true,\n"
                         ],
                         [
-                            132,
+                            108,
                             "              \"retentionPolicy\": {\n"
                         ],
                         [
-                            133,
+                            109,
                             "                \"enabled\": true,\n"
                         ],
                         [
-                            134,
+                            110,
                             "                \"days\": 7\n"
                         ],
                         [
-                            135,
+                            111,
                             "              }\n"
                         ],
                         [
-                            136,
+                            112,
                             "            }\n"
                         ],
                         [
-                            137,
+                            113,
                             "          }\n"
                         ],
                         [
-                            138,
+                            114,
                             "        }\n"
                         ],
                         [
-                            139,
+                            115,
                             "      ]\n"
                         ],
                         [
-                            140,
+                            116,
                             "    },\n"
                         ]
                     ],
@@ -4609,7 +4024,7 @@
                     "repo_file_path": "/deploy/azure/arm_template.json",
                     "file_line_range": [
                         58,
-                        140
+                        116
                     ],
                     "resource": "Microsoft.Storage/storageAccounts.stchurnguardsea2026",
                     "evaluations": {},
@@ -4669,7 +4084,7 @@
                         ],
                         [
                             64,
-                            "        \"name\": \"Standard_GRS\"\n"
+                            "        \"name\": \"Standard_LRS\"\n"
                         ],
                         [
                             65,
@@ -4753,226 +4168,130 @@
                         ],
                         [
                             85,
-                            "        },\n"
+                            "        }\n"
                         ],
                         [
                             86,
-                            "        \"sku\": {\n"
-                        ],
-                        [
-                            87,
-                            "          \"name\": \"GRS\"\n"
-                        ],
-                        [
-                            88,
-                            "        },\n"
-                        ],
-                        [
-                            89,
-                            "        \"blobServices\": {\n"
-                        ],
-                        [
-                            90,
-                            "          \"properties\": {\n"
-                        ],
-                        [
-                            91,
-                            "            \"deleteRetentionPolicy\": {\n"
-                        ],
-                        [
-                            92,
-                            "              \"enabled\": true,\n"
-                        ],
-                        [
-                            93,
-                            "              \"days\": 7\n"
-                        ],
-                        [
-                            94,
-                            "            }\n"
-                        ],
-                        [
-                            95,
-                            "          }\n"
-                        ],
-                        [
-                            96,
-                            "        },\n"
-                        ],
-                        [
-                            97,
-                            "        \"queueServices\": {\n"
-                        ],
-                        [
-                            98,
-                            "          \"properties\": {\n"
-                        ],
-                        [
-                            99,
-                            "            \"logging\": {\n"
-                        ],
-                        [
-                            100,
-                            "              \"delete\": true,\n"
-                        ],
-                        [
-                            101,
-                            "              \"read\": true,\n"
-                        ],
-                        [
-                            102,
-                            "              \"write\": true,\n"
-                        ],
-                        [
-                            103,
-                            "              \"retentionPolicy\": {\n"
-                        ],
-                        [
-                            104,
-                            "                \"enabled\": true,\n"
-                        ],
-                        [
-                            105,
-                            "                \"days\": 7\n"
-                        ],
-                        [
-                            106,
-                            "              }\n"
-                        ],
-                        [
-                            107,
-                            "            }\n"
-                        ],
-                        [
-                            108,
-                            "          }\n"
-                        ],
-                        [
-                            109,
-                            "        }\n"
-                        ],
-                        [
-                            110,
                             "      },\n"
                         ],
                         [
-                            111,
+                            87,
                             "      \"resources\": [\n"
                         ],
                         [
-                            112,
+                            88,
                             "        {\n"
                         ],
                         [
-                            113,
+                            89,
                             "          \"type\": \"blobServices\",\n"
                         ],
                         [
-                            114,
+                            90,
                             "          \"apiVersion\": \"2023-01-01\",\n"
                         ],
                         [
-                            115,
+                            91,
                             "          \"name\": \"default\",\n"
                         ],
                         [
-                            116,
+                            92,
                             "          \"properties\": {\n"
                         ],
                         [
-                            117,
+                            93,
                             "            \"deleteRetentionPolicy\": {\n"
                         ],
                         [
-                            118,
+                            94,
                             "              \"enabled\": true,\n"
                         ],
                         [
-                            119,
+                            95,
                             "              \"days\": 7\n"
                         ],
                         [
-                            120,
+                            96,
                             "            }\n"
                         ],
                         [
-                            121,
+                            97,
                             "          }\n"
                         ],
                         [
-                            122,
+                            98,
                             "        },\n"
                         ],
                         [
-                            123,
+                            99,
                             "        {\n"
                         ],
                         [
-                            124,
+                            100,
                             "          \"type\": \"queueServices\",\n"
                         ],
                         [
-                            125,
+                            101,
                             "          \"apiVersion\": \"2023-01-01\",\n"
                         ],
                         [
-                            126,
+                            102,
                             "          \"name\": \"default\",\n"
                         ],
                         [
-                            127,
+                            103,
                             "          \"properties\": {\n"
                         ],
                         [
-                            128,
+                            104,
                             "            \"logging\": {\n"
                         ],
                         [
-                            129,
+                            105,
                             "              \"delete\": true,\n"
                         ],
                         [
-                            130,
+                            106,
                             "              \"read\": true,\n"
                         ],
                         [
-                            131,
+                            107,
                             "              \"write\": true,\n"
                         ],
                         [
-                            132,
+                            108,
                             "              \"retentionPolicy\": {\n"
                         ],
                         [
-                            133,
+                            109,
                             "                \"enabled\": true,\n"
                         ],
                         [
-                            134,
+                            110,
                             "                \"days\": 7\n"
                         ],
                         [
-                            135,
+                            111,
                             "              }\n"
                         ],
                         [
-                            136,
+                            112,
                             "            }\n"
                         ],
                         [
-                            137,
+                            113,
                             "          }\n"
                         ],
                         [
-                            138,
+                            114,
                             "        }\n"
                         ],
                         [
-                            139,
+                            115,
                             "      ]\n"
                         ],
                         [
-                            140,
+                            116,
                             "    },\n"
                         ]
                     ],
@@ -4981,7 +4300,7 @@
                     "repo_file_path": "/deploy/azure/arm_template.json",
                     "file_line_range": [
                         58,
-                        140
+                        116
                     ],
                     "resource": "Microsoft.Storage/storageAccounts.stchurnguardsea2026",
                     "evaluations": {},
@@ -5040,7 +4359,7 @@
                         ],
                         [
                             64,
-                            "        \"name\": \"Standard_GRS\"\n"
+                            "        \"name\": \"Standard_LRS\"\n"
                         ],
                         [
                             65,
@@ -5124,226 +4443,130 @@
                         ],
                         [
                             85,
-                            "        },\n"
+                            "        }\n"
                         ],
                         [
                             86,
-                            "        \"sku\": {\n"
-                        ],
-                        [
-                            87,
-                            "          \"name\": \"GRS\"\n"
-                        ],
-                        [
-                            88,
-                            "        },\n"
-                        ],
-                        [
-                            89,
-                            "        \"blobServices\": {\n"
-                        ],
-                        [
-                            90,
-                            "          \"properties\": {\n"
-                        ],
-                        [
-                            91,
-                            "            \"deleteRetentionPolicy\": {\n"
-                        ],
-                        [
-                            92,
-                            "              \"enabled\": true,\n"
-                        ],
-                        [
-                            93,
-                            "              \"days\": 7\n"
-                        ],
-                        [
-                            94,
-                            "            }\n"
-                        ],
-                        [
-                            95,
-                            "          }\n"
-                        ],
-                        [
-                            96,
-                            "        },\n"
-                        ],
-                        [
-                            97,
-                            "        \"queueServices\": {\n"
-                        ],
-                        [
-                            98,
-                            "          \"properties\": {\n"
-                        ],
-                        [
-                            99,
-                            "            \"logging\": {\n"
-                        ],
-                        [
-                            100,
-                            "              \"delete\": true,\n"
-                        ],
-                        [
-                            101,
-                            "              \"read\": true,\n"
-                        ],
-                        [
-                            102,
-                            "              \"write\": true,\n"
-                        ],
-                        [
-                            103,
-                            "              \"retentionPolicy\": {\n"
-                        ],
-                        [
-                            104,
-                            "                \"enabled\": true,\n"
-                        ],
-                        [
-                            105,
-                            "                \"days\": 7\n"
-                        ],
-                        [
-                            106,
-                            "              }\n"
-                        ],
-                        [
-                            107,
-                            "            }\n"
-                        ],
-                        [
-                            108,
-                            "          }\n"
-                        ],
-                        [
-                            109,
-                            "        }\n"
-                        ],
-                        [
-                            110,
                             "      },\n"
                         ],
                         [
-                            111,
+                            87,
                             "      \"resources\": [\n"
                         ],
                         [
-                            112,
+                            88,
                             "        {\n"
                         ],
                         [
-                            113,
+                            89,
                             "          \"type\": \"blobServices\",\n"
                         ],
                         [
-                            114,
+                            90,
                             "          \"apiVersion\": \"2023-01-01\",\n"
                         ],
                         [
-                            115,
+                            91,
                             "          \"name\": \"default\",\n"
                         ],
                         [
-                            116,
+                            92,
                             "          \"properties\": {\n"
                         ],
                         [
-                            117,
+                            93,
                             "            \"deleteRetentionPolicy\": {\n"
                         ],
                         [
-                            118,
+                            94,
                             "              \"enabled\": true,\n"
                         ],
                         [
-                            119,
+                            95,
                             "              \"days\": 7\n"
                         ],
                         [
-                            120,
+                            96,
                             "            }\n"
                         ],
                         [
-                            121,
+                            97,
                             "          }\n"
                         ],
                         [
-                            122,
+                            98,
                             "        },\n"
                         ],
                         [
-                            123,
+                            99,
                             "        {\n"
                         ],
                         [
-                            124,
+                            100,
                             "          \"type\": \"queueServices\",\n"
                         ],
                         [
-                            125,
+                            101,
                             "          \"apiVersion\": \"2023-01-01\",\n"
                         ],
                         [
-                            126,
+                            102,
                             "          \"name\": \"default\",\n"
                         ],
                         [
-                            127,
+                            103,
                             "          \"properties\": {\n"
                         ],
                         [
-                            128,
+                            104,
                             "            \"logging\": {\n"
                         ],
                         [
-                            129,
+                            105,
                             "              \"delete\": true,\n"
                         ],
                         [
-                            130,
+                            106,
                             "              \"read\": true,\n"
                         ],
                         [
-                            131,
+                            107,
                             "              \"write\": true,\n"
                         ],
                         [
-                            132,
+                            108,
                             "              \"retentionPolicy\": {\n"
                         ],
                         [
-                            133,
+                            109,
                             "                \"enabled\": true,\n"
                         ],
                         [
-                            134,
+                            110,
                             "                \"days\": 7\n"
                         ],
                         [
-                            135,
+                            111,
                             "              }\n"
                         ],
                         [
-                            136,
+                            112,
                             "            }\n"
                         ],
                         [
-                            137,
+                            113,
                             "          }\n"
                         ],
                         [
-                            138,
+                            114,
                             "        }\n"
                         ],
                         [
-                            139,
+                            115,
                             "      ]\n"
                         ],
                         [
-                            140,
+                            116,
                             "    },\n"
                         ]
                     ],
@@ -5352,7 +4575,7 @@
                     "repo_file_path": "/deploy/azure/arm_template.json",
                     "file_line_range": [
                         58,
-                        140
+                        116
                     ],
                     "resource": "Microsoft.Storage/storageAccounts.stchurnguardsea2026",
                     "evaluations": {},
@@ -5411,7 +4634,7 @@
                         ],
                         [
                             64,
-                            "        \"name\": \"Standard_GRS\"\n"
+                            "        \"name\": \"Standard_LRS\"\n"
                         ],
                         [
                             65,
@@ -5495,226 +4718,130 @@
                         ],
                         [
                             85,
-                            "        },\n"
+                            "        }\n"
                         ],
                         [
                             86,
-                            "        \"sku\": {\n"
-                        ],
-                        [
-                            87,
-                            "          \"name\": \"GRS\"\n"
-                        ],
-                        [
-                            88,
-                            "        },\n"
-                        ],
-                        [
-                            89,
-                            "        \"blobServices\": {\n"
-                        ],
-                        [
-                            90,
-                            "          \"properties\": {\n"
-                        ],
-                        [
-                            91,
-                            "            \"deleteRetentionPolicy\": {\n"
-                        ],
-                        [
-                            92,
-                            "              \"enabled\": true,\n"
-                        ],
-                        [
-                            93,
-                            "              \"days\": 7\n"
-                        ],
-                        [
-                            94,
-                            "            }\n"
-                        ],
-                        [
-                            95,
-                            "          }\n"
-                        ],
-                        [
-                            96,
-                            "        },\n"
-                        ],
-                        [
-                            97,
-                            "        \"queueServices\": {\n"
-                        ],
-                        [
-                            98,
-                            "          \"properties\": {\n"
-                        ],
-                        [
-                            99,
-                            "            \"logging\": {\n"
-                        ],
-                        [
-                            100,
-                            "              \"delete\": true,\n"
-                        ],
-                        [
-                            101,
-                            "              \"read\": true,\n"
-                        ],
-                        [
-                            102,
-                            "              \"write\": true,\n"
-                        ],
-                        [
-                            103,
-                            "              \"retentionPolicy\": {\n"
-                        ],
-                        [
-                            104,
-                            "                \"enabled\": true,\n"
-                        ],
-                        [
-                            105,
-                            "                \"days\": 7\n"
-                        ],
-                        [
-                            106,
-                            "              }\n"
-                        ],
-                        [
-                            107,
-                            "            }\n"
-                        ],
-                        [
-                            108,
-                            "          }\n"
-                        ],
-                        [
-                            109,
-                            "        }\n"
-                        ],
-                        [
-                            110,
                             "      },\n"
                         ],
                         [
-                            111,
+                            87,
                             "      \"resources\": [\n"
                         ],
                         [
-                            112,
+                            88,
                             "        {\n"
                         ],
                         [
-                            113,
+                            89,
                             "          \"type\": \"blobServices\",\n"
                         ],
                         [
-                            114,
+                            90,
                             "          \"apiVersion\": \"2023-01-01\",\n"
                         ],
                         [
-                            115,
+                            91,
                             "          \"name\": \"default\",\n"
                         ],
                         [
-                            116,
+                            92,
                             "          \"properties\": {\n"
                         ],
                         [
-                            117,
+                            93,
                             "            \"deleteRetentionPolicy\": {\n"
                         ],
                         [
-                            118,
+                            94,
                             "              \"enabled\": true,\n"
                         ],
                         [
-                            119,
+                            95,
                             "              \"days\": 7\n"
                         ],
                         [
-                            120,
+                            96,
                             "            }\n"
                         ],
                         [
-                            121,
+                            97,
                             "          }\n"
                         ],
                         [
-                            122,
+                            98,
                             "        },\n"
                         ],
                         [
-                            123,
+                            99,
                             "        {\n"
                         ],
                         [
-                            124,
+                            100,
                             "          \"type\": \"queueServices\",\n"
                         ],
                         [
-                            125,
+                            101,
                             "          \"apiVersion\": \"2023-01-01\",\n"
                         ],
                         [
-                            126,
+                            102,
                             "          \"name\": \"default\",\n"
                         ],
                         [
-                            127,
+                            103,
                             "          \"properties\": {\n"
                         ],
                         [
-                            128,
+                            104,
                             "            \"logging\": {\n"
                         ],
                         [
-                            129,
+                            105,
                             "              \"delete\": true,\n"
                         ],
                         [
-                            130,
+                            106,
                             "              \"read\": true,\n"
                         ],
                         [
-                            131,
+                            107,
                             "              \"write\": true,\n"
                         ],
                         [
-                            132,
+                            108,
                             "              \"retentionPolicy\": {\n"
                         ],
                         [
-                            133,
+                            109,
                             "                \"enabled\": true,\n"
                         ],
                         [
-                            134,
+                            110,
                             "                \"days\": 7\n"
                         ],
                         [
-                            135,
+                            111,
                             "              }\n"
                         ],
                         [
-                            136,
+                            112,
                             "            }\n"
                         ],
                         [
-                            137,
+                            113,
                             "          }\n"
                         ],
                         [
-                            138,
+                            114,
                             "        }\n"
                         ],
                         [
-                            139,
+                            115,
                             "      ]\n"
                         ],
                         [
-                            140,
+                            116,
                             "    },\n"
                         ]
                     ],
@@ -5723,7 +4850,7 @@
                     "repo_file_path": "/deploy/azure/arm_template.json",
                     "file_line_range": [
                         58,
-                        140
+                        116
                     ],
                     "resource": "Microsoft.Storage/storageAccounts.stchurnguardsea2026",
                     "evaluations": {},
@@ -5757,51 +4884,51 @@
                     },
                     "code_block": [
                         [
-                            155,
+                            131,
                             "    {\n"
                         ],
                         [
-                            156,
+                            132,
                             "      \"type\": \"Microsoft.Storage/storageAccounts/blobServices/containers\",\n"
                         ],
                         [
-                            157,
+                            133,
                             "      \"apiVersion\": \"2023-01-01\",\n"
                         ],
                         [
-                            158,
+                            134,
                             "      \"name\": \"[format('{0}/default/{1}', parameters('storageAccountName'), variables('blobContainerName'))]\",\n"
                         ],
                         [
-                            159,
+                            135,
                             "      \"dependsOn\": [\n"
                         ],
                         [
-                            160,
+                            136,
                             "        \"[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]\",\n"
                         ],
                         [
-                            161,
+                            137,
                             "        \"[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]\"\n"
                         ],
                         [
-                            162,
+                            138,
                             "      ],\n"
                         ],
                         [
-                            163,
+                            139,
                             "      \"properties\": {\n"
                         ],
                         [
-                            164,
+                            140,
                             "        \"publicAccess\": \"None\"\n"
                         ],
                         [
-                            165,
+                            141,
                             "      }\n"
                         ],
                         [
-                            166,
+                            142,
                             "    },\n"
                         ]
                     ],
@@ -5809,8 +4936,8 @@
                     "file_abs_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\deploy\\azure\\arm_template.json",
                     "repo_file_path": "/deploy/azure/arm_template.json",
                     "file_line_range": [
-                        155,
-                        166
+                        131,
+                        142
                     ],
                     "resource": "Microsoft.Storage/storageAccounts/blobServices/containers.[format('{0}/default/{1}', stchurnguardsea2026, churnguard-datasets)]",
                     "evaluations": {},
@@ -5842,7 +4969,7 @@
             "failed": 0,
             "skipped": 0,
             "parsing_errors": 0,
-            "resource_count": 9,
+            "resource_count": 10,
             "checkov_version": "3.4.0"
         },
         "url": "Add an api key '--bc-api-key <api-key>' to see more detailed insights via https://bridgecrew.cloud"

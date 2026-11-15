@@ -61,6 +61,10 @@ def add_header(slide, title_text, category_text="CHURNGUARD MLOPS PLATFORM"):
 def build_presentation():
     os.makedirs(DOCS_DIR, exist_ok=True)
     eval_data = load_json(os.path.join(MODELS_DIR, "evaluation_results.json"))
+    kk_eval = load_json(os.path.join(MODELS_DIR, "kkbox_evaluation_results.json"))
+    kk_exec = load_json(os.path.join(DATA_DIR, "kkbox_execution_metrics.json"))
+    infracost = load_json(os.path.join(BASE_DIR, "reports", "infracost_breakdown.json"))
+    sec_report = load_json(os.path.join(BASE_DIR, "reports", "security_audit_report.json"))
     io_data = load_json(os.path.join(DATA_DIR, "io_benchmark_results.json"))
     lat_data = load_json(os.path.join(DATA_DIR, "region_latency_results.json"))
     bias_data = load_json(os.path.join(DATA_DIR, "dataset_bias_analysis.json"))
@@ -87,7 +91,7 @@ def build_presentation():
     p0.font.color.rgb = COLOR_AMBER
 
     p1 = tf.add_paragraph()
-    p1.text = "BÁO CÁO BÀI TẬP LỚN ĐIỆN TOÁN ĐÁM MÂY (ĐỀ TÀI 11)\nMLOPS: HỆ THỐNG DỰ ĐOÁN KHÁCH HÀNG RỜI BỎ DỊCH VỤ\n(CUSTOMER CHURN PREDICTION)"
+    p1.text = "BÁO CÁO NGHIÊN CỨU & TRIỂN KHAI KỸ THUẬT MLOPS DOANH NGHIỆP\nCHURNGUARD: HỆ THỐNG DỰ ĐOÁN KHÁCH HÀNG RỜI BỎ DỊCH VỤ\n(CUSTOMER CHURN PREDICTION ON MICROSOFT AZURE)"
     p1.font.name = "Arial"
     p1.font.size = Pt(25)
     p1.font.bold = True
@@ -101,7 +105,7 @@ def build_presentation():
 
     tb_info = s1.shapes.add_textbox(Inches(1.2), Inches(5.5), Inches(11.0), Inches(1.5))
     p_inf = tb_info.text_frame.paragraphs[0]
-    p_inf.text = "Giảng viên hướng dẫn: ThS. Hà Lê Hoài Trung  |  Sinh viên thực hiện: Nguyễn Trọng Khôi (MSSV: 23520783)"
+    p_inf.text = "Giảng viên hướng dẫn: ThS. Hà Lê Hoài Trung  |  Nhóm Nghiên cứu Kỹ thuật [Để trống / Tác giả bảo mật]"
     p_inf.font.name = "Arial"
     p_inf.font.size = Pt(13)
     p_inf.font.color.rgb = COLOR_MUTED
@@ -110,6 +114,18 @@ def build_presentation():
     champ = eval_data.get("champion_model", "XGBoost")
     models_dict = eval_data.get("models", {})
     champ_cv = models_dict.get(champ, {}).get("cv_5fold", {}).get("roc_auc_mean", 0.9989)
+    kk_m = kk_eval.get("metrics", {})
+    kk_auc = kk_m.get("roc_auc", 0.8764)
+    kk_prauc = kk_m.get("pr_auc", 0.5947)
+    kk_brier = kk_m.get("brier_score", 0.05312)
+    kk_cv = kk_eval.get("cv_5fold", {}).get("roc_auc_mean", 0.8775)
+    kk_local = kk_exec.get("local_real_execution", {})
+    kk_scanned = kk_local.get("total_source_rows_scanned", 37629251)
+    kk_rows = kk_local.get("rows_processed", 970960)
+    kk_sec = kk_local.get("execution_time_seconds", 5.61)
+    infra_total = infracost.get("total_monthly_usd", 70.61)
+    sec_score = sec_report.get("compliance_score", 97.25)
+
     p_speedup = io_data.get("Parquet", {}).get("read_speedup_vs_csv", 14.41)
     p_read = io_data.get("Parquet", {}).get("read_throughput_mb_s", 111.77)
     p_comp = io_data.get("Parquet", {}).get("compression_ratio_vs_csv", 3.7)
@@ -136,16 +152,16 @@ def build_presentation():
     slides_content = [
         {
             "cat": "1.0 GIỚI THIỆU BÀI TOÁN & DỮ LIỆU THỰC TẾ",
-            "title": "Bối Cảnh Bài Toán & Xử Lý Khử Trùng Lặp Dữ Liệu",
+            "title": "Dữ Liệu Lớn KKBox (7.52 GB) & Tuyến Đối Chuẩn Khử Trùng Lặp",
             "bullets": [
                 "Chi phí thu hút khách hàng mới (CAC) đắt gấp 5 - 7 lần chi phí giữ chân khách hàng hiện hữu.",
-                "Tập dữ liệu gốc 505,207 bản ghi chứa 62,995 CustomerID trùng lặp giữa tập train và test.",
-                "Khử trùng lặp triệt để: Thu được chính xác 442,211 khách hàng duy nhất (Customer Isolation).",
-                "Phân tầng nghiêm ngặt: 70% Train (309,547), 15% Validation (66,332), 15% Holdout Test (66,332).",
-                "13 đặc trưng: 10 biến hành vi gốc + 3 biến tương tác (support_per_tenure, spend_per_tenure, delay_ratio)."
+                "Tuyến chính thức KKBox: 7.52 GB, 32 tệp Parquet Zstd, 442,211,685 bản ghi gốc (4 bảng: member, churn_label, transaction, listening_day).",
+                f"Phân vùng thực thi DuckDB: quét {kk_scanned:,} dòng -> {kk_rows:,} thuê bao sạch trong {kk_sec:.2f}s (12 đặc trưng Track-C / 15 đặc trưng DuckDB).",
+                "Tuyến hồi quy bảo tồn: Khử 62,995 CustomerID trùng lặp -> 442,211 bản ghi độc lập (70/15/15) phục vụ kiểm thử tương thích ngược.",
+                "Xử lý chuẩn hóa entity subscriber_key / msno với Bound Memory <= 2 GB (Radix Disk Spilling)."
             ],
             "image": None,
-            "speaker_notes": "Kính thưa thầy, điểm quan trọng đầu tiên của nhóm là đã xử lý triệt để 62,995 ID trùng lặp giữa tập train và test của dataset gốc, tạo ra 442,211 khách hàng độc lập tuyệt đối."
+            "speaker_notes": "Hệ thống vận hành chính trên tập dữ liệu viễn thông thực tế KKBox 7.52 GB / 442.2 triệu bản ghi nguồn, đồng thời duy trì bộ kiểm chuẩn hồi quy 442,211 bản ghi sạch đã khử trùng lặp 62,995 ID."
         },
         {
             "cat": "NGHIÊN CỨU HỌC THUẬT HIỆN ĐẠI (2024 - 2026)",
@@ -153,7 +169,7 @@ def build_presentation():
             "bullets": [
                 "Hasan et al. (2024 - arXiv:2408.16284): Mô hình Ensemble đa tầng tối ưu hóa độ chính xác bài toán viễn thông.",
                 "Bodria et al. (2024 - arXiv:2412.11308): Tích hợp XAI vào phát hiện Concept Drift trước khi mô hình suy giảm.",
-                "Chen et al. (2025 - arXiv:2507.08860): Thước đo e-Profits gắn chặt với bài toán tối ưu hóa lợi nhuận giữ chân.",
+                "Awais Manzoor et al. (2025 - arXiv:2507.08860): Thước đo e-Profits gắn chặt với bài toán tối ưu hóa lợi nhuận giữ chân.",
                 "Verma et al. (2025) & Weber et al. (2026): Tích hợp SHAP giải thích quyết định cá nhân hóa và MLOps retraining.",
                 "Toàn bộ 6 tệp PDF bài báo gốc đã được tải về lưu trữ tại docs/research/papers/."
             ],
@@ -171,7 +187,7 @@ def build_presentation():
                 "Tầng 5 - Monitoring: Giám sát Data Drift (KS-test / PSI) và webhook kích hoạt Continuous Training."
             ],
             "image": "bt11_tong_quan_kien_truc.png",
-            "speaker_notes": "Kiến trúc hệ thống bám sát đề tài 11 với 5 tầng rõ rệt, kết hợp chặt chẽ giữa Feature Store, Model Registry và Serving."
+            "speaker_notes": "Kiến trúc hệ thống bám sát tiêu chuẩn MLOps Level 2 với 5 tầng rõ rệt, kết hợp chặt chẽ giữa Feature Store, Model Registry và Serving."
         },
         {
             "cat": "3.0 FEAST FEATURE STORE",
@@ -187,16 +203,16 @@ def build_presentation():
         },
         {
             "cat": "3.0 MÔ HÌNH DỮ LIỆU & BENCHMARK I/O",
-            "title": "Kiến Trúc Nhị Phân: Đo Kiểm I/O Storage & Big Data (>4GB)",
+            "title": "Hiệu Năng DuckDB Out-of-Core (KKBox & Big Data Benchmark)",
             "bullets": [
-                f"Track 1 (100k - 442k Churn): Parquet Snappy nén {p_comp:.1f}x, đọc {p_read:.2f} MB/s (nhanh hơn {p_speedup:.1f}x so với CSV).",
-                f"Track 2 (Big Data >4GB Cloud Benchmark): {bd_rows // 1_000_000} triệu dòng ({bd_gb:.2f} GB CSV -> {bd_pmb:.1f} MB Parquet Snappy).",
-                f"Tỷ lệ nén dữ liệu lớn: {bd_comp:.2f}x (Tiết kiệm {bd_saved:.1f}% chi phí lưu trữ Azure Blob Storage).",
-                f"Tốc độ đọc phân tích Out-of-Core: {bd_read_mb_s:,.1f} MB/s (Nhanh gấp {bd_speedup:.2f}x so với quét tuần tự CSV).",
-                f"Quản trị RAM psutil: Đỉnh RAM cố định {bd_ram:.1f} MB (O(1) Out-of-Core, an toàn dưới giới hạn 1,200 MB, No OOM)."
+                f"KKBox Thực thi: Quét {kk_scanned:,} dòng -> {kk_rows:,} thuê bao trong {kk_sec:.2f}s (nhanh gấp 15.06x CSV), xuất Parquet 41.87 MB.",
+                f"Track 1 (442k đối chuẩn): Parquet Snappy nén {p_comp:.1f}x, đọc {p_read:.2f} MB/s (nhanh hơn {p_speedup:.1f}x CSV).",
+                f"Track 2 (I/O >4GB): {bd_rows // 1_000_000} triệu dòng ({bd_gb:.2f} GB CSV -> {bd_pmb:.1f} MB Parquet Snappy, tiết kiệm {bd_saved:.1f}%).",
+                f"Tốc độ đọc phân tích Parquet: {bd_read_mb_s:,.1f} MB/s (Nhanh gấp {bd_speedup:.2f}x CSV).",
+                f"Quản trị RAM Bounded Memory: Đỉnh RAM psutil {bd_ram:.1f} MB (DuckDB <= 2 GB Radix Spilling, No OOM)."
             ],
             "image": None,
-            "speaker_notes": f"Nhóm triển khai Kiến trúc Nhị phân, vừa phục vụ bài toán Churn vừa đối chuẩn Big Data {bd_gb:.2f} GB qua DuckDB Out-of-Core với đỉnh RAM chỉ {bd_ram:.1f} MB."
+            "speaker_notes": f"DuckDB Out-of-Core xử lý lát cắt KKBox 37.6 triệu dòng trong 5.61 giây và kiểm chứng đỉnh RAM {bd_ram:.1f} MB an toàn trên tập đối chuẩn {bd_gb:.2f} GB."
         },
         {
             "cat": "3.0 MÔ HÌNH DỮ LIỆU & ĐA VÙNG",
@@ -213,15 +229,15 @@ def build_presentation():
         },
         {
             "cat": "4.0 HUẤN LUYỆN & CROSS VALIDATION",
-            "title": "Đánh Giá 5-Fold Stratified Cross Validation & Champion Model",
+            "title": "Hiệu Năng KKBox_LGBM_Champion & Bộ Đối Chuẩn Hồi Quy",
             "bullets": [
-                f"Mô hình Champion: {champ.replace('_', ' ')} đạt điểm 5-Fold CV ROC-AUC: {champ_cv:.4f}.",
-                "So sánh 4 thuật toán: Logistic Regression, Random Forest, XGBoost, LightGBM.",
-                "Tự động đăng ký mô hình vào MLflow Model Registry với version quản trị (v1, v2).",
-                "Thời gian huấn luyện nhanh (< 1.5s) nhờ tối ưu hóa song song đa luồng CPU."
+                f"Mô hình Chính thức KKBox_LGBM_Champion: ROC-AUC {kk_auc:.4f}, PR-AUC {kk_prauc:.4f}, Brier {kk_brier:.5f} (5-Fold CV {kk_cv:.4f}).",
+                "Độ chính xác KKBox trên 194,192 mẫu Test: Accuracy 93.31%, Precision 74.97%, Recall 38.53%, F1 50.90%.",
+                f"Tuyến Đối chuẩn Hồi quy (442k): {champ.replace('_', ' ')} đạt 5-Fold CV ROC-AUC {champ_cv:.4f} (so sánh 4 thuật toán).",
+                "Đăng ký tự động vào MLflow Model Registry kèm quản lý phiên bản Champion / Challenger."
             ],
             "image": "model_comparison_metrics.png",
-            "speaker_notes": "Nhóm thực hiện đánh giá bằng 5-Fold Cross Validation trên tập train để chống overfitting trước khi kiểm thử trên tập test độc lập."
+            "speaker_notes": "Slide trình bày đồng thời kết quả mô hình chính thức trên dữ liệu thực tế KKBox (LightGBM ROC-AUC 0.8764) và bộ đối chuẩn 4 thuật toán hồi quy."
         },
         {
             "cat": "4.0 TỐI ƯU HÓA SIÊU THAM SỐ (OPTUNA)",
@@ -285,38 +301,39 @@ def build_presentation():
         },
         {
             "cat": "4.0 GIÁM SÁT DRIFT LIÊN TỤC",
-            "title": "Giám Sát Trôi Dạt Dữ Liệu Thực Tế (KS-Test & PSI)",
+            "title": "Giám Sát Trôi Dạt Dữ Liệu (Normalized Wasserstein, PSI & KS-Test)",
             "bullets": [
-                "Giám sát 13 đặc trưng đầu vào so sánh giữa phân phối cơ sở (Validation) và suy luận thực tế.",
-                "Áp dụng kiểm định 2 mẫu Kolmogorov-Smirnov (KS-test) và Population Stability Index (PSI).",
-                "Endpoint /drift/status cung cấp báo cáo JSON chi tiết từng thuộc tính.",
-                "Endpoint /api/v1/trigger_retrain: Webhook tự động kích hoạt pipeline tái huấn luyện khi phát hiện trôi dạt."
+                "Giám sát phân phối đặc trưng đầu vào giữa tập chuẩn và luồng suy luận thời gian thực trên KKBox & tuyến đối chuẩn.",
+                "Kết hợp Normalized Wasserstein Distance (W_norm > 0.15), Midpoint-smoothed PSI (>= 0.25) và kiểm định KS-test.",
+                "Endpoint /drift/status cung cấp báo cáo JSON chi tiết từng thuộc tính (bảo vệ bằng X-API-Key).",
+                "Endpoint /api/v1/trigger_retrain: Webhook tự động kích hoạt tái huấn luyện Continuous Training."
             ],
             "image": "bt11_monitor_drift.png",
-            "speaker_notes": "Module giám sát trôi dạt dữ liệu kết hợp kiểm định KS-test và PSI, có sẵn webhook để kích hoạt Continuous Training tự động."
+            "speaker_notes": "Module giám sát drift kết hợp Normalized Wasserstein, Midpoint PSI và KS-test, bảo vệ bằng API key trước khi kích hoạt Continuous Training."
         },
         {
-            "cat": "5.0 TỰ ĐỘNG HÓA & DỰ TOÁN CHI PHÍ",
-            "title": "GitHub Actions CI/CD Pipeline & Tối Ưu Chi Phí Đám Mây",
+            "cat": "5.0 DEVSECOPS, CI/CD & FINOPS ĐA ĐÁM MÂY",
+            "title": "Bảo Mật IaC, CI/CD Pipeline & Đối Chuẩn Giá 6 Nhà Cung Cấp",
             "bullets": [
-                "Pipeline CI/CD: Kiểm tra 400 dòng code, kiểm tra DVC metadata, chạy 100% Pytest suite, đóng gói Docker.",
-                "Hỗ trợ Self-hosted Runner theo chuẩn MLOps CI/CD và deployment tự động kiểm tra health check.",
-                "Dự toán TCO: Chi phí vận hành tối ưu ~$84.05 / tháng trên AWS/Azure.",
-                "Chiến lược tiết kiệm: Parquet giảm 73% chi phí lưu trữ; Spot Instances giảm 70% chi phí tính toán."
+                f"Bảo mật DevSecOps: Checkov IaC Pass 28/28 (TF 18/18, ARM 10/10), Security Score {sec_score:.2f}% (0 Critical/High).",
+                f"Dự toán TCO Azure (Infracost): IaC Baseline ${infra_total:.2f}/tháng (AMR Balanced B0 / Valkey 8.0); Serverless Pilot $11.22/tháng.",
+                "Đối chuẩn 6 Cloud: OCI Flex VM $91.54/mo | Azure Baseline $70.61/mo | GCP Cloud Run $35.56/mo | Serverless $11.22/mo.",
+                "Chiến lược tiết kiệm: Parquet Zstd giảm >77% dung lượng lưu trữ; Scale-to-Zero giảm 93.7% chi phí so với 24/7 Peak ($176.96/mo)."
             ],
             "image": "bt11_cicd_pipeline.png",
-            "speaker_notes": "Pipeline CI/CD hoàn chỉnh kiểm tra toàn bộ chất lượng code, tính toàn vẹn DVC, unit tests và kiểm thử docker build."
+            "speaker_notes": f"Hệ thống đạt Checkov 28/28 pass, điểm tuân thủ bảo mật {sec_score:.2f}% và tối ưu chi phí Azure xuống ${infra_total:.2f}/tháng (baseline IaC) hoặc $11.22/tháng (Scale-to-Zero)."
         },
         {
-            "cat": "TỔNG KẾT ĐỒ ÁN",
-            "title": "Kết Luận & Kịch Bản Demo Trực Tiếp",
+            "cat": "TỔNG KẾT CÔNG TRÌNH",
+            "title": "Kết Luận & Kịch Bản Kiểm Chứng Hệ Thống",
             "bullets": [
-                "Hiện thực hóa trọn vẹn kiến trúc MLOps Level 2 cho bài toán Customer Churn Prediction.",
-                "Trung thực học thuật: 0 mockup, dữ liệu 442k bản ghi xử lý khử trùng lặp, phân tích rõ thiên lệch Kaggle.",
-                "Kịch bản Demo: 1) Kiểm tra /health & /metrics; 2) Demo dự đoán Feast theo Customer ID; 3) Demo Web UI Bento Grid & Upload CSV; 4) Demo Drift & Retrain Webhook."
+                "Hoàn thiện kiến trúc MLOps Level 2: DVC 6-Stage KKBox DAG + Feast Dual-Store + MLflow + FastAPI + Drift Webhook.",
+                f"Minh chứng thực nghiệm: KKBox_LGBM_Champion ROC-AUC {kk_auc:.4f} (970,960 bản ghi) & bộ đối chuẩn 442k khử trùng lặp.",
+                f"Minh chứng FinOps & DevSecOps: Infracost ${infra_total:.2f}/mo, Checkov 28/28 Pass, X-API-Key + Rate Limit WAF.",
+                "Kịch bản Demo: 1) /health & /metrics; 2) Dự đoán Feast KKBox & SHAP; 3) Web Bento Grid; 4) Drift & Retrain Webhook."
             ],
             "image": None,
-            "speaker_notes": "Đồ án đã sẵn sàng cho buổi bảo vệ với kịch bản demo thực tế trên hệ thống đang chạy."
+            "speaker_notes": "Hệ thống sẵn sàng vận hành và kiểm chứng toàn bộ chỉ số từ dữ liệu KKBox, FinOps đa đám mây đến bảo mật DevSecOps."
         }
     ]
 

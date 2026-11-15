@@ -60,7 +60,7 @@ def load_json_file(file_path: str) -> dict:
 st.sidebar.title("ChurnGuard MLOps")
 st.sidebar.caption("Enterprise Observability & Model Serving Platform")
 st.sidebar.markdown("---")
-st.sidebar.markdown("- **Pipeline:** DVC + MLflow 3.16\n- **Feature Store:** Feast 0.66\n- **Champion Model:** XGBoost (AUC: 0.9990)\n- **A/B Split:** 80% Champ / 20% Chall")
+st.sidebar.markdown("- **Pipeline:** DVC (6-stage KKBox) + MLflow 3.16\n- **Feature Store:** Feast 0.66\n- **Champion Model:** KKBox_LGBM_Champion (ROC-AUC: 0.8764)\n- **A/B Split:** 80% Champ / 20% Chall")
 st.sidebar.markdown("---")
 if st.sidebar.button("Làm mới ngay (Refresh)"):
     st.rerun()

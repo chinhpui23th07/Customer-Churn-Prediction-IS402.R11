@@ -24,7 +24,7 @@ export const options = {
 };
 
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:8000';
-const API_KEY = __ENV.API_KEY || 'mlops-churn-secret-2026';
+const API_KEY = __ENV.API_KEY || '';
 
 const samplePayload = JSON.stringify({
   customer_id: 10452,
@@ -43,7 +43,6 @@ const samplePayload = JSON.stringify({
 const headers = {
   'Content-Type': 'application/json',
   'X-API-Key': API_KEY,
-  'X-Requested-With': 'XMLHttpRequest',
 };
 
 export default function () {

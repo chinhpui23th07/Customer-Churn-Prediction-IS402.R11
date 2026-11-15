@@ -1,4 +1,4 @@
-# Feature contract v0.1 — KKBox public-m12
+# Feature contract v0.1 - KKBox public-m12
 
 **Đơn vị một dòng:** (`subscriber_key`, `as_of_date`). `subscriber_key` là chuỗi số thập phân bảo toàn giá trị `uint64` của Parquet. `as_of_date` là ngày dạng `YYYY-MM-DD`, chỉ nhận `2017-01-31` hoặc `2017-02-28` trong bản demo. Feast online dùng entity nội bộ `snapshot_key = subscriber_key + "|" + as_of_date` để không ghi đè hai snapshot của cùng khách hàng; API vẫn chỉ nhận hai trường riêng. `snapshot_key` không vào model. `label_period` và `is_churn` chỉ xuất hiện trong bảng huấn luyện/đánh giá, không nằm trong Feast online features.
 

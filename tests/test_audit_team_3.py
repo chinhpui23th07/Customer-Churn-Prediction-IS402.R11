@@ -17,6 +17,7 @@ from scipy.stats import ks_2samp
 from src.monitoring.drift_detector import (
     FEATURE_COLS,
     calculate_psi,
+    calculate_normalized_wasserstein,
     run_drift_analysis,
 )
 
@@ -184,3 +185,53 @@ def test_psi_zero_count_smoothing_epsilon_bounds():
     assert np.isfinite(psi_smoothed), f"PSI is not finite: {psi_smoothed}"
     assert psi_smoothed > 0.0, f"PSI should be positive under distribution shift: {psi_smoothed}"
     assert not np.isnan(psi_smoothed), "PSI returned NaN"
+
+
+def test_normalized_wasserstein_distance_calculation():
+    """
+    Kiểm thử khoảng cách Normalized Wasserstein theo chuẩn Evidently AI:
+    - Hai phân phối đồng nhất: norm_w < 0.05.
+    - Phân phối dịch chuyển mạnh (+1.0 sigma): norm_w >= 0.80 (> 0.10 threshold).
+    - Biên và suy biến: vector rỗng, vector hằng số, chứa NaN / Inf đều trả về float hữu hạn.
+    """
+    rng = np.random.default_rng(42)
+    ref = rng.normal(loc=10.0, scale=2.0, size=5000)
+    cur_same = rng.normal(loc=10.0, scale=2.0, size=5000)
+    raw_w, norm_w = calculate_normalized_wasserstein(ref, cur_same)
+    assert norm_w < 0.05, f"Expected small norm_w for identical distributions, got {norm_w}"
+
+    cur_shifted = rng.normal(loc=12.0, scale=2.0, size=5000)
+    raw_w_s, norm_w_s = calculate_normalized_wasserstein(ref, cur_shifted)
+    assert norm_w_s > 0.80, f"Expected high norm_w for 1.0 sigma shift, got {norm_w_s}"
+
+    # Edge cases
+    assert calculate_normalized_wasserstein(np.array([]), np.array([])) == (0.0, 0.0)
+    assert calculate_normalized_wasserstein(np.array([5.0, 5.0]), np.array([5.0, 5.0])) == (0.0, 0.0)
+    r_nan, n_nan = calculate_normalized_wasserstein(np.array([1.0, np.nan, 2.0, np.inf]), np.array([1.0, 2.0, -np.inf]))
+    assert np.isfinite(r_nan) and np.isfinite(n_nan)
+
+
+def test_big_data_overpowered_ks_vs_wasserstein():
+    """
+    Chứng minh thực nghiệm lý do khoa học tại sao KS-test bị overpowered trên dữ liệu lớn (N=100,000):
+    - Khi có độ lệch siêu nhỏ (0.02 sigma), KS-test bác bỏ H0 với p-value << alpha_Bonferroni,
+      dẫn tới báo động giả (False Alarm).
+    - Ngược lại, Normalized Wasserstein Distance đánh giá đúng effect size (~0.02),
+      nằm an toàn dưới ngưỡng 0.10 của Evidently AI, loại bỏ triệt để báo động giả.
+    """
+    rng = np.random.default_rng(42)
+    n_big = 100000
+    ref = rng.normal(loc=50.0, scale=10.0, size=n_big)
+    # Dịch chuyển chỉ 0.02 sigma (0.2 đơn vị trên độ lệch chuẩn 10.0)
+    cur = rng.normal(loc=50.2, scale=10.0, size=n_big)
+
+    ks_res = ks_2samp(ref, cur)
+    bonferroni_alpha = 0.05 / 13.0  # ~0.003846
+
+    # KS-test bị overpowered: p-value cực nhỏ, kích hoạt cảnh báo sai
+    assert ks_res.pvalue < bonferroni_alpha, f"KS-test did not trigger overpowered alarm: p={ks_res.pvalue}"
+
+    # Normalized Wasserstein Distance đo đúng effect size vật lý (~0.02)
+    raw_w, norm_w = calculate_normalized_wasserstein(ref, cur)
+    assert norm_w < 0.10, f"Normalized Wasserstein falsely triggered drift: {norm_w} >= 0.10"
+    assert 0.01 <= norm_w <= 0.04, f"Normalized Wasserstein out of expected range: {norm_w}"

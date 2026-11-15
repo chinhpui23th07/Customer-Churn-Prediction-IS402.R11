@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-11-01T17:24:45.919905+00:00",
+  "timestamp": "2026-11-13T12:48:17.334417+00:00",
   "tools_executed": [
     "bridgecrewio/checkov (9.1k stars)",
     "aquasecurity/trivy (38.9k stars)",
     "NetSPI/MicroBurst (2.5k stars)"
   ],
-  "total_rules": 183,
-  "passed_count": 182,
-  "failed_count": 1,
-  "compliance_score_percent": 99.45,
+  "total_rules": 182,
+  "passed_count": 177,
+  "failed_count": 5,
+  "compliance_score_percent": 97.25,
   "summary": {
     "CRITICAL": 0,
     "HIGH": 0,
-    "MEDIUM": 1,
-    "LOW": 0
+    "MEDIUM": 3,
+    "LOW": 2
   },
   "findings": [
     {
@@ -143,38 +143,11 @@
       "remediation": "Compliant with policy baseline."
     },
     {
-      "rule_id": "CKV_AZURE_91",
+      "rule_id": "CKV2_AZURE_47",
       "category": "Checkov (terraform)",
       "severity": "LOW",
       "target": "/deploy/azure/main.tf",
-      "description": "Ensure that only SSL are enabled for Cache for Redis",
-      "status": "PASS",
-      "remediation": "Compliant with policy baseline."
-    },
-    {
-      "rule_id": "CKV_AZURE_148",
-      "category": "Checkov (terraform)",
-      "severity": "LOW",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure Redis Cache is using the latest version of TLS encryption",
-      "status": "PASS",
-      "remediation": "Compliant with policy baseline."
-    },
-    {
-      "rule_id": "CKV_AZURE_89",
-      "category": "Checkov (terraform)",
-      "severity": "LOW",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure that Azure Cache for Redis disables public network access",
-      "status": "PASS",
-      "remediation": "Compliant with policy baseline."
-    },
-    {
-      "rule_id": "CKV2_AZURE_40",
-      "category": "Checkov (terraform)",
-      "severity": "LOW",
-      "target": "/deploy/azure/main.tf",
-      "description": "Ensure storage account is not configured with Shared Key authorization",
+      "description": "Ensure storage account is configured without blob anonymous access",
       "status": "PASS",
       "remediation": "Compliant with policy baseline."
     },
@@ -188,11 +161,11 @@
       "remediation": "Compliant with policy baseline."
     },
     {
-      "rule_id": "CKV2_AZURE_47",
+      "rule_id": "CKV2_AZURE_40",
       "category": "Checkov (terraform)",
       "severity": "LOW",
       "target": "/deploy/azure/main.tf",
-      "description": "Ensure storage account is configured without blob anonymous access",
+      "description": "Ensure storage account is not configured with Shared Key authorization",
       "status": "PASS",
       "remediation": "Compliant with policy baseline."
     },
@@ -728,6 +701,24 @@
       "remediation": "Set network rules to deny"
     },
     {
+      "rule_id": "AZU-0030",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "Roles limited to the required actions",
+      "status": "PASS",
+      "remediation": "Use targeted permissions for roles"
+    },
+    {
+      "rule_id": "AZU-0052",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure",
+      "description": "Role Definition Allows Custom Role Creation",
+      "status": "PASS",
+      "remediation": "Avoid granting 'Microsoft.Authorization/roleDefinitions/write' permission in custom roles. Restrict role creation capability to core admins only."
+    },
+    {
       "rule_id": "AZU-0056",
       "category": "Trivy (Misconfig)",
       "severity": "MEDIUM",
@@ -744,15 +735,6 @@
       "description": "Storage account should have logging enabled",
       "status": "PASS",
       "remediation": "Enable logging for at least one storage service (Queue, Table, or Blob)"
-    },
-    {
-      "rule_id": "AZU-0058",
-      "category": "Trivy (Misconfig)",
-      "severity": "LOW",
-      "target": "deploy/azure",
-      "description": "Storage account should use geo-redundant replication",
-      "status": "PASS",
-      "remediation": "Configure storage account to use geo-redundant replication (GRS, RAGRS, GZRS, or RAGZRS)"
     },
     {
       "rule_id": "AZU-0059",
@@ -989,6 +971,33 @@
       "remediation": "Enable VPC Flow Logs for subnets."
     },
     {
+      "rule_id": "AZU-0056",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure/arm_template.json",
+      "description": "Storage account should have blob soft delete enabled",
+      "status": "FAIL",
+      "remediation": "Enable soft delete for blobs with an appropriate retention period"
+    },
+    {
+      "rule_id": "AZU-0057",
+      "category": "Trivy (Misconfig)",
+      "severity": "MEDIUM",
+      "target": "deploy/azure/arm_template.json",
+      "description": "Storage account should have logging enabled",
+      "status": "FAIL",
+      "remediation": "Enable logging for at least one storage service (Queue, Table, or Blob)"
+    },
+    {
+      "rule_id": "AZU-0058",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/azure/arm_template.json",
+      "description": "Storage account should use geo-redundant replication",
+      "status": "FAIL",
+      "remediation": "Configure storage account to use geo-redundant replication (GRS, RAGRS, GZRS, or RAGZRS)"
+    },
+    {
       "rule_id": "AZU-0007",
       "category": "Trivy (Misconfig)",
       "severity": "HIGH",
@@ -1043,33 +1052,6 @@
       "remediation": "Set network rules to deny"
     },
     {
-      "rule_id": "AZU-0056",
-      "category": "Trivy (Misconfig)",
-      "severity": "MEDIUM",
-      "target": "deploy/azure/arm_template.json",
-      "description": "Storage account should have blob soft delete enabled",
-      "status": "PASS",
-      "remediation": "Enable soft delete for blobs with an appropriate retention period"
-    },
-    {
-      "rule_id": "AZU-0057",
-      "category": "Trivy (Misconfig)",
-      "severity": "MEDIUM",
-      "target": "deploy/azure/arm_template.json",
-      "description": "Storage account should have logging enabled",
-      "status": "PASS",
-      "remediation": "Enable logging for at least one storage service (Queue, Table, or Blob)"
-    },
-    {
-      "rule_id": "AZU-0058",
-      "category": "Trivy (Misconfig)",
-      "severity": "LOW",
-      "target": "deploy/azure/arm_template.json",
-      "description": "Storage account should use geo-redundant replication",
-      "status": "PASS",
-      "remediation": "Configure storage account to use geo-redundant replication (GRS, RAGRS, GZRS, or RAGZRS)"
-    },
-    {
       "rule_id": "AZU-0059",
       "category": "Trivy (Misconfig)",
       "severity": "HIGH",
@@ -1095,6 +1077,15 @@
       "description": "Storage account should have infrastructure encryption enabled",
       "status": "PASS",
       "remediation": "Enable infrastructure encryption for storage account"
+    },
+    {
+      "rule_id": "AZU-0058",
+      "category": "Trivy (Misconfig)",
+      "severity": "LOW",
+      "target": "deploy/azure/main.tf",
+      "description": "Storage account should use geo-redundant replication",
+      "status": "FAIL",
+      "remediation": "Configure storage account to use geo-redundant replication (GRS, RAGRS, GZRS, or RAGZRS)"
     },
     {
       "rule_id": "AZU-0060",

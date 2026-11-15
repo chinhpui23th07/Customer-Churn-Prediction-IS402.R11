@@ -33,6 +33,12 @@ variable "acr_name" {
   description = "Azure Container Registry name"
 }
 
+variable "api_key" {
+  type        = string
+  sensitive   = true
+  description = "Serving API X-API-Key token injected at deploy time via TF_VAR_api_key"
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.location
@@ -62,7 +68,7 @@ resource "azurerm_storage_account" "sa" {
   resource_group_name               = azurerm_resource_group.rg.name
   location                          = azurerm_resource_group.rg.location
   account_tier                      = "Standard"
-  account_replication_type          = "GRS"
+  account_replication_type          = "LRS"
   min_tls_version                   = "TLS1_2"
   public_network_access_enabled     = false
   shared_access_key_enabled         = false
@@ -99,20 +105,22 @@ resource "azurerm_storage_container" "sc" {
   container_access_type = "private"
 }
 
-resource "azurerm_redis_cache" "redis" {
-  name                          = "redis-churnguard-sea"
-  location                      = azurerm_resource_group.rg.location
-  resource_group_name           = azurerm_resource_group.rg.name
-  capacity                      = 0
-  family                        = "C"
-  sku_name                      = "Basic"
-  enable_non_ssl_port           = false
-  minimum_tls_version           = "1.2"
-  public_network_access_enabled = false
+# Azure Managed Redis (AMR) - Replaces legacy Azure Cache for Redis (Basic C0 deprecated April 1, 2026)
+resource "azurerm_redis_enterprise_cluster" "redis" {
+  name                = "redis-churnguard-sea"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku_name            = "Balanced_B0"
+  minimum_tls_version = "1.2"
+}
 
-  redis_configuration {
-    maxmemory_policy = "volatile-lru"
-  }
+resource "azurerm_redis_enterprise_database" "redis_db" {
+  name              = "default"
+  cluster_id        = azurerm_redis_enterprise_cluster.redis.id
+  client_protocol   = "Encrypted"
+  clustering_policy = "EnterpriseCluster"
+  eviction_policy   = "VolatileLRU"
+  port              = 10000
 }
 
 resource "azurerm_log_analytics_workspace" "law" {
@@ -130,11 +138,49 @@ resource "azurerm_container_app_environment" "cae" {
   log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
 }
 
+resource "azurerm_user_assigned_identity" "app_identity" {
+  name                = "id-churnguard-mlops-sea"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+resource "azurerm_role_assignment" "acr_pull" {
+  scope                = azurerm_container_registry.acr.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_user_assigned_identity.app_identity.principal_id
+}
+
+resource "azurerm_role_assignment" "storage_blob_contributor" {
+  scope                = azurerm_storage_account.sa.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_user_assigned_identity.app_identity.principal_id
+}
+
 resource "azurerm_container_app" "app" {
   name                         = "churnguard-serving-app"
   container_app_environment_id = azurerm_container_app_environment.cae.id
   resource_group_name          = azurerm_resource_group.rg.name
   revision_mode                = "Single"
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.app_identity.id]
+  }
+
+  registry {
+    server   = azurerm_container_registry.acr.login_server
+    identity = azurerm_user_assigned_identity.app_identity.id
+  }
+
+  secret {
+    name  = "redis-access-key"
+    value = azurerm_redis_enterprise_database.redis_db.primary_access_key
+  }
+
+  secret {
+    name  = "api-key-token"
+    value = var.api_key
+  }
 
   ingress {
     external_enabled = true
@@ -156,20 +202,32 @@ resource "azurerm_container_app" "app" {
       memory = "2.0Gi"
 
       env {
+        name  = "APP_ENV"
+        value = "production"
+      }
+      env {
+        name        = "API_KEY"
+        secret_name = "api-key-token"
+      }
+      env {
         name  = "MLFLOW_TRACKING_URI"
         value = "sqlite:////app/data/mlflow.db"
       }
       env {
         name  = "REDIS_HOST"
-        value = azurerm_redis_cache.redis.hostname
+        value = azurerm_redis_enterprise_cluster.redis.hostname
       }
       env {
         name  = "REDIS_PORT"
-        value = tostring(azurerm_redis_cache.redis.ssl_port)
+        value = tostring(azurerm_redis_enterprise_database.redis_db.port)
       }
       env {
         name  = "REDIS_SSL"
         value = "true"
+      }
+      env {
+        name        = "AZURE_REDIS_PASSWORD"
+        secret_name = "redis-access-key"
       }
       env {
         name  = "AZURE_STORAGE_CONTAINER"
@@ -177,6 +235,8 @@ resource "azurerm_container_app" "app" {
       }
     }
   }
+
+  depends_on = [azurerm_role_assignment.acr_pull]
 }
 
 output "container_app_fqdn" {
@@ -185,6 +245,11 @@ output "container_app_fqdn" {
 }
 
 output "redis_ssl_port" {
-  value       = azurerm_redis_cache.redis.ssl_port
-  description = "Azure Cache for Redis SSL port (6380)"
+  value       = azurerm_redis_enterprise_database.redis_db.port
+  description = "Azure Managed Redis (AMR Balanced B0) SSL/TLS port (10000)"
+}
+
+output "redis_hostname" {
+  value       = azurerm_redis_enterprise_cluster.redis.hostname
+  description = "Azure Managed Redis (AMR Balanced B0) hostname"
 }

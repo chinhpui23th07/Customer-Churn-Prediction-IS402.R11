@@ -40,9 +40,9 @@ flowchart LR
 | Full runner/Blob/API Azure | Mới có cấu hình hoặc kế hoạch | Cần run thành công, URL, log, ảnh và đối chiếu output |
 | Drift | Đã có mã và report pilot | Cần report trên full feature; đây là drift giữa hai kỳ lịch sử, chưa phải monitoring production liên tục |
 
-## 3. Rubric: Giới thiệu bài toán — 1,5 điểm
+## 3. Rubric: Giới thiệu bài toán - 1,5 điểm
 
-### 3.1 Loại bài toán và loại dữ liệu — 0,5 điểm
+### 3.1 Loại bài toán và loại dữ liệu - 0,5 điểm
 
 **Làm:** ghi nguồn dữ liệu, giấy phép/điều khoản, sơ đồ 4 bảng và định nghĩa `is_churn` (1 = churn, 0 = tiếp tục). Nêu bài toán chính là **xử lý + phân tích tiên đoán**, có lưu trữ, pipeline và giao diện phụ trợ. Làm bảng nguồn → cột khóa → số dòng → vai trò: `member`, `subscription_transaction`, `listening_day`, `churn_label`.
 
@@ -50,7 +50,7 @@ flowchart LR
 
 **Nói với thầy:** “Input model không phải 7,52 GB thô được đưa thẳng vào thuật toán. Spark đọc toàn bộ nguồn, join và tổng hợp theo khách hàng/cutoff thành feature. Nhãn đã có trong bảng churn_label, không tự gán từ dữ liệu nghe nhạc.”
 
-### 3.2 Kích thước >4 GB, RAM, local so với cloud — 0,75 điểm
+### 3.2 Kích thước >4 GB, RAM, local so với cloud - 0,75 điểm
 
 **Làm:** sau khi tải đủ trên Azure, ghi SHA-256/byte/row từng file, tổng chính xác, output ETL và log Spark; lưu cùng commit và dataset revision. Đo **cùng một workload** trên máy local và Azure: cùng 32 file nếu local đủ tài nguyên; nếu không thì cùng 6 file cho so sánh tốc độ, còn bằng chứng >4 GB lấy từ Azure full run riêng. Script `scripts/kkbox_benchmark_read.py` chỉ đo đọc file theo manifest; thời gian ETL Spark phải đo riêng. Mỗi ca chạy tối thiểu 3 lần, ghi cold/warm cache, CPU/RAM, disk, region, số core, Spark partitions, start/end UTC, elapsed seconds, peak memory, bytes đọc/ghi. Tính `throughput_MBps = bytes thực đọc / 1e6 / elapsed_seconds` và speedup `t_local / t_cloud`; không gộp thời gian tải mạng với thời gian ETL nếu một bên dùng dữ liệu đã lưu sẵn.
 
@@ -58,95 +58,95 @@ flowchart LR
 
 **Nói:** “Tổng dung lượng nguồn lớn hơn 4 GB là điều kiện dữ liệu; để chứng minh xử lý lớn, em đối chiếu input_file_count = 32 và input_bytes của audit với log Spark, rồi chỉ output snapshot và thời gian thực tế.”
 
-### 3.3 IaaS/PaaS/FaaS/SaaS — 0,25 điểm
+### 3.3 IaaS/PaaS/FaaS/SaaS - 0,25 điểm
 
 **Làm:** dùng bảng phân loại ở mục 1, thêm tên resource/region thật khi có. **Ảnh:** `07_azure_resources_region.png`, `08_github_actions.png`. **Nói:** “VM cấp hạ tầng tính toán; Blob lưu dữ liệu; GitHub Actions điều phối CI/CD. MLflow/Feast do nhóm vận hành trên VM.”
 
-## 4. Rubric: Cơ sở lý thuyết — 1,5 điểm
+## 4. Rubric: Cơ sở lý thuyết - 1,5 điểm
 
-### 4.1 Định dạng lưu trữ — 0,5 điểm
+### 4.1 Định dạng lưu trữ - 0,5 điểm
 
 **Làm:** giải thích Parquet dạng cột và nén Zstandard của nguồn, schema/footer, lợi ích projection/predicate pushdown; snapshot feature cũng lưu Parquet. Giải thích Blob object storage khác disk của VM; DVC lưu con trỏ/version trong Git và object trong remote sau khi cấu hình. Vẽ sơ đồ khóa `(subscriber_key, label_period)`; `subscriber_key` uint64 gửi qua JSON **string** để không mất chính xác.
 
 **Ảnh:** `09_parquet_schema_footer.png`, `10_dvc_remote_version.png` (chỉ sau push/pull thật). **Nói:** “DVC version hóa dữ liệu/model artifact; Azure Blob giữ byte, Git lưu metadata. Không đưa 7,52 GB raw lên GitHub.”
 
-### 4.2 Thuật toán xử lý — 0,5 điểm
+### 4.2 Thuật toán xử lý - 0,5 điểm
 
 **Làm:** mô tả 4 bước cụ thể: kiểm tra manifest → Spark join và tổng hợp theo cutoff → train/validation tháng 02, final test tháng 03 → tra feature/model khi API dự đoán. Trình bày quy tắc chống leakage: chỉ dùng giao dịch/log có ngày không sau cutoff, `is_churn` và ID không nằm trong feature vector. Giải thích LR/XGBoost được so bằng validation PR-AUC; threshold/risk lấy từ validation và lưu với model; báo cáo test tháng 03 chỉ sau khi khóa lựa chọn model.
 
 **Ảnh:** `11_etl_dag.png`, `12_mlflow_runs.png`, `13_temporal_split.png`. **Nói:** “Final test khác thời gian với train; đây là kiểm tra khả năng áp dụng sang kỳ kế tiếp. API hiện là historical replay cho năm 2017.”
 
-### 4.3 Dịch vụ cloud — 0,5 điểm
+### 4.3 Dịch vụ cloud - 0,5 điểm
 
 **Làm:** mỗi dịch vụ một dòng gồm chức năng, SKU/region, dữ liệu vào/ra, ước tính và chi phí thực tế: Blob raw/remote; Linux VM + disk cho Spark/runner/API; Azure Monitor/Cost Management nếu bật; GitHub Actions (SaaS). Không mô tả Redis/Container Apps/Functions là đã dùng nếu chưa triển khai.
 
 **Ảnh:** `14_service_inventory_cost.png`, kiến trúc mục 1. **Nói:** “Em chỉ tính là dịch vụ đã dùng khi resource và lần chạy xuất hiện trên portal/log.”
 
-## 5. Rubric: Mô hình dữ liệu — 2 điểm
+## 5. Rubric: Mô hình dữ liệu - 2 điểm
 
-### 5.1 Tốc độ đọc/ghi — 0,5 điểm
+### 5.1 Tốc độ đọc/ghi - 0,5 điểm
 
 **Làm:** đo ba chặng riêng: Blob → VM (download), đọc Parquet → Spark feature (ETL), ghi snapshot/DVC remote (upload). Ghi byte, giây, MB/s, worker, region, disk và số lần lặp; lưu raw log lẫn bảng tổng hợp. Không so network download với local disk read như cùng phép đo. Nếu có cache, tách cold/warm.
 
 **Ảnh:** `15_io_benchmark.png` (bảng p50/range và biểu đồ), `16_blob_metrics.png` nếu metrics hiện hữu. **Nói:** “Thông lượng được tính từ số byte thực chuyển, không suy từ kích thước công bố.”
 
-### 5.2 Luồng ETL tự động — 0,5 điểm
+### 5.2 Luồng ETL tự động - 0,5 điểm
 
 **Làm:** sau khi có runner thật, bấm manual dispatch `kkbox_full_runner.yml` với `execute_full=true` một lần; job chạy DVC `kkbox_train_full`, `kkbox_feast_full`, `kkbox_drift_full`. Chụp trigger, runner có label `kkbox`, từng stage/log, artifacts audit. Ghi rõ đây là **tự động chạy các stage sau khi được kích hoạt thủ công**, chưa phải lịch ingest realtime. Kiểm tra run không trộn các stage Kaggle legacy.
 
 **Ảnh:** `17_runner_online.png`, `18_actions_full_green.png`, `19_dvc_stage_audit.png`. **Nói:** “Workflow chỉ thành công nếu dữ liệu đủ 32 file, ETL full và các bước train/Feast/drift trả về thành công.”
 
-### 5.3 Độ trễ theo region — 0,5 điểm
+### 5.3 Độ trễ theo region - 0,5 điểm
 
 **Làm:** nếu được duyệt đủ quota/chi phí, đặt **cùng phiên bản API/model** ở Southeast Asia và một region thứ hai; từ một client cố định dùng `scripts/kkbox_latency_probe.py` gọi cùng payload 100 lần mỗi endpoint, bỏ warm-up, ghi median/p95/p99 và lỗi; kèm thông tin vùng của client và timestamp. Script kiểm tra hai endpoint trả cùng model/prediction và không ghi API key/subscriber key vào report. Kiểm soát DNS/TLS/cache, lấy thời gian HTTP end-to-end. Sau đo, xóa/deallocate bản thứ hai. Nếu không triển khai region thứ hai, đánh dấu tiêu chí này **chưa có bằng chứng**, không lấy ping trang Azure khác để thay thế.
 
 **Ảnh:** `20_two_regions.png`, `21_latency_boxplot.png`. **Nói:** “Chênh lệch là đo từ một điểm khách đến hai endpoint giống nhau; kết luận chỉ áp dụng cho điều kiện thử nghiệm này.”
 
-### 5.4 Tối ưu lưu trữ/đọc ghi — 0,5 điểm
+### 5.4 Tối ưu lưu trữ/đọc ghi - 0,5 điểm
 
 **Làm:** trên cùng dữ liệu và VM, so (A) đọc toàn bộ cột/partition với (B) chọn cột cần cho 12 feature, lọc ngày đến cutoff và ghi Parquet có partition hợp lý. Chụp Spark plan/metrics: bytes scanned, thời gian, output bytes. Chỉ nêu cải thiện khi số đo xác nhận; nếu thêm partition thì tính cả chi phí ghi. So kích thước Parquet và CSV chỉ nếu đã tạo hai bản từ **cùng các dòng/cột**.
 
 **Ảnh:** `22_scan_before_after.png`, `23_storage_size_before_after.png`. **Nói:** “Tối ưu được chứng minh bằng số byte đọc, thời gian, và dung lượng đầu ra; không chỉ dựa trên lý thuyết Parquet.”
 
-## 6. Rubric: Phân tích dữ liệu — 3 điểm
+## 6. Rubric: Phân tích dữ liệu - 3 điểm
 
-### 6.1 Train model — 1 điểm
+### 6.1 Train model - 1 điểm
 
 **Làm:** train full, ghi dataset revision, cutoff, số dòng train/validation/test, tỷ lệ churn, feature list, seed, phiên bản thư viện, MLflow run ID. So LR/XGBoost bằng validation; khóa lựa chọn rồi mới đánh giá tháng 03. Ghi PR-AUC cùng prevalence, ROC-AUC, precision/recall/F1 tại threshold đã chọn, confusion matrix và thời gian train. Registry version/alias `champion` chỉ sau full run đạt gate.
 
 **Ảnh:** `24_mlflow_full_compare.png`, `25_test_metrics.png`, `26_registry_champion.png`. **Nói:** “Metric tháng 03 là kết quả cuối, không dùng ROC-AUC 0,9989 của Kaggle cũ hoặc pilot.”
 
-### 6.2 API dùng model — 0,5 điểm
+### 6.2 API dùng model - 0,5 điểm
 
 **Làm:** triển khai FastAPI trên endpoint Azure có HTTPS nếu công khai; health và `POST /v1/predictions`. Gửi một `subscriber_key` **dạng chuỗi** có snapshot và cutoff hợp lệ, xem HTTP 200; kiểm tra 404 khi không có snapshot, 422 khi sai request, 503 khi model/Feast chưa sẵn sàng. Response có `prediction`, `churn_probability`, `risk_level`, `model_version`, `feature_version`, `prediction_mode`; không gửi nhãn thật. Ẩn API key và ID thật trong ảnh công khai.
 
 **Ảnh:** `27_api_request_response.png`, `28_api_errors.png`, `29_api_cloud_endpoint.png`. **Nói:** “API lấy feature tương ứng cutoff từ Feast và version model đã đăng ký; demo là dự đoán lại lịch sử, không phải dự đoán khách hàng năm 2026.”
 
-### 6.3 Trực quan model — 1 điểm
+### 6.3 Trực quan model - 1 điểm
 
 **Làm:** từ báo cáo full tạo tối thiểu: biểu đồ LR/XGBoost validation PR-AUC, PR curve hoặc precision/recall theo threshold, confusion matrix test tháng 03, biểu đồ feature importance/giải thích có ghi nguồn và giới hạn. Mỗi hình có tiêu đề, đơn vị, kỳ dữ liệu, version và chú thích; không đưa thông tin cá nhân. Biểu đồ phải dùng JSON full run, không hardcode pilot.
 
 **Ảnh:** `30_model_comparison.png`, `31_pr_curve.png`, `32_confusion_matrix.png`. Script `scripts/kkbox_make_figures.py` đã chuẩn bị hình so model, PR curve, confusion matrix và drift từ report full; hình feature importance chỉ thêm khi có phương pháp và dữ liệu đánh giá thích hợp. **Nói:** “Tỷ lệ churn thấp nên em trình bày PR-AUC cùng tỷ lệ churn nền; đây là đánh giá phân loại, không diễn giải feature importance thành quan hệ nhân quả.”
 
-### 6.4 Web gọi API — 0,5 điểm
+### 6.4 Web gọi API - 0,5 điểm
 
 **Làm:** Web demo nhập `subscriber_key` dạng text và chọn `as_of_date`, gửi request đến URL API Azure, parse JSON, hiện xác suất/0-1/rủi ro/version và thông báo lỗi. Kiểm tra tab Network của browser: URL cloud, status 200, payload và response; đảm bảo không để API key cố định trong JS công khai (chọn cơ chế auth phù hợp trước triển khai).
 
 **Ảnh:** `33_web_form_result.png`, `34_browser_network_api.png`. **Nói:** “Trang web không tự tính churn; nó gửi khóa/cutoff đến API cloud và hiển thị kết quả JSON.”
 
-## 7. Rubric: Báo cáo, demo, quản lý dự án — 2 điểm
+## 7. Rubric: Báo cáo, demo, quản lý dự án - 2 điểm
 
 ### Word 0,5 + PowerPoint 0,5
 
 - **Word:** Chương 1 bài toán/rubric và nguồn; Chương 2 lý thuyết Parquet, Spark, model, cloud; Chương 3 kiến trúc và mô hình dữ liệu; Chương 4 thực nghiệm có bảng byte/row/time/metric/cost, benchmark local/cloud và region; Chương 5 kết luận, hạn chế historical replay, tài liệu tham khảo. Tất cả hình/bảng có số thứ tự, chú thích, ngày đo, commit/run ID. Theo mẫu KLTN của lớp.
-- **Slides 10–12 trang:** (1) bài toán; (2) dữ liệu 7,52 GB/nhãn; (3) kiến trúc cloud; (4) cutoff chống leakage; (5) ETL/DVC; (6) benchmark; (7) model/MLflow; (8) API/Web; (9) drift/CI/CD; (10) chi phí/quota; (11) demo; (12) kết luận/hạn chế. Mỗi slide tối đa một thông điệp chính, trỏ sang phụ lục bằng chứng.
+- **Slides 10-12 trang:** (1) bài toán; (2) dữ liệu 7,52 GB/nhãn; (3) kiến trúc cloud; (4) cutoff chống leakage; (5) ETL/DVC; (6) benchmark; (7) model/MLflow; (8) API/Web; (9) drift/CI/CD; (10) chi phí/quota; (11) demo; (12) kết luận/hạn chế. Mỗi slide tối đa một thông điệp chính, trỏ sang phụ lục bằng chứng.
 - **Ảnh:** `35_word_toc_figures.png`, `36_slides_overview.png` sau khi tài liệu được làm thật.
 
-### Trình bày và demo — 0,5
+### Trình bày và demo - 0,5
 
-**Kịch bản 5–7 phút:** 1 phút dữ liệu/nhãn/cutoff; 1 phút Azure architecture và 32-file full audit; 1 phút DVC/Actions runner; 1 phút MLflow chart/registry; 1 phút Web → API → Feast/model; 30 giây drift; 30 giây cost/quota. Chuẩn bị sẵn 1 ID hợp lệ riêng cho demo, không chiếu raw row; thử đường link và model trước buổi trình bày. Nếu VM đã deallocate để tiết kiệm, dùng video/ảnh/log của phiên chạy và nói rõ đó là bản ghi demo, không giả là live.
+**Kịch bản 5-7 phút:** 1 phút dữ liệu/nhãn/cutoff; 1 phút Azure architecture và 32-file full audit; 1 phút DVC/Actions runner; 1 phút MLflow chart/registry; 1 phút Web → API → Feast/model; 30 giây drift; 30 giây cost/quota. Chuẩn bị sẵn 1 ID hợp lệ riêng cho demo, không chiếu raw row; thử đường link và model trước buổi trình bày. Nếu VM đã deallocate để tiết kiệm, dùng video/ảnh/log của phiên chạy và nói rõ đó là bản ghi demo, không giả là live.
 
-### Quản lý dự án trên cloud — 0,5
+### Quản lý dự án trên cloud - 0,5
 
 **Làm:** chụp GitHub branch/PR/commit của các thành viên, issue/project board phân công, Actions history; nếu nhiều người cùng dùng Azure thì chụp role assignment **đã che email/subscription ID**, Activity Log và resource tags. Lưu bảng quota theo region, bảng dự toán so với actual Cost Analysis. Azure Budget là cảnh báo, **không tự chặn chi**; phải theo dõi và deallocate/xóa resource khi xong.
 

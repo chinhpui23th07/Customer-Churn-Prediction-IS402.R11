@@ -1,4 +1,4 @@
-# API contract v0.1 — historical KKBox churn replay
+# API contract v0.1 - historical KKBox churn replay
 
 Endpoint mục tiêu: `POST /v1/predictions`. Body JSON:
 

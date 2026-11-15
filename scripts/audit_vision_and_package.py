@@ -140,10 +140,9 @@ def verify_workspace_cleanliness():
 
 
 def create_clean_submission_zip(output_zip_path=None):
-    """Đóng gói tệp ZIP nộp bài chuẩn UIT: Chỉ chứa mã nguồn sạch và PDF báo cáo."""
+    """Đóng gói tệp ZIP nộp bài chuẩn: Chỉ chứa mã nguồn sạch và PDF báo cáo."""
     if output_zip_path is None:
-        student_id = "23520783"
-        output_zip_path = os.path.join(BASE_DIR, f"{student_id}_BTL_Cloud_Computing_MLOps.zip")
+        output_zip_path = os.path.join(BASE_DIR, "ChurnGuard_MLOps_Enterprise_Release.zip")
 
     print(f"[*] Bắt đầu đóng gói bài nộp: {output_zip_path}")
     allowed_dirs = ['src', 'configs', 'scripts', 'tests', 'assets', '.github', 'deploy', 'notebooks']

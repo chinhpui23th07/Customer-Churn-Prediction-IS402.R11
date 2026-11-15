@@ -29,7 +29,7 @@ OUTPUT_JSON = os.path.join(BASE_DIR, "data", "processed", "academic_inspection_v
 
 def run_full_inspection():
     print("=" * 80)
-    print("BẮT ĐẦU QUY TRÌNH THANH TRA TOÀN DIỆN LIÊM CHÍNH HỌC THUẬT (IS402 - UIT)")
+    print("BẮT ĐẦU QUY TRÌNH THANH TRA TOÀN DIỆN LIÊM CHÍNH KỸ THUẬT & HỌC THUẬT")
     print("=" * 80)
 
     # 1. Chạy Stub Detector
@@ -69,16 +69,16 @@ def run_full_inspection():
     md_content = f"""# BÁO CÁO THANH TRA ĐỘC LẬP VÀ KIỂM ĐỊNH LIÊM CHÍNH HỌC THUẬT
 
 > **Thời điểm thanh tra:** {master_verdict['timestamp']}  
-> **Cơ quan thẩm định:** Ban Thanh tra & Đảm bảo Chất lượng Đồ án MLOps (IS402 - UIT)  
+> **Cơ quan thẩm định:** Ban Thanh tra & Đảm bảo Chất lượng Hệ thống ChurnGuard Enterprise MLOps  
 > **Kết luận điểm số thực tế:** **{rubric_verdict['total_score']} / 10.0** (Bị trừ thẳng tay **{master_verdict['penalized_points']} điểm**)
 
 ---
 
 ## 1. TỔNG QUAN KẾT LUẬN THANH TRA
 
-Hệ thống mã nguồn trên môi trường local **đã được hoàn thiện đầy đủ khung logic kỹ thuật** (4 thuật toán ML, Optuna Bayesian tuning, SHAP explainability, FastAPI serving, Feast dual-store SQLite/Redis fallback, Evidently AI drift detector, Web Bento Grid). 
+Hệ thống mã nguồn trên môi trường local **đã được hoàn thiện đầy đủ khung logic kỹ thuật** (KKBox Big Data DuckDB + 4 thuật toán đối chuẩn, Optuna Bayesian tuning, SHAP explainability, FastAPI serving, Feast dual-store SQLite/AMR/Valkey, Drift Normalized Wasserstein + Midpoint PSI, Web Bento Grid). 
 
-Tuy nhiên, đối chiếu với **Rubric chấm điểm chính thức của Giảng viên (ThS. Hà Lê Hoài Trung)** cho môn Điện toán đám mây (IS402), hệ thống bị trừ điểm nghiêm ngặt (**-{master_verdict['penalized_points']} điểm**) do **hoàn toàn chưa kết nối hạ tầng Cloud Azure thực tế**:
+Tuy nhiên, đối chiếu với **Rubric thẩm định kỹ thuật của Cán bộ hướng dẫn (ThS. Hà Lê Hoài Trung)** cho hạ tầng Điện toán Đám mây, hệ thống bị trừ điểm nghiêm ngặt (**-{master_verdict['penalized_points']} điểm**) do **hoàn toàn chưa kết nối hạ tầng Cloud Azure thực tế**:
 
 1. **Giới hạn Kích thước dữ liệu trên máy cục bộ (Mục 1.3):** Dữ liệu thô trên ổ đĩa local chỉ đạt **{size_audit['total_raw_mb']} MB ({size_audit['total_raw_gb']} GB)**, thiếu hụt gấp **{size_audit['deficit_factor']} lần** so với ngưỡng >4GB của đề tài. Kịch bản Big Data Cloud đã được đặc tả tại `docs/requirements/project_context.md` (tập KKBox Churn 7.52 GB, 32 Parquet files) theo kế hoạch chuyển đổi trên môi trường Cloud.
 2. **Lưu trữ Cloud Storage (Mục 3.2):** Pipeline ETL streaming đã sẵn sàng adapter `sync_to_cloud_storage` nhưng hiện chỉ ghi vào `data/processed/` cục bộ do chưa có Azure Blob Connection String.

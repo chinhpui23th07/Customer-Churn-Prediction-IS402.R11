@@ -7,11 +7,11 @@
 ## 1. Thông Tin Định Danh Học Thuật & Tác Giả
 - **Cơ sở đào tạo:** Trường Đại học Công nghệ Thông tin - ĐHQG-HCM (UIT).
 - **Khoa:** Hệ thống Thông tin | **Bộ môn:** Mạng và Hệ thống Thông tin.
-- **Môn học:** Điện toán Đám mây (Cloud Computing) - **Mã môn:** IS402.
+- **Lĩnh vực nghiên cứu:** Kỹ thuật Điện toán Đám mây & MLOps Cấp độ Doanh nghiệp.
 - **Giảng viên hướng dẫn:** ThS. Hà Lê Hoài Trung.
-- **Sinh viên thực hiện:** Nguyễn Trọng Khôi.
-- **Mã số sinh viên (MSSV):** 23520783 (Khóa 2023 - 2027, Lớp IS402).
-- **Tên đề tài chính thức:** Đề tài 11 - MLOps: Xây dựng hệ thống dự đoán khách hàng rời bỏ dịch vụ (Customer Churn Prediction) kết hợp nền tảng Microsoft Azure.
+- **Nhóm tác giả / Kỹ sư nghiên cứu:** [Để trống / Tác giả bảo mật].
+- **Mã định danh:** [Để trống / Tác giả bảo mật].
+- **Tên đề tài chính thức:** ChurnGuard MLOps: Hệ thống dự đoán khách hàng rời bỏ dịch vụ (Customer Churn Prediction) kết hợp nền tảng Microsoft Azure.
 
 ---
 
@@ -30,10 +30,10 @@
 ---
 
 ## 3. Kiến Trúc Hạ Tầng Đám Mây & FinOps
-- **Nhà cung cấp đám mây:** Microsoft Azure (Khu vực Southeast Asia).
-- **Dịch vụ mục tiêu:** Azure VM/Container Apps và Azure Blob Storage; Redis chỉ triển khai sau khi báo giá/quota phù hợp trần chi. Không coi file IaC hiện có là bằng chứng đã deploy.
-- **Lưu trữ nguồn:** Parquet Zstandard. Pilot processed dùng Parquet; Feast offline đọc Parquet và online dùng SQLite, đã kiểm tra historical và online lookup. Full run có thể chuyển online sang Redis trên VM để tránh dịch vụ Redis trả phí riêng.
-- **Ngân sách FinOps:** trần chi toàn đồ án 50 USD nếu credit xác nhận còn ít nhất 75 USD, giữ 25 USD dự phòng; chưa phải báo giá Azure SKU/region.
+- **Nhà cung cấp đám mây:** Microsoft Azure (Khu vực Southeast Asia; đối chuẩn 6 nhà cung cấp Azure, AWS, GCP, OCI, OVHcloud, Viettel IDC).
+- **Dịch vụ mục tiêu (IaC ready):** Azure Container Apps, Azure Blob Storage (`Standard_LRS`), Azure Container Registry (`Basic`), và Azure Managed Redis (`Balanced_B0`, TLS Port `10000`) / Valkey 8.0 thay thế Redis Basic C0 ngừng hỗ trợ từ `01/04/2026`. Không coi file IaC hiện có là bằng chứng đã deploy live cloud.
+- **Lưu trữ nguồn:** Parquet Zstandard. Pilot processed dùng Parquet; Feast offline đọc Parquet và online dùng SQLite WAL cục bộ, đã kiểm tra historical và online lookup. Triển khai cloud dùng AMR `Balanced_B0` hoặc Valkey 8.0.
+- **Ngân sách FinOps:** Baseline IaC `$70.61/tháng` (`reports/infracost_breakdown.json`) và Serverless Scale-to-Zero `$11.22/tháng`, mục tiêu `< $75.00/tháng`.
 
 ---
 
@@ -70,5 +70,6 @@
 - **Báo cáo thuyết minh (Word):** `docs/Bao_Cao_Bai_Tap_Lon_MLOps_Customer_Churn.docx`
 - **Báo cáo PDF chính thức:** `docs/Bao_Cao_Bai_Tap_Lon_MLOps_Customer_Churn.pdf`
 - **Slide báo cáo (PowerPoint):** `docs/Slide_Thuyet_Trinh_MLOps_Customer_Churn.pptx`
-- **Giao diện Web:** `src/web/index.html` (Bento Grid)
-- **Tệp nộp bài chuẩn UIT:** `23520783_BTL_Cloud_Computing_MLOps.zip`
+- **Tài liệu chuẩn tối cao:** `docs/MASTER_PROJECT_TRUTH.md`
+- **Giao diện Web:** `src/kkbox/web/index.html` (`/demo`) & `src/web/index.html` (`/ui`)
+- **Tệp đóng gói phát hành:** `ChurnGuard_MLOps_Enterprise_Release.zip`

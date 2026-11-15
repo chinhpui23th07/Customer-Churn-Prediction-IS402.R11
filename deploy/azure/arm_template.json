@@ -24,7 +24,7 @@
     "redisName": {
       "type": "string",
       "defaultValue": "redis-churnguard-sea",
-      "metadata": { "description": "Name of the Azure Cache for Redis instance" }
+      "metadata": { "description": "Name of the Azure Managed Redis (AMR Balanced B0) instance" }
     },
     "storageAccountName": {
       "type": "string",
@@ -35,6 +35,10 @@
       "type": "string",
       "defaultValue": "southeastasia",
       "metadata": { "description": "Azure Region (Southeast Asia - Singapore)" }
+    },
+    "apiKeyToken": {
+      "type": "securestring",
+      "metadata": { "description": "Serving API X-API-Key token supplied at deployment time" }
     }
   },
   "variables": {
@@ -61,7 +65,7 @@
       "name": "[parameters('storageAccountName')]",
       "location": "[parameters('location')]",
       "sku": {
-        "name": "Standard_GRS"
+        "name": "Standard_LRS"
       },
       "kind": "StorageV2",
       "properties": {
@@ -82,30 +86,6 @@
           },
           "keySource": "Microsoft.Storage",
           "requireInfrastructureEncryption": true
-        },
-        "sku": {
-          "name": "GRS"
-        },
-        "blobServices": {
-          "properties": {
-            "deleteRetentionPolicy": {
-              "enabled": true,
-              "days": 7
-            }
-          }
-        },
-        "queueServices": {
-          "properties": {
-            "logging": {
-              "delete": true,
-              "read": true,
-              "write": true,
-              "retentionPolicy": {
-                "enabled": true,
-                "days": 7
-              }
-            }
-          }
         }
       },
       "resources": [
@@ -165,23 +145,33 @@
       }
     },
     {
-      "type": "Microsoft.Cache/Redis",
-      "apiVersion": "2023-08-01",
+      "type": "Microsoft.Cache/redisEnterprise",
+      "apiVersion": "2024-09-01-preview",
       "name": "[parameters('redisName')]",
       "location": "[parameters('location')]",
+      "sku": {
+        "name": "Balanced_B0",
+        "capacity": 1
+      },
       "properties": {
-        "sku": {
-          "name": "Basic",
-          "family": "C",
-          "capacity": 0
-        },
-        "publicNetworkAccess": "Disabled",
-        "enableNonSslPort": false,
-        "minimumTlsVersion": "1.2",
-        "redisConfiguration": {
-          "maxmemory-policy": "volatile-lru"
+        "minimumTlsVersion": "1.2"
+      },
+      "resources": [
+        {
+          "type": "databases",
+          "apiVersion": "2024-09-01-preview",
+          "name": "default",
+          "dependsOn": [
+            "[parameters('redisName')]"
+          ],
+          "properties": {
+            "clientProtocol": "Encrypted",
+            "port": 10000,
+            "clusteringPolicy": "EnterpriseCluster",
+            "evictionPolicy": "VolatileLRU"
+          }
         }
-      }
+      ]
     },
     {
       "type": "Microsoft.App/managedEnvironments",
@@ -197,14 +187,29 @@
       "apiVersion": "2023-05-01",
       "name": "[parameters('appName')]",
       "location": "[parameters('location')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
       "dependsOn": [
         "[resourceId('Microsoft.App/managedEnvironments', parameters('environmentName'))]",
         "[resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName'))]",
-        "[resourceId('Microsoft.Cache/Redis', parameters('redisName'))]"
+        "[resourceId('Microsoft.Cache/redisEnterprise', parameters('redisName'))]"
       ],
       "properties": {
         "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('environmentName'))]",
         "configuration": {
+          "secrets": [
+            {
+              "name": "api-key-token",
+              "value": "[parameters('apiKeyToken')]"
+            }
+          ],
+          "registries": [
+            {
+              "server": "[format('{0}.azurecr.io', parameters('acrName'))]",
+              "identity": "system"
+            }
+          ],
           "ingress": {
             "external": true,
             "targetPort": 8000
@@ -221,12 +226,20 @@
               },
               "env": [
                 {
+                  "name": "APP_ENV",
+                  "value": "production"
+                },
+                {
+                  "name": "API_KEY",
+                  "secretRef": "api-key-token"
+                },
+                {
                   "name": "REDIS_HOST",
-                  "value": "[reference(resourceId('Microsoft.Cache/Redis', parameters('redisName'))).hostName]"
+                  "value": "[reference(resourceId('Microsoft.Cache/redisEnterprise', parameters('redisName'))).hostName]"
                 },
                 {
                   "name": "REDIS_PORT",
-                  "value": "6380"
+                  "value": "10000"
                 },
                 {
                   "name": "REDIS_SSL",
@@ -258,11 +271,11 @@
     },
     "redisHostName": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Cache/Redis', parameters('redisName'))).hostName]"
+      "value": "[reference(resourceId('Microsoft.Cache/redisEnterprise', parameters('redisName'))).hostName]"
     },
     "redisSslPort": {
       "type": "int",
-      "value": 6380
+      "value": 10000
     }
   }
 }

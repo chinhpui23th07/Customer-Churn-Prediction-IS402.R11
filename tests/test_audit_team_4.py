@@ -218,3 +218,39 @@ def test_model_diagnostics_cohort_slice_consistency():
     assert np.array_equal(cm_total, cm_cohort_sum), (
         f"Cohort confusion matrices do not sum to total:\nTotal:\n{cm_total}\nCohort Sum:\n{cm_cohort_sum}"
     )
+
+
+def test_residual_clv_and_optimal_thresholding():
+    """
+    Kiểm thử khung quyết định giữ chân e-Profits theo Manzoor et al. (2025/2026, arXiv:2507.08860):
+    - Ngưỡng quyết định tối ưu p_i* = C_offer / (alpha * CLV_i).
+    - Lợi nhuận kỳ vọng E[Profit_i] = p_i * alpha * CLV_i - C_offer.
+    - An toàn khi residual_clv <= 0 hoặc alpha <= 0 (p_star = 1.0, không phát sinh chia cho 0).
+    - Phân tầng khuyến nghị giữ chân phù hợp giữa CLV cao vs CLV thấp.
+    """
+    from src.api.utils import (
+        compute_optimal_retention_threshold,
+        compute_expected_retention_profit,
+        generate_recommendation,
+    )
+
+    # 1. Tính ngưỡng tối ưu với CLV chuẩn
+    p_star = compute_optimal_retention_threshold(residual_clv=200.0, cost_offer=15.0, alpha_lift=0.25)
+    assert round(p_star, 4) == round(15.0 / (0.25 * 200.0), 4) == 0.30
+
+    # 2. Lợi nhuận kỳ vọng: Với p=0.8, CLV=200, alpha=0.25, C=15 => E[Profit] = 0.8 * 0.25 * 200 - 15 = 25.0
+    profit = compute_expected_retention_profit(prob=0.8, residual_clv=200.0, cost_offer=15.0, alpha_lift=0.25)
+    assert profit == 25.0
+
+    # 3. An toàn chia cho 0 hoặc CLV âm/0
+    assert compute_optimal_retention_threshold(residual_clv=0.0) == 1.0
+    assert compute_optimal_retention_threshold(residual_clv=-50.0) == 1.0
+    assert compute_optimal_retention_threshold(residual_clv=200.0, alpha_lift=0.0) == 1.0
+    assert compute_expected_retention_profit(prob=0.9, residual_clv=-10.0, cost_offer=15.0) == -15.0
+
+    # 4. Kiểm tra khuyến nghị phân tầng rủi ro & CLV
+    rec_high_clv = generate_recommendation(prob=0.85, calls=5, delay=8, total_spend=800.0, residual_clv=350.0)
+    assert "ƯU TIÊN KHẨN CẤP" in rec_high_clv or "RỦI RO CAO" in rec_high_clv
+
+    rec_low_clv = generate_recommendation(prob=0.85, calls=1, delay=2, total_spend=100.0, residual_clv=25.0)
+    assert "CLV Thấp" in rec_low_clv

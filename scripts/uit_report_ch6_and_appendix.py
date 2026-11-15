@@ -14,16 +14,16 @@ from uit_report_content import (
 def build_chapter_6(doc):
     """Chương 6: Kết luận và hướng phát triển."""
     add_uit_heading_1(doc, "CHƯƠNG 6: KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN")
-    h1 = add_uit_heading_2(doc, "6.1. Các Kết Quả Đạt Được Của Đồ Án")
+    h1 = add_uit_heading_2(doc, "6.1. Các Kết Quả Đạt Được Của Công Trình")
     h1.paragraph_format.space_before = Pt(8)
     h1.paragraph_format.space_after = Pt(2)
     p1 = add_uit_body_p(doc, (
-        "Sau quá trình nghiên cứu, thiết kế và triển khai thực nghiệm nghiêm túc, đề tài đã hoàn thành xuất sắc toàn bộ các mục tiêu: "
-        "1) Xây dựng thành công nền tảng MLOps Level 2 hoàn chỉnh giải quyết triệt để bài toán Training-Serving Skew và Data Drift; "
-        "2) Tiền xử lý và khử trùng lặp thành công bộ dữ liệu lớn 442,211 khách hàng, bảo đảm 100% Data Contracts với Great Expectations; "
-        "3) Tinh chỉnh siêu tham số Bayes bằng Optuna đưa mô hình XGBoost đạt hiệu năng vượt trội ROC-AUC 0.9990; "
-        "4) Cung cấp REST API hiệu năng cao trên nền FastAPI hỗ trợ dự đoán thời gian thực, dự đoán theo lô và A/B Testing deterministic; "
-        "5) Trực quan hóa giải thích nguyên nhân rời bỏ bằng SHAP TreeExplainer gắn liền khuyến nghị kinh doanh."
+        "Sau quá trình nghiên cứu, thiết kế và triển khai thực nghiệm nghiêm túc, công trình đã hoàn thành toàn diện các mục tiêu đề ra: "
+        "1) Xây dựng nền tảng ChurnGuard MLOps Level 2 hoàn chỉnh giải quyết triệt để Training-Serving Skew và Data Drift (Normalized Wasserstein + Midpoint PSI); "
+        "2) Xử lý thành công tập dữ liệu lớn KKBox (7.52 GB, 32 tệp Zstd, 442,211,685 bản ghi nguồn) với DuckDB Bounded Memory (<= 2 GB), quét 37,629,251 dòng xuống 970,960 thuê bao trong 5.61 giây; "
+        "3) Huấn luyện KKBox_LGBM_Champion đạt ROC-AUC 0.8764, PR-AUC 0.5947, Brier Score 0.05312 (5-Fold CV 0.8775 +- 0.0014), song hành cùng bộ đối chuẩn hồi quy 442,211 bản ghi (XGBoost 0.9990); "
+        "4) Hoàn thiện bảo mật DevSecOps (Checkov 28/28 Pass, Security Audit 97.25%, 0 Critical/High) và phân tích FinOps đa đám mây (Azure IaC $70.61/mo, Serverless Scale-to-Zero $11.22/mo); "
+        "5) Tích hợp SHAP TreeExplainer, e-Profits / CATE Uplift qua FastAPI REST API bảo vệ bằng X-API-Key và rate limiting."
     ))
     if p1:
         p1.paragraph_format.space_after = Pt(4)

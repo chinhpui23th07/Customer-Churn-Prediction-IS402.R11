@@ -1,89 +1,136 @@
 # ==============================================================================
 # ChurnGuard MLOps - Production Model & Pipeline Configuration
 # Governing Standard: AGENTS.md v3.4 Enterprise Specification
-# Referenced by: dvc.yaml across all 9 MLOps DAG stages
+# Referenced by: dvc.yaml across KKBox Big Data MLOps DAG stages
 # ==============================================================================
 
 dataset:
-  raw_train_file: "data/raw/customer_churn_dataset-training-master.csv"
-  raw_test_file: "data/raw/customer_churn_dataset-testing-master.csv"
-  canonical_source: "https://www.kaggle.com/datasets/muhammadshahidazeem/customer-churn-dataset"
-  train_url: "https://raw.githubusercontent.com/faisalghifari17/customer-churn-prediction/main/customer_churn_dataset-training-master.csv"
-  test_url: "https://raw.githubusercontent.com/faisalghifari17/customer-churn-prediction/main/customer_churn_dataset-testing-master.csv"
-  expected_rows_train: 440833
-  expected_rows_test: 64374
-  expected_hashes:
-    train_sha256: "a41be7b96fb85110521bf03d1530879e9ca94b9f5de19866757f6d184300fff7"
-    test_sha256: "330af932f2dc1cae917f3bd0fb29395c4021319dd906189b7dc257d0ad58a617"
-  target_column: "churn"
-  entity_id_column: "customerid"
+  name: "vaibhavkhurana/subscriber-retention-intelligence"
+  title: "KKBox Customer Churn Benchmark Big Data (7.52 GB)"
+  canonical_source: "https://huggingface.co/datasets/vaibhavkhurana/subscriber-retention-intelligence"
+  manifest: "docs/experiments/kkbox_parquet_manifest.json"
+  raw_dir: "data/kkbox_raw"
+  sample_dir: "data/kkbox_sample_raw"
+  processed_dir: "data/kkbox_processed/features"
+  feast_parquet: "data/kkbox_feast/churn_features.parquet"
+  models_dir: "data/kkbox_models"
+  total_published_parquet_files: 32
+  total_published_parquet_bytes: 7522254856
+  total_rows: 442211685
+  expected_rows: 442211685
+  tables:
+    churn_label:
+      files: 2
+      rows: 1963891
+      bytes: 15720822
+    listening_day:
+      files: 27
+      rows: 410502905
+      bytes: 6982487551
+    member:
+      files: 1
+      rows: 6769473
+      bytes: 60491935
+    subscription_transaction:
+      files: 2
+      rows: 22975416
+      bytes: 463554548
+  target_column: "is_churn"
+  entity_id_column: "subscriber_key"
+  schema_compat:
+    target_column: "is_churn"
+    entity_id_column: "subscriber_key"
+
+kkbox:
+  feature_version: "kkbox-v1"
+  windows:
+    "2017-02":
+      source: "train"
+      cutoff: "2017-01-31"
+    "2017-03":
+      source: "train_v2"
+      cutoff: "2017-02-28"
+  feature_columns:
+    - "txn_count_30d"
+    - "paid_amount_30d"
+    - "cancel_count_90d"
+    - "days_since_last_txn"
+    - "last_auto_renew"
+    - "days_until_expiry"
+    - "active_days_30d"
+    - "listening_secs_30d"
+    - "days_since_last_listen"
+    - "registration_tenure_days"
+    - "has_txn_history"
+    - "has_listening_history"
+  duckdb_memory_limit: "2GB"
+  out_of_core_spill_dir: "data/processed/.duckdb_temp"
+  metrics:
+    throughput_rows_per_sec: 6707531
+    throughput_entities_per_sec: 173091
+    scan_time_sec: 5.61
 
 preprocessing:
   train_split_ratio: 0.70
   val_split_ratio: 0.15
   test_split_ratio: 0.15
-  stratify_column: "churn"
+  stratify_column: "is_churn"
   random_state: 42
   out_of_core_chunk_size: 100000
   feature_names:
-    - "age"
-    - "gender_encoded"
-    - "tenure"
-    - "usage_frequency"
-    - "support_calls"
-    - "payment_delay"
-    - "subscription_type_encoded"
-    - "contract_length_encoded"
-    - "total_spend"
-    - "last_interaction"
-    - "support_calls_per_tenure"
-    - "spend_per_tenure"
-    - "delay_ratio"
+    - "txn_count_30d"
+    - "paid_amount_30d"
+    - "cancel_count_90d"
+    - "days_since_last_txn"
+    - "last_auto_renew"
+    - "days_until_expiry"
+    - "active_days_30d"
+    - "listening_secs_30d"
+    - "days_since_last_listen"
+    - "registration_tenure_days"
+    - "has_txn_history"
+    - "has_listening_history"
   numeric_cols:
-    - "age"
-    - "tenure"
-    - "usage_frequency"
-    - "support_calls"
-    - "payment_delay"
-    - "total_spend"
-    - "last_interaction"
-  category_mappings:
-    gender:
-      Female: 0
-      Male: 1
-    subscription_type:
-      Basic: 0
-      Standard: 1
-      Premium: 2
-    contract_length:
-      Monthly: 0
-      Quarterly: 1
-      Annual: 2
+    - "txn_count_30d"
+    - "paid_amount_30d"
+    - "cancel_count_90d"
+    - "days_since_last_txn"
+    - "last_auto_renew"
+    - "days_until_expiry"
+    - "active_days_30d"
+    - "listening_secs_30d"
+    - "days_since_last_listen"
+    - "registration_tenure_days"
+    - "has_txn_history"
+    - "has_listening_history"
+  category_mappings: {}
 
 data_quality:
   iqr_multiplier: 3.0
   zscore_threshold: 3.5
   min_contract_success_rate: 95.0
   feature_bounds:
-    age: [18.0, 100.0]
-    tenure: [0.0, 120.0]
-    usage_frequency: [0.0, 50.0]
-    support_calls: [0.0, 30.0]
-    payment_delay: [0.0, 90.0]
-    total_spend: [0.0, 100000.0]
-    last_interaction: [0.0, 60.0]
-    gender_encoded: [0, 1]
-    subscription_type_encoded: [0, 2]
-    contract_length_encoded: [0, 2]
-    churn: [0, 1]
+    txn_count_30d: [0, 1000]
+    paid_amount_30d: [0.0, 100000.0]
+    cancel_count_90d: [0, 100]
+    days_since_last_txn: [0, 3650]
+    last_auto_renew: [0, 1]
+    days_until_expiry: [-3650, 3650]
+    active_days_30d: [0, 31]
+    listening_secs_30d: [0.0, 8640000.0]
+    days_since_last_listen: [0, 3650]
+    registration_tenure_days: [0, 36500]
+    has_txn_history: [0, 1]
+    has_listening_history: [0, 1]
+    is_churn: [0, 1]
 
 feature_store:
-  repo_path: "data/feast_repo"
-  offline_source: "data/feast_repo/churn_features.parquet"
-  online_store_db: "data/feast_repo/data/online_store.db"
-  entity_name: "customer_id"
-  join_key: "customerid"
-  feature_view_name: "customer_churn_features"
+  repo_path: "data/kkbox_feast"
+  offline_source: "data/kkbox_feast/churn_features.parquet"
+  online_store_db: "data/kkbox_feast/data/online_store.db"
+  entity_name: "snapshot_key"
+  join_key: "snapshot_key"
+  feature_view_name: "kkbox_churn_features"
   ttl_days: null
   redis_cooldown_sec: 30.0
   redis_timeout_sec: 0.2
@@ -93,6 +140,8 @@ optuna:
   direction: "maximize"
   metric: "roc_auc"
   n_trials: 12
+  n_startup_trials: 5
+  multivariate: true
   cv_folds: 3
   seed: 42
   sample_size: 25000
@@ -179,3 +228,5 @@ monitoring:
   psi_epsilon: 0.0001
   max_inference_log_window: 5000
   evidently_sample_size: 3000
+  wasserstein_threshold: 0.10
+  big_data_sample_threshold: 1000

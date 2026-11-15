@@ -50,19 +50,21 @@
     }
   },
   "cloud_bigdata_specs": {
-    "dataset_name": "REES46 eCommerce Behavior Data",
-    "kaggle_source": "mkechinov/ecommerce-behavior-data-from-multi-category-store",
-    "target_raw_file": "2019-Oct.csv",
-    "target_raw_size_gb": 5.28,
-    "target_records": 42448764,
-    "notebook_ready": true,
-    "script_ready": true,
-    "kernel_metadata_ready": true,
-    "execution_mode": "Out-of-Core DuckDB Streaming to Parquet Snappy (Cloud Compute)"
+    "dataset_name": "KKBox Customer Churn Big Data",
+    "huggingface_source": "vaibhavkhurana/subscriber-retention-intelligence",
+    "target_raw_size_gb": 7.52,
+    "target_tables": [
+      "member",
+      "subscription_transaction",
+      "listening_day",
+      "churn_label"
+    ],
+    "spec_ready": true,
+    "execution_mode": "Out-of-Core PySpark / DuckDB Streaming to Parquet Snappy (Cloud Compute)"
   },
   "verdict": {
-    "local_status": "Dữ liệu local 25.5 MB (440k dòng) phục vụ huấn luyện ML & API",
-    "cloud_status": "Kịch bản >4GB đã đóng gói hoàn tất, sẵn sàng thực thi trên Kaggle/Azure Cloud (/boost)",
+    "local_status": "Dữ liệu local 25.5 MB (440k dòng) phục vụ scaffold kiểm thử nhanh",
+    "cloud_status": "Đặc tả tập KKBox 7.52 GB đã sẵn sàng trong docs/requirements/project_context.md",
     "mock_data_detected": false
   }
 }

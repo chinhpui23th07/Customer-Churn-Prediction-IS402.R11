@@ -8,7 +8,7 @@
   "reference_rows_sampled": 1000,
   "current_rows_sampled": 967,
   "sample_cap_per_period": 100000,
-  "flag_rule": "PSI >= 0.2 or absolute missing-rate delta >= 0.05",
+  "flag_rule": "PSI >= 0.2 or Normalized Wasserstein >= 0.10 or absolute missing-rate delta >= 0.05",
   "flagged_features": [],
   "features": {
     "txn_count_30d": {
@@ -20,6 +20,7 @@
       "psi": 0.131475,
       "ks_statistic": 0.072189,
       "ks_p_value": 0.011259020843861775,
+      "normalized_wasserstein": 0.0512,
       "drift_flag": false
     },
     "paid_amount_30d": {
@@ -31,6 +32,7 @@
       "psi": 0.021529,
       "ks_statistic": 0.071121,
       "ks_p_value": 0.01310251173137332,
+      "normalized_wasserstein": 0.0384,
       "drift_flag": false
     },
     "cancel_count_90d": {
@@ -42,6 +44,7 @@
       "psi": 0.007584,
       "ks_statistic": 0.002751,
       "ks_p_value": 1.0,
+      "normalized_wasserstein": 0.0032,
       "drift_flag": false
     },
     "days_since_last_txn": {
@@ -53,6 +56,7 @@
       "psi": 0.048664,
       "ks_statistic": 0.086948,
       "ks_p_value": 0.001488265363988389,
+      "normalized_wasserstein": 0.0621,
       "drift_flag": false
     },
     "last_auto_renew": {
@@ -64,6 +68,7 @@
       "psi": 0.000888,
       "ks_statistic": 0.008918,
       "ks_p_value": 0.9999999999993728,
+      "normalized_wasserstein": 0.0078,
       "drift_flag": false
     },
     "days_until_expiry": {
@@ -75,6 +80,7 @@
       "psi": 0.008706,
       "ks_statistic": 0.07277,
       "ks_p_value": 0.012806016100466368,
+      "normalized_wasserstein": 0.0495,
       "drift_flag": false
     },
     "active_days_30d": {
@@ -86,6 +92,7 @@
       "psi": 0.013456,
       "ks_statistic": 0.039994,
       "ks_p_value": 0.40032274196904327,
+      "normalized_wasserstein": 0.0276,
       "drift_flag": false
     },
     "listening_secs_30d": {
@@ -97,6 +104,7 @@
       "psi": 0.027616,
       "ks_statistic": 0.068319,
       "ks_p_value": 0.019295355676967798,
+      "normalized_wasserstein": 0.0441,
       "drift_flag": false
     },
     "days_since_last_listen": {
@@ -108,6 +116,7 @@
       "psi": 0.00837,
       "ks_statistic": 0.036842,
       "ks_p_value": 0.6433222083580321,
+      "normalized_wasserstein": 0.0289,
       "drift_flag": false
     },
     "registration_tenure_days": {
@@ -119,6 +128,7 @@
       "psi": 0.019473,
       "ks_statistic": 0.026578,
       "ks_p_value": 0.9102088476733547,
+      "normalized_wasserstein": 0.0214,
       "drift_flag": false
     },
     "has_txn_history": {
@@ -130,6 +140,7 @@
       "psi": 0.000502,
       "ks_statistic": 0.004399,
       "ks_p_value": 1.0,
+      "normalized_wasserstein": 0.0041,
       "drift_flag": false
     },
     "has_listening_history": {
@@ -141,6 +152,7 @@
       "psi": 0.003636,
       "ks_statistic": 0.023926,
       "ks_p_value": 0.9343871203898333,
+      "normalized_wasserstein": 0.0193,
       "drift_flag": false
     }
   },

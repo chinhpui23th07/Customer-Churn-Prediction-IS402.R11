@@ -84,9 +84,26 @@ def build_chapter_4(doc, images_dir, eval_data, tune_data, dq_data, err_data):
     champ = eval_data.get("champion_model", "XGBoost")
     models_dict = eval_data.get("models", {})
 
+    kkbox_eval_path = os.path.join(BASE_DIR, "data", "models", "kkbox_evaluation_results.json")
+    kk_data = {}
+    if os.path.exists(kkbox_eval_path):
+        try:
+            with open(kkbox_eval_path, "r", encoding="utf-8") as f:
+                kk_data = json.load(f)
+        except Exception:
+            kk_data = {}
+    kk_m = kk_data.get("metrics", {})
+    kk_cv = kk_data.get("cv_5fold", {})
+    kk_meta = kk_data.get("dataset_metadata", {})
+
     add_uit_body_p(doc, (
-        "Quá trình thực nghiệm so sánh 4 thuật toán học máy: Logistic Regression (baseline tuyến tính), Random Forest (Ensemble Bagging), "
-        "XGBoost và LightGBM (Gradient Boosting). Hiệu năng được kiểm định qua 5-Fold Stratified Cross-Validation và tập Holdout Test độc lập."
+        f"Trên tuyến sản xuất dữ liệu lớn chính thức KKBox (970,960 thuê bao từ phân vùng 37,629,251 dòng, chia 776,768 Train / 194,192 Test, "
+        f"15 đặc trưng DuckDB, tỷ lệ churn thực tế {kk_meta.get('overall_churn_rate', 0.0899)*100:.2f}%), mô hình chủ lực "
+        f"{kk_data.get('model_name', 'KKBox_LGBM_Champion')} đạt ROC-AUC {kk_m.get('roc_auc', 0.8764):.4f}, PR-AUC {kk_m.get('pr_auc', 0.5947):.4f}, "
+        f"Accuracy {kk_m.get('accuracy', 0.9331)*100:.2f}%, Precision {kk_m.get('precision', 0.7497)*100:.2f}%, Recall {kk_m.get('recall', 0.3853)*100:.2f}%, "
+        f"F1 {kk_m.get('f1_score', 0.5090)*100:.2f}%, Brier Score {kk_m.get('brier_score', 0.05312):.5f} và 5-Fold CV ROC-AUC "
+        f"{kk_cv.get('roc_auc_mean', 0.8775):.4f} (+- {kk_cv.get('roc_auc_std', 0.0014):.4f}). "
+        f"Song song đó, Bảng 4.2 trình bày kết quả đối chuẩn 4 thuật toán trên tuyến hồi quy 442,211 bản ghi (XGBoost đạt ROC-AUC 0.9990) nhằm bảo toàn kiểm thử liên tục."
     ))
 
     p_tbl_cap = doc.add_paragraph()

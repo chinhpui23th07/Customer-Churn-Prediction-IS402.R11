@@ -1,6 +1,6 @@
 """
 Hội Đồng Thanh Tra Chấm Điểm Liêm Chính Học Thuật (Zero-Leniency Rubric Auditor).
-Đánh giá độc lập 15 tiêu chí theo đúng Rubric môn IS402 (Điện toán đám mây - UIT).
+Đánh giá độc lập 15 tiêu chí theo chuẩn Kiến trúc Hệ thống & Điện toán Đám mây (Enterprise Cloud MLOps).
 Nguyên tắc Liêm chính Học thuật:
 - Phân định rõ ràng: Điểm thực tế Local (3.35/10) vs Điểm mục tiêu Cloud (9.90/10).
 - Vạch rõ 13 tiêu chí (17 tiểu mục) bị trừ điểm khi chưa kết nối Azure thực tế: 1.3, 1.4, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 4.1, 4.2, 4.3, 4.4, 5.1, 5.2, 5.3, 5.4.
@@ -84,7 +84,7 @@ class AcademicIntegrityAuditor:
         # 3.2 Luồng tự động ETL vào Storage Cloud (0.50đ)
         self.local_scores["3.2"] = 0.10
         self.target_scores["3.2"] = 0.50
-        self.penalties["3.2"] = "Trừ 0.40đ: Luồng ETL streaming O(1) tự động, nhưng lưu disk local thay vì Cloud Blob."
+        self.penalties["3.2"] = "Trừ 0.40đ: Luồng ETL streaming Bounded Memory (<= 2GB) tự động, nhưng lưu disk local thay vì Cloud Blob."
         self.evidence["3.2"] = "Luồng ETL tự động hóa sạch sẽ, khử trùng 62,189 ID, lưu định dạng Parquet."
 
         # 3.3 Đo độ trễ đặt server ở region khác (0.50đ)
@@ -146,8 +146,8 @@ class AcademicIntegrityAuditor:
         # 5.4 Quản lý dự án trên Cloud & Quotas (0.50đ)
         self.local_scores["5.4"] = 0.10
         self.target_scores["5.4"] = 0.50
-        self.penalties["5.4"] = "TRỪ 0.40đ: Đã tính toán TCO $74.67/month, bảng Cloud Quotas, IAM RBAC, nhưng chưa gắn với live Azure Subscription."
-        self.evidence["5.4"] = "TCO $74.67/month, bảng Cloud Quotas, ma trận IAM RBAC, và Serving Hot-Reload Retraining pipeline."
+        self.penalties["5.4"] = "TRỪ 0.40đ: Đã tính toán TCO $70.61/month ($11.22/month Scale-to-Zero), bảng Cloud Quotas, IAM RBAC, nhưng chưa gắn với live Azure Subscription."
+        self.evidence["5.4"] = "TCO $70.61/month (Infracost IaC), $11.22/month (Scale-to-Zero), Cloud Quotas, IAM RBAC, và Serving Hot-Reload Retraining."
 
     def evaluate_all(self):
         self.audit_1_introduction()

@@ -8,9 +8,40 @@ from pathlib import Path
 
 import duckdb
 import numpy as np
-from scipy.stats import ks_2samp
+from scipy.stats import ks_2samp, wasserstein_distance
 
 from src.kkbox.contract import FEATURE_COLUMNS, FEATURE_VERSION
+
+
+def calculate_normalized_wasserstein(
+    expected: np.ndarray, actual: np.ndarray
+) -> tuple[float | None, float | None]:
+    """
+    Tính khoảng cách Wasserstein chuẩn hóa (Normalized Wasserstein Distance) theo chuẩn Evidently AI.
+    norm_w = W(P, Q) / sigma_reference.
+
+    Lý do khoa học (Evidently AI Big Data Specification):
+    Với dữ liệu lớn (N > 1,000, e.g. N = 100,000), kiểm định hai mẫu Kolmogorov-Smirnov (KS-test)
+    bị overpowered nghiêm trọng: mọi độ lệch nhỏ không đáng kể (0.02 sigma) đều khiến p-value -> 0
+    (p << alpha_Bonferroni), dẫn tới báo động giả (False Alarms) liên tục.
+    Normalized Wasserstein Distance đánh giá đúng quy mô tác động thực tế (effect size) chuẩn hóa
+    độc lập với kích thước mẫu N. Ngưỡng cảnh báo drift chuẩn của Evidently AI cho Big Data là 0.10.
+    """
+    expected = np.asarray(expected, dtype=float)
+    actual = np.asarray(actual, dtype=float)
+    expected = expected[np.isfinite(expected)]
+    actual = actual[np.isfinite(actual)]
+    if len(expected) == 0 or len(actual) == 0:
+        return None, None
+    raw_w = float(wasserstein_distance(expected, actual))
+    std_ref = float(np.std(expected))
+    if std_ref > 1e-6:
+        norm_w = raw_w / std_ref
+    else:
+        norm_w = 0.0 if raw_w < 1e-5 else raw_w
+    if not np.isfinite(norm_w):
+        norm_w = 0.0
+    return float(np.round(raw_w, 4)), float(np.round(norm_w, 4))
 
 
 def population_stability_index(reference: np.ndarray, current: np.ndarray) -> float | None:
@@ -44,6 +75,7 @@ def compare_feature(reference: np.ndarray, current: np.ndarray) -> dict:
     valid_cur = current[np.isfinite(current)]
     psi = population_stability_index(valid_ref, valid_cur)
     ks = ks_2samp(valid_ref, valid_cur, method="asymp") if len(valid_ref) and len(valid_cur) else None
+    raw_w, norm_w = calculate_normalized_wasserstein(valid_ref, valid_cur)
     ref_missing = 1 - len(valid_ref) / len(reference)
     cur_missing = 1 - len(valid_cur) / len(current)
     return {
@@ -54,8 +86,12 @@ def compare_feature(reference: np.ndarray, current: np.ndarray) -> dict:
         "psi": round(psi, 6) if psi is not None else None,
         "ks_statistic": round(float(ks.statistic), 6) if ks is not None else None,
         "ks_p_value": float(ks.pvalue) if ks is not None else None,
-        "drift_flag": bool((psi is not None and psi >= 0.2)
-                           or abs(cur_missing - ref_missing) >= 0.05),
+        "normalized_wasserstein": round(norm_w, 4) if norm_w is not None else None,
+        "drift_flag": bool(
+            (psi is not None and psi >= 0.2)
+            or (norm_w is not None and norm_w >= 0.10)
+            or abs(cur_missing - ref_missing) >= 0.05
+        ),
     }
 
 
@@ -99,7 +135,7 @@ def main() -> None:
         "reference_period": "2017-02", "current_period": "2017-03",
         "reference_rows_sampled": len(reference), "current_rows_sampled": len(current),
         "sample_cap_per_period": args.sample_cap,
-        "flag_rule": "PSI >= 0.2 or absolute missing-rate delta >= 0.05",
+        "flag_rule": "PSI >= 0.2 or Normalized Wasserstein >= 0.10 or absolute missing-rate delta >= 0.05",
         "flagged_features": [name for name, detail in features.items() if detail["drift_flag"]],
         "features": features,
         "warning": "Pilot source history is incomplete; this report is only a pipeline check."

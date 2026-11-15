@@ -52,24 +52,28 @@ def test_psi_all_three_binning_regimes_and_empty_inputs() -> None:
 
 def test_compare_feature_drift_flag_thresholds_and_missing_rates() -> None:
     rng = np.random.default_rng(7)
-    base = rng.normal(50.0, 10.0, size=500)
-    stable = rng.normal(50.2, 10.0, size=500)
-    shifted = rng.normal(80.0, 10.0, size=500)
+    base = rng.normal(50.0, 10.0, size=2000)
+    stable = rng.normal(50.2, 10.0, size=2000)
+    shifted = rng.normal(80.0, 10.0, size=2000)
 
     res_stable = drift.compare_feature(base, stable)
     assert res_stable["drift_flag"] is False
     assert res_stable["psi"] < 0.2
     assert abs(res_stable["missing_rate_delta"]) < 0.05
     assert 0.0 <= res_stable["ks_statistic"] < 0.15
+    assert res_stable["normalized_wasserstein"] is not None
+    assert res_stable["normalized_wasserstein"] < 0.10
 
     res_psi_flagged = drift.compare_feature(base, shifted)
     assert res_psi_flagged["drift_flag"] is True
     assert res_psi_flagged["psi"] >= 0.2
     assert res_psi_flagged["ks_statistic"] > 0.5
+    assert res_psi_flagged["normalized_wasserstein"] is not None
+    assert res_psi_flagged["normalized_wasserstein"] >= 0.10
 
     # Missing-rate delta >= 0.05 triggers drift_flag even when valid values are identical
     cur_missing = base.copy()
-    cur_missing[:40] = np.nan  # 40 / 500 = 0.08 missing rate delta
+    cur_missing[:160] = np.nan  # 160 / 2000 = 0.08 missing rate delta
     res_missing_flagged = drift.compare_feature(base, cur_missing)
     assert res_missing_flagged["reference_missing_rate"] == 0.0
     assert res_missing_flagged["current_missing_rate"] == pytest.approx(0.08)
@@ -83,9 +87,32 @@ def test_compare_feature_drift_flag_thresholds_and_missing_rates() -> None:
     assert res_nan["psi"] is None
     assert res_nan["ks_statistic"] is None
     assert res_nan["ks_p_value"] is None
+    assert res_nan["normalized_wasserstein"] is None
     assert res_nan["reference_missing_rate"] == 1.0
     assert res_nan["current_missing_rate"] == 1.0
     assert res_nan["drift_flag"] is False
+
+
+def test_calculate_normalized_wasserstein_and_big_data_property() -> None:
+    # 1. Empty and invalid inputs return (None, None)
+    assert drift.calculate_normalized_wasserstein(np.array([]), np.array([1.0, 2.0])) == (None, None)
+    assert drift.calculate_normalized_wasserstein(np.array([np.nan]), np.array([1.0])) == (None, None)
+
+    # 2. Constant distributions (zero reference std)
+    assert drift.calculate_normalized_wasserstein(np.zeros(100), np.zeros(100)) == (0.0, 0.0)
+    raw_w, norm_w = drift.calculate_normalized_wasserstein(np.zeros(100), np.ones(100))
+    assert raw_w == 1.0 and norm_w == 1.0
+
+    # 3. Big Data regime (N = 5,000, tiny shift = 0.02 sigma):
+    # Normalized Wasserstein avoids false alarm (< 0.10)
+    rng = np.random.default_rng(42)
+    ref = rng.normal(loc=100.0, scale=10.0, size=5000)
+    cur = rng.normal(loc=100.2, scale=10.0, size=5000)  # 0.02 sigma shift
+    raw_w, norm_w = drift.calculate_normalized_wasserstein(ref, cur)
+    assert norm_w is not None and norm_w < 0.10
+    res = drift.compare_feature(ref, cur)
+    assert res["normalized_wasserstein"] == norm_w
+    assert res["drift_flag"] is False
 
 
 def _write_drift_parquet(root: Path, count: int) -> Path:
@@ -172,4 +199,7 @@ def test_drift_cli_end_to_end_and_validation_guards(
     assert report["current_rows_sampled"] == 120
     assert set(report["features"].keys()) == set(FEATURE_COLUMNS)
     assert "paid_amount_30d" in report["flagged_features"]
+    assert "normalized_wasserstein" in report["features"]["paid_amount_30d"]
+    assert report["features"]["paid_amount_30d"]["normalized_wasserstein"] is not None
+    assert report["features"]["paid_amount_30d"]["normalized_wasserstein"] >= 0.10
     assert "Historical cohort comparison" in report["warning"]

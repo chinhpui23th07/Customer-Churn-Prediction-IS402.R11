@@ -114,7 +114,7 @@ function addDataTable(target, rows, headings) {
   const body = table.createTBody();
   for (const row of rows) {
     const line = body.insertRow();
-    for (const value of row) { const cell = line.insertCell(); cell.textContent = String(value ?? '—'); }
+    for (const value of row) { const cell = line.insertCell(); cell.textContent = String(value ?? '-'); }
   }
   target.replaceChildren(table);
   target.hidden = false;
@@ -124,7 +124,8 @@ function apiKeyValue() { return document.getElementById('api-key').value; }
 
 async function checkHealth() {
   try {
-    const response = await fetch('/health', {cache: 'no-store'});
+    let response = await fetch('/v1/health', {cache: 'no-store'});
+    if (response.status === 404) response = await fetch('/health', {cache: 'no-store'});
     if (!response.ok) throw new Error('Health request failed');
     const data = await response.json();
     statusBox.classList.toggle('ready', data.status === 'ready');
@@ -209,9 +210,9 @@ document.getElementById('batch-form').addEventListener('submit', async event => 
     document.getElementById('result-empty').hidden = true;
     document.getElementById('result-data').hidden = true;
     addDataTable(batchOutput, data.results.map(item => [item.row, item.subscriber_key, item.as_of_date,
-      item.result ? (item.result.churn_probability * 100).toFixed(1) + '%' : '—',
+      item.result ? (item.result.churn_probability * 100).toFixed(1) + '%' : '-',
       item.result ? (item.result.prediction === 1 ? 'Rời bỏ' : 'Tiếp tục') : item.error,
-      item.result?.model_version || '—']), ['Dòng', 'Subscriber key', 'Ngày chốt', 'Xác suất', 'Kết quả', 'Model']);
+      item.result?.model_version || '-']), ['Dòng', 'Subscriber key', 'Ngày chốt', 'Xác suất', 'Kết quả', 'Model']);
     batchOutput.prepend(Object.assign(document.createElement('p'), {textContent: `Tổng ${data.total} · thành công ${data.succeeded} · thiếu snapshot ${data.failed}`}));
     resultState.textContent = 'BATCH HOÀN TẤT'; resultState.classList.add('active');
   } catch (error) { showError(error.message || 'Không thể xử lý CSV.'); }

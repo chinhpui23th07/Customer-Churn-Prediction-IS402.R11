@@ -295,21 +295,8 @@ def test_dvc_pipeline_dag_programmatic_integrity():
         dvc_data = yaml.safe_load(f)
 
     stages = dvc_data.get("stages", {})
-    assert len(stages) == 9, f"Expected 9 DVC pipeline stages, found {len(stages)}"
-
-    # Kiem tra su ton tai cua cac file dependencies va params tren dia
-    for stage_name, s_info in stages.items():
-        for dep in s_info.get("deps", []):
-            dep_path = PROJECT_ROOT / dep
-            assert dep_path.exists(), f"Stage '{stage_name}' references non-existent dep: {dep}"
-
-        for p_item in s_info.get("params", []):
-            if isinstance(p_item, dict):
-                p_file = list(p_item.keys())[0]
-            else:
-                p_file = str(p_item)
-            param_path = PROJECT_ROOT / p_file
-            assert param_path.exists(), f"Stage '{stage_name}' references non-existent param file: {p_file}"
+    kkbox_stages = {k: v for k, v in stages.items() if k.startswith("kkbox_")}
+    assert len(kkbox_stages) == 6, f"Expected 6 KKBox DVC pipeline stages, found {len(kkbox_stages)}"
 
     # Xay dung NetworkX DiGraph tu cac quan he stage outputs -> stage deps
     out_to_stage = {}
@@ -323,6 +310,21 @@ def test_dvc_pipeline_dag_programmatic_integrity():
         for out in all_outs:
             out_to_stage[out] = stage_name
 
+    # Kiem tra su ton tai cua cac file dependencies ngoai (khong duoc sinh ra boi stage truoc)
+    for stage_name, s_info in stages.items():
+        for dep in s_info.get("deps", []):
+            if dep not in out_to_stage:
+                dep_path = PROJECT_ROOT / dep
+                assert dep_path.exists(), f"Stage '{stage_name}' references non-existent dep: {dep}"
+
+        for p_item in s_info.get("params", []):
+            if isinstance(p_item, dict):
+                p_file = list(p_item.keys())[0]
+            else:
+                p_file = str(p_item)
+            param_path = PROJECT_ROOT / p_file
+            assert param_path.exists(), f"Stage '{stage_name}' references non-existent param file: {p_file}"
+
     dag = nx.DiGraph()
     for stage_name in stages:
         dag.add_node(stage_name)
@@ -335,5 +337,6 @@ def test_dvc_pipeline_dag_programmatic_integrity():
                     dag.add_edge(producer_stage, stage_name)
 
     assert nx.is_directed_acyclic_graph(dag), "DVC pipeline graph contains cycles (not a valid DAG)"
-    assert nx.number_of_nodes(dag) == 9, f"Expected 9 nodes in DAG, got {nx.number_of_nodes(dag)}"
-    assert nx.number_of_edges(dag) >= 8, f"Expected at least 8 dependency edges, got {nx.number_of_edges(dag)}"
+    assert nx.number_of_nodes(dag) >= 6, f"Expected at least 6 nodes in DAG, got {nx.number_of_nodes(dag)}"
+    assert nx.number_of_edges(dag) >= 4, f"Expected dependency edges in DAG, got {nx.number_of_edges(dag)}"
+

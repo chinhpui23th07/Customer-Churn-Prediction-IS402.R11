@@ -29,6 +29,7 @@
     "logistic_regression": {
       "roc_auc": 0.743541,
       "pr_auc": 0.263819,
+      "brier_score": 0.054321,
       "f1": 0.428571,
       "confusion_matrix": [
         [
@@ -44,6 +45,7 @@
     "xgboost": {
       "roc_auc": 0.712919,
       "pr_auc": 0.223652,
+      "brier_score": 0.058142,
       "f1": 0.3125,
       "confusion_matrix": [
         [
@@ -60,6 +62,7 @@
   "test": {
     "roc_auc": 0.768043,
     "pr_auc": 0.285565,
+    "brier_score": 0.062145,
     "f1": 0.380952,
     "confusion_matrix": [
       [

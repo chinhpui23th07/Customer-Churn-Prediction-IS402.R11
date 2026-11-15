@@ -1,4 +1,4 @@
-# Khung nội dung báo cáo KKBox — chỉ điền số đo full
+# Khung nội dung báo cáo KKBox - chỉ điền số đo full
 
 Tài liệu nguồn để soạn Word và slides theo mẫu KLTN của lớp. Các ô `[CẦN ĐO]` chưa có bằng chứng và **không được điền bằng metric pilot, REES46 hoặc Kaggle**. Danh mục ảnh/câu demo ở [kịch bản rubric](RUBRIC_DEMO_PLAN_2026-11-04.md).
 
@@ -38,7 +38,7 @@ Số trên là **metadata nguồn**, không thay cho số file/byte Spark đã x
 
 **Hợp đồng API:** trích [API contract](../contracts/api_contract.md); chụp request/response thực tế sau triển khai. Giao diện hiện tại ở `/demo` hiển thị trạng thái API, form ID/cutoff và kết quả model. Không đưa API key hoặc ID thật vào ảnh công khai.
 
-## Chương 4. Thực nghiệm — chờ số đo thật
+## Chương 4. Thực nghiệm - chờ số đo thật
 
 ### 4.1 Cấu hình môi trường
 

@@ -67,7 +67,8 @@ def run_optuna_tuning(n_trials: int = 12):
         scores = cross_val_score(clf, X, y, cv=skf, scoring="roc_auc", n_jobs=-1)
         return float(np.mean(scores))
 
-    study_xgb = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=42))
+    sampler_xgb = optuna.samplers.TPESampler(n_startup_trials=5, multivariate=True, seed=42)
+    study_xgb = optuna.create_study(direction="maximize", sampler=sampler_xgb)
     study_xgb.optimize(objective_xgb, n_trials=n_trials)
 
     print(f"[+] XGBoost Best Trial #{study_xgb.best_trial.number}: ROC-AUC = {study_xgb.best_value:.4f}")
@@ -86,7 +87,8 @@ def run_optuna_tuning(n_trials: int = 12):
         scores = cross_val_score(clf, X, y, cv=skf, scoring="roc_auc", n_jobs=-1)
         return float(np.mean(scores))
 
-    study_rf = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=42))
+    sampler_rf = optuna.samplers.TPESampler(n_startup_trials=5, multivariate=True, seed=42)
+    study_rf = optuna.create_study(direction="maximize", sampler=sampler_rf)
     study_rf.optimize(objective_rf, n_trials=min(n_trials, 8))
 
     print(f"[+] Random Forest Best Trial #{study_rf.best_trial.number}: ROC-AUC = {study_rf.best_value:.4f}")
@@ -103,9 +105,15 @@ def run_optuna_tuning(n_trials: int = 12):
     ]
 
     tuning_summary = {
-        "framework": "Optuna 4.8.0 + Bayesian TPE Sampler",
+        "framework": "Optuna 4.8.0 + Bayesian TPE Sampler (multivariate=True, n_startup_trials=5)",
         "objective": "Maximize 3-Fold Stratified Cross-Validation ROC-AUC",
         "sample_size": len(X),
+        "sampler_config": {
+            "sampler": "TPESampler",
+            "n_startup_trials": 5,
+            "multivariate": True,
+            "seed": 42
+        },
         "xgboost_champion": {
             "best_roc_auc": round(float(study_xgb.best_value), 4),
             "best_params": study_xgb.best_params,

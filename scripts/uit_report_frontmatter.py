@@ -52,13 +52,13 @@ def add_review_forms(doc):
     """Tạo biểu mẫu Nhận xét của Giảng viên hướng dẫn và Phản biện theo quy chế UIT."""
     add_uit_heading_1(doc, "PHIẾU NHẬN XÉT CỦA CÁN BỘ HƯỚNG DẪN")
     _add_form_line(doc, f"Họ và tên Cán bộ hướng dẫn: {UIT_FRONT_MATTER['instructor_name']}")
-    _add_form_line(doc, f"Sinh viên thực hiện: {UIT_FRONT_MATTER['student_name']} - MSSV: {UIT_FRONT_MATTER['student_id']} - Lớp: {UIT_FRONT_MATTER['class_name']}")
+    _add_form_line(doc, f"Nhóm nghiên cứu: {UIT_FRONT_MATTER['student_name']} - Lớp: {UIT_FRONT_MATTER['class_name']}")
     _add_form_line(doc, f"Tên đề tài: {UIT_FRONT_MATTER['title_vi']}")
 
     for label in [
-        "1. Tinh thần, thái độ làm việc và tính chủ động của sinh viên:",
+        "1. Tinh thần, thái độ làm việc và tính chủ động của nhóm nghiên cứu:",
         "2. Đánh giá về khối lượng, tiến độ và chất lượng sản phẩm MLOps:",
-        "3. Kết quả thử nghiệm trên dữ liệu lớn (442k bản ghi) và tối ưu Optuna:"
+        "3. Kết quả thử nghiệm dữ liệu lớn KKBox (442.2M nguồn / 970,960 lát cắt) & bộ đối chuẩn:"
     ]:
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -110,12 +110,12 @@ def add_review_forms(doc):
     r_pb2 = p_pb.add_run("\t")
     r_pb2.font.color.rgb = RGBColor(140, 140, 140)
 
-    _add_form_line(doc, f"Sinh viên thực hiện: {UIT_FRONT_MATTER['student_name']} - MSSV: {UIT_FRONT_MATTER['student_id']}")
+    _add_form_line(doc, f"Nhóm nghiên cứu: {UIT_FRONT_MATTER['student_name']}")
     _add_form_line(doc, f"Tên đề tài: {UIT_FRONT_MATTER['title_vi']}")
 
     for label in [
         "1. Đánh giá tính mới, tính thực tiễn và độ hoàn thiện mã nguồn:",
-        "2. Câu hỏi chất vấn phản biện dành cho sinh viên:"
+        "2. Câu hỏi chất vấn phản biện dành cho nhóm nghiên cứu:"
     ]:
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -153,8 +153,8 @@ def add_review_forms(doc):
     r_s2.font.italic = True
     doc.add_page_break()
 
-    add_uit_heading_1(doc, "THÔNG TIN HỘI ĐỒNG BẢO VỆ ĐỒ ÁN")
-    add_uit_body_p(doc, f"Hội đồng chấm bảo vệ đồ án môn học, thành lập theo {UIT_FRONT_MATTER['decision_number']}", first_line_indent=False)
+    add_uit_heading_1(doc, "THÔNG TIN HỘI ĐỒNG ĐÁNH GIÁ CHUYÊN MÔN")
+    add_uit_body_p(doc, f"Hội đồng đánh giá công trình kỹ thuật MLOps doanh nghiệp, thành lập theo {UIT_FRONT_MATTER['decision_number']}", first_line_indent=False)
     col_widths_b = [Inches(1.8), Inches(2.2), Inches(2.3)]
     t_board = doc.add_table(rows=1, cols=3)
     t_board.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -182,7 +182,7 @@ def add_pledge_and_thanks(doc):
     add_uit_body_p(doc, UIT_FRONT_MATTER["pledge"])
     p_sig_p = doc.add_paragraph()
     p_sig_p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    r_sp = p_sig_p.add_run("TP. Hồ Chí Minh, ngày 22 tháng 09 năm 2026\nSinh viên thực hiện\n(Ký và ghi rõ họ tên)\n\n\nNguyễn Trọng Khôi")
+    r_sp = p_sig_p.add_run("TP. Hồ Chí Minh, ngày 22 tháng 09 năm 2026\nĐại diện Nhóm Nghiên cứu\n(Ký và ghi rõ họ tên)\n\n\n[Để trống / Tác giả bảo mật]")
     r_sp.font.name = 'Times New Roman'
     r_sp.font.italic = True
     doc.add_page_break()
@@ -191,7 +191,7 @@ def add_pledge_and_thanks(doc):
     add_uit_body_p(doc, UIT_FRONT_MATTER["acknowledgments"])
     p_sig_a = doc.add_paragraph()
     p_sig_a.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    r_sa = p_sig_a.add_run("Sinh viên thực hiện\n\nNguyễn Trọng Khôi")
+    r_sa = p_sig_a.add_run("Đại diện Nhóm Nghiên cứu\n\n[Để trống / Tác giả bảo mật]")
     r_sa.font.name = 'Times New Roman'
     r_sa.font.italic = True
     doc.add_page_break()
@@ -255,7 +255,7 @@ def add_toc_and_lists(doc):
         ("  5.3. Giám Sát Drift Thời Gian Thực & Kích Hoạt Tái Huấn Luyện", "11"),
         ("  5.4. Dự Toán Chi Phí Hạ Tầng Đám Mây (TCO Analysis)", "11"),
         ("CHƯƠNG 6: KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN", "12"),
-        ("  6.1. Các Kết Quả Đạt Được Của Đồ Án", "12"),
+        ("  6.1. Các Kết Quả Đạt Được Của Công Trình", "12"),
         ("  6.2. Phân Tích Giới Hạn Dữ Liệu Tổng Hợp Kaggle", "12"),
         ("  6.3. Hướng Phát Triển Tương Lai", "12"),
         ("TÀI LIỆU THAM KHẢO CHUẨN IEEE", "13"),

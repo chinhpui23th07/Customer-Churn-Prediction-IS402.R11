@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-01T23:09:30.377178",
+  "timestamp": "2026-11-05T03:40:28.006331",
   "audit_standard": "UIT IS402 Cloud Computing Rubric v2.0",
   "evaluator_mode": "Strict Academic Integrity (Dual-Track Local vs Cloud)",
   "local_real_score": 3.35,
@@ -49,7 +49,7 @@
     "R5.4_cloud_management_quotas": 0.5
   },
   "cloud_penalties_breakdown": {
-    "R1.3_scale_and_speed": "TRỪ TOÀN BỘ 0.75đ: Dữ liệu thô local chỉ 25.49 MB (440k dòng), chưa đạt >4GB trên local disk. Kịch bản >4GB Kaggle REES46 (5.28 GB, 42.45M dòng) đã sẵn sàng trong notebooks/ chờ thực thi trên cloud.",
+    "R1.3_scale_and_speed": "TRỪ TOÀN BỘ 0.75đ: Dữ liệu thô local chỉ 25.49 MB (440k dòng), chưa đạt >4GB trên local disk. Kịch bản >4GB KKBox Churn (7.52 GB, 32 Parquet files) đang trong lộ trình chuyển đổi và thực thi trên cloud.",
     "R1.4_cloud_models": "Trừ 0.15đ: Đã phân loại IaaS/PaaS/FaaS trong configs/ nhưng chưa provision live resource trên Azure.",
     "R2.1_storage_format": "Trừ 0.40đ: Đã có Parquet Snappy local, chưa đồng bộ lên Azure Blob Storage.",
     "R2.2_algorithms": "Trừ 0.20đ: Cơ sở lý thuyết XGBoost, Random Forest, Optuna 12 trials, SHAP hoàn chỉnh; dữ liệu local bị thiên kiến hợp đồng tháng.",
@@ -67,5 +67,5 @@
     "R5.3_presentation_demo": "TRỪ TOÀN BỘ 0.50đ: Kịch bản demo E2E 4 Tiers sẵn sàng trên local, nhưng chưa diễn ra buổi thuyết trình bảo vệ trực tiếp.",
     "R5.4_cloud_management_quotas": "TRỪ 0.40đ: Đã tính toán TCO $74.67/month, bảng Cloud Quotas, IAM RBAC, nhưng chưa gắn với live Azure Subscription."
   },
-  "engineering_gates_passed": true
+  "engineering_gates_passed": false
 }

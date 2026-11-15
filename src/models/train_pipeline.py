@@ -333,27 +333,30 @@ def train_and_track_all_models():
         "metrics": champ_res["test"]
     }, champion_path)
 
-    # Đăng ký Champion Model vào MLflow Registry và chuyển sang stage Production
-    try:
-        with mlflow.start_run(run_name="Champion_Model_Registration"):
-            mlflow.sklearn.log_model(
-                sk_model=best_model_obj,
-                artifact_path="champion_model",
-                registered_model_name="CustomerChurnChampion",
-                serialization_format="pickle"
-            )
-        client = MlflowClient()
-        latest_versions = client.get_latest_versions("CustomerChurnChampion")
-        version_to_promote = latest_versions[-1].version if latest_versions else 1
-        client.transition_model_version_stage(
-            name="CustomerChurnChampion",
-            version=version_to_promote,
-            stage="Production",
-            archive_existing_versions=True
-        )
-        print("[+] Champion Model đã được đăng ký và chuyển sang stage Production: CustomerChurnChampion")
-    except Exception as e:
-        print(f"[-] Cảnh báo đăng ký Champion: {e}")
+    # Đăng ký Champion (@champion) và Challenger (@challenger) theo chuẩn MLflow 2.9+
+    def _register_alias(reg_name: str, model_obj, alias: str, legacy_stage: str):
+        try:
+            with mlflow.start_run(run_name=f"{reg_name}_Registration"):
+                mlflow.sklearn.log_model(sk_model=model_obj, artifact_path=alias, registered_model_name=reg_name, serialization_format="pickle")
+            client = MlflowClient()
+            latest = client.get_latest_versions(reg_name)
+            v = str(latest[-1].version if latest else 1)
+            try:
+                client.set_registered_model_alias(name=reg_name, alias=alias, version=v)
+                print(f"[+] Gán MLflow Alias @{alias} v{v}: models:/{reg_name}@{alias}")
+            except Exception as ea:
+                print(f"    [-] Cảnh báo alias: {ea}")
+            try:
+                client.transition_model_version_stage(name=reg_name, version=v, stage=legacy_stage, archive_existing_versions=True)
+            except Exception:
+                pass
+        except Exception as e_reg:
+            print(f"[-] Cảnh báo đăng ký {reg_name}: {e_reg}")
+
+    _register_alias("CustomerChurnChampion", best_model_obj, "champion", "Production")
+    rf_cfg = next((m for m in models_config if m["name"] == "Random_Forest"), None)
+    if rf_cfg and rf_cfg.get("model") is not None:
+        _register_alias("CustomerChurnChallenger", rf_cfg["model"], "challenger", "Staging")
 
     summary_file = os.path.join(MODELS_DIR, "evaluation_results.json")
     with open(summary_file, "w", encoding="utf-8") as f:

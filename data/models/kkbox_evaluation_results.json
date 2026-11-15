@@ -1,0 +1,84 @@
+{
+  "model_name": "KKBox_LGBM_Champion",
+  "metrics": {
+    "accuracy": 0.9331,
+    "precision": 0.7497,
+    "recall": 0.3853,
+    "f1_score": 0.509,
+    "roc_auc": 0.8764,
+    "pr_auc": 0.5947,
+    "brier_score": 0.05312,
+    "confusion_matrix": [
+      [
+        174479,
+        2247
+      ],
+      [
+        10736,
+        6730
+      ]
+    ],
+    "probability_distribution": {
+      "p_min": 0.002053152388330643,
+      "p_max": 0.9894968971465138,
+      "p_mean": 0.0901188084644607,
+      "p_median": 0.030869359021107906,
+      "low_risk_ratio": 0.9389367224190492,
+      "mid_risk_ratio": 0.03547005025953695,
+      "high_risk_ratio": 0.025593227321413857,
+      "mid_risk_count": 6888,
+      "total_evaluated": 194192
+    }
+  },
+  "cv_5fold": {
+    "folds": 5,
+    "roc_auc_mean": 0.8775,
+    "roc_auc_std": 0.0014,
+    "fold_scores": [
+      0.8766,
+      0.8798,
+      0.8759,
+      0.8786,
+      0.8768
+    ]
+  },
+  "probability_distribution": {
+    "p_min": 0.002053152388330643,
+    "p_max": 0.9894968971465138,
+    "p_mean": 0.0901188084644607,
+    "p_median": 0.030869359021107906,
+    "low_risk_ratio": 0.9389367224190492,
+    "mid_risk_ratio": 0.03547005025953695,
+    "high_risk_ratio": 0.025593227321413857,
+    "mid_risk_count": 6888,
+    "total_evaluated": 194192
+  },
+  "feature_importance": {
+    "city": 0.0476,
+    "bd": 0.0265,
+    "gender_encoded": 0.0181,
+    "registered_via": 0.0971,
+    "trans_count": 0.0633,
+    "avg_plan_days": 0.1155,
+    "total_actual_paid": 0.1969,
+    "auto_renew_ratio": 0.062,
+    "cancel_ratio": 0.0646,
+    "discount_ratio": 0.08,
+    "listen_days_count": 0.0851,
+    "total_listen_secs": 0.0325,
+    "total_songs_played": 0.0459,
+    "completion_ratio": 0.0291,
+    "unique_song_ratio": 0.0358
+  },
+  "dataset_metadata": {
+    "source_path": "C:\\Users\\Nguyen Trong Khoi\\Downloads\\CLOUD\\data\\processed\\real_hf_kkbox_full_window.parquet",
+    "total_source_rows": 970960,
+    "loaded_rows": 970960,
+    "train_rows": 776768,
+    "test_rows": 194192,
+    "overall_churn_rate": 0.08994191315811156,
+    "feature_count": 15
+  },
+  "train_duration_sec": 14.48,
+  "trained_at": "2026-11-02T16:57:31.887857+00:00"
+}

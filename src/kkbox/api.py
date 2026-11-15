@@ -4,11 +4,10 @@ from __future__ import annotations
 
 import hmac
 import json
-import math
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal
+from typing import Any
 
 import duckdb
 import joblib
@@ -16,89 +15,40 @@ import numpy as np
 from fastapi import APIRouter, FastAPI, Header, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field, field_validator, model_validator
 
 from src.kkbox.contract import ALLOWED_CUTOFFS, FEATURE_COLUMNS, FEATURE_VERSION
+from src.kkbox.schemas import (
+    BatchPredictionItem,
+    BatchPredictionRequest,
+    BatchPredictionResponse,
+    FeatureResponse,
+    ManualPredictionRequest,
+    ManualPredictionResponse,
+    MAX_UINT64,
+    PredictionRequest,
+    PredictionResponse,
+)
+from src.resilience import CircuitBreaker, CircuitBreakerOpenException
 
 MODEL_DIR = Path(os.getenv("KKBOX_MODEL_DIR", "data/kkbox_models"))
 FEATURE_PATH = os.getenv("KKBOX_FEATURE_PATH", "data/kkbox_processed/features/**/*.parquet")
 FEAST_REPO = os.getenv("KKBOX_FEAST_REPO", "data/kkbox_feast")
-MAX_UINT64 = 2**64 - 1
+
+feature_circuit_breaker = CircuitBreaker(
+    name="kkbox_feature_store",
+    failure_threshold=int(os.getenv("KKBOX_CB_FAILURE_THRESHOLD", "5")),
+    recovery_timeout=float(os.getenv("KKBOX_CB_RECOVERY_TIMEOUT", "30.0")),
+)
+model_circuit_breaker = CircuitBreaker(
+    name="kkbox_model_inference",
+    failure_threshold=int(os.getenv("KKBOX_CB_FAILURE_THRESHOLD", "5")),
+    recovery_timeout=float(os.getenv("KKBOX_CB_RECOVERY_TIMEOUT", "30.0")),
+)
 
 
-class PredictionRequest(BaseModel):
-    subscriber_key: str = Field(..., description="Pseudonymized 64-bit key as a decimal string")
-    as_of_date: Literal["2017-01-31", "2017-02-28"]
-
-    @field_validator("subscriber_key")
-    @classmethod
-    def valid_key(cls, value: str) -> str:
-        if not value or not value.isascii() or not value.isdecimal() or (len(value) > 1 and value[0] == "0"):
-            raise ValueError("subscriber_key must be a canonical decimal string")
-        if int(value) > MAX_UINT64:
-            raise ValueError("subscriber_key exceeds uint64 range")
-        return value
-
-
-class PredictionResponse(BaseModel):
-    subscriber_key: str
-    as_of_date: str
-    prediction: int
-    churn_probability: float
-    risk_level: Literal["low", "medium", "high"]
-    model_version: str
-    feature_version: str
-    prediction_mode: Literal["historical_replay"] = "historical_replay"
-
-
-class ManualPredictionRequest(BaseModel):
-    features: dict[str, float | None]
-
-    @model_validator(mode="after")
-    def valid_features(self):
-        if set(self.features) != set(FEATURE_COLUMNS):
-            raise ValueError("features must contain exactly the 12 KKBox model columns")
-        if all(value is None for value in self.features.values()):
-            raise ValueError("at least one feature value is required")
-        if any(value is not None and not math.isfinite(value) for value in self.features.values()):
-            raise ValueError("feature values must be finite numbers or null")
-        return self
-
-
-class ManualPredictionResponse(BaseModel):
-    prediction: int
-    churn_probability: float
-    risk_level: Literal["low", "medium", "high"]
-    model_version: str
-    feature_version: str
-    prediction_mode: Literal["manual_scenario"] = "manual_scenario"
-
-
-class FeatureResponse(BaseModel):
-    subscriber_key: str
-    as_of_date: str
-    features: dict[str, float | None]
-    missing_count: int
-    feature_version: str
-
-
-class BatchPredictionRequest(BaseModel):
-    items: list[PredictionRequest] = Field(..., min_length=1, max_length=100)
-
-
-class BatchPredictionItem(BaseModel):
-    row: int
-    subscriber_key: str
-    as_of_date: str
-    result: PredictionResponse | None = None
-    error: str | None = None
-
-
-class BatchPredictionResponse(BaseModel):
-    total: int
-    succeeded: int
-    failed: int
-    results: list[BatchPredictionItem]
+def reset_circuit_breakers() -> None:
+    feature_circuit_breaker.reset()
+    model_circuit_breaker.reset()
 
 
 @lru_cache(maxsize=1)
@@ -162,6 +112,10 @@ def feast_features(snapshot_key: str) -> list[float | None] | None:
     return None if all(value is None for value in values) else values
 
 
+def _get_features(snapshot_key: str, backend: str) -> list[float | None] | None:
+    return parquet_features(snapshot_key) if backend == "parquet" else feast_features(snapshot_key)
+
+
 router = APIRouter(tags=["KKBox Churn Serving"])
 WEB_DIR = Path(__file__).resolve().parent / "web"
 
@@ -169,9 +123,38 @@ WEB_DIR = Path(__file__).resolve().parent / "web"
 def require_api_key(value: str | None) -> None:
     configured_key = os.getenv("KKBOX_API_KEY")
     if not configured_key:
-        raise HTTPException(status_code=503, detail="API secret is not configured")
+        raise HTTPException(
+            status_code=503, detail="API secret is not configured", headers={"Content-Type": "application/problem+json"}
+        )
     if not value or not hmac.compare_digest(value, configured_key):
         raise HTTPException(status_code=401, detail="Invalid API key")
+
+
+def require_admin_key(value: str | None) -> None:
+    configured_key = os.getenv("KKBOX_ADMIN_API_KEY")
+    if not configured_key and os.getenv("KKBOX_ALLOW_PILOT") == "1":
+        configured_key = os.getenv("KKBOX_API_KEY")
+    if not configured_key:
+        raise HTTPException(
+            status_code=503, detail="Admin API secret is not configured", headers={"Content-Type": "application/problem+json"}
+        )
+    if not value or not hmac.compare_digest(value, configured_key):
+        raise HTTPException(status_code=401, detail="Invalid admin API key")
+
+
+def _degraded_prediction(key: str, cutoff: str, metadata: dict[str, Any] | None = None) -> PredictionResponse:
+    threshold = float(metadata.get("classification_threshold", 0.5)) if metadata else 0.5
+    version = str(metadata.get("model_version", "fallback-degraded")) if metadata else "fallback-degraded"
+    return PredictionResponse(
+        subscriber_key=key,
+        as_of_date=cutoff,
+        prediction=int(0.5 >= threshold),
+        churn_probability=0.5,
+        risk_level="medium",
+        model_version=version,
+        feature_version=FEATURE_VERSION,
+        fallback=True,
+    )
 
 
 @router.get("/demo", include_in_schema=False)
@@ -183,6 +166,7 @@ app = FastAPI(title="KKBox Customer Churn API", version="1.0.0")
 app.mount("/demo/assets", StaticFiles(directory=WEB_DIR), name="kkbox-demo-assets")
 
 
+@router.get("/v1/health")
 @app.get("/health")
 def health():
     try:
@@ -193,6 +177,15 @@ def health():
         return {"status": "degraded", "reason": "Model unavailable"}
 
 
+@router.get("/v1/resilience/status")
+def resilience_status():
+    return {
+        "feature_store": feature_circuit_breaker.get_metrics(),
+        "model_inference": model_circuit_breaker.get_metrics(),
+    }
+
+
+
 @router.post("/v1/predictions", response_model=PredictionResponse)
 def predict(payload: PredictionRequest, x_api_key: str | None = Header(default=None)):
     require_api_key(x_api_key)
@@ -201,25 +194,60 @@ def predict(payload: PredictionRequest, x_api_key: str | None = Header(default=N
     try:
         model, metadata = load_model()
     except Exception as exc:
-        raise HTTPException(status_code=503, detail="Model unavailable") from exc
+        if os.getenv("KKBOX_ENABLE_FALLBACK", "0") == "1":
+            return _degraded_prediction(payload.subscriber_key, payload.as_of_date)
+        raise HTTPException(
+            status_code=503, detail="Model unavailable", headers={"Content-Type": "application/problem+json"}
+        ) from exc
+
     snapshot_key = f"{payload.subscriber_key}|{payload.as_of_date}"
     backend = os.getenv("KKBOX_FEATURE_BACKEND", "feast")
     try:
-        values = parquet_features(snapshot_key) if backend == "parquet" else feast_features(snapshot_key)
+        values = feature_circuit_breaker.call(_get_features, snapshot_key, backend)
+    except CircuitBreakerOpenException as exc:
+        if os.getenv("KKBOX_ENABLE_FALLBACK", "0") == "1":
+            return _degraded_prediction(payload.subscriber_key, payload.as_of_date, metadata)
+        raise HTTPException(
+            status_code=503, detail=f"Circuit breaker open: {exc}", headers={"Content-Type": "application/problem+json"}
+        ) from exc
     except Exception as exc:
-        raise HTTPException(status_code=503, detail="Feature store unavailable") from exc
+        if os.getenv("KKBOX_ENABLE_FALLBACK", "0") == "1":
+            return _degraded_prediction(payload.subscriber_key, payload.as_of_date, metadata)
+        raise HTTPException(
+            status_code=503, detail="Feature store unavailable", headers={"Content-Type": "application/problem+json"}
+        ) from exc
+
     if values is None:
         raise HTTPException(status_code=404, detail="No feature snapshot for this ID and cutoff")
+
     vector = np.array([[np.nan if value is None else float(value) for value in values]], dtype=np.float32)
-    probability = float(model.predict_proba(vector)[0, 1])
+    try:
+        proba = model_circuit_breaker.call(model.predict_proba, vector)
+        probability = float(proba[0, 1])
+    except CircuitBreakerOpenException as exc:
+        if os.getenv("KKBOX_ENABLE_FALLBACK", "0") == "1":
+            return _degraded_prediction(payload.subscriber_key, payload.as_of_date, metadata)
+        raise HTTPException(
+            status_code=503, detail=f"Circuit breaker open: {exc}", headers={"Content-Type": "application/problem+json"}
+        ) from exc
+    except Exception as exc:
+        if os.getenv("KKBOX_ENABLE_FALLBACK", "0") == "1":
+            return _degraded_prediction(payload.subscriber_key, payload.as_of_date, metadata)
+        raise HTTPException(
+            status_code=503, detail="Model inference unavailable", headers={"Content-Type": "application/problem+json"}
+        ) from exc
+
     risk_level = ("high" if probability >= metadata["risk_high_threshold"] else
                   "medium" if probability >= metadata["risk_medium_threshold"] else "low")
     return PredictionResponse(
         subscriber_key=payload.subscriber_key,
         as_of_date=payload.as_of_date,
         prediction=int(probability >= metadata["classification_threshold"]),
-        churn_probability=round(probability, 6), risk_level=risk_level,
-        model_version=str(metadata["model_version"]), feature_version=FEATURE_VERSION,
+        churn_probability=round(probability, 6),
+        risk_level=risk_level,
+        model_version=str(metadata["model_version"]),
+        feature_version=FEATURE_VERSION,
+        fallback=False,
     )
 
 
@@ -229,15 +257,24 @@ def inspect_features(payload: PredictionRequest, x_api_key: str | None = Header(
     snapshot_key = f"{payload.subscriber_key}|{payload.as_of_date}"
     backend = os.getenv("KKBOX_FEATURE_BACKEND", "feast")
     try:
-        values = parquet_features(snapshot_key) if backend == "parquet" else feast_features(snapshot_key)
+        values = feature_circuit_breaker.call(_get_features, snapshot_key, backend)
+    except CircuitBreakerOpenException as exc:
+        raise HTTPException(
+            status_code=503, detail=f"Circuit breaker open: {exc}", headers={"Content-Type": "application/problem+json"}
+        ) from exc
     except Exception as exc:
-        raise HTTPException(status_code=503, detail="Feature store unavailable") from exc
+        raise HTTPException(
+            status_code=503, detail="Feature store unavailable", headers={"Content-Type": "application/problem+json"}
+        ) from exc
     if values is None:
         raise HTTPException(status_code=404, detail="No feature snapshot for this ID and cutoff")
-    return FeatureResponse(subscriber_key=payload.subscriber_key, as_of_date=payload.as_of_date,
-                           features=dict(zip(FEATURE_COLUMNS, values)),
-                           missing_count=sum(value is None for value in values),
-                           feature_version=FEATURE_VERSION)
+    return FeatureResponse(
+        subscriber_key=payload.subscriber_key,
+        as_of_date=payload.as_of_date,
+        features=dict(zip(FEATURE_COLUMNS, values)),
+        missing_count=sum(value is None for value in values),
+        feature_version=FEATURE_VERSION,
+    )
 
 
 @router.post("/v1/predictions/manual", response_model=ManualPredictionResponse)
@@ -246,16 +283,51 @@ def predict_manual(payload: ManualPredictionRequest, x_api_key: str | None = Hea
     try:
         model, metadata = load_model()
     except Exception as exc:
-        raise HTTPException(status_code=503, detail="Model unavailable") from exc
+        if os.getenv("KKBOX_ENABLE_FALLBACK", "0") == "1":
+            return ManualPredictionResponse(
+                prediction=1, churn_probability=0.5, risk_level="medium",
+                model_version="fallback-degraded", feature_version=FEATURE_VERSION, fallback=True,
+            )
+        raise HTTPException(
+            status_code=503, detail="Model unavailable", headers={"Content-Type": "application/problem+json"}
+        ) from exc
+
     vector = np.array([[np.nan if payload.features[name] is None else payload.features[name]
                         for name in FEATURE_COLUMNS]], dtype=np.float32)
-    probability = float(model.predict_proba(vector)[0, 1])
+    try:
+        proba = model_circuit_breaker.call(model.predict_proba, vector)
+        probability = float(proba[0, 1])
+    except CircuitBreakerOpenException as exc:
+        if os.getenv("KKBOX_ENABLE_FALLBACK", "0") == "1":
+            threshold = float(metadata.get("classification_threshold", 0.5))
+            return ManualPredictionResponse(
+                prediction=int(0.5 >= threshold), churn_probability=0.5, risk_level="medium",
+                model_version=str(metadata["model_version"]), feature_version=FEATURE_VERSION, fallback=True,
+            )
+        raise HTTPException(
+            status_code=503, detail=f"Circuit breaker open: {exc}", headers={"Content-Type": "application/problem+json"}
+        ) from exc
+    except Exception as exc:
+        if os.getenv("KKBOX_ENABLE_FALLBACK", "0") == "1":
+            threshold = float(metadata.get("classification_threshold", 0.5))
+            return ManualPredictionResponse(
+                prediction=int(0.5 >= threshold), churn_probability=0.5, risk_level="medium",
+                model_version=str(metadata["model_version"]), feature_version=FEATURE_VERSION, fallback=True,
+            )
+        raise HTTPException(
+            status_code=503, detail="Model unavailable", headers={"Content-Type": "application/problem+json"}
+        ) from exc
+
     risk_level = ("high" if probability >= metadata["risk_high_threshold"] else
                   "medium" if probability >= metadata["risk_medium_threshold"] else "low")
-    return ManualPredictionResponse(prediction=int(probability >= metadata["classification_threshold"]),
-                                    churn_probability=round(probability, 6), risk_level=risk_level,
-                                    model_version=str(metadata["model_version"]),
-                                    feature_version=FEATURE_VERSION)
+    return ManualPredictionResponse(
+        prediction=int(probability >= metadata["classification_threshold"]),
+        churn_probability=round(probability, 6),
+        risk_level=risk_level,
+        model_version=str(metadata["model_version"]),
+        feature_version=FEATURE_VERSION,
+        fallback=False,
+    )
 
 
 @router.post("/v1/predictions/batch", response_model=BatchPredictionResponse)
@@ -279,12 +351,15 @@ def predict_batch(payload: BatchPredictionRequest, x_api_key: str | None = Heade
 
 @router.post("/v1/model/reload", include_in_schema=False)
 def reload_champion(x_api_key: str | None = Header(default=None)):
-    require_api_key(x_api_key)
+    require_admin_key(x_api_key)
     load_model.cache_clear()
+    reset_circuit_breakers()
     try:
         _, metadata = load_model()
     except Exception as exc:
-        raise HTTPException(status_code=503, detail="Champion model unavailable") from exc
+        raise HTTPException(
+            status_code=503, detail="Champion model unavailable", headers={"Content-Type": "application/problem+json"}
+        ) from exc
     return {"status": "ready", "model_version": str(metadata["model_version"])}
 
 

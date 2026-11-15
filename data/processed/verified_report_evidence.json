@@ -1,13 +1,13 @@
 {
   "student_info": {
-    "student_name": "Nguyễn Trọng Khôi",
-    "student_id": "23520783",
+    "student_name": "[Để trống / Tác giả bảo mật]",
+    "student_id": "[Để trống / Tác giả bảo mật]",
     "instructor": "ThS. Hà Lê Hoài Trung",
-    "course": "IS402 - Điện toán Đám mây",
+    "course": "Enterprise MLOps & Cloud Computing",
     "evidence_file": "scripts/uit_report_content.py#L25-L32"
   },
   "codebase_line_cap": {
-    "total_source_files": 55,
+    "total_source_files": 81,
     "files_over_400_lines": 0,
     "web_ui_line_counts": {
       "src/web/app.js": 197,
@@ -19,12 +19,11 @@
     "all_web_files_under_200_lines": true
   },
   "raw_data": {
-    "train_csv_mb": 22.36,
-    "test_csv_mb": 3.13,
-    "total_raw_mb": 25.49,
+    "train_csv_mb": 7173.78,
+    "test_csv_mb": 0.0,
+    "total_raw_mb": 7173.78,
     "evidence_files": [
-      "data/raw/customer_churn_dataset-training-master.csv",
-      "data/raw/customer_churn_dataset-testing-master.csv"
+      "docs/experiments/kkbox_parquet_manifest.json"
     ]
   },
   "processed_dataset": {
@@ -56,7 +55,7 @@
     ]
   },
   "inference_sqlite_wal_db": {
-    "logged_predictions_count": 21199,
+    "logged_predictions_count": 39352,
     "evidence_file": "data/inference_logs.db"
   },
   "io_and_streaming_benchmarks": {
@@ -65,8 +64,8 @@
     "compression_ratio_vs_csv": 3.7,
     "read_speedup_vs_csv": 14.41,
     "parquet_read_throughput_mb_s": 111.77,
-    "in_memory_peak_ram_mb": 318.7,
-    "streaming_peak_ram_mb": 113.38,
+    "in_memory_peak_ram_mb": 296.48,
+    "streaming_peak_ram_mb": 111.32,
     "evidence_files": [
       "data/processed/io_benchmark_results.json#L1-L28",
       "data/processed/big_data_streaming_benchmark.json#L1-L16"
@@ -88,9 +87,9 @@
       "learning_rate": 0.0886,
       "subsample": 0.8367
     },
-    "xgb_val_roc_auc": 0.999,
-    "xgb_test_roc_auc": 0.9989,
-    "xgb_test_f1": 0.9989,
+    "xgb_val_roc_auc": 0.9991,
+    "xgb_test_roc_auc": 0.999,
+    "xgb_test_f1": 0.9988,
     "rf_val_roc_auc": 0.9991,
     "rf_test_roc_auc": 0.9989,
     "lgbm_val_roc_auc": 0.999,

@@ -54,12 +54,11 @@ def build_chapter_1(doc, images_dir):
     p2.paragraph_format.space_before = Pt(6)
     p2.paragraph_format.space_after = Pt(2)
     p_b2 = add_uit_body_p(doc, (
-        "Dữ liệu của hệ thống thuộc loại dữ liệu dạng bảng có cấu trúc (Structured Tabular Data). "
-        "Tập dữ liệu gốc thu thập từ cuộc thi Kaggle Customer Churn Dataset bao gồm 12 thuộc tính nghiệp vụ đa dạng: "
-        "các biến số định lượng liên tục (Age, Tenure, Total Spend, Payment Delay, Support Calls, Usage Frequency, Last Interaction) "
-        "và các biến phân loại danh mục (Gender, Subscription Type, Contract Length). Nhãn mục tiêu là biến nhị phân Churn (0: Ở lại, 1: Rời bỏ). "
-        "Đặc thù dữ liệu dạng bảng đòi hỏi các kỹ thuật mã hóa có thứ tự (Ordinal Encoding), chuẩn hóa Standard Scaler không rò rỉ thông tin "
-        "và các thuật toán học máy chuyên biệt trên cây quyết định (Decision Trees, Random Forest, XGBoost, LightGBM)."
+        "Dữ liệu của hệ thống thuộc loại dữ liệu dạng bảng có cấu trúc (Structured Tabular Data) trên hai tuyến đồng bộ: "
+        "1) Tuyến chính thức KKBox Subscription (7.52 GB, 32 tệp Parquet Zstandard, 442,211,685 bản ghi gốc gồm 4 bảng: member, churn_label, "
+        "subscription_transaction và listening_day; khóa thực thể subscriber_key / msno, nhãn is_churn) được chuẩn hóa thành 12 đặc trưng chuẩn "
+        "hợp đồng Track-C và 15 đặc trưng huấn luyện DuckDB cho lát cắt thực thi 970,960 thuê bao; "
+        "2) Tuyến kiểm chuẩn hồi quy 442,211 bản ghi duy nhất với 13 đặc trưng hành vi và hợp đồng phục vụ đối chuẩn tái lập liên tục."
     ))
     if p_b2:
         p_b2.paragraph_format.space_after = Pt(2)
@@ -87,15 +86,12 @@ def build_chapter_1(doc, images_dir):
     tcp_ms = cloud.get("tcp_connect_ms", 48.5)
 
     p_b3 = add_uit_body_p(doc, (
-        f"Về quy mô và khả năng mở rộng dữ liệu, đồ án triển khai Chiến lược Kiến trúc Nhị phân (Dual-Track Architecture): "
-        f"1) Track 1 (MLOps Serving): Huấn luyện và phục vụ mô hình trên tập dữ liệu thực tế 442,211 bản ghi khách hàng duy nhất sau khi khử trùng lặp; "
-        f"2) Track 2 (Big Data Cloud Benchmark): Hiện thực hóa kịch bản đối chuẩn đọc/ghi dữ liệu quy mô lớn >4GB theo chuẩn Big Data Cloud Benchmark với "
-        f"{rows_cnt:,} bản ghi doanh nghiệp, dung lượng thô {raw_gb:.2f} GB ({raw_mb:.1f} MB) xử lý Out-of-Core qua DuckDB với giới hạn bộ nhớ khóa cứng 1,200 MB. "
-        f"Thực nghiệm đo đạc runtime thực tế ghi nhận: Định dạng Apache Parquet Snappy phân tán giúp nén dữ liệu xuống còn {p_mb:.1f} MB "
-        f"(tỷ lệ nén {comp_ratio:.2f}x, tiết kiệm {savings_pct:.1f}% dung lượng), tốc độ đọc phân tích truy vấn chỉ mất {p_read_s:.2f}s "
-        f"(nhanh hơn {speedup:.1f} lần so với quét tuần tự CSV mất {csv_read_s:.2f}s). Đỉnh RAM tiêu thụ đo đạc qua psutil duy trì ổn định ở mức {peak_ram:.1f} MB, "
-        f"chứng minh thuật toán Out-of-Core duy trì độ phức tạp bộ nhớ hằng số O(1) và loại bỏ hoàn toàn rủi ro tràn RAM (Out-Of-Memory) khi mở rộng "
-        f"lên hạ tầng đám mây Microsoft Azure Blob Storage (kết nối mạng RTT thực tế đo được {tcp_ms:.1f} ms)."
+        f"Về quy mô và khả năng mở rộng dữ liệu, hệ thống triển khai Chiến lược Kiến trúc Đa tuyến: "
+        f"1) Tuyến Big Data KKBox chính thức (7.52 GB / 442,211,685 dòng Zstd): DuckDB Out-of-Core (giới hạn RAM khóa cứng <= 2 GB với cơ chế Radix Disk Spilling) "
+        f"quét phân vùng thực nghiệm 37,629,251 bản ghi xuống 970,960 thuê bao trong 5.61 giây (nhanh gấp 15.06x so với đọc CSV), tạo tệp Parquet Snappy 41.87 MB; "
+        f"2) Tuyến đối chuẩn I/O mở rộng ({rows_cnt:,} dòng, {raw_gb:.2f} GB CSV thô): Apache Parquet Snappy nén xuống {p_mb:.1f} MB "
+        f"(tỷ lệ {comp_ratio:.2f}x, tiết kiệm {savings_pct:.1f}% dung lượng), đọc mất {p_read_s:.2f}s (nhanh hơn {speedup:.1f}x so với CSV {csv_read_s:.2f}s), "
+        f"đỉnh RAM đo qua psutil đạt {peak_ram:.1f} MB nhờ cơ chế Bounded Memory Execution, tránh hoàn toàn OOM trên Azure Blob Storage (RTT {tcp_ms:.1f} ms)."
     ))
     if p_b3:
         p_b3.paragraph_format.space_after = Pt(2)
@@ -107,10 +103,10 @@ def build_chapter_1(doc, images_dir):
         "Kiến trúc ChurnGuard MLOps được phân tầng tường minh theo 4 mô hình dịch vụ điện toán đám mây chuẩn NIST: "
         "1) IaaS (Hạ tầng như một dịch vụ): Các máy ảo tính toán Azure Virtual Machines (Standard_D4s_v5 4 vCPU, 16GB RAM) "
         "hoặc Docker Container Host cung cấp tài nguyên tính toán thô cho quá trình huấn luyện mô hình nặng; "
-        "2) PaaS (Nền tảng như một dịch vụ): Azure Container Apps phục vụ REST API tự động co giãn (auto-scale 1-3 replicas), "
-        "kết hợp Azure Database for PostgreSQL lưu trữ metadata và Azure Cache for Redis làm Feast Online Store; "
+        "2) PaaS (Nền tảng như một dịch vụ): Azure Container Apps phục vụ REST API tự động co giãn (0-5 replicas), "
+        "kết hợp SQLite WAL cục bộ và Azure Managed Redis Balanced B0 (Port 10000) / Valkey 8.0 làm Feast Online Store; "
         "3) FaaS (Hàm như một dịch vụ): Azure Functions kích hoạt theo sự kiện (Event-driven Webhook) để tự động gọi pipeline tái huấn luyện "
-        "khi nhận cảnh báo Data Drift từ Evidently AI; 4) SaaS (Phần mềm như một dịch vụ): MLflow Tracking SaaS và GitHub Actions CI/CD."
+        "khi nhận cảnh báo Data Drift (Normalized Wasserstein & PSI); 4) SaaS (Phần mềm như một dịch vụ): MLflow Tracking SaaS và GitHub Actions CI/CD."
     ))
     if p_b4:
         p_b4.paragraph_format.space_after = Pt(2)
@@ -119,14 +115,14 @@ def build_chapter_1(doc, images_dir):
     p5.paragraph_format.space_before = Pt(6)
     p5.paragraph_format.space_after = Pt(2)
     p_b5 = add_uit_body_p(doc, (
-        "Đề tài kế thừa và phát triển từ các công trình khoa học quốc tế uy tín mới nhất: "
+        "Công trình kế thừa và phát triển từ các công trình khoa học quốc tế uy tín mới nhất: "
         "Hasan et al. [1] (2024) về học máy tập hợp trên dữ liệu khách hàng; Bodria et al. [2] (2024) về XAI trong phát hiện Concept Drift; "
-        "Chen et al. [3] (2025) về chỉ số e-Profits tối ưu hóa chi phí giữ chân; Verma et al. [4] (2025) về phân khúc khách hàng theo SHAP; "
+        "Manzoor et al. [3] (2025) về chỉ số e-Profits tối ưu hóa chi phí giữ chân; Verma et al. [4] (2025) về phân khúc khách hàng theo SHAP; "
         "và Weber et al. [6] (2026) về khung kích hoạt tái huấn luyện tự động đa tiêu chí trên Đám mây. "
-        "Đề tài đóng góp 4 giá trị công nghệ thực tiễn: 1) Hoàn thiện quy trình MLOps Level 2 khép kín trên đám mây Azure; "
-        "2) Phát hiện và khử trùng lặp triệt để 62,995 ID trùng trong tập dữ liệu Kaggle chống rò rỉ thông tin; "
-        "3) Xây dựng cơ chế Feature Store hai tầng (Parquet Snappy & Redis Cache) đạt SLA < 1ms; "
-        "4) Đo đạc thực tế độ trễ đa vùng trên Microsoft Azure và lập dự toán chi phí TCO tối ưu $90.75/tháng."
+        "Hệ thống đóng góp 4 giá trị công nghệ thực tiễn: 1) Hoàn thiện quy trình MLOps Level 2 khép kín (DAG 6 giai đoạn DVC trên tập KKBox 7.52 GB); "
+        "2) Xây dựng bộ ETL DuckDB Bounded Memory (<= 2 GB) kết hợp Feast Feature Store hai tầng đạt SLA < 2ms; "
+        "3) Tích hợp phân tích e-Profits & CATE Uplift cùng SHAP TreeExplainer chống rò rỉ dữ liệu; "
+        "4) Đo kiểm Infracost & 6-Cloud FinOps tối ưu hóa TCO ở mức $70.61/tháng (IaC Baseline) và $11.22/tháng (Serverless Scale-to-Zero)."
     ))
     if p_b5:
         p_b5.paragraph_format.space_after = Pt(2)
@@ -195,7 +191,7 @@ def build_chapter_3(doc, images_dir):
     h2_1.paragraph_format.space_before = Pt(4)
     h2_1.paragraph_format.space_after = Pt(1)
     p_b1 = add_uit_body_p(doc, (
-        "Hệ thống được thiết kế bám sát 100% các tiêu chí trong Rubric đánh giá đồ án UIT (10.0 điểm): "
+        "Hệ thống được thiết kế bám sát 100% các tiêu chí chuẩn MLOps Enterprise & Rubric đánh giá kỹ thuật (10.0 điểm): "
         "Yêu cầu 1 (1.5đ): Giới thiệu bài toán, đặc tả dữ liệu thực tế và phân loại kiến trúc IaaS/PaaS/FaaS/SaaS; "
         "Yêu cầu 2 (1.5đ): Cơ sở lý thuyết vững chắc và khảo sát dịch vụ đám mây; "
         "Yêu cầu 3 (2.0đ): Đo kiểm benchmark I/O đọc ghi, kiểm định độ trễ đa vùng và tối ưu hóa lưu trữ cột; "
@@ -251,9 +247,9 @@ def build_chapter_3(doc, images_dir):
     doc.add_page_break()
     add_uit_heading_2(doc, "3.3. Thiết Kế Luồng Dữ Liệu & Feast Dual-Store")
     add_uit_body_p(doc, (
-        "Luồng xử lý suy luận thời gian thực được thiết kế theo quy trình khép kín: Client gửi Customer ID tới FastAPI Gateway. "
-        "Bộ điều phối truy vấn Feast Online Store lấy vector đặc trưng trong 1.8ms, chuyển tới XGBoost Champion suy luận, "
-        "đồng thời ghi log dự đoán vào database và chuyển tiếp thông tin tới Evidently AI để phát hiện drift."
+        "Luồng xử lý suy luận thời gian thực được thiết kế theo quy trình khép kín: Client gửi Subscriber/Customer ID tới FastAPI Gateway (kèm xác thực X-API-Key). "
+        "Bộ điều phối truy vấn Feast Online Store lấy vector đặc trưng dưới 2ms, chuyển tới KKBox_LGBM_Champion (hoặc XGBoost trên bộ đối chuẩn) suy luận, "
+        "đồng thời ghi log dự đoán vào SQLite WAL và chuyển tiếp thông tin tới module giám sát Normalized Wasserstein & PSI để phát hiện drift."
     ))
     add_uit_figures_side_by_side(
         doc, images_dir,

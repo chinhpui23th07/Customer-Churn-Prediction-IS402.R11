@@ -64,6 +64,7 @@ def test_train_helper_metrics_pr_curve_and_f1_threshold() -> None:
     m = train.metrics(y, probs, thresh)
     assert m["roc_auc"] == 1.0
     assert m["pr_auc"] == 1.0
+    assert m["brier_score"] == pytest.approx(0.049167, abs=1e-5)
     assert m["f1"] == 1.0
     assert m["confusion_matrix"] == [[3, 0], [0, 3]]
 
@@ -184,6 +185,12 @@ def test_train_pilot_end_to_end_pipeline_and_mlflow_logging(
     assert report["train_rows"] + report["validation_rows"] == 160
     assert report["test_rows"] == 120
     assert set(report["candidate_validation"].keys()) == {"logistic_regression", "xgboost"}
+    for candidate in ("logistic_regression", "xgboost"):
+        cand_metrics = report["candidate_validation"][candidate]
+        assert "brier_score" in cand_metrics
+        assert 0.0 <= cand_metrics["brier_score"] <= 1.0
+    assert "brier_score" in report["test"]
+    assert 0.0 <= report["test"]["brier_score"] <= 1.0
     assert report["warning"] is not None
 
     # Verify deterministic blake2b validation split count

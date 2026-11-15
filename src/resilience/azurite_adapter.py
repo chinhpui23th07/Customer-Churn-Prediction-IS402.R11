@@ -74,17 +74,31 @@ class AzuriteStorageAdapter:
 
         target_conn = connection_string if connection_string is not None else DEFAULT_AZURITE_CONN
         if not force_fallback:
-            try:
-                from azure.storage.blob import BlobServiceClient
-                client = BlobServiceClient.from_connection_string(
-                    target_conn, connection_verify=False
-                )
-                client.get_account_information()
-                self._live_client = client
-                self._is_using_fallback = False
-                logger.info("Connected to live Azure/Azurite endpoint on port 10000.")
-            except Exception as exc:
-                logger.warning("Live Azure/Azurite unavailable (%s). Using in-memory fallback.", exc)
+            is_endpoint_alive = False
+            if "127.0.0.1:10000" in target_conn or "localhost:10000" in target_conn or "UseDevelopmentStorage=true" in target_conn:
+                import socket
+                try:
+                    with socket.create_connection(("127.0.0.1", 10000), timeout=0.1):
+                        is_endpoint_alive = True
+                except (OSError, socket.timeout):
+                    is_endpoint_alive = False
+            else:
+                is_endpoint_alive = True
+
+            if is_endpoint_alive:
+                try:
+                    from azure.storage.blob import BlobServiceClient
+                    client = BlobServiceClient.from_connection_string(
+                        target_conn, connection_verify=False
+                    )
+                    client.get_account_information(connection_timeout=1, read_timeout=1)
+                    self._live_client = client
+                    self._is_using_fallback = False
+                    logger.info("Connected to live Azure/Azurite endpoint on port 10000.")
+                except Exception as exc:
+                    logger.warning("Live Azure/Azurite unavailable (%s). Using in-memory fallback.", exc)
+                    self._is_using_fallback = True
+            else:
                 self._is_using_fallback = True
         else:
             self._is_using_fallback = True
@@ -168,3 +182,39 @@ class AzuriteStorageAdapter:
             "is_using_fallback": self._is_using_fallback,
             "live_available": self.is_live_service_available(),
         }
+
+
+def get_azurite_docker_command(
+    host: str = "0.0.0.0",
+    blob_port: int = 10000,
+    skip_api_version_check: bool = True,
+) -> List[str]:
+    """Generate command line for running Azurite with official Microsoft WAF best practices.
+
+    Includes --skipApiVersionCheck to negotiate modern Azure client SDK API versions (e.g. 2024-08-04)
+    and avoid HTTP 400 rejects described in the Azure testing specification.
+    """
+    cmd = [
+        "docker",
+        "run",
+        "-d",
+        "-p",
+        f"{blob_port}:10000",
+        "mcr.microsoft.com/azure-storage/azurite:latest",
+        "azurite-blob",
+        "--blobHost",
+        host,
+    ]
+    if skip_api_version_check:
+        cmd.append("--skipApiVersionCheck")
+    return cmd
+
+
+def configure_azurite_testcontainer(container: Any, skip_api_version_check: bool = True) -> Any:
+    """Configure Testcontainers Azurite instance with API version negotiation."""
+    command = "azurite-blob --blobHost 0.0.0.0"
+    if skip_api_version_check:
+        command += " --skipApiVersionCheck"
+    if hasattr(container, "with_command"):
+        return container.with_command(command)
+    return container

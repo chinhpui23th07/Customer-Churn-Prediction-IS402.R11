@@ -40,6 +40,7 @@ class Bulkhead:
 
         self._semaphore = threading.BoundedSemaphore(self.max_concurrent_calls)
         self._async_semaphore: asyncio.Semaphore | None = None
+        self._async_semaphore_loop: Any = None
         self._lock = threading.Lock()
         self._active_calls = 0
         self._total_calls = 0
@@ -79,6 +80,17 @@ class Bulkhead:
         with self._lock:
             self._active_calls = max(0, self._active_calls - 1)
 
+    def _get_async_semaphore(self) -> asyncio.Semaphore:
+        with self._lock:
+            try:
+                current_loop = asyncio.get_running_loop()
+            except RuntimeError:
+                current_loop = None
+            if self._async_semaphore is None or self._async_semaphore_loop != current_loop:
+                self._async_semaphore = asyncio.Semaphore(self.max_concurrent_calls)
+                self._async_semaphore_loop = current_loop
+            return self._async_semaphore
+
     def __enter__(self) -> Bulkhead:
         if not self.acquire():
             raise BulkheadFullException(self.name, self.max_concurrent_calls)
@@ -90,13 +102,25 @@ class Bulkhead:
     async def __aenter__(self) -> Bulkhead:
         with self._lock:
             self._total_calls += 1
-            if self._active_calls >= self.max_concurrent_calls:
+        sem = self._get_async_semaphore()
+        try:
+            if self.max_wait_duration > 0:
+                await asyncio.wait_for(sem.acquire(), timeout=self.max_wait_duration)
+            else:
+                if sem.locked():
+                    raise asyncio.TimeoutError()
+                await sem.acquire()
+        except (asyncio.TimeoutError, TimeoutError):
+            with self._lock:
                 self._rejected_calls += 1
-                raise BulkheadFullException(self.name, self.max_concurrent_calls)
+            raise BulkheadFullException(self.name, self.max_concurrent_calls)
+        with self._lock:
             self._active_calls += 1
         return self
 
     async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        sem = self._get_async_semaphore()
+        sem.release()
         with self._lock:
             self._active_calls = max(0, self._active_calls - 1)
 
@@ -124,6 +148,16 @@ class Bulkhead:
         def sync_wrapper(*args: Any, **kwargs: Any) -> Any:
             return self.execute(func, *args, **kwargs)
         return sync_wrapper
+
+    def reset(self) -> None:
+        """Reset internal metrics and semaphores."""
+        with self._lock:
+            self._active_calls = 0
+            self._total_calls = 0
+            self._rejected_calls = 0
+            self._semaphore = threading.BoundedSemaphore(self.max_concurrent_calls)
+            self._async_semaphore = None
+            self._async_semaphore_loop = None
 
     def get_metrics(self) -> Dict[str, Any]:
         """Return diagnostic metrics snapshot."""

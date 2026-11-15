@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#08101e">
   <meta name="description" content="Demo dự đoán churn KKBox theo hai mốc dữ liệu lịch sử năm 2017">
-  <title>KKBox Signal Lab — Customer Churn</title>
+  <title>KKBox Signal Lab - Customer Churn</title>
   <link rel="icon" href="/demo/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/demo/assets/style.css">
   <script src="/demo/assets/app.js" defer></script>
@@ -13,7 +13,7 @@
 <body>
   <div class="page-shell">
     <header class="site-header" id="top">
-      <a class="brand" href="#top" aria-label="Signal Lab — về đầu trang">
+      <a class="brand" href="#top" aria-label="Signal Lab - về đầu trang">
         <span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <span><strong>SIGNAL<span>LAB</span></strong><small>KKBOX / CHURN INTELLIGENCE</small></span>
       </a>
@@ -43,7 +43,7 @@
       </section>
 
       <section class="source-strip" aria-label="Quy mô nguồn theo manifest">
-        <div class="source-intro"><span class="kicker">DATASET / FULL RUN</span><strong>Quy mô nguồn</strong><small>Đã xử lý đủ 32 file trên Azure VM; kiểm chứng qua ETL audit.</small></div>
+        <div class="source-intro"><span class="kicker">DATASET / MANIFEST &amp; LOCAL REPLAY</span><strong>Quy mô nguồn &amp; lát cắt kiểm chứng</strong><small>Manifest gồm 32 file Parquet (7,52 GB; 442.211.685 dòng); thực nghiệm cục bộ DuckDB xử lý lát cắt 37.629.251 dòng nguồn -&gt; 970.960 thực thể, kèm mô hình pilot serving.</small></div>
         <div class="stat"><strong>32</strong><span>file Parquet</span></div>
         <div class="stat"><strong>7,52 <small>GB</small></strong><span>dung lượng nguồn</span></div>
         <div class="stat"><strong>12</strong><span>feature thiết kế</span></div>
@@ -74,7 +74,7 @@
             </form>
             <form id="prediction-form" class="mode-form" novalidate>
             <div class="field"><label for="subscriber-key">Subscriber key <b>*</b></label><p>Khóa khách hàng 64 bit; giữ nguyên dạng chuỗi số.</p><input id="subscriber-key" name="subscriber_key" type="text" inputmode="numeric" pattern="0|[1-9][0-9]*" maxlength="20" required autocomplete="off" spellcheck="false" placeholder="Nhập mã khách hàng hợp lệ"></div>
-            <div class="field"><label for="as-of-date">Ngày chốt đặc trưng <b>*</b></label><p>Chỉ dùng thông tin đã biết đến ngày chốt.</p><select id="as-of-date" name="as_of_date"><option value="2017-02-28">28/02/2017 — nhãn tháng 03</option><option value="2017-01-31">31/01/2017 — nhãn tháng 02</option></select></div>
+            <div class="field"><label for="as-of-date">Ngày chốt đặc trưng <b>*</b></label><p>Chỉ dùng thông tin đã biết đến ngày chốt.</p><select id="as-of-date" name="as_of_date"><option value="2017-02-28">28/02/2017 - nhãn tháng 03</option><option value="2017-01-31">31/01/2017 - nhãn tháng 02</option></select></div>
             <button id="submit-button" class="submit-button" type="submit"><span>Chạy dự đoán</span><span aria-hidden="true">↗</span></button>
             <div class="form-foot"><span>POST /v1/features + /v1/predictions</span><span>FEAST ONLINE</span></div>
             </form>
@@ -84,9 +84,9 @@
             <div class="panel-head"><span class="kicker">OUTPUT / 02</span><span class="result-state" id="result-state">ĐANG CHỜ DỮ LIỆU</span></div>
             <div id="result-empty" class="result-empty"><div class="empty-orbit" aria-hidden="true">◎</div><h3>Kết quả sẽ xuất hiện tại đây</h3><p>Gửi subscriber key và chọn ngày chốt để xem xác suất churn, mức rủi ro và model version.</p><div class="empty-flow">01 INPUT <span>→</span> 02 FEATURES <span>→</span> 03 PREDICTION</div></div>
             <div id="result-data" class="result-data" hidden>
-              <div class="result-summary"><div class="score-ring" id="score-ring"><div><strong id="score-value">—</strong><span>CHURN PROBABILITY</span></div></div><div class="prediction-copy"><small>MODEL OUTPUT</small><strong id="prediction-label">—</strong><span class="risk-badge" id="risk-badge">—</span></div></div>
+              <div class="result-summary"><div class="score-ring" id="score-ring"><div><strong id="score-value">-</strong><span>CHURN PROBABILITY</span></div></div><div class="prediction-copy"><small>MODEL OUTPUT</small><strong id="prediction-label">-</strong><span class="risk-badge" id="risk-badge">-</span></div></div>
               <div class="result-meter"><div><span>0% · TIẾP TỤC</span><span>100% · RỜI BỎ</span></div><div class="meter-track"><span id="meter-fill"></span></div></div>
-              <dl class="result-details"><div><dt>Ngày chốt</dt><dd id="result-cutoff">—</dd></div><div><dt>Model version</dt><dd id="result-model">—</dd></div><div><dt>Feature version</dt><dd id="result-feature">—</dd></div><div><dt>Chế độ</dt><dd id="result-mode">Phát lại lịch sử</dd></div></dl>
+              <dl class="result-details"><div><dt>Ngày chốt</dt><dd id="result-cutoff">-</dd></div><div><dt>Model version</dt><dd id="result-model">-</dd></div><div><dt>Feature version</dt><dd id="result-feature">-</dd></div><div><dt>Chế độ</dt><dd id="result-mode">Phát lại lịch sử</dd></div></dl>
               <p class="disclaimer" id="result-disclaimer">Xác suất của mô hình tại cutoff đã chọn; không phải nhãn churn thật hoặc cam kết khách hàng sẽ rời bỏ.</p>
             </div>
             <div id="feature-output" class="feature-output" hidden></div>

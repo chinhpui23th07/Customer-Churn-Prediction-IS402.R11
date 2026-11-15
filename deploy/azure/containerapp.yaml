@@ -5,8 +5,13 @@ type: Microsoft.App/containerApps
 location: southeastasia
 properties:
   environmentId: /subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/rg-churnguard-mlops-sea/providers/Microsoft.App/managedEnvironments/env-churnguard-mlops
+  identity:
+    type: SystemAssigned
   configuration:
     activeRevisionsMode: Single
+    registries:
+      - server: ${acrName}.azurecr.io
+        identity: system
     ingress:
       external: true
       targetPort: 8000
@@ -30,6 +35,8 @@ properties:
           cpu: 1.0
           memory: 2.0Gi
         env:
+          - name: APP_ENV
+            value: "production"
           - name: API_KEY
             secretRef: api-key-secret
           - name: MLFLOW_TRACKING_URI
@@ -39,7 +46,7 @@ properties:
           - name: REDIS_HOST
             value: "${AZURE_REDIS_HOST}"
           - name: REDIS_PORT
-            value: "6380"
+            value: "10000"
           - name: REDIS_SSL
             value: "true"
           - name: AZURE_REDIS_PASSWORD

@@ -261,3 +261,49 @@ def test_testcontainers_live_container() -> None:
     except Exception as exc:
         pytest.skip(f"Testcontainers container runtime unavailable or restricted in CI: {exc}")
 
+
+@pytest.mark.asyncio
+async def test_bulkhead_async_semaphore_wait_and_timeout() -> None:
+    """Test async bulkhead waits up to max_wait_duration before rejecting."""
+    import asyncio
+    bulkhead = Bulkhead(name="async_test_bulkhead", max_concurrent_calls=1, max_wait_duration=0.08)
+
+    async def _holding_task():
+        async with bulkhead:
+            await asyncio.sleep(0.03)
+            return "done"
+
+    res1, res2 = await asyncio.gather(_holding_task(), _holding_task())
+    assert res1 == "done"
+    assert res2 == "done"
+
+    async def _long_task():
+        async with bulkhead:
+            await asyncio.sleep(0.15)
+            return "long_done"
+
+    async def _timeout_task():
+        await asyncio.sleep(0.01)
+        async with bulkhead:
+            return "never"
+
+    with pytest.raises(BulkheadFullException):
+        await asyncio.gather(_long_task(), _timeout_task())
+
+    # Verify reset clears metrics and semaphores
+    bulkhead.reset()
+    assert bulkhead.active_calls == 0
+    assert bulkhead.available_permits == 1
+
+    # Verify loop migration: executing in a separate thread and event loop
+    def _run_in_new_loop():
+        async def _quick():
+            async with bulkhead:
+                return "migrated"
+        return asyncio.run(_quick())
+
+    import concurrent.futures
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        assert executor.submit(_run_in_new_loop).result() == "migrated"
+
+

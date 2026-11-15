@@ -1,8 +1,8 @@
 # ĐẶC TẢ KIẾN TRÚC HỆ THỐNG MLOPS DỰ ĐOÁN KHÁCH HÀNG RỜI BỎ (CHURNGUARD SPECIFICATION)
 
 > **Mô hình kiến trúc:** MLOps Level 2 (Continuous Training & Automated Model Deployment)  
-> **Bài toán:** Phân loại nhị phân dự đoán khả năng khách hàng rời bỏ dịch vụ viễn thông & tính toán giá trị rủi ro vòng đời (CLV)  
-> **Tập dữ liệu chuẩn:** Kaggle Telecommunications Customer Churn Dataset (442,211 thực thể duy nhất sau khử trùng lặp)  
+> **Bài toán:** Phân loại nhị phân dự đoán khả năng khách hàng rời bỏ dịch vụ âm nhạc số KKBox & tối ưu hóa chiến dịch giữ chân  
+> **Tập dữ liệu chuẩn:** KKBox Customer Churn Big Data Dataset (7.52 GB, 442,211,685 bản ghi trên 32 tệp Parquet Zstandard)  
 
 ---
 
@@ -11,11 +11,11 @@
 ![Sơ đồ tổng quan kiến trúc hệ thống MLOps](../images/bt11_tong_quan_kien_truc.png)
 
 Hệ thống được tổ chức thành 5 phân hệ cốt lõi:
-1. **Data Pipeline & Versioning:** Thu thập, khử trùng lặp, tiền xử lý streaming $O(1)$ RAM và quản lý phiên bản dữ liệu bằng DVC kết nối Azure Blob Storage.
-2. **Feature Store:** Feast Dual-Store kết nối Offline Parquet Store và Online Low-Latency Store (SQLite / Azure Cache for Redis C0 SSL 6380).
-3. **Model Lifecycle & Registry:** Tinh chỉnh siêu tham số Bayesian TPE (Optuna), huấn luyện tổ hợp 4 mô hình, theo dõi thực nghiệm và quản lý phiên bản với MLflow Model Registry.
-4. **Model Serving & Explainability:** FastAPI REST API serving độ trễ $< 1$ms, giải thích thuộc tính SHAP bảo toàn tính cộng tính địa phương ($f(x) = \phi_0 + \sum \phi_i$), khuyến nghị giữ chân tối ưu hóa lợi nhuận kỳ vọng ($e\text{-Profits}$), định tuyến A/B testing và cơ chế Hot-Reload an toàn luồng với `MODEL_LOCK`.
-5. **Continuous Monitoring & Drift Retraining:** Giám sát trôi dạt dữ liệu bằng chỉ số Population Stability Index (PSI) và kiểm định Kolmogorov-Smirnov 2 mẫu hiệu chỉnh Bonferroni, tự động kích hoạt tái huấn luyện khi `drift_share >= 0.30`.
+1. **Data Pipeline & Versioning:** Thu thập, khử trùng lặp, tiền xử lý streaming Bounded Memory (<= 2 GB) và quản lý phiên bản dữ liệu bằng DVC kết nối Azure Blob Storage.
+2. **Feature Store:** Feast Dual-Store kết nối Offline Parquet Store và Online Low-Latency Store (SQLite / Azure Managed Redis Balanced B0 TLS 10000).
+3. **Model Lifecycle & Registry:** Tinh chỉnh siêu tham số Bayesian TPE (Optuna), huấn luyện tổ hợp các mô hình, theo dõi thực nghiệm và quản lý phiên bản với MLflow Model Registry.
+4. **Model Serving & Explainability:** FastAPI REST API serving độ trễ $< 1$ms, bảo vệ bằng Circuit Breaker và cơ chế Fallback graceful degradation, định tuyến A/B testing và cơ chế Hot-Reload an toàn luồng với phân quyền Admin Key.
+5. **Continuous Monitoring & Drift Retraining:** Giám sát trôi dạt dữ liệu bằng chỉ số Population Stability Index (PSI) và kiểm định Wasserstein / Kolmogorov-Smirnov, tự động kích hoạt cảnh báo drift.
 
 ---
 
@@ -23,12 +23,12 @@ Hệ thống được tổ chức thành 5 phân hệ cốt lõi:
 
 ![Sơ đồ Tracking data version sử dụng DVC](../images/bt11_data_versioning_dvc.png)
 
-- **Thu thập dữ liệu thô:** Tải dữ liệu từ kho lưu trữ mở Kaggle (`customer_churn_dataset-training-master.csv` 22.36 MB và `customer_churn_dataset-testing-master.csv` 3.13 MB).
-- **Khử trùng lặp thực thể (`customerid`):** Đảm bảo mỗi khách hàng chỉ xuất hiện duy nhất 1 lần xuyên suốt toàn bộ tập dữ liệu (tổng 442,211 khách hàng duy nhất).
-- **Phân chia tập dữ liệu:** Tách tập Stratified 70% Train (309,547 bản ghi), 15% Validation (66,332 bản ghi), và 15% Test (66,332 bản ghi) bảo toàn phân phối nhãn.
-- **Tính toán trung vị chống rò rỉ (`train_medians`):** Tính toán giá trị trung vị cho 7 thuộc tính số chỉ trên tập Train và áp dụng nhất quán cho Validation và Test để chống hiện tượng Pre-split Data Snooping.
-- **Lưu trữ cột tối ưu:** Chuyển đổi toàn bộ sang định dạng Apache Parquet Snappy, đạt tỷ lệ nén 3.7x và tốc độ đọc 111.77 MB/s (nhanh gấp 14.41x so với CSV).
-- **Theo dõi DVC:** Quản trị toàn bộ đồ thị DAG 9 giai đoạn trong `dvc.yaml` với remote storage Azure Blob Container `churnguard-datasets`.
+- **Thu thập dữ liệu thô:** Tải tập dữ liệu lớn KKBox từ Hugging Face Hub (`vaibhavkhurana/subscriber-retention-intelligence`) gồm 32 tệp Parquet Zstandard (7.52 GB, 442,211,685 dòng).
+- **Khử trùng lặp thực thể (`msno` / `subscriber_key`):** Đảm bảo tính nhất quán thực thể xuyên suốt 4 bảng quan hệ lớn (`member`, `subscription_transaction`, `listening_day`, `churn_label`).
+- **Phân chia tập dữ liệu:** Tách 2 Rolling Windows (Window 2017-02 cho Train & Validation 80/20 Blake2b, Window 2017-03 cho Out-of-time Test Cohort) bảo toàn phân phối nhãn và chống rò rỉ thời gian.
+- **Tính toán đặc trưng chống rò rỉ:** Giới hạn dữ liệu lịch sử nghiêm ngặt theo mốc cutoff date (`activity_date <= cutoff` & `transaction_date <= cutoff`).
+- **Lưu trữ cột tối ưu:** Lưu trữ toàn bộ dưới định dạng Apache Parquet Snappy/Zstandard, đạt tỷ lệ nén 3.7x và thông lượng DuckDB Out-of-Core 1.77M rows/s.
+- **Theo dõi DVC:** Quản trị toàn bộ đồ thị DAG 6 giai đoạn KKBox trong `dvc.yaml` với remote storage Azure Blob Container `churnguard-datasets`.
 
 ---
 
@@ -40,7 +40,7 @@ Hệ thống được tổ chức thành 5 phân hệ cốt lõi:
 - **Feature View:** Cung cấp 13 đặc trưng cốt lõi (nhân khẩu học, hành vi sử dụng dịch vụ, lịch sử thanh toán, và các chỉ số tỷ lệ phái sinh).
 - **Kho lưu trữ kép (Dual-Store):**
   - **Offline Store:** Tệp Parquet `churn_features.parquet` phục vụ trích xuất đặc trưng tại điểm thời gian (Point-in-Time Correctness) khi huấn luyện.
-  - **Online Store:** Bảng SQLite `online_store.db` cục bộ hoặc Azure Cache for Redis Basic C0 (cổng SSL 6380) phục vụ truy vấn thời gian thực với độ trễ $< 1$ms.
+  - **Online Store:** Bảng SQLite `online_store.db` cục bộ hoặc Azure Managed Redis Balanced B0 (TLS Port 10000) / Valkey 8.0 phục vụ truy vấn thời gian thực với độ trễ $< 2$ms.
 - **Chống Training-Serving Skew:** Đảm bảo 100% logic trích xuất đặc trưng khớp tuyệt đối giữa luồng tiền xử lý batch và API trực tuyến.
 
 ---
@@ -104,5 +104,5 @@ Hệ thống được tổ chức thành 5 phân hệ cốt lõi:
   - Đóng gói container Docker và kiểm thử tính toàn vẹn.
 - **Cấu hình Hạ tầng Đám mây (Infrastructure-as-Code):**
   - Cung cấp mã nguồn triển khai tự động qua Terraform (`deploy/azure/main.tf`) và Azure Resource Manager (`deploy/azure/arm_template.json`).
-  - Dịch vụ mục tiêu: Azure Container Apps Serverless (1.0 vCPU, 2.0 GiB RAM), Azure Cache for Redis Basic C0 (SSL 6380), Azure Container Registry (ACR), và Azure Blob Storage Hot Tier.
-  - Dự toán FinOps TCO hàng tháng: **$74.67 / tháng** (với ngưỡng cảnh báo ngân sách $100.00 / tháng).
+  - Dịch vụ mục tiêu: Azure Container Apps Serverless (1.0 vCPU, 2.0 GiB RAM), Azure Managed Redis Balanced B0 (TLS Port 10000) / Valkey 8.0, Azure Container Registry (ACR), và Azure Blob Storage Standard_LRS Hot Tier.
+  - Dự toán FinOps TCO hàng tháng: **$70.61 / tháng** (IaC Terraform Baseline; Serverless Scale-to-Zero **$11.22 / tháng** với ngưỡng cảnh báo ngân sách $75.00 / tháng).

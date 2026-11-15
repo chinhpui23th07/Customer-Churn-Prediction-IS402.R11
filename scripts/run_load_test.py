@@ -41,8 +41,7 @@ SAMPLE_PAYLOAD = {
 
 HEADERS = {
     "Content-Type": "application/json",
-    "X-API-Key": os.getenv("API_KEY", "mlops-churn-secret-2026"),
-    "X-Requested-With": "XMLHttpRequest",
+    "X-API-Key": os.getenv("API_KEY", ""),
 }
 
 

@@ -37,7 +37,7 @@ def svg(width: int, height: int, parts: list[str], title: str, pilot: bool) -> s
             rect(0, 0, width, height, "#0d1829"), *parts]
     if pilot:
         body += [rect(0, height - 42, width, 42, "#744239"),
-                 text(20, height - 15, "PILOT / INCOMPLETE SOURCE — NOT FINAL EVIDENCE",
+                 text(20, height - 15, "PILOT / INCOMPLETE SOURCE - NOT FINAL EVIDENCE",
                       14, "#fff2df", 700)]
     return "\n".join([*body, "</svg>", ""])
 
@@ -112,7 +112,7 @@ def figure_drift(report: dict, pilot: bool) -> str:
 
 def figure_pr_curve(report: dict, pilot: bool) -> str:
     curve = report.get("test_pr_curve")
-    parts = [text(40, 55, "PRECISION–RECALL / FINAL TEST THÁNG 03", 20, weight=700),
+    parts = [text(40, 55, "PRECISION-RECALL / FINAL TEST THÁNG 03", 20, weight=700),
              text(40, 83, "Đường hiển thị lấy mẫu tối đa 201 điểm; PR-AUC tính từ toàn bộ dự đoán",
                   12, "#9ab4c5")]
     if curve is None:

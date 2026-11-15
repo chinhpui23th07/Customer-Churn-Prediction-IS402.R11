@@ -279,10 +279,14 @@ def test_feast_backend_duplicate_parquet_and_model_reload(
         json={"subscriber_key": "555", "as_of_date": "2017-02-28"},
     ).status_code == 503
 
-    # 3. Reload endpoint
+    # 3. Reload endpoint with admin key privilege separation
     reload_res = client.post("/v1/model/reload", headers=headers)
     assert reload_res.status_code == 200
     assert reload_res.json() == {"status": "ready", "model_version": "pilot-test"}
+    monkeypatch.setenv("KKBOX_ADMIN_API_KEY", "admin-secret-999")
+    assert client.post("/v1/model/reload", headers=headers).status_code == 401
+    assert client.post("/v1/model/reload", headers={"x-api-key": "admin-secret-999"}).status_code == 200
+    assert client.post("/v1/predictions", headers={"x-api-key": "admin-secret-999"}, json={"subscriber_key": "777", "as_of_date": "2017-02-28"}).status_code == 401
 
 
 def test_security_auth_pilot_gate_and_contract_mismatch_guards(
@@ -334,3 +338,61 @@ def test_security_auth_pilot_gate_and_contract_mismatch_guards(
         headers=headers,
         json={"subscriber_key": MAX_UINT64_STR, "as_of_date": "2017-02-28"},
     ).status_code == 503
+
+
+def test_resilience_circuit_breaker_and_graceful_fallback(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    headers = _setup_pilot_fixture(tmp_path, monkeypatch)
+    client = TestClient(api.app)
+
+    res_status = client.get("/v1/resilience/status")
+    assert res_status.status_code == 200
+    metrics = res_status.json()
+    assert metrics["feature_store"]["state"] == "CLOSED"
+    assert metrics["model_inference"]["state"] == "CLOSED"
+
+    api.feature_circuit_breaker.trip()
+    try:
+        res_fail = client.post(
+            "/v1/predictions",
+            headers=headers,
+            json={"subscriber_key": MAX_UINT64_STR, "as_of_date": "2017-02-28"},
+        )
+        assert res_fail.status_code == 503
+        assert "Circuit breaker open" in res_fail.json()["detail"]
+        assert "application/problem+json" in res_fail.headers.get("content-type", "")
+        api.model_circuit_breaker.trip()
+        res_man_fail = client.post(
+            "/v1/predictions/manual", headers=headers, json={"features": {c: 1.0 for c in FEATURE_COLUMNS}}
+        )
+        assert res_man_fail.status_code == 503
+        assert "application/problem+json" in res_man_fail.headers.get("content-type", "")
+
+        monkeypatch.setenv("KKBOX_ENABLE_FALLBACK", "1")
+        res_fallback = client.post(
+            "/v1/predictions",
+            headers=headers,
+            json={"subscriber_key": MAX_UINT64_STR, "as_of_date": "2017-02-28"},
+        )
+        assert res_fallback.status_code == 200
+        body = res_fallback.json()
+        assert body["churn_probability"] == 0.5
+        assert body["risk_level"] == "medium"
+        assert body["fallback"] is True
+        assert body["subscriber_key"] == MAX_UINT64_STR
+
+        api.model_circuit_breaker.trip()
+        res_man_fallback = client.post(
+            "/v1/predictions/manual",
+            headers=headers,
+            json={"features": {c: 1.0 for c in FEATURE_COLUMNS}},
+        )
+        assert res_man_fallback.status_code == 200
+        man_body = res_man_fallback.json()
+        assert man_body["churn_probability"] == 0.5
+        assert man_body["risk_level"] == "medium"
+        assert man_body["fallback"] is True
+    finally:
+        api.reset_circuit_breakers()
+

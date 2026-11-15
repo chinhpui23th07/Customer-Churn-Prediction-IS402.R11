@@ -55,7 +55,7 @@ def test_tier1_feast_online_feature_lookup():
 
 def test_tier1_trigger_retrain_evaluation():
     """Verify trigger_retrain endpoint evaluates drift without forced override."""
-    response = client.post("/api/v1/trigger_retrain?force=false", headers=AUTH_HEADERS)
+    response = client.post("/api/v1/trigger_retrain?force=false&dry_run=true", headers=AUTH_HEADERS)
     assert response.status_code == 200
     data = response.json()
     assert data["status"] in ["SKIPPED", "TRIGGERED", "ALREADY_RUNNING"]

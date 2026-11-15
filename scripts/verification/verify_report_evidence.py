@@ -33,9 +33,24 @@ def verify_all_evidence() -> dict:
     """Đọc trực tiếp toàn bộ tệp dữ liệu, DB, mô hình và JSON để đối chứng số liệu."""
     raw_train = BASE_DIR / "data" / "raw" / "customer_churn_dataset-training-master.csv"
     raw_test = BASE_DIR / "data" / "raw" / "customer_churn_dataset-testing-master.csv"
-    raw_train_mb = round(raw_train.stat().st_size / (1024 * 1024), 2)
-    raw_test_mb = round(raw_test.stat().st_size / (1024 * 1024), 2)
-    raw_total_mb = round((raw_train.stat().st_size + raw_test.stat().st_size) / (1024 * 1024), 2)
+    manifest_path = BASE_DIR / "docs" / "experiments" / "kkbox_parquet_manifest.json"
+    if raw_train.exists() and raw_test.exists():
+        raw_train_mb = round(raw_train.stat().st_size / (1024 * 1024), 2)
+        raw_test_mb = round(raw_test.stat().st_size / (1024 * 1024), 2)
+        raw_total_mb = round((raw_train.stat().st_size + raw_test.stat().st_size) / (1024 * 1024), 2)
+        raw_evidence_files = [
+            "data/raw/customer_churn_dataset-training-master.csv",
+            "data/raw/customer_churn_dataset-testing-master.csv",
+        ]
+    elif manifest_path.exists():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        kkbox_bytes = int(manifest.get("total_published_parquet_bytes", 0))
+        raw_train_mb = round(kkbox_bytes / (1024 * 1024), 2)
+        raw_test_mb = 0.0
+        raw_total_mb = raw_train_mb
+        raw_evidence_files = ["docs/experiments/kkbox_parquet_manifest.json"]
+    else:
+        raise FileNotFoundError("Neither legacy raw CSVs nor docs/experiments/kkbox_parquet_manifest.json exist")
 
     meta_path = BASE_DIR / "data" / "processed" / "metadata.json"
     meta = json.loads(meta_path.read_text(encoding="utf-8"))
@@ -114,10 +129,10 @@ def verify_all_evidence() -> dict:
 
     summary = {
         "student_info": {
-            "student_name": "Nguyễn Trọng Khôi",
-            "student_id": "23520783",
+            "student_name": "[Để trống / Tác giả bảo mật]",
+            "student_id": "[Để trống / Tác giả bảo mật]",
             "instructor": "ThS. Hà Lê Hoài Trung",
-            "course": "IS402 - Điện toán Đám mây",
+            "course": "Enterprise MLOps & Cloud Computing",
             "evidence_file": "scripts/uit_report_content.py#L25-L32",
         },
         "codebase_line_cap": {
@@ -130,10 +145,7 @@ def verify_all_evidence() -> dict:
             "train_csv_mb": raw_train_mb,
             "test_csv_mb": raw_test_mb,
             "total_raw_mb": raw_total_mb,
-            "evidence_files": [
-                "data/raw/customer_churn_dataset-training-master.csv",
-                "data/raw/customer_churn_dataset-testing-master.csv",
-            ],
+            "evidence_files": raw_evidence_files,
         },
         "processed_dataset": {
             "unique_customers_total": meta["unique_customers_total"],

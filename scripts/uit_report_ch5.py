@@ -107,13 +107,11 @@ def build_chapter_5(doc, images_dir, io_data, lat_data, bias_data):
     bd_ram = bdmem.get("peak_ram_mb", 85.12)
 
     add_uit_body_p(doc, (
-        f"Kết quả thực nghiệm trên Track 1 (Customer Churn 442k bản ghi) chứng minh Parquet Snappy giúp tiết kiệm {pq_sav:.1f}% chi phí lưu trữ trên Cloud Object Storage "
-        f"và tăng tốc độ đọc dữ liệu phục vụ huấn luyện mô hình lên gấp {pq_spd:.2f} lần so với tệp CSV.\n\n"
-        f"Đồng thời, trên Track 2 (Big Data Cloud Benchmark quy mô lớn >4GB theo chuẩn Big Data Cloud Benchmark), hệ thống đã thực nghiệm trên {bd_rows:,} bản ghi "
-        f"({bd_gb:.2f} GB CSV thô). Khi chuyển đổi và truy vấn Out-of-Core qua DuckDB với giới hạn bộ nhớ khóa cứng 1,200 MB, định dạng Parquet Snappy "
-        f"đạt tỷ lệ nén {bd_comp:.2f}x (giảm từ {bd_mb:.1f} MB xuống còn {bd_pmb:.1f} MB, tiết kiệm {bd_saved:.1f}% không gian lưu trữ), thông lượng đọc phân tích đạt {bd_pread:,.1f} MB/s "
-        f"(nhanh hơn {bd_spd:.2f} lần so với quét tuần tự CSV {bd_cread:.1f} MB/s). Đỉnh RAM thực tế ghi nhận qua psutil chỉ {bd_ram:.2f} MB, khẳng định hệ thống duy trì độ phức tạp O(1) "
-        f"và triệt tiêu hoàn toàn rủi ro tràn RAM (Out-Of-Memory) khi vận hành với dữ liệu quy mô lớn trên Microsoft Azure Blob Storage."
+        f"Trên tuyến chính thức KKBox (7.52 GB / 442,211,685 dòng Zstd gốc), DuckDB Out-of-Core quét phân vùng 37,629,251 dòng xuống 970,960 thuê bao "
+        f"trong 5.61 giây (nhanh gấp 15.06x so với đọc CSV), xuất tệp Parquet Snappy 41.87 MB dưới giới hạn Bounded Memory <= 2 GB (Radix Disk Spilling).\n\n"
+        f"Trên bộ đối chuẩn 442k bản ghi (Bảng 5.1), Parquet Snappy tiết kiệm {pq_sav:.1f}% dung lượng và tăng tốc đọc {pq_spd:.2f} lần so với CSV. "
+        f"Đồng thời trên bài kiểm tra I/O quy mô {bd_rows:,} dòng ({bd_gb:.2f} GB CSV thô), Parquet Snappy nén {bd_comp:.2f}x xuống {bd_pmb:.1f} MB "
+        f"(tiết kiệm {bd_saved:.1f}%), đạt {bd_pread:,.1f} MB/s (nhanh hơn {bd_spd:.2f}x CSV {bd_cread:.1f} MB/s) với đỉnh RAM psutil cố định {bd_ram:.2f} MB (No OOM)."
     ))
 
     add_uit_heading_2(doc, "5.2. Đo Kiểm Độ Trễ Mạng Đa Vùng (Multi-Region Latency)")
@@ -159,10 +157,10 @@ def build_chapter_5(doc, images_dir, io_data, lat_data, bias_data):
     doc.add_page_break()
     add_uit_heading_2(doc, "5.3. Giám Sát Drift Thời Gian Thực & Kích Hoạt Tái Huấn Luyện")
     add_uit_body_p(doc, (
-        "Module Evidently AI và drift_detector.py theo dõi liên tục các chỉ số trôi dạt dữ liệu trên tập suy luận sản xuất. "
-        "Khi phân phối của biến Support Calls dịch chuyển dẫn tới chỉ số PSI tăng vượt ngưỡng 0.25 (p-value < 0.00385 sau hiệu chỉnh Bonferroni), "
-        "hệ thống tự động phát đi tín hiệu Webhook tới endpoint `/api/v1/trigger_retrain`, kích hoạt pipeline tái huấn luyện tự động "
-        "để thích ứng kịp thời với xu hướng hành vi mới của khách hàng."
+        "Module giám sát drift_detector.py (kết hợp chuẩn Evidently AI) theo dõi liên tục các chỉ số trôi dạt dữ liệu trên tập suy luận sản xuất. "
+        "Khi phân phối đặc trưng dịch chuyển làm chỉ số Normalized Wasserstein vượt 0.15 hoặc Midpoint PSI vượt ngưỡng 0.25 "
+        "(p-value KS-test < 0.00385 sau hiệu chỉnh Bonferroni), hệ thống tự động phát tín hiệu Webhook tới endpoint /api/v1/trigger_retrain, "
+        "kích hoạt pipeline tái huấn luyện tự động nhằm thích ứng kịp thời với biến động hành vi thuê bao."
     ))
 
     add_uit_heading_2(doc, "5.4. Dự Toán Chi Phí Hạ Tầng Đám Mây (Cloud FinOps TCO Analysis)")
@@ -182,13 +180,13 @@ def build_chapter_5(doc, images_dir, io_data, lat_data, bias_data):
         format_table_cell(t_tco.rows[0].cells[i], h, bold=True, font_size=11, color_rgb=RGBColor(0, 0, 0), fill_hex=None)
 
     tco_rows = [
-        ("Azure Container Apps", "1.0 vCPU, 2.0 GiB RAM, Scale-to-Zero (0-5 replicas, ~320h/tháng)", "FastAPI Serving & UI Gateway (1,152,000 vCPU-s + 2,304,000 GiB-s)", "$34.56/month"),
-        ("Azure Cache for Redis", "Basic C0 (250MB, SSL Port 6380)", "Feast Online Hot Cache (< 2ms lookup)", "$16.06/month"),
+        ("Azure Container Apps", "1.0 vCPU, 2.0 GiB RAM, Consumption (Scale-to-Zero)", "FastAPI Serving & Web UI Gateway (IaC Terraform Baseline)", "$46.80/month"),
+        ("Azure Managed Redis", "Balanced_B0 (TLS Port 10000) / Valkey 8.0", "Feast Online Hot Cache (thay thế Basic C0 deprecate 01/04/2026)", "$12.00/month"),
         ("Azure Container Registry", "ACR Basic Tier (10 GB image storage)", "Lưu trữ Docker Image churnguard-mlops:latest", "$5.00/month"),
-        ("Azure Blob Storage (Hot)", "ADLS Gen2 Hot Tier 50GB + DVC Remote", "Lưu trữ container churnguard-datasets & Model Weights", "$3.55/month"),
-        ("Azure Monitor & Log Analytics", "Application Insights & Log Analytics (5GB/month)", "Giám sát API telemetry & Drift alerts", "$11.50/month"),
-        ("Azure Virtual Network & Egress", "VNet & Outbound Data Egress (~200GB/month)", "Phục vụ truy vấn suy luận REST API Client", "$4.00/month"),
-        ("TỔNG CỘNG HÀNG THÁNG (TCO)", "Total Monthly Cloud TCO (Ngân sách cảnh báo: $100.00/month)", "Vận hành hệ thống MLOps hoàn chỉnh", "$74.67/month (~1.87 triệu VNĐ)")
+        ("Azure Storage & Egress", "ADLS Gen2 Standard_LRS Hot (~100 GB) + Free Egress <=100 GB", "Lưu trữ churnguard-datasets & Model Weights", "$2.40/month"),
+        ("Azure Log Analytics", "Log Analytics Workspace (PerGB2018: 5GB free + 1.5GB billed)", "Giám sát API telemetry, OpenTelemetry & Drift alerts", "$4.41/month"),
+        ("Budget Alerts & Monitor", "Azure Action Group + Consumption Budget", "Cảnh báo tự động tại ngưỡng 80% ($60) và 100% ($75)", "$0.00/month"),
+        ("TỔNG CỘNG BASELINE (IaC)", "Azure Terraform Baseline (Infracost Verified)", "Serverless Scale-to-Zero: $11.22/mo | 24/7 Peak: $176.96/mo | OCI VM: $91.54/mo", "$70.61/month")
     ]
     for s, c, m, p in tco_rows:
         row = t_tco.add_row()
@@ -199,6 +197,7 @@ def build_chapter_5(doc, images_dir, io_data, lat_data, bias_data):
         format_table_cell(row.cells[3], p, bold=is_total, font_size=10)
 
     # Bảng 5.4: Cloud Quotas & Budget Alerts
+    doc.add_page_break()
     p_tquota = doc.add_paragraph()
     p_tquota.paragraph_format.space_before = Pt(8)
     p_tquota.paragraph_format.space_after = Pt(3)
@@ -216,9 +215,9 @@ def build_chapter_5(doc, images_dir, io_data, lat_data, bias_data):
 
     quota_rows = [
         ("Compute vCPUs (ACA)", "10 vCPUs / Region", "1.0 vCPU / replica (0-5)", "5.0 vCPUs (Khóa scale out)"),
-        ("Container Apps Replicas", "5 Replicas tối đa", "0 - 3 Replicas (Scale-to-Zero)", "4 Replicas (Scale throttling)"),
-        ("Blob Storage (Hot LRS)", "5 TB dung lượng", "~50 GB (churnguard-datasets)", "100 GB (Auto-tiering)"),
-        ("Ngân sách Hàng tháng", "$100.00/month", "$74.67/month", "$59.74 (80%) & $74.67 (100%)")
+        ("Container Apps Replicas", "5 Replicas tối đa", "0 - 5 Replicas (Scale-to-Zero)", "4 Replicas (Scale throttling)"),
+        ("Blob Storage (Standard LRS)", "5 TB dung lượng", "~50 GB (churnguard-datasets)", "100 GB (Auto-tiering)"),
+        ("Ngân sách Hàng tháng", "$75.00/month Target", "$70.61/mo Baseline ($11.22 Pilot)", "$60.00 (80%) & $75.00 (100%)")
     ]
     for r, q, u, a in quota_rows:
         row = t_quo.add_row()
@@ -231,7 +230,7 @@ def build_chapter_5(doc, images_dir, io_data, lat_data, bias_data):
     p_trbac = doc.add_paragraph()
     p_trbac.paragraph_format.space_before = Pt(8)
     p_trbac.paragraph_format.space_after = Pt(3)
-    r_rb = p_trbac.add_run("Bảng 5.5: Phân chia vai trò thành viên nhóm và ma trận phân quyền IAM RBAC trên Azure")
+    r_rb = p_trbac.add_run("Bảng 5.5: Phân chia vai trò vận hành kỹ thuật và ma trận phân quyền IAM RBAC trên Azure")
     r_rb.font.name = 'Times New Roman'
     r_rb.font.size = Pt(11)
     r_rb.font.bold = True
@@ -244,7 +243,7 @@ def build_chapter_5(doc, images_dir, io_data, lat_data, bias_data):
         format_table_cell(t_rb.rows[0].cells[i], h, bold=True, font_size=11, color_rgb=RGBColor(0, 0, 0), fill_hex=None)
 
     rbac_rows = [
-        ("MLOps Lead (Nguyễn Trọng Khôi)", "Kiến trúc tổng thể, CI/CD, Serving API, Quotas", "Subscription Contributor / Budget Admin"),
+        ("MLOps Lead ([Để trống / Tác giả bảo mật])", "Kiến trúc tổng thể, CI/CD, Serving API, Quotas", "Subscription Contributor / Budget Admin"),
         ("Data Engineer", "DVC versioning, Feast Store, Out-of-Core ETL", "Storage Blob Data Contributor, Redis Contributor"),
         ("ML Engineer", "Huấn luyện 4 mô hình, Optuna, MLflow, SHAP", "Azure ML Data Scientist / Registry Contributor"),
         ("DevOps / MLOps SRE", "Evidently AI Data Drift, Docker, Web UI", "Container Apps Operator, Monitor Metrics Publisher")

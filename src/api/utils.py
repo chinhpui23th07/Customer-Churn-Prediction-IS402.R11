@@ -5,6 +5,7 @@ import os
 os.environ["OMP_NUM_THREADS"] = "1"
 os.environ["OPENBLAS_NUM_THREADS"] = "1"
 os.environ["MKL_NUM_THREADS"] = "1"
+import hmac
 import json
 import sqlite3
 import numpy as np
@@ -15,7 +16,7 @@ from fastapi import HTTPException, Header
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 INFERENCE_DB = os.path.join(BASE_DIR, "data", "inference_logs.db")
-API_KEY_SECRET = os.getenv("API_KEY", "mlops-churn-secret-2026")
+API_KEY_SECRET = os.getenv("API_KEY") or ("" if os.getenv("APP_ENV") == "production" else "mlops-churn-secret-2026")
 
 FEATURE_COLS = [
     "age", "gender_encoded", "tenure", "usage_frequency", "support_calls",
@@ -116,14 +117,16 @@ def fetch_recent_predictions(limit: int = 100) -> List[Dict[str, Any]]:
 
 def verify_api_key(
     x_api_key: Optional[str] = Header(None),
-    x_requested_with: Optional[str] = Header(None),
-    x_session_token: Optional[str] = Header(None),
 ):
-    """Kiểm tra API Key bảo mật hoặc cho phép request nội bộ từ giao diện Web cùng origin."""
-    if x_api_key and x_api_key == API_KEY_SECRET:
+    """Verify API Key strictly using constant-time comparison (no unauthenticated header bypass)."""
+    configured_secret = os.getenv("API_KEY") or API_KEY_SECRET
+    if not configured_secret:
+        raise HTTPException(
+            status_code=503,
+            detail="API Key chưa được cấu hình trên máy chủ (APP_ENV=production yêu cầu biến môi trường API_KEY).",
+        )
+    if x_api_key and hmac.compare_digest(x_api_key, configured_secret):
         return x_api_key
-    if x_api_key is None and ((x_requested_with and x_requested_with.lower() == "xmlhttprequest") or (x_session_token and len(x_session_token) >= 8)):
-        return "internal-web-ui-session"
     raise HTTPException(status_code=401, detail="Thiếu hoặc sai API Key! Vui lòng cung cấp header 'X-API-Key' hợp lệ.")
 
 

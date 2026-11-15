@@ -1,7 +1,13 @@
 {
-  "framework": "Optuna 4.8.0 + Bayesian TPE Sampler",
+  "framework": "Optuna 4.8.0 + Bayesian TPE Sampler (multivariate=True, n_startup_trials=5)",
   "objective": "Maximize 3-Fold Stratified Cross-Validation ROC-AUC",
   "sample_size": 25000,
+  "sampler_config": {
+    "sampler": "TPESampler",
+    "n_startup_trials": 5,
+    "multivariate": true,
+    "seed": 42
+  },
   "xgboost_champion": {
     "best_roc_auc": 0.999,
     "best_params": {

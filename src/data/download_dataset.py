@@ -1,5 +1,7 @@
 """
-Module tải và xác thực tập dữ liệu Customer Churn từ nguồn Kaggle chính thống.
+DEPRECATED: Module tải tập dữ liệu Kaggle cũ (Legacy).
+Dự án hiện tại sử dụng tập dữ liệu lớn KKBox Parquet (7.52 GB).
+Vui lòng sử dụng 'src/data/kkbox_etl.py' hoặc 'src/kkbox/run_etl.py'.
 """
 import os
 import sys

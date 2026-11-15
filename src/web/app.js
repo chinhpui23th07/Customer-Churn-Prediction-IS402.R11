@@ -9,7 +9,7 @@ let currentBatchPredictions = [];
 
 function getApiKey() { return window.__CHURN_API_KEY__ || sessionStorage.getItem("X_API_KEY") || ""; }
 function getAuthHeaders(extra = {}) {
-  const headers = { "X-Requested-With": "XMLHttpRequest", ...extra };
+  const headers = { ...extra };
   const key = getApiKey(); if (key) headers["X-API-Key"] = key;
   return headers;
 }

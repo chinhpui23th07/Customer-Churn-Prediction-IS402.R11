@@ -1,4 +1,4 @@
-# IS402 MLOps Customer Churn Prediction - Scientific & Repository Grounding Catalog
+# Enterprise MLOps Customer Churn Prediction - Scientific & Repository Grounding Catalog
 
 Every Audit Agent (`AuditSwarmAgent`) and Fixer Agent (`FixerSwarmAgent`) MUST cite from this authoritative catalog when reporting defects or implementing root-cause fixes.
 
@@ -29,6 +29,6 @@ Every Audit Agent (`AuditSwarmAgent`) and Fixer Agent (`FixerSwarmAgent`) MUST c
 | **REPO-02** | `docs/research/repos/Gees14_feast_drift` (`Gees14_Feast_Drift_Trigger_Spec.md`) | Feast Feature Store (`FeatureView`, `Entity`, `FileSource` Parquet) integrated with Evidently AI Data Drift detection and automated retraining trigger. | `src/features/feature_store.py`, `src/monitoring/drift_detector.py`, `data/feast_repo/` |
 | **REPO-03** | `docs/research/repos/Oyebamiji_Micheal_dvc_mlflow` (`Oyebamiji_DVC_MLflow_Pipeline_Spec.md`) | Reproducible DVC pipeline (`dvc.yaml` stages) coupled with MLflow Tracking & Model Registry artifact persistence. | `dvc.yaml`, `src/data/preprocess.py`, `src/models/train_pipeline.py` |
 | **REPO-04** | `docs/research/repos/mlops-churn-feature-store` | Production Customer Churn Feature Store with Online SQLite/Redis lookup and Training-Serving Skew prevention. | `src/features/feature_store.py`, `src/api/main.py` (`/predict/feast/online`) |
-| **REPO-05** | `docs/research/repos/HinnoNguyen_IS402` (`UIT_Cloud_Computing_Curriculum_Spec.md`) | UIT IS402 Cloud Computing Course Reference: IaaS/PaaS/FaaS taxonomy, Multi-Region latency benchmarking, Parquet vs CSV I/O analysis, Cloud TCO & Quotas. | `configs/cloud_architecture_and_cost.md`, `src/data/latency_simulator.py`, `scripts/verification/final_comprehensive_check.py` |
+| **REPO-05** | `docs/research/repos/HinnoNguyen_IS402` (`UIT_Cloud_Computing_Curriculum_Spec.md`) | Cloud Computing Architecture Reference: IaaS/PaaS/FaaS taxonomy, Multi-Region latency benchmarking, Parquet vs CSV I/O analysis, Cloud TCO & Quotas. | `configs/cloud_architecture_and_cost.md`, `src/data/latency_simulator.py`, `scripts/verification/final_comprehensive_check.py` |
 | **REPO-06** | `docs/research/repos/arpanneupane-churn-mlops` & `dcwind-churn-mlops` | End-to-end Churn MLOps pipelines with FastAPI batch/single inference, Pydantic schema validation, and model serialization. | `src/api/schemas.py`, `src/api/main.py` |
 | **REPO-07** | `docs/research/repos/telco-churn-mlops-pipeline` | Champion vs Challenger A/B deterministic routing (`MD5/SHA256` hash bucketing) and SQLite inference telemetry logging. | `src/api/main.py` (`/predict/ab_test`), `src/api/database.py` |

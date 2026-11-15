@@ -1,0 +1,69 @@
+{
+  "dataset_canonical_name": "KKBox Customer Churn Dataset",
+  "huggingface_repo": "vaibhavkhurana/subscriber-retention-intelligence",
+  "nominal_size_bytes": 7522254856,
+  "nominal_size_gb": 7.52,
+  "nominal_total_rows": 442211685,
+  "nominal_parquet_files": 32,
+  "manifest_release": "public-m12",
+  "manifest_compression": "zstd",
+  "tables": [
+    {
+      "name": "member",
+      "rows": 6769473,
+      "size_bytes": 60491935,
+      "entity_key": "subscriber_key (harmonized to msno)"
+    },
+    {
+      "name": "churn_label",
+      "rows": 1963891,
+      "size_bytes": 15720822,
+      "target_column": "is_churn",
+      "partitions": 2
+    },
+    {
+      "name": "subscription_transaction",
+      "rows": 22975416,
+      "size_bytes": 463554548,
+      "partitions": 2
+    },
+    {
+      "name": "listening_day",
+      "rows": 410502905,
+      "size_bytes": 6982487551,
+      "partitions": 27
+    }
+  ],
+  "local_real_execution": {
+    "engine": "DuckDB out-of-core streaming + PyArrow Parquet Snappy",
+    "partitions_executed": "churn_label (window=2017-03) + member + subscription_transaction (part=0) + listening_day (v2/activity_month=201703)",
+    "total_source_rows_scanned": 37629251,
+    "rows_processed": 970960,
+    "churn_positive_count": 87330,
+    "churn_negative_count": 883630,
+    "churn_rate": 0.0899,
+    "matched_transaction_users": 950963,
+    "avg_transactions_per_user": 8.37,
+    "matched_listening_users": 754551,
+    "avg_listen_days_per_user": 13.94,
+    "avg_total_actual_paid": 1151.12,
+    "avg_song_completion_ratio": 0.5473,
+    "execution_time_seconds": 5.61,
+    "throughput_rows_per_second": 173091.7,
+    "source_scanning_throughput_rows_per_second": 6707531.4,
+    "target_entity_throughput_records_per_second": 173091.0,
+    "output_file": "data/processed/real_hf_kkbox_full_window.parquet",
+    "output_file_size_mb": 41.87,
+    "memory_cap": "Bounded Memory Execution (<= 2 GB Buffer Manager) via Radix-Partitioned Out-of-Core Disk Spilling (temp_directory)"
+  },
+  "synthetic_ci_execution": {
+    "engine": "DuckDB out-of-core streaming",
+    "rows_processed": 500,
+    "churn_count": 85,
+    "churn_rate": 0.17,
+    "execution_time_seconds": 0.09,
+    "throughput_rows_per_second": 5273.9,
+    "output_file": "data/processed/kkbox_churn_features.parquet",
+    "output_file_size_mb": 0.02
+  }
+}

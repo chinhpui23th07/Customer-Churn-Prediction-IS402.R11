@@ -17,8 +17,8 @@ from mlflow.tracking import MlflowClient
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
-    average_precision_score, confusion_matrix, f1_score, precision_recall_curve,
-    roc_auc_score,
+    average_precision_score, brier_score_loss, confusion_matrix, f1_score,
+    precision_recall_curve, roc_auc_score,
 )
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
@@ -48,6 +48,7 @@ def metrics(y, probabilities, threshold: float) -> dict:
     return {
         "roc_auc": round(float(roc_auc_score(y, probabilities)), 6),
         "pr_auc": round(float(average_precision_score(y, probabilities)), 6),
+        "brier_score": round(float(brier_score_loss(y, probabilities)), 6),
         "positive_rate": round(float(np.mean(y)), 6),
         "precision": round(true_positive / max(true_positive + false_positive, 1), 6),
         "recall": round(true_positive / max(true_positive + false_negative, 1), 6),
@@ -147,12 +148,15 @@ def main() -> None:
     winner = runs[winner_name]
     test_probabilities = winner["pipeline"].predict_proba(x_test)[:, 1]
     test_metrics = metrics(y_test, test_probabilities, winner["threshold"])
+    client = MlflowClient()
+    for key, value in test_metrics.items():
+        if isinstance(value, float):
+            client.log_metric(winner["run_id"], f"test_{key}", value)
     val_probabilities = winner["pipeline"].predict_proba(x_val)[:, 1]
     risk_medium, risk_high = (float(value) for value in np.quantile(val_probabilities, [0.5, 0.9]))
     model_version = f"pilot-{winner['run_id'][:8]}"
     if args.mode == "full":
         registered = mlflow.register_model(winner["model_uri"], "KKBoxChurn")
-        client = MlflowClient()
         version_tags = {
             "feature_version": FEATURE_VERSION,
             "source_revision_sha": audit["source_revision_sha"],

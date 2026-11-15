@@ -244,15 +244,14 @@ Sau khi bấm, khối `#prediction-result` trượt mở ra với animation `fad
   * **Vị trí không gian:** Nằm ở **Cột bên phải**, trong Tab 1, vị trí **BÊN TRÁI** trong cụm nút `.batch-actions` (dưới biểu tượng đám mây tải lên SVG nét xanh trời `#38BDF8`).
 - **Thao tác thực hiện:**
   1. Bấm chuột trái vào nút **`Chọn Tệp CSV`** (hoặc kéo thả tệp trực tiếp vào khung nét đứt `#drop-zone`).
-  2. Hộp thoại Windows Explorer mở ra. Chọn tệp dữ liệu kiểm thử có sẵn:  
-     `c:\Users\Nguyen Trong Khoi\Downloads\CLOUD\data\raw\customer_churn_dataset-testing-master.csv`
+  2. Hộp thoại Windows Explorer mở ra. Chọn tệp dữ liệu kiểm thử (ví dụ tệp CSV mẫu trích xuất từ dữ liệu kiểm thử hoặc tệp chứa các cột đặc trưng cần dự đoán).
   3. Bấm **Open** để xác nhận tải tệp. Hàm JavaScript `uploadCsvFile(file)` tự động gửi tệp qua `POST /upload_csv_predict`.
 - **Dấu hiệu THÀNH CÔNG:**
   - Sau 1 - 2 giây, bảng thống kê tự động hiển thị tổng số dòng xử lý, tỷ lệ rời bỏ và danh sách 10 dòng đầu tiên được gắn nhãn.
   - Bấm nút màu cam **`Xuất Báo Cáo CSV Gắn Nhãn`** để tải toàn bộ tệp kết quả.
 - **Dấu hiệu LỖI & Cách xử lý:**
   - **Lỗi `400 Bad Request` (`Vui lòng chỉ tải lên tệp định dạng CSV!`):** Do tải tệp đuôi `.xlsx` hoặc `.txt`. Chọn đúng tệp có đuôi `.csv`.
-  - **Lỗi `400 Bad Request` (`Tệp CSV thiếu cột bắt buộc: <tên_cột>`):** Tệp thiếu 1 trong 10 cột Kaggle bắt buộc. Sử dụng tệp mẫu chuẩn trong `data/raw/`.
+  - **Lỗi `400 Bad Request` (`Tệp CSV thiếu cột bắt buộc: <tên_cột>`):** Tệp thiếu 1 trong các cột đặc trưng bắt buộc. Kiểm tra hợp đồng dữ liệu chuẩn tại `contracts/feature_contract.md`.
   - **Lỗi `422 Unprocessable Entity` (`Dòng X: Cột 'Y' chứa giá trị trống (NaN)`):** Dữ liệu có ô trống chưa được điền. Cần tiền xử lý điền khuyết trước khi tải lên.
   - **Lỗi `422 Unprocessable Entity` (`Batch size exceeds maximum limit of 1000`):** Tệp vượt quá giới hạn an toàn 1,000 dòng. Cần trích xuất tập mẫu con $\le 1000$ dòng để tải lên giao diện web.
 
@@ -623,13 +622,13 @@ Sau khi bấm, khối `#prediction-result` trượt mở ra với animation `fad
 
 ---
 
-## 6. HƯỚNG DẪN ĐĂNG KÝ AZURE FOR STUDENTS ($100 CREDIT MIỄN PHÍ) & TRIỂN KHAI CLOUD 1-CLICK
+## 6. HƯỚNG DẪN KÍCH HOẠT HẠ TẦNG ĐÁM MÂY AZURE & TRIỂN KHAI CLOUD 1-CLICK
 
-Quy trình này hướng dẫn chi tiết cách sở hữu tài khoản đám mây Microsoft Azure hoàn toàn miễn phí dành riêng cho sinh viên ($0 chi phí, tuyệt đối không cần thẻ ngân hàng) và đưa toàn bộ hệ thống lên Cloud phục vụ công khai bằng kiến trúc Cloud-Native Serverless.
+Quy trình này hướng dẫn chi tiết cách sở hữu tài khoản đám mây Microsoft Azure (Azure Academic / Cloud Grant $100 credit) và đưa toàn bộ hệ thống lên Cloud phục vụ công khai bằng kiến trúc Cloud-Native Serverless.
 
 ---
 
-### 6.1 Quy trình Wizard 5 bước đăng ký tài khoản Azure for Students
+### 6.1 Quy trình Wizard 5 bước đăng ký tài khoản Azure Cloud Grant
 
 1. **Bước 1 - Truy cập cổng đăng ký chính thức:**
    - Mở trình duyệt web truy cập: **`https://azure.microsoft.com/en-us/free/students/`**  
@@ -643,12 +642,12 @@ Quy trình này hướng dẫn chi tiết cách sở hữu tài khoản đám m�
    - Bấm vào nút **`Start free`**.
 2. **Bước 2 - Đăng nhập tài khoản Microsoft:**
    - Trang web chuyển hướng sang màn hình `login.microsoftonline.com`.
-   - Nhập tài khoản Microsoft cá nhân hoặc Office 365 trường cấp (ví dụ: `23520783@gm.uit.edu.vn` hoặc `mssv@student.uit.edu.vn`).
+   - Nhập tài khoản Microsoft cá nhân hoặc Office 365 tổ chức cấp (ví dụ: `research@uit.edu.vn` hoặc `account@domain.edu.vn`).
    - Bấm nút **`Next`** màu xanh dương ở góc dưới bên phải khung đăng nhập, nhập mật khẩu và bấm **`Sign in`**.
-3. **Bước 3 - Xác thực danh tính sinh viên (Academic Verification):**
+3. **Bước 3 - Xác thực danh tính học thuật & nghiên cứu (Academic Verification):**
    - Tại mục "Verification method", chọn **`School email address`**.
-   - Nhập lại email sinh viên của trường và bấm nút màu xanh **`Send verification email`**.
-   - Mở hòm thư sinh viên nhận thư từ Microsoft có chứa mã PIN xác nhận 6 chữ số.
+   - Nhập lại email học thuật/tổ chức của đơn vị và bấm nút màu xanh **`Send verification email`**.
+   - Mở hòm thư học thuật nhận thư từ Microsoft có chứa mã PIN xác nhận 6 chữ số.
    - Quay lại trang Azure, nhập 6 chữ số vào ô "Verification code" và bấm nút **`Verify code`**.
    - *(Dự phòng: Nếu trường chưa liên kết trực tiếp, hỗ trợ xác thực thông qua GitHub Student Developer Pack).*
 4. **Bước 4 - Xác minh thiết bị qua SMS OTP (Tuyệt đối không cần thẻ tín dụng):**
@@ -677,7 +676,7 @@ Quy trình này hướng dẫn chi tiết cách sở hữu tài khoản đám m�
 5. **Nút Azure Cloud Shell trên Portal:**
    - **Vị trí:** Nằm ở **Góc trên bên phải thanh Header Toolbar của Azure Portal**, ngay bên cạnh biểu tượng Quả chuông thông báo (Notifications) và Bánh răng cài đặt (Settings).
    - **Biểu tượng:** Icon terminal hình **`>_`**.
-   - **Tiện ích vượt trội:** Nhấp vào nút `>_` để mở terminal Bash hoặc PowerShell trực tiếp ngay trong trình duyệt web. Môi trường này đã cài sẵn và tự động xác thực Azure CLI (`az`), giúp sinh viên thực thi toàn bộ lệnh triển khai mà **không cần cài đặt bất kỳ phần mềm nào lên máy tính cá nhân**.
+   - **Tiện ích vượt trội:** Nhấp vào nút `>_` để mở terminal Bash hoặc PowerShell trực tiếp ngay trong trình duyệt web. Môi trường này đã cài sẵn và tự động xác thực Azure CLI (`az`), giúp kỹ sư thực thi toàn bộ lệnh triển khai mà **không cần cài đặt bất kỳ phần mềm nào lên máy tính cá nhân**.
 
 ---
 
@@ -687,7 +686,7 @@ Quy trình này hướng dẫn chi tiết cách sở hữu tài khoản đám m�
    ```bash
    cmd /c "az login"
    ```
-   *(Trình duyệt tự động mở tab đăng nhập Microsoft, chọn tài khoản sinh viên vừa kích hoạt).*
+   *(Trình duyệt tự động mở tab đăng nhập Microsoft, chọn tài khoản vừa kích hoạt).*
 2. **Thiết lập gói thuê bao mặc định (sử dụng Subscription ID đã sao chép):**
    ```bash
    cmd /c "az account set --subscription \"Azure for Students\""
@@ -718,7 +717,7 @@ Kịch bản tự động hóa tại `deploy/azure/deploy_azure.bat` (101 dòng)
    | `APP_NAME` | `churnguard-serving-app` | Dịch vụ Container App phục vụ suy luận thời gian thực và Web UI |
    | `STORAGE_ACCOUNT` | `stchurnguardsea2026` | Tài khoản Azure Blob Storage lưu trữ Parquet DVC & Model |
    | `BLOB_CONTAINER` | `churnguard-datasets` | Thùng chứa dữ liệu trong Blob Storage |
-   | `REDIS_NAME` | `redis-churnguard-sea` | Azure Cache for Redis Basic C0 (SSL 6380) lưu trữ Feast Hot Cache |
+   | `REDIS_NAME` | `redis-churnguard-sea` | Azure Managed Redis Balanced B0 (TLS 10000) / Valkey 8.0 lưu trữ Feast Hot Cache |
    | `IMAGE_TAG` | `v2.0.0` | Thẻ phiên bản Docker image đóng gói |
 3. **Tiến trình tự động diễn ra tuần tự trong 8 - 12 phút:**
    - **Bước 1-2:** Kiểm tra Azure CLI và tài khoản đăng nhập.
@@ -760,7 +759,7 @@ Bảng đối chiếu cung cấp cơ sở kỹ thuật hỗ trợ đánh giá ki
 | **Cơ chế Co giãn (Scaling)**| **Serverless Scale-to-Zero (`minReplicas: 0, maxReplicas: 5`)** -> Không có truy cập: chi phí compute = $0.00 | Luôn duy trì máy chủ B1 chạy 24/7 (~$13.14/tháng), không thể co về 0 |
 | **Định dạng URL công khai** | `https://<APP_NAME>.<hash>.<REGION>.azurecontainerapps.io` | `https://<WEB_APP_NAME>.azurewebsites.net` |
 | **Lệnh xem nhật ký** | `az containerapp logs show --name churnguard-serving-app --tail 100` | `az webapp log tail --name churnguard-serving-app` |
-| **Đánh giá FinOps ($100 Credit)** | **Tối ưu chi phí ($74.67/tháng tổng thể):** Vận hành an toàn trong hạn mức $100 credit khả dụng, tự ngắt khi nhàn rỗi. | Kém linh hoạt hơn về dung lượng RAM (gói B1 chỉ có 1.75 GB RAM, dễ quá tải khi nạp SHAP TreeExplainer). |
+| **Đánh giá FinOps ($100 Credit)** | **Tối ưu chi phí ($70.61/mo IaC Baseline; $11.22/mo Scale-to-Zero):** Vận hành an toàn dưới mục tiêu $75/mo, tự ngắt khi nhàn rỗi. | Kém linh hoạt hơn về dung lượng RAM (gói B1 chỉ có 1.75 GB RAM, dễ quá tải khi nạp SHAP TreeExplainer). |
 
 ---
 
@@ -791,7 +790,7 @@ Danh mục 6 sự cố triển khai đám mây phổ biến nhất đối với 
   ```text
   ResourceProviderQuotaExceeded: A quota limit for ContainerAppResources in region southeastasia has been exceeded.
   ```
-- **Nguyên nhân gốc rễ:** Vùng Singapore (`southeastasia`) chịu tải cao từ các tài khoản sinh viên miễn phí khu vực Đông Nam Á.
+- **Nguyên nhân gốc rễ:** Vùng Singapore (`southeastasia`) chịu tải cao từ các tài khoản hạn ngạch miễn phí khu vực Đông Nam Á.
 - **Cách khắc phục triệt để:**
   Mở tệp `deploy/azure/deploy_azure.bat`, sửa dòng số 15 chuyển sang trung tâm dữ liệu Hồng Kông hoặc Bờ Đông Hoa Kỳ:
   ```bat
@@ -842,7 +841,7 @@ Danh mục 6 sự cố triển khai đám mây phổ biến nhất đối với 
 - **Cách khắc phục triệt để:**
   Mở tệp `deploy/azure/deploy_azure.bat`, sửa dòng số 19 gắn thêm hậu tố định danh duy nhất (unique suffix) hoặc mã cá nhân:
   ```bat
-  set STORAGE_ACCOUNT=stchurn23520783sea
+  set STORAGE_ACCOUNT=stchurnguardsea
   ```
   *(Ràng buộc kỹ thuật: Tên Storage Account chỉ được chứa từ 3 đến 24 ký tự chữ thường và chữ số, tuyệt đối không chứa dấu gạch nối `-` hay chữ hoa).*
 
@@ -866,7 +865,7 @@ cmd /c "az group delete --name rg-churnguard-mlops-sea --yes --no-wait"
 | :--- | :--- | :--- | :--- |
 | **HTTP 401 Unauthorized** | `{"detail": "Thiếu hoặc sai API Key! Vui lòng cung cấp header 'X-API-Key' hợp lệ."}` | Thiếu header `X-API-Key` hoặc nhập sai chuỗi bí mật khi gọi REST API /docs | Thêm header `x-api-key` với giá trị bí mật mặc định: `mlops-churn-secret-2026` |
 | **HTTP 422 Unprocessable** | `{"detail": [{"loc": ["body", "age"], "msg": "Input should be greater than or equal to 18"}]}` | Dữ liệu đầu vào vi phạm quy tắc Pydantic (tuổi < 18 hoặc > 100, số cuộc gọi âm, chuỗi enum sai) | Hiệu chỉnh lại dữ liệu JSON hoặc form theo đúng dải min/max trong Bảng kiểm kê mục 3.2.A |
-| **HTTP 400 Bad Request** | `Vui lòng chỉ tải lên tệp định dạng CSV!` hoặc `Tệp CSV thiếu cột bắt buộc` | Tệp tải lên sai định dạng hoặc thiếu 1 trong 10 cột đặc trưng Kaggle Telco | Sử dụng đúng tệp CSV chuẩn trong `data/raw/customer_churn_dataset-testing-master.csv` |
+| **HTTP 400 Bad Request** | `Vui lòng chỉ tải lên tệp định dạng CSV!` hoặc `Tệp CSV thiếu cột bắt buộc` | Tệp tải lên sai định dạng hoặc thiếu các cột đặc trưng bắt buộc | Sử dụng đúng tệp CSV hợp lệ theo chuẩn đặc tả trong `contracts/feature_contract.md` |
 | **HTTP 307 Temporary Redirect** | Tự động chuyển hướng từ `http://localhost:8000/` sang `/docs` | Đường dẫn gốc `/` được thiết kế chuyển hướng về Swagger UI | Nhập đầy đủ hậu tố `/ui` để vào giao diện Bento Grid: `http://localhost:8000/ui` |
 | **HTTP 502 / 504 Gateway** | `502 Bad Gateway` hoặc `504 Gateway Timeout` | Container Cloud bị crash do quá tải RAM khi nạp SHAP hoặc Liveness probe timeout | Kiểm tra logs: `cmd /c "az containerapp logs show --name churnguard-serving-app --resource-group rg-churnguard-mlops-sea --tail 100"` |
 | **Lỗi Chiếm Cổng 8000** | `[Errno 10048] error while attempting to bind on address ('0.0.0.0', 8000)` | Tiến trình Uvicorn cũ hoặc ứng dụng khác đang chiếm dụng cổng 8000 | Tìm PID: `cmd /c "netstat -ano \| findstr :8000"`<br>Diệt PID: `cmd /c "taskkill /F /PID <PID>"` |
@@ -875,7 +874,7 @@ cmd /c "az group delete --name rg-churnguard-mlops-sea --yes --no-wait"
 | **Lỗi Thiếu Báo Cáo Drift** | `404 Not Found: docs/drift_report.html` | Chưa biên dịch báo cáo trôi dạt dữ liệu HTML | Sinh báo cáo drift: `cmd /c "python src/monitoring/drift_detector.py"` |
 | **Lỗi Khóa Ghi SQLite WAL** | `sqlite3.OperationalError: database is locked` | Nhiều tiến trình cùng ghi vào SQLite khi chưa bật chế độ WAL | Mã nguồn đã tự động kích hoạt `PRAGMA journal_mode=WAL; busy_timeout=5000;` để tự giải tỏa |
 | **Lỗi Docker Daemon Offline** | `failed to connect to the docker API at npipe://...` | Docker Desktop cục bộ chưa được bật | Kịch bản `deploy_azure.bat` sử dụng `az acr build` trên Cloud nên **hoàn toàn không cần Docker Desktop** |
-| **Lỗi Azure Quota vCPU** | `Quota limit exceeded in region southeastasia` | Hạn ngạch tài khoản sinh viên tại vùng Singapore bị quá tải | Sửa dòng 15 trong `deploy_azure.bat` thành `set LOCATION=eastus` hoặc `eastasia` |
-| **Lỗi Trùng Tên Storage** | `StorageAccountAlreadyTaken: ... is already taken` | Tên Azure Storage Account bị trùng lặp trên phạm vi toàn cầu | Sửa dòng 19 trong `deploy_azure.bat` thành `set STORAGE_ACCOUNT=stchurn23520783sea` |
+| **Lỗi Azure Quota vCPU** | `Quota limit exceeded in region southeastasia` | Hạn ngạch tài nguyên tại vùng Singapore bị quá tải | Sửa dòng 15 trong `deploy_azure.bat` thành `set LOCATION=eastus` hoặc `eastasia` |
+| **Lỗi Trùng Tên Storage** | `StorageAccountAlreadyTaken: ... is already taken` | Tên Azure Storage Account bị trùng lặp trên phạm vi toàn cầu | Sửa dòng 19 trong `deploy_azure.bat` thành `set STORAGE_ACCOUNT=stchurnguardsea` |
 | **Lỗi Chưa Đăng Ký Provider** | `The subscription is not registered to use namespace 'Microsoft.ContainerRegistry'` | Tài khoản Azure for Students mới chưa kích hoạt đủ namespace | Đăng ký namespace: `cmd /c "az provider register --namespace Microsoft.ContainerRegistry"` và `Microsoft.App` |
 | **Lỗi Lệch Cổng Ingress Cloud** | Container báo `Running` nhưng không vào được mạng ngoài | Cổng Ingress trỏ nhầm sang cổng 80 thay vì 8000 | Cập nhật cổng: `cmd /c "az containerapp update --name churnguard-serving-app --resource-group rg-churnguard-mlops-sea --target-port 8000"` |

@@ -1,6 +1,6 @@
 {
   "champion_model": "XGBoost",
-  "champion_roc_auc": 0.9989,
+  "champion_roc_auc": 0.999,
   "models": {
     "Logistic_Regression": {
       "params": {
@@ -8,7 +8,7 @@
         "solver": "lbfgs",
         "class_weight": "balanced"
       },
-      "train_duration_sec": 0.23,
+      "train_duration_sec": 0.25,
       "tuning_history": {},
       "cv_5fold": {
         "roc_auc_mean": 0.9442,
@@ -250,7 +250,7 @@
         "max_depth": 12,
         "min_samples_split": 5
       },
-      "train_duration_sec": 7.02,
+      "train_duration_sec": 9.67,
       "tuning_history": {
         "best_roc_auc": 0.9988,
         "best_params": {
@@ -347,7 +347,7 @@
         "f1_score": 0.9932,
         "roc_auc": 0.9991,
         "pr_auc": 0.9989,
-        "latency_per_sample_ms": 0.0018,
+        "latency_per_sample_ms": 0.0022,
         "confusion_matrix": [
           [
             28629,
@@ -575,7 +575,7 @@
         "learning_rate": 0.0886,
         "subsample": 0.8367
       },
-      "train_duration_sec": 1.42,
+      "train_duration_sec": 5.88,
       "tuning_history": {
         "best_roc_auc": 0.999,
         "best_params": {
@@ -728,21 +728,21 @@
         "f1_std": 0.0003
       },
       "validation": {
-        "accuracy": 0.9989,
+        "accuracy": 0.9988,
         "precision": 0.9984,
         "recall": 0.9996,
         "f1_score": 0.999,
-        "roc_auc": 0.999,
-        "pr_auc": 0.9984,
-        "latency_per_sample_ms": 0.0003,
+        "roc_auc": 0.9991,
+        "pr_auc": 0.9986,
+        "latency_per_sample_ms": 0.0019,
         "confusion_matrix": [
           [
             28629,
             61
           ],
           [
-            14,
-            37628
+            16,
+            37626
           ]
         ],
         "roc_curve": [
@@ -752,82 +752,82 @@
           },
           {
             "fpr": 0.0003,
-            "tpr": 0.0866
+            "tpr": 0.0906
           },
           {
-            "fpr": 0.0004,
-            "tpr": 0.1666
+            "fpr": 0.0003,
+            "tpr": 0.1851
           },
           {
-            "fpr": 0.0006,
-            "tpr": 0.2412
+            "fpr": 0.0005,
+            "tpr": 0.2677
           },
           {
-            "fpr": 0.0006,
-            "tpr": 0.3046
+            "fpr": 0.0005,
+            "tpr": 0.3402
           },
           {
             "fpr": 0.0007,
-            "tpr": 0.3625
+            "tpr": 0.404
+          },
+          {
+            "fpr": 0.0007,
+            "tpr": 0.4628
           },
           {
             "fpr": 0.0008,
-            "tpr": 0.4189
+            "tpr": 0.5178
           },
           {
             "fpr": 0.0008,
-            "tpr": 0.4701
-          },
-          {
-            "fpr": 0.0008,
-            "tpr": 0.5206
-          },
-          {
-            "fpr": 0.001,
-            "tpr": 0.5691
+            "tpr": 0.5729
           },
           {
             "fpr": 0.0011,
-            "tpr": 0.6207
+            "tpr": 0.6259
           },
           {
-            "fpr": 0.0012,
-            "tpr": 0.6748
+            "fpr": 0.0013,
+            "tpr": 0.6886
           },
           {
-            "fpr": 0.0014,
-            "tpr": 0.7389
+            "fpr": 0.0013,
+            "tpr": 0.77
           },
           {
-            "fpr": 0.0016,
-            "tpr": 0.8322
+            "fpr": 0.0018,
+            "tpr": 0.8812
           },
           {
-            "fpr": 0.0021,
-            "tpr": 0.9661
-          },
-          {
-            "fpr": 0.0656,
+            "fpr": 0.0143,
             "tpr": 1.0
           },
           {
-            "fpr": 0.1949,
+            "fpr": 0.1366,
             "tpr": 1.0
           },
           {
-            "fpr": 0.3007,
+            "fpr": 0.2496,
             "tpr": 1.0
           },
           {
-            "fpr": 0.4266,
+            "fpr": 0.3655,
             "tpr": 1.0
           },
           {
-            "fpr": 0.6207,
+            "fpr": 0.479,
             "tpr": 1.0
           },
           {
-            "fpr": 0.9693,
+            "fpr": 0.6285,
+            "tpr": 1.0
+          },
+          {
+            "fpr": 0.8009,
+            "tpr": 1.0
+          },
+          {
+            "fpr": 0.9964,
             "tpr": 1.0
           }
         ]
@@ -835,19 +835,19 @@
       "test": {
         "accuracy": 0.9987,
         "precision": 0.9981,
-        "recall": 0.9996,
-        "f1_score": 0.9989,
-        "roc_auc": 0.9989,
+        "recall": 0.9995,
+        "f1_score": 0.9988,
+        "roc_auc": 0.999,
         "pr_auc": 0.9983,
-        "latency_per_sample_ms": 0.0003,
+        "latency_per_sample_ms": 0.0017,
         "confusion_matrix": [
           [
             28619,
             70
           ],
           [
-            16,
-            37627
+            17,
+            37626
           ]
         ],
         "roc_curve": [
@@ -857,99 +857,99 @@
           },
           {
             "fpr": 0.0002,
-            "tpr": 0.0866
+            "tpr": 0.0926
           },
           {
             "fpr": 0.0003,
-            "tpr": 0.1654
+            "tpr": 0.1847
+          },
+          {
+            "fpr": 0.0003,
+            "tpr": 0.2647
           },
           {
             "fpr": 0.0004,
-            "tpr": 0.2426
+            "tpr": 0.3358
           },
           {
-            "fpr": 0.0005,
-            "tpr": 0.3079
-          },
-          {
-            "fpr": 0.0005,
-            "tpr": 0.3653
+            "fpr": 0.0006,
+            "tpr": 0.3994
           },
           {
             "fpr": 0.0007,
-            "tpr": 0.4181
-          },
-          {
-            "fpr": 0.0008,
-            "tpr": 0.4672
+            "tpr": 0.4587
           },
           {
             "fpr": 0.0009,
-            "tpr": 0.5172
+            "tpr": 0.5128
           },
           {
             "fpr": 0.0011,
-            "tpr": 0.5674
+            "tpr": 0.5694
+          },
+          {
+            "fpr": 0.0012,
+            "tpr": 0.6259
           },
           {
             "fpr": 0.0014,
-            "tpr": 0.6198
-          },
-          {
-            "fpr": 0.0015,
-            "tpr": 0.6756
+            "tpr": 0.6847
           },
           {
             "fpr": 0.0017,
-            "tpr": 0.7396
+            "tpr": 0.7564
           },
           {
-            "fpr": 0.0019,
-            "tpr": 0.8226
+            "fpr": 0.0021,
+            "tpr": 0.8814
           },
           {
-            "fpr": 0.0023,
-            "tpr": 0.9624
-          },
-          {
-            "fpr": 0.0673,
+            "fpr": 0.0082,
             "tpr": 1.0
           },
           {
-            "fpr": 0.1956,
+            "fpr": 0.1336,
             "tpr": 1.0
           },
           {
-            "fpr": 0.3086,
+            "fpr": 0.2548,
             "tpr": 1.0
           },
           {
-            "fpr": 0.4376,
+            "fpr": 0.3725,
             "tpr": 1.0
           },
           {
-            "fpr": 0.6417,
+            "fpr": 0.4952,
             "tpr": 1.0
           },
           {
-            "fpr": 0.9705,
+            "fpr": 0.6384,
+            "tpr": 1.0
+          },
+          {
+            "fpr": 0.8094,
+            "tpr": 1.0
+          },
+          {
+            "fpr": 0.9986,
             "tpr": 1.0
           }
         ]
       },
       "subgroup_non_monthly_roc_auc": 0.9992,
       "feature_importance": {
-        "age": 0.0639,
-        "gender_encoded": 0.1125,
-        "tenure": 0.0142,
-        "usage_frequency": 0.0074,
-        "support_calls": 0.2728,
-        "payment_delay": 0.1245,
-        "subscription_type_encoded": 0.0155,
-        "contract_length_encoded": 0.1634,
-        "total_spend": 0.1851,
-        "last_interaction": 0.0366,
-        "support_calls_per_tenure": 0.0032,
+        "age": 0.0599,
+        "gender_encoded": 0.1423,
+        "tenure": 0.0161,
+        "usage_frequency": 0.0078,
+        "support_calls": 0.2794,
+        "payment_delay": 0.119,
+        "subscription_type_encoded": 0.011,
+        "contract_length_encoded": 0.1614,
+        "total_spend": 0.1771,
+        "last_interaction": 0.0218,
+        "support_calls_per_tenure": 0.0031,
         "spend_per_tenure": 0.0006,
         "delay_ratio": 0.0005
       },
@@ -961,7 +961,7 @@
         "max_depth": 5,
         "num_leaves": 24
       },
-      "train_duration_sec": 0.79,
+      "train_duration_sec": 0.72,
       "tuning_history": {},
       "cv_5fold": {
         "roc_auc_mean": 0.9988,
@@ -1081,7 +1081,7 @@
         "f1_score": 0.9977,
         "roc_auc": 0.9988,
         "pr_auc": 0.9981,
-        "latency_per_sample_ms": 0.0006,
+        "latency_per_sample_ms": 0.0008,
         "confusion_matrix": [
           [
             28619,

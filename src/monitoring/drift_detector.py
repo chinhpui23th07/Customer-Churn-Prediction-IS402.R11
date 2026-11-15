@@ -7,7 +7,7 @@ import sys
 import json
 import numpy as np
 import pandas as pd
-from scipy.stats import ks_2samp
+from scipy.stats import ks_2samp, wasserstein_distance
 
 try:
     from evidently import Report
@@ -33,6 +33,35 @@ FEATURE_COLS = [
     "total_spend", "last_interaction", "support_calls_per_tenure",
     "spend_per_tenure", "delay_ratio"
 ]
+
+
+def calculate_normalized_wasserstein(expected: np.ndarray, actual: np.ndarray) -> tuple[float, float]:
+    """
+    Tính khoảng cách Wasserstein chuẩn hóa (Normalized Wasserstein Distance) theo chuẩn Evidently AI.
+    norm_w = W(P, Q) / sigma_reference.
+
+    Lý do khoa học (Evidently AI Big Data Specification):
+    Với dữ liệu lớn (N > 1,000, e.g. N = 100,000), kiểm định hai mẫu Kolmogorov-Smirnov (KS-test)
+    bị overpowered nghiêm trọng: mọi độ lệch nhỏ không đáng kể (0.02 sigma) đều khiến p-value -> 0
+    (p << alpha_Bonferroni), dẫn tới báo động giả (False Alarms) liên tục.
+    Normalized Wasserstein Distance đánh giá đúng quy mô tác động thực tế (effect size) chuẩn hóa
+    độc lập với kích thước mẫu N. Ngưỡng cảnh báo drift chuẩn của Evidently AI cho Big Data là 0.10.
+    """
+    expected = np.asarray(expected, dtype=float)
+    actual = np.asarray(actual, dtype=float)
+    expected = expected[np.isfinite(expected)]
+    actual = actual[np.isfinite(actual)]
+    if len(expected) == 0 or len(actual) == 0:
+        return 0.0, 0.0
+    raw_w = float(wasserstein_distance(expected, actual))
+    std_ref = float(np.std(expected))
+    if std_ref > 1e-6:
+        norm_w = raw_w / std_ref
+    else:
+        norm_w = 0.0 if raw_w < 1e-5 else raw_w
+    if not np.isfinite(norm_w):
+        norm_w = 0.0
+    return float(np.round(raw_w, 4)), float(np.round(norm_w, 4))
 
 
 def calculate_psi(
@@ -164,22 +193,43 @@ def run_drift_analysis(current_df: pd.DataFrame = None, p_val_threshold: float =
             ks_pval = float(ks_res.pvalue)
             stat = float(ks_res.statistic)
 
-            # PSI Metric
+            # PSI & Normalized Wasserstein Distance (Evidently AI Big Data Standard)
             psi = calculate_psi(ref_vals, cur_vals)
+            raw_w, norm_w = calculate_normalized_wasserstein(ref_vals, cur_vals)
+
+            is_continuous = len(np.unique(ref_vals)) > 10
+            n_samples = min(len(ref_vals), len(cur_vals))
+            use_wasserstein = is_continuous and (n_samples > 1000)
 
             ks_drift = ks_pval < bonferroni_alpha
-            is_drifted = ks_drift or (psi > 0.25)
+            w_drift = norm_w > 0.10
+
+            if use_wasserstein:
+                is_drifted = bool(w_drift or (psi > 0.25))
+                detection_method = "Normalized Wasserstein (threshold=0.10)"
+                drift_level = "High" if (norm_w > 0.20 or psi > 0.25) else ("Moderate" if (norm_w > 0.10 or psi > 0.10) else "Stable")
+            else:
+                is_drifted = bool(ks_drift or (psi > 0.25))
+                detection_method = "KS-Test Bonferroni"
+                drift_level = "High" if psi > 0.25 else ("Moderate" if psi > 0.10 else "Stable")
+
             if is_drifted:
                 drifted_count += 1
 
             drift_report["features"][col] = {
                 "ks_statistic": round(stat, 4),
                 "p_value": round(ks_pval, 5),
+                "ks_p_value": round(ks_pval, 5),
                 "bonferroni_alpha": round(float(bonferroni_alpha), 6),
                 "ks_drift": bool(ks_drift),
+                "wasserstein_distance": raw_w,
+                "normalized_wasserstein": norm_w,
+                "wasserstein_threshold": 0.10,
+                "wasserstein_drift": bool(w_drift),
+                "detection_method": detection_method,
                 "psi_score": psi,
                 "drift_detected": bool(is_drifted),
-                "drift_level": "High" if psi > 0.25 else ("Moderate" if psi > 0.1 else "Stable")
+                "drift_level": drift_level
             }
 
     drift_report["drifted_features_count"] = drifted_count
@@ -226,6 +276,7 @@ def generate_html_report(report: dict, ref_df: pd.DataFrame = None, current_df: 
         rows_html += f"""
         <tr style="border-bottom: 1px solid #334155;">
             <td style="padding:10px;font-weight:600;color:#F8FAFC;">{f_name}</td>
+            <td style="padding:10px;color:#94A3B8;">{f_data.get('normalized_wasserstein', 'N/A')}</td>
             <td style="padding:10px;color:#94A3B8;">{f_data['ks_statistic']}</td>
             <td style="padding:10px;color:#94A3B8;">{f_data['p_value']}</td>
             <td style="padding:10px;color:#94A3B8;">{f_data['psi_score']}</td>
@@ -260,13 +311,14 @@ def generate_html_report(report: dict, ref_df: pd.DataFrame = None, current_df: 
         <div class="kpi">
             <div class="card"><div class="num">{report['drifted_features_count']} / {report['total_features']}</div><div style="color:#94A3B8;font-size:12px;">ĐẶC TRƯNG BỊ DRIFT</div></div>
             <div class="card"><div class="num">{report['drift_share'] * 100:.1f}%</div><div style="color:#94A3B8;font-size:12px;">TỶ LỆ TRÔI DẠT</div></div>
-            <div class="card"><div class="num">KS-Test + PSI</div><div style="color:#94A3B8;font-size:12px;">PHƯƠNG PHÁP KIỂM ĐỊNH</div></div>
+            <div class="card"><div class="num">Wasserstein + PSI</div><div style="color:#94A3B8;font-size:12px;">PHƯƠNG PHÁP KIỂM ĐỊNH</div></div>
         </div>
 
         <table>
             <thead>
                 <tr>
                     <th>TÊN ĐẶC TRƯNG</th>
+                    <th>NORM WASSERSTEIN</th>
                     <th>KS STATISTIC</th>
                     <th>P-VALUE</th>
                     <th>PSI SCORE</th>

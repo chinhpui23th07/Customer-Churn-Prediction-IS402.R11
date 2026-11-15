@@ -7,33 +7,33 @@
 ## 1. Thông Tin Định Danh Học Thuật & Tác Giả
 - **Cơ sở đào tạo:** Trường Đại học Công nghệ Thông tin - ĐHQG-HCM (UIT).
 - **Khoa:** Hệ thống Thông tin | **Bộ môn:** Mạng và Hệ thống Thông tin.
-- **Môn học:** Điện toán Đám mây (Cloud Computing) - **Mã môn:** IS402.
+- **Lĩnh vực nghiên cứu:** Kỹ thuật Điện toán Đám mây & MLOps Cấp độ Doanh nghiệp.
 - **Giảng viên hướng dẫn:** ThS. Hà Lê Hoài Trung.
-- **Sinh viên thực hiện:** Nguyễn Trọng Khôi.
-- **Mã số sinh viên (MSSV):** 23520783 (Khóa 2023 - 2027, Lớp IS402).
-- **Tên đề tài chính thức:** Đề tài 11 - MLOps: Xây dựng hệ thống dự đoán khách hàng rời bỏ dịch vụ (Customer Churn Prediction) kết hợp nền tảng Microsoft Azure.
+- **Nhóm tác giả / Kỹ sư nghiên cứu:** [Để trống / Tác giả bảo mật].
+- **Mã định danh:** [Để trống / Tác giả bảo mật].
+- **Tên đề tài chính thức:** ChurnGuard MLOps: Hệ thống dự đoán khách hàng rời bỏ dịch vụ (Customer Churn Prediction) kết hợp nền tảng Microsoft Azure.
 
 ---
 
 ## 2. Đặc Tả Bộ Dữ Liệu Thực Nghiệm (Canonical Dataset Specifications)
-- **Tên bộ dữ liệu chuẩn:** KKBox Customer Churn Dataset (HuggingFace `vaibhavkhurana/subscriber-retention-intelligence`).
-- **Quy mô danh định:** 7.52 GB (32 tệp Parquet Snappy).
+- **Tên bộ dữ liệu chuẩn:** KKBox Customer Churn Dataset (HuggingFace `vaibhavkhurana/subscriber-retention-intelligence`, release `public-m12`).
+- **Quy mô danh định:** 7.52 GB (32 tệp Parquet Zstandard, 442,211,685 dòng). Manifest: `docs/experiments/kkbox_parquet_manifest.json`.
 - **Cấu trúc 4 bảng quan hệ:**
-  1. `member`: Thông tin nhân khẩu học của thành viên (`msno`, `city`, `bd`, `gender`, `registered_via`, `registration_init_time`).
-  2. `subscription_transaction`: Lịch sử giao dịch gói dịch vụ (`msno`, `payment_method_id`, `payment_plan_days`, `plan_list_price`, `actual_amount_paid`, `is_auto_renew`, `transaction_date`, `membership_expire_date`, `is_cancel`).
-  3. `listening_day`: Nhật ký nghe nhạc theo ngày (`msno`, `date`, `num_25`, `num_50`, `num_75`, `num_985`, `num_100`, `num_unq`, `total_secs`).
-  4. `churn_label`: Nhãn mục tiêu rời bỏ dịch vụ (`msno`, `is_churn`).
-- **Thực thể định danh duy nhất (Entity Key):** `msno` (chuỗi ký tự).
+  1. `member`: Thông tin nhân khẩu học của thành viên (`subscriber_key` / quy chiếu `msno`, `city_code`/`city`, `age_band_start`/`bd`, `gender`, `registered_via`, `registration_init_time`).
+  2. `subscription_transaction`: Lịch sử giao dịch gói dịch vụ (`subscriber_key`, `payment_method_id`, `payment_plan_days`, `plan_list_price`, `actual_amount_paid`, `is_auto_renew`, `transaction_date`, `membership_expire_date`, `is_cancel`).
+  3. `listening_day`: Nhật ký nghe nhạc theo ngày (`subscriber_key`, `activity_date`/`date`, `num_25`, `num_50`, `num_75`, `num_985`, `num_100`, `num_unq`, `total_secs`).
+  4. `churn_label`: Nhãn mục tiêu rời bỏ dịch vụ (`subscriber_key`, `label_window`, `is_churn`).
+- **Thực thể định danh duy nhất (Entity Key):** `subscriber_key` (`uint64` trong Parquet nguồn, chuẩn hóa chuỗi thập phân; quy chiếu `msno` trong lược đồ KKBox chuẩn).
 - **Nhãn mục tiêu (Target Label):** `is_churn` (nhị phân: 0 hoặc 1).
-- **Nguyên tắc nhất quán:** 100% các thành phần trong hệ thống (ETL, Storage, Feature Store Feast, Model Training, FastAPI Serving, Web UI) bắt buộc phải dùng chung thực thể `msno` và nhãn `is_churn`.
+- **Nguyên tắc nhất quán:** 100% các thành phần KKBox mới trong hệ thống dùng thực thể `subscriber_key` (`msno`) và nhãn `is_churn`; không tồn tại tham chiếu trái domain.
 
 ---
 
 ## 3. Kiến Trúc Hạ Tầng Đám Mây & FinOps
-- **Nhà cung cấp đám mây:** Microsoft Azure (Khu vực Southeast Asia).
-- **Dịch vụ tích hợp:** Azure Container Apps, Azure Blob Storage, Azure Cache for Redis (Port 6380 SSL).
-- **Lưu trữ cục bộ:** Parquet Snappy Offline Store & SQLite WAL Online Store (`online_store.db`).
-- **Ngân sách FinOps:** TCO $74.67/tháng.
+- **Nhà cung cấp đám mây:** Microsoft Azure (Khu vực Southeast Asia; đối chuẩn 6 nhà cung cấp Azure, AWS, GCP, OCI, OVHcloud, Viettel IDC).
+- **Dịch vụ tích hợp (IaC ready, chưa provision live cloud):** Azure Container Apps, Azure Blob Storage (`Standard_LRS`), Azure Container Registry (`Basic`), Azure Managed Redis (`Balanced_B0`, TLS Port `10000`) / Valkey 8.0.
+- **Lưu trữ cục bộ:** Parquet Zstandard / Snappy Offline Store & SQLite WAL Online Store (`online_store.db`).
+- **Ngân sách FinOps:** $70.61/tháng (Baseline IaC trong `reports/infracost_breakdown.json`) và $11.22/tháng (Serverless Scale-to-Zero), mục tiêu < $75.00/tháng.
 
 ---
 
@@ -70,5 +70,6 @@
 - **Báo cáo thuyết minh (Word):** `docs/Bao_Cao_Bai_Tap_Lon_MLOps_Customer_Churn.docx`
 - **Báo cáo PDF chính thức:** `docs/Bao_Cao_Bai_Tap_Lon_MLOps_Customer_Churn.pdf`
 - **Slide báo cáo (PowerPoint):** `docs/Slide_Thuyet_Trinh_MLOps_Customer_Churn.pptx`
-- **Giao diện Web:** `src/web/index.html` (Bento Grid)
-- **Tệp nộp bài chuẩn UIT:** `23520783_BTL_Cloud_Computing_MLOps.zip`
+- **Tài liệu chuẩn tối cao:** `docs/MASTER_PROJECT_TRUTH.md`
+- **Giao diện Web:** `src/kkbox/web/index.html` (`/demo`) & `src/web/index.html` (`/ui`)
+- **Tệp đóng gói phát hành:** `ChurnGuard_MLOps_Enterprise_Release.zip`

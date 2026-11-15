@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-FINAL COMPREHENSIVE AUDIT & RUBRIC VERIFICATION (UIT IS402 Standard)
+FINAL COMPREHENSIVE AUDIT & RUBRIC VERIFICATION (Enterprise Cloud MLOps Standard)
 Đánh giá khách quan, độc lập theo 15 tiêu chí của Rubric Đề tài 11.
 Nguyên tắc Liêm chính học thuật (Academic Integrity):
 - Tuyệt đối KHÔNG tự phong 10/10 khi chưa kết nối Cloud Azure thật.
@@ -170,7 +170,7 @@ def check_r5_presentation_and_management():
     local_scores["R5.4_cloud_management_quotas"] = 0.10
     target_cloud_scores["R5.4_cloud_management_quotas"] = 0.50
     cloud_penalties["R5.4_cloud_management_quotas"] = (
-        "TRỪ 0.40đ: Đã tính toán TCO $74.67/month, bảng Cloud Quotas, IAM RBAC, nhưng chưa gắn với live Azure Subscription."
+        "TRỪ 0.40đ: Đã tính toán TCO $70.61/month (IaC Baseline) & $11.22/month (Scale-to-Zero), bảng Cloud Quotas, IAM RBAC, nhưng chưa gắn với live Azure Subscription."
     )
     print("  [!] R5.4 Quản trị Cloud & Quotas: LOCAL 0.10/0.50đ (Trừ 0.40đ - Thiết kế TCO/Quotas đầy đủ, chưa liên kết live Cloud)")
 
@@ -225,7 +225,7 @@ if __name__ == "__main__":
     with open(summary_file, "w", encoding="utf-8") as f:
         json.dump({
             "timestamp": datetime.now().isoformat(),
-            "audit_standard": "UIT IS402 Cloud Computing Rubric v2.0",
+            "audit_standard": "Enterprise Cloud MLOps Rubric v2.0",
             "evaluator_mode": "Strict Academic Integrity (Dual-Track Local vs Cloud)",
             "local_real_score": tot_local,
             "target_cloud_score": tot_cloud,

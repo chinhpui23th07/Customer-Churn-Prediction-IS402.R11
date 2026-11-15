@@ -21,6 +21,7 @@ from src.api.ab_testing import route_customer_to_model, CHAMPION_VERSION, CHALLE
 from src.features.feature_store import query_online_features
 from src.api.routes_management import router as management_router, register_reload_hook
 from src.kkbox.api import router as kkbox_router, WEB_DIR as KKBOX_WEB_DIR
+from src.resilience import CircuitBreaker, CircuitBreakerOpenException, ResiliencePipeline
 
 if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8")
 if hasattr(sys.stderr, "reconfigure"): sys.stderr.reconfigure(encoding="utf-8")
@@ -77,13 +78,10 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(
-    title="ChurnGuard MLOps Serving API",
-    description="REST API dự đoán khách hàng rời bỏ dịch vụ với Feast Feature Store và SHAP TreeExplainer.",
-    version="2.0.0",
-    lifespan=lifespan
-)
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
+app = FastAPI(title="ChurnGuard MLOps Serving API", description="REST API dự đoán khách hàng rời bỏ dịch vụ với Feast Feature Store và SHAP TreeExplainer.", version="2.0.0", lifespan=lifespan)
+ALLOWED_ORIGINS = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000").split(",") if o.strip()]
+FEAST_RESILIENCE = ResiliencePipeline(name="legacy_feast_lookup", circuit_breaker=CircuitBreaker(name="feast_online_store", failure_threshold=5, recovery_timeout=15.0))
+app.add_middleware(CORSMiddleware, allow_origins=ALLOWED_ORIGINS, allow_credentials=True, allow_methods=["GET", "POST", "OPTIONS"], allow_headers=["Authorization", "Content-Type", "X-API-Key"])
 app.include_router(management_router)
 app.include_router(kkbox_router)
 if os.path.exists(KKBOX_WEB_DIR):
@@ -138,7 +136,10 @@ def _execute_feast_online_prediction(customer_id: int) -> PredictionResponse:
     if MODEL_ARTIFACT is None: load_artifacts()
 
     t0 = time.perf_counter()
-    online_data = query_online_features([customer_id])
+    try:
+        online_data = FEAST_RESILIENCE.execute(query_online_features, [customer_id])
+    except CircuitBreakerOpenException as exc:
+        raise HTTPException(status_code=503, detail=f"Feast Online Store circuit breaker open: {exc}") from exc
     if not online_data:
         raise HTTPException(status_code=404, detail=f"Không tìm thấy khách hàng {customer_id} trong Feast Online Store!")
 
@@ -241,12 +242,7 @@ def predict_ab_test(customer: CustomerInput, api_key: str = Depends(verify_api_k
 
 
 @app.post("/batch_predict", response_model=BatchPredictionResponse, tags=["Inference"])
-def predict_batch(
-    customers: List[CustomerInput],
-    explain: bool = False,
-    explain_threshold: float = 0.70,
-    api_key: str = Depends(verify_api_key)
-):
+def predict_batch(customers: List[CustomerInput], explain: bool = False, explain_threshold: float = 0.70, api_key: str = Depends(verify_api_key)):
     if MODEL_ARTIFACT is None: load_artifacts()
     if len(customers) > MAX_BATCH_SIZE:
         raise HTTPException(status_code=422, detail=f"Batch size exceeds maximum limit of {MAX_BATCH_SIZE}")
@@ -266,16 +262,7 @@ def predict_batch(
     x_eval = x_batch_df if hasattr(clf, "feature_names_in_") else x_batch
     preds = clf.predict(x_eval).astype(int)
     probs = clf.predict_proba(x_eval)[:, 1] if hasattr(clf, "predict_proba") else preds.astype(float)
-
-    batch_explanations = compute_batch_attributions(
-        model=clf,
-        explainer=explainer,
-        feature_matrix=x_eval,
-        churn_probabilities=probs,
-        explain=explain,
-        explain_threshold=explain_threshold,
-    )
-
+    batch_explanations = compute_batch_attributions(model=clf, explainer=explainer, feature_matrix=x_eval, churn_probabilities=probs, explain=explain, explain_threshold=explain_threshold)
     avg_lat = round(((time.perf_counter() - t0) * 1000.0) / len(customers), 2)
 
     results, log_records = [], []
@@ -310,12 +297,7 @@ def predict_batch(
 
 
 @app.post("/upload_csv_predict", tags=["Inference"])
-def predict_from_csv(
-    file: UploadFile = File(...),
-    explain: bool = False,
-    explain_threshold: float = 0.70,
-    api_key: str = Depends(verify_api_key)
-):
+def predict_from_csv(file: UploadFile = File(...), explain: bool = False, explain_threshold: float = 0.70, api_key: str = Depends(verify_api_key)):
     if not (file.filename or "").lower().endswith(".csv"):
         raise HTTPException(status_code=400, detail="Vui lòng chỉ tải lên tệp định dạng CSV!")
     try:

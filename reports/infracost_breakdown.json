@@ -12,18 +12,18 @@
     {
       "resource_type": "azurerm_storage_account",
       "resource_name": "sa",
-      "sku_or_tier": "Standard_GRS",
-      "monthly_cost_usd": 4.8,
-      "unit_description": "~100GB hot data geo-replicated",
-      "notes": "Geo-redundant blob storage"
+      "sku_or_tier": "Standard_LRS",
+      "monthly_cost_usd": 2.4,
+      "unit_description": "~100GB hot data + 50k ops",
+      "notes": "Locally-redundant hot blob storage"
     },
     {
-      "resource_type": "azurerm_redis_cache",
+      "resource_type": "azurerm_redis_enterprise_cluster",
       "resource_name": "redis",
-      "sku_or_tier": "Basic_C0",
-      "monthly_cost_usd": 16.06,
-      "unit_description": "250MB cache node / month",
-      "notes": "Basic C0 single node cache"
+      "sku_or_tier": "Balanced_B0",
+      "monthly_cost_usd": 12.0,
+      "unit_description": "Balanced B0 Non-HA / month",
+      "notes": "Azure Managed Redis (AMR) Balanced B0"
     },
     {
       "resource_type": "azurerm_log_analytics_workspace",
@@ -42,11 +42,14 @@
       "notes": "Container Apps active consumption"
     }
   ],
-  "total_monthly_usd": 77.07,
+  "total_monthly_usd": 70.61,
   "enterprise_budget_usd": 150.0,
   "student_credit_usd": 100.0,
   "within_enterprise_budget": true,
   "within_student_credit": true,
-  "enterprise_headroom_usd": 72.93,
-  "student_headroom_usd": 22.93
+  "enterprise_headroom_usd": 79.39,
+  "student_headroom_usd": 29.39,
+  "course_budget_usd": 75.0,
+  "within_course_budget": true,
+  "course_headroom_usd": 4.39
 }
