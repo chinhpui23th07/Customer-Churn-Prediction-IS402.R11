@@ -20,12 +20,16 @@ graphify-out/
 .agents/
 
 # Data files (handled via mounts or pipeline)
-data/raw/*.csv
+data/raw/
+data/kkbox_sample_raw/
+data/retrain_jobs/
 data/processed/*.parquet
+data/processed/*.csv
 *.db
 *.sqlite
 *.log
 
 # Whitelist Feast Registry and Online Store DB for Docker serving
 !data/feast_repo/data/*.db
+!data/kkbox_feast/*.db
 

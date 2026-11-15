@@ -28,7 +28,7 @@ def is_docker_running() -> bool:
     """Check if Docker Desktop engine is online without throwing unhandled exceptions."""
     try:
         import docker
-        client = docker.from_env(timeout=1)
+        client = docker.from_env(timeout=5)
         client.ping()
         return True
     except Exception:
@@ -252,14 +252,21 @@ def test_azurite_adapter_auto_detection() -> None:
 @pytest.mark.skipif(not is_docker_running(), reason="Docker daemon is offline; skipping ephemeral container test")
 def test_testcontainers_live_container() -> None:
     """Integration test against disposable Testcontainers container (when Docker daemon is online)."""
-    try:
-        from testcontainers.core.container import DockerContainer
-        with DockerContainer("redis:alpine").with_exposed_ports(6379) as container:
-            port = container.get_exposed_port(6379)
-            assert port is not None
-            assert int(port) > 0
-    except Exception as exc:
-        pytest.skip(f"Testcontainers container runtime unavailable or restricted in CI: {exc}")
+    from testcontainers.core.container import DockerContainer
+
+    with DockerContainer("redis:alpine").with_exposed_ports(6379) as container:
+        port = container.get_exposed_port(6379)
+        assert port is not None
+        assert int(port) > 0
+
+
+def test_azurite_adapter_strict_production_forbids_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
+    """In production/strict mode, AzuriteStorageAdapter must raise instead of silently falling back to RAM."""
+    monkeypatch.setenv("APP_ENV", "production")
+    with pytest.raises(ValueError, match="forbidden"):
+        AzuriteStorageAdapter(force_fallback=True)
+    with pytest.raises(ConnectionError):
+        AzuriteStorageAdapter(connection_string="DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=invalid;BlobEndpoint=http://127.0.0.1:19999/devstoreaccount1;")
 
 
 @pytest.mark.asyncio

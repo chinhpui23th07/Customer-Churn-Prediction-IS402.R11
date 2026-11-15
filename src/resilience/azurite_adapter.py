@@ -64,9 +64,23 @@ DEFAULT_AZURITE_CONN = os.getenv("AZURITE_CONNECTION_STRING", "UseDevelopmentSto
 
 
 class AzuriteStorageAdapter:
-    """Dual-mode storage adapter routing to live Azurite/Azure or in-memory fallback."""
+    """Dual-mode storage adapter routing to live Azurite/Azure or in-memory fallback (dev/test only)."""
 
-    def __init__(self, connection_string: Optional[str] = None, force_fallback: bool = False) -> None:
+    def __init__(
+        self,
+        connection_string: Optional[str] = None,
+        force_fallback: bool = False,
+        strict_mode: Optional[bool] = None,
+    ) -> None:
+        if strict_mode is None:
+            strict_mode = (
+                os.getenv("APP_ENV", "").strip().lower() == "production"
+                or os.getenv("STRICT_CLOUD_MODE", "0").strip() == "1"
+            )
+        self._strict_mode = strict_mode
+        if self._strict_mode and force_fallback:
+            raise ValueError("In-memory fallback is forbidden in production/strict mode.")
+
         self._fallback_store = InMemoryBlobStore()
         self._is_using_fallback = force_fallback
         self._live_client: Optional[Any] = None
@@ -94,11 +108,15 @@ class AzuriteStorageAdapter:
                     client.get_account_information(connection_timeout=1, read_timeout=1)
                     self._live_client = client
                     self._is_using_fallback = False
-                    logger.info("Connected to live Azure/Azurite endpoint on port 10000.")
+                    logger.info("Connected to live Azure/Azurite endpoint.")
                 except Exception as exc:
+                    if self._strict_mode:
+                        raise ConnectionError(f"Live Azure/Azurite required in production mode: {exc}") from exc
                     logger.warning("Live Azure/Azurite unavailable (%s). Using in-memory fallback.", exc)
                     self._is_using_fallback = True
             else:
+                if self._strict_mode:
+                    raise ConnectionError("Live Azure/Azurite endpoint unreachable in production/strict mode.")
                 self._is_using_fallback = True
         else:
             self._is_using_fallback = True
@@ -134,6 +152,8 @@ class AzuriteStorageAdapter:
             blob_client.upload_blob(payload, overwrite=overwrite)
             return True
         except Exception as exc:
+            if self._strict_mode:
+                raise
             logger.warning("Live upload failed (%s). Retrying to in-memory fallback.", exc)
             self._is_using_fallback = True
             return self._fallback_store.upload_blob(container, blob, data, overwrite=overwrite)
@@ -145,6 +165,8 @@ class AzuriteStorageAdapter:
             blob_client = self._live_client.get_blob_client(container=container, blob=blob)
             return blob_client.download_blob().readall()
         except Exception as exc:
+            if self._strict_mode:
+                raise
             logger.warning("Live download failed (%s). Falling back to in-memory.", exc)
             return self._fallback_store.download_blob(container, blob)
 
@@ -155,6 +177,8 @@ class AzuriteStorageAdapter:
             container_client = self._live_client.get_container_client(container)
             return [b.name for b in container_client.list_blobs()]
         except Exception:
+            if self._strict_mode:
+                raise
             return self._fallback_store.list_blobs(container)
 
     def delete_blob(self, container: str, blob: str) -> bool:
@@ -165,6 +189,8 @@ class AzuriteStorageAdapter:
             blob_client.delete_blob()
             return True
         except Exception:
+            if self._strict_mode:
+                raise
             return self._fallback_store.delete_blob(container, blob)
 
     def exists(self, container: str, blob: str) -> bool:
@@ -174,6 +200,8 @@ class AzuriteStorageAdapter:
             blob_client = self._live_client.get_blob_client(container=container, blob=blob)
             return blob_client.exists()
         except Exception:
+            if self._strict_mode:
+                raise
             return self._fallback_store.exists(container, blob)
 
     def get_status(self) -> Dict[str, Any]:

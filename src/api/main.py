@@ -46,21 +46,26 @@ def load_artifacts():
 
         if os.path.exists(champion_path): MODEL_ARTIFACT = joblib.load(champion_path)
         if os.getenv("USE_MLFLOW_REGISTRY", "false").lower() == "true":
-            try:
-                os.environ["MLFLOW_DISABLE_AGENT_HINT"] = "1"
-                import mlflow.sklearn
-                mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", f"sqlite:///{MLFLOW_DB.replace(chr(92), '/')}"))
-                for stage in ("models:/CustomerChurnChampion@champion", "models:/CustomerChurnChampion/Production"):
-                    try:
-                        MODEL_ARTIFACT = {"name": "CustomerChurnChampion (MLflow Registry)", "model": mlflow.sklearn.load_model(stage), "use_scaled": False}
-                        break
-                    except Exception: pass
-                for stage in ("models:/CustomerChurnChallenger@challenger", "models:/CustomerChurnChallenger/Staging"):
-                    try:
-                        CHALLENGER_ARTIFACT = mlflow.sklearn.load_model(stage)
-                        break
-                    except Exception: pass
-            except Exception: pass
+            os.environ["MLFLOW_DISABLE_AGENT_HINT"] = "1"
+            import logging
+            import mlflow.sklearn
+            mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", f"sqlite:///{MLFLOW_DB.replace(chr(92), '/')}"))
+            loaded_champ = False
+            for stage in ("models:/CustomerChurnChampion@champion", "models:/CustomerChurnChampion/Production"):
+                try:
+                    MODEL_ARTIFACT = {"name": "CustomerChurnChampion (MLflow Registry)", "model": mlflow.sklearn.load_model(stage), "use_scaled": False}
+                    loaded_champ = True
+                    break
+                except Exception as exc:
+                    logging.getLogger(__name__).warning("MLflow champion load failed (%s): %s", stage, exc)
+            if not loaded_champ and os.getenv("APP_ENV", "").strip().lower() == "production":
+                raise RuntimeError("USE_MLFLOW_REGISTRY=true failed to load Champion model in production mode.")
+            for stage in ("models:/CustomerChurnChallenger@challenger", "models:/CustomerChurnChallenger/Staging"):
+                try:
+                    CHALLENGER_ARTIFACT = mlflow.sklearn.load_model(stage)
+                    break
+                except Exception as exc:
+                    logging.getLogger(__name__).warning("MLflow challenger load failed (%s): %s", stage, exc)
         if MODEL_ARTIFACT is not None: TREE_EXPLAINER = _build_shap_explainer(MODEL_ARTIFACT["model"])
         if CHALLENGER_ARTIFACT is None and os.path.exists(challenger_path): CHALLENGER_ARTIFACT = joblib.load(challenger_path)
         if CHALLENGER_ARTIFACT is not None: CHALLENGER_TREE_EXPLAINER = _build_shap_explainer(CHALLENGER_ARTIFACT)
